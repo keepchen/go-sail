@@ -1,0 +1,362 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an api document of go-sail.",
+        "title": "user - \u003cgo-sail\u003e",
+        "termsOfService": "https://blog.keepchen.com",
+        "contact": {
+            "name": "keepchen",
+            "url": "https://blog.keepchen.com",
+            "email": "keepchen2016@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/keepchen/go-sail/LICENSE"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/say-hello": {
+            "get": {
+                "description": "欢迎语",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "welcome / 欢迎语"
+                ],
+                "summary": "say-hello / 说你好",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "昵称",
+                        "name": "nickname",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SayHello"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error400"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error500"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user / 用户相关"
+                ],
+                "summary": "user-info / 获取用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户id",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error400"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error500"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.Error400": {
+            "type": "object",
+            "required": [
+                "code",
+                "data",
+                "message",
+                "success",
+                "ts"
+            ],
+            "properties": {
+                "code": {
+                    "description": "错误码\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int",
+                    "example": 100000
+                },
+                "data": {
+                    "description": "业务数据\nin: body\nrequired: true"
+                },
+                "message": {
+                    "description": "提示信息\nin: body\nrequired: true",
+                    "type": "string",
+                    "format": "string",
+                    "example": "Bad request parameters"
+                },
+                "requestId": {
+                    "description": "请求id\nin: body\nrequired: false",
+                    "type": "string",
+                    "format": "string",
+                    "example": "1234567890123456789"
+                },
+                "success": {
+                    "description": "是否成功\nin: body\nrequired: true",
+                    "type": "boolean",
+                    "format": "bool",
+                    "example": false
+                },
+                "ts": {
+                    "description": "服务器时间(毫秒时间戳)\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1670899688591
+                }
+            }
+        },
+        "api.Error500": {
+            "type": "object",
+            "required": [
+                "code",
+                "data",
+                "message",
+                "success",
+                "ts"
+            ],
+            "properties": {
+                "code": {
+                    "description": "错误码\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int",
+                    "example": 999999
+                },
+                "data": {
+                    "description": "业务数据\nin: body\nrequired: true"
+                },
+                "message": {
+                    "description": "提示信息\nin: body\nrequired: true",
+                    "type": "string",
+                    "format": "string",
+                    "example": "Internal server error"
+                },
+                "requestId": {
+                    "description": "请求id\nin: body\nrequired: false",
+                    "type": "string",
+                    "format": "string",
+                    "example": "1234567890123456789"
+                },
+                "success": {
+                    "description": "是否成功\nin: body\nrequired: true",
+                    "type": "boolean",
+                    "format": "bool",
+                    "example": false
+                },
+                "ts": {
+                    "description": "服务器时间(毫秒时间戳)\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1670899688591
+                }
+            }
+        },
+        "response.GetUserInfo": {
+            "type": "object",
+            "required": [
+                "code",
+                "data",
+                "message",
+                "success",
+                "ts"
+            ],
+            "properties": {
+                "code": {
+                    "description": "错误码\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int",
+                    "example": 0
+                },
+                "data": {
+                    "description": "数据体\nin: body\nrequired: true",
+                    "type": "object",
+                    "properties": {
+                        "user": {
+                            "$ref": "#/definitions/response.UserInfo"
+                        },
+                        "wallet": {
+                            "$ref": "#/definitions/response.WalletInfo"
+                        }
+                    }
+                },
+                "message": {
+                    "description": "提示信息\nin: body\nrequired: true",
+                    "type": "string",
+                    "format": "string",
+                    "example": "SUCCESS"
+                },
+                "requestId": {
+                    "description": "请求id\nin: body\nrequired: false",
+                    "type": "string",
+                    "format": "string",
+                    "example": "1234567890123456789"
+                },
+                "success": {
+                    "description": "是否成功\nin: body\nrequired: true",
+                    "type": "boolean",
+                    "format": "bool",
+                    "example": true
+                },
+                "ts": {
+                    "description": "服务器时间(毫秒时间戳)\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1670899688591
+                }
+            }
+        },
+        "response.SayHello": {
+            "type": "object",
+            "required": [
+                "code",
+                "data",
+                "data",
+                "message",
+                "success",
+                "ts"
+            ],
+            "properties": {
+                "code": {
+                    "description": "错误码\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int",
+                    "example": 0
+                },
+                "data": {
+                    "description": "数据体\nin: body\nrequired: true",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "提示信息\nin: body\nrequired: true",
+                    "type": "string",
+                    "format": "string",
+                    "example": "SUCCESS"
+                },
+                "requestId": {
+                    "description": "请求id\nin: body\nrequired: false",
+                    "type": "string",
+                    "format": "string",
+                    "example": "1234567890123456789"
+                },
+                "success": {
+                    "description": "是否成功\nin: body\nrequired: true",
+                    "type": "boolean",
+                    "format": "bool",
+                    "example": true
+                },
+                "ts": {
+                    "description": "服务器时间(毫秒时间戳)\nin: body\nrequired: true",
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1670899688591
+                }
+            }
+        },
+        "response.UserInfo": {
+            "type": "object",
+            "required": [
+                "status",
+                "userId",
+                "userInfo"
+            ],
+            "properties": {
+                "status": {
+                    "description": "账号状态\n\nUserStatusCodeNormal    = UserStatusCode(0) //正常\nUserStatusCodeForbidden = UserStatusCode(1) //禁用\n\nin: body\nrequired: true",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
+                },
+                "userId": {
+                    "description": "用户id",
+                    "type": "integer"
+                },
+                "userInfo": {
+                    "description": "用户昵称\nin: body\nrequired: true",
+                    "type": "string"
+                }
+            }
+        },
+        "response.WalletInfo": {
+            "type": "object",
+            "required": [
+                "amount",
+                "status"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "账户余额\nin: body\nrequired: true",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "钱包状态\n\nWalletStatusCodeNormal    = WalletStatusCode(0) //正常\nWalletStatusCodeForbidden = WalletStatusCode(1) //禁用\n\nin: body\nrequired: true",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Access Token protects our entity endpoints",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

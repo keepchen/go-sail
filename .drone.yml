@@ -1,0 +1,117 @@
+kind: pipeline
+type: docker
+name: football-ecosystem
+
+trigger:
+  event:
+    - push
+    - promote
+#    - pull_request
+
+steps:
+  - name: 检查和测试
+    image: golang:latest
+    commands:
+      - uname -sr
+      - export GOPROXY=https://goproxy.io,direct
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.47.0
+      - make lint
+      - make test
+    when:
+      event:
+        exclude:
+          - promote
+      branch:
+        exclude:
+          - main
+          - develop
+          - release*
+
+  - name: 构建镜像
+    image: docker:latest
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    environment:
+      harbor_host:
+        from_secret: harbor_host
+      harbor_username:
+        from_secret: harbor_username
+      harbor_password:
+        from_secret: harbor_password
+    commands:
+      - echo "waiting 10 seconds..." && sleep 10
+      - docker info
+      - docker login -u $$harbor_username -p $$harbor_password $$harbor_host
+      - export REGISTRY_HOST=$$harbor_host
+      - export SHORT_COMMIT_ID=$(echo ${CI_COMMIT_SHA}|cut -c1-8)
+      - sh build-docker-image.sh
+    when:
+      event:
+        exclude:
+          - promote
+      branch:
+        include:
+          - main
+          - develop
+          - release*
+
+  - name: 推送镜像
+    image: docker:latest
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    environment:
+      local_harbor_host:
+        from_secret: harbor_host
+      local_harbor_username:
+        from_secret: harbor_username
+      local_harbor_password:
+        from_secret: harbor_password
+      test_registry_host:
+        from_secret: test_registry_host
+      test_registry_username:
+        from_secret: test_registry_username
+      test_registry_password:
+        from_secret: test_registry_password
+      preview_registry_host:
+        from_secret: preview_registry_host
+      preview_registry_username:
+        from_secret: preview_registry_username
+      preview_registry_password:
+        from_secret: preview_registry_password
+      prod_registry_host:
+        from_secret: prod_registry_host
+      prod_registry_username:
+        from_secret: prod_registry_username
+      prod_registry_password:
+        from_secret: prod_registry_password
+    commands:
+      - |
+        export VCS_BRANCH=${DRONE_BRANCH}
+        export SHORT_COMMIT_HASH=$(echo ${CI_COMMIT_SHA}|cut -c1-8)
+        export LOCAL_REGISTRY_USERNAME=$$local_harbor_username
+        export DRONE_PROMOTE_TARGET=${DRONE_DEPLOY_TO}
+      - sh push-docker-image.sh
+    when:
+      event:
+        - promote
+      target:
+        - test
+        - preview
+        - prod
+
+  - name: 飞书通知
+    image: keepchen/drone-feishu
+    settings:
+      token:
+        from_secret: feishu_token
+      secret:
+        from_secret: feishu_secret
+    when:
+      status: [ failure, success ]
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock

@@ -1,0 +1,130 @@
+version: "3"
+
+services:
+  redis-node1:
+    image: "bitnami/redis-cluster:6.2.6"
+    container_name: redis-node1
+    environment:
+      - REDIS_PORT_NUMBER=6379
+      - REDIS_PASSWORD=changeme
+      - REDISCLI_AUTH=changeme
+      - REDIS_CLUSTER_CREATOR=no
+      - REDIS_NODES=192.168.224.114:6379 192.168.224.114:6380 192.168.224.114:6381 192.168.224.114:6382 192.168.224.114:6383 192.168.224.114:6384
+      - REDIS_CLUSTER_ANNOUNCE_IP=192.168.224.114
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+    volumes:
+      - ./data/node1:/bitnami/redis/data
+    ports:
+      - "6379:6379"
+      - "16379:16379"
+    restart: always
+
+  redis-node2:
+    image: "bitnami/redis-cluster:6.2.6"
+    container_name: redis-node2
+    environment:
+      - REDIS_PORT_NUMBER=6380
+      - REDIS_PASSWORD=changeme
+      - REDISCLI_AUTH=changeme
+      - REDIS_CLUSTER_CREATOR=no
+      - REDIS_NODES=192.168.224.114:6379 192.168.224.114:6380 192.168.224.114:6381 192.168.224.114:6382 192.168.224.114:6383 192.168.224.114:6384
+      - REDIS_CLUSTER_ANNOUNCE_IP=192.168.224.114
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+    volumes:
+      - ./data/node2:/bitnami/redis/data
+    ports:
+      - "6380:6380"
+      - "16380:16380"
+    depends_on:
+      - redis-node1
+    restart: always
+
+  redis-node3:
+    image: "bitnami/redis-cluster:6.2.6"
+    container_name: redis-node3
+    environment:
+      - REDIS_PORT_NUMBER=6381
+      - REDIS_PASSWORD=changeme
+      - REDISCLI_AUTH=changeme
+      - REDIS_CLUSTER_CREATOR=no
+      - REDIS_NODES=192.168.224.114:6379 192.168.224.114:6380 192.168.224.114:6381 192.168.224.114:6382 192.168.224.114:6383 192.168.224.114:6384
+      - REDIS_CLUSTER_ANNOUNCE_IP=192.168.224.114
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+    volumes:
+      - ./data/node3:/bitnami/redis/data
+    ports:
+      - "6381:6381"
+      - "16381:16381"
+    depends_on:
+      - redis-node1
+      - redis-node2
+    restart: always
+
+  redis-node4:
+    image: "bitnami/redis-cluster:6.2.6"
+    container_name: redis-node4
+    environment:
+      - REDIS_PORT_NUMBER=6382
+      - REDIS_PASSWORD=changeme
+      - REDISCLI_AUTH=changeme
+      - REDIS_CLUSTER_CREATOR=no
+      - REDIS_NODES=192.168.224.114:6379 192.168.224.114:6380 192.168.224.114:6381 192.168.224.114:6382 192.168.224.114:6383 192.168.224.114:6384
+      - REDIS_CLUSTER_ANNOUNCE_IP=192.168.224.114
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+    volumes:
+      - ./data/node4:/bitnami/redis/data
+    ports:
+      - "6382:6382"
+      - "16382:16382"
+    depends_on:
+      - redis-node1
+      - redis-node2
+      - redis-node3
+    restart: always
+
+  redis-node5:
+    image: "bitnami/redis-cluster:6.2.6"
+    container_name: redis-node5
+    environment:
+      - REDIS_PORT_NUMBER=6383
+      - REDIS_PASSWORD=changeme
+      - REDISCLI_AUTH=changeme
+      - REDIS_CLUSTER_CREATOR=no
+      - REDIS_NODES=192.168.224.114:6379 192.168.224.114:6380 192.168.224.114:6381 192.168.224.114:6382 192.168.224.114:6383 192.168.224.114:6384
+      - REDIS_CLUSTER_ANNOUNCE_IP=192.168.224.114
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+    volumes:
+      - ./data/node5:/bitnami/redis/data
+    ports:
+      - "6383:6383"
+      - "16383:16383"
+    depends_on:
+      - redis-node1
+      - redis-node2
+      - redis-node3
+      - redis-node4
+    restart: always
+
+  redis-node6:
+    image: "bitnami/redis-cluster:6.2.6"
+    container_name: redis-node6
+    environment:
+      - REDIS_PORT_NUMBER=6384
+      - REDIS_PASSWORD=changeme
+      - REDISCLI_AUTH=changeme
+      - REDIS_CLUSTER_CREATOR=yes
+      - REDIS_NODES=192.168.224.114:6379 192.168.224.114:6380 192.168.224.114:6381 192.168.224.114:6382 192.168.224.114:6383 192.168.224.114:6384
+      - REDIS_CLUSTER_ANNOUNCE_IP=192.168.224.114
+      - REDIS_CLUSTER_DYNAMIC_IPS=no
+    volumes:
+      - ./data/node6:/bitnami/redis/data
+    ports:
+      - "6384:6384"
+      - "16384:16384"
+    depends_on:
+      - redis-node1
+      - redis-node2
+      - redis-node3
+      - redis-node4
+      - redis-node5
+    restart: always

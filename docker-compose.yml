@@ -1,0 +1,36 @@
+version: "3"
+
+# 说明，这是一个服务的docker-compose一键启动模板，使用前，需要做一些准备工作：
+# 1.修改"${registry_host}"的值，这个值是镜像仓库的地址
+# 2.修改"${short_commit_hash}"的值，这个值是git仓库提交哈希，注意是短哈希
+# 3.根据实际需求，配置environment的值
+# 另：
+# 1.私有仓库需要配置insecure-registries，@see https://stackoverflow.com/questions/42211380/add-insecure-registry-to-docker
+# 2.在启动docker-compose前预先登录私有仓库(docker login)
+
+services:
+  go-sail-user:
+    image: "${registry_host}/keepchen/go-sail:${short_commit_hash}"
+    container_name: go-sail-user
+    environment:
+      - nacosNamespaceID=  # nacos 命名空间
+      - nacosAddrs= # 多个地址用英文逗号分割
+      - SUB_CMD=user # 启动命令
+    volumes:
+      - ./logs:/logs
+    restart: always
+    ports:
+      - "8080:8080"
+
+  go-sail-order:
+    image: "${registry_host}/keepchen/go-sail:${short_commit_hash}"
+    container_name: go-sail-order
+    environment:
+      - nacosNamespaceID=  # nacos 命名空间
+      - nacosAddrs= # 多个地址用英文逗号分割
+      - SUB_CMD=order # 启动命令
+    volumes:
+      - ./logs:/logs
+    restart: always
+    ports:
+      - "8090:8090"

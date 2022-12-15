@@ -1,0 +1,16 @@
+# 单机模式启动
+MODE=standalone
+# 保存策略： mysql/empty
+SPRING_DATASOURCE_PLATFORM=mysql
+# 更改 mysql 配置
+MYSQL_SERVICE_HOST=mysql-server
+MYSQL_SERVICE_DB_NAME=nacos_config
+MYSQL_SERVICE_PORT=33061
+MYSQL_SERVICE_USER=root
+MYSQL_SERVICE_PASSWORD=root
+# 修改jvm参数i
+JVM_XMS=1024m
+JVM_XMX=1024m
+NACOS_DEBUG=no # 是否开启远程Debug
+TOMCAT_ACCESSLOG_ENABLED=false
+# MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=20000&socketTimeout=30000&autoReconnect=true&useSSL=false&serverTimezone=UTC

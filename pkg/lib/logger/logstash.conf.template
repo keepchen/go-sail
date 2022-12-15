@@ -1,0 +1,68 @@
+input {
+    redis {
+        data_type => "list"
+        key => "list_key"
+        type => "redis-cluster-input"
+        host => "127.0.0.1"
+        port => 6379
+        password =>
+        threads => 2
+    }
+
+    redis {
+        data_type => "list"
+        key => "list_key"
+        type => "redis-cluster-input"
+        host => "127.0.0.1"
+        port => 6380
+        password =>
+        threads => 2
+    }
+    redis {
+        data_type => "list"
+        key => "list_key"
+        type => "redis-cluster-input"
+        host => "127.0.0.1"
+        port => 6381
+        password =>
+        threads => 2
+    }
+    redis {
+        data_type => "list"
+        key => "list_key"
+        type => "redis-cluster-input"
+        host => "127.0.0.1"
+        port => 6382
+        password =>
+        threads => 2
+    }
+    redis {
+        data_type => "list"
+        key => "list_key"
+        type => "redis-cluster-input"
+        host => "127.0.0.1"
+        port => 6383
+        password =>
+        threads => 2
+    }
+    redis {
+        codec => "json_lines"
+        data_type => "list"
+        key => "list_key"
+        type => "redis-cluster-input"
+        host => "127.0.0.1"
+        port => 6384
+        password =>
+        threads => 2
+    }
+}
+
+output{
+    elasticsearch {
+            hosts => "elasticsearch:9200"
+            index => "football-ecosystem-bet-%{+YYYY.MM.dd}"
+            user => "elastic"
+            password => "changeme"
+    }
+    stdout { codec => rubydebug }
+}

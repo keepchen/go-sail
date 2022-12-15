@@ -1,0 +1,183 @@
+# config.sample.toml
+# 配置文件模板，具体配置请创建此文件副本并按需修改
+
+# ::应用名称::
+app_name = "user"
+
+# ::调试模式::
+debug = true
+
+# ::服务器时区（默认：Asia/Shanghai）::
+timezone = "Asia/Shanghai"
+
+# ::jwt密钥配置::
+[jwt]
+# 公钥文件或字符串
+public_key = ""
+# 私钥文件或字符串
+private_key = ""
+# 加密算法: RS256 | RS512 | HS512
+algorithm = "RS256"
+# 密钥，当algorithm = "HS512"时需要配置此项
+hmac_secret = "example"
+# 令牌颁发者
+token_issuer = "authority"
+
+# ::zap日志组件配置::
+[logger]
+# 日志环境 dev,prod
+env = "dev"
+# 日志级别 debug,info,warn,error,dpanic,panic,fatal
+level = "info"
+# 日志文件名称 需要跟上路径
+filename = "logs/running.log"
+# 单文件日志大小限制，单位MB
+max_size = 100
+# 最大历史文件保留数量
+max_backups = 10
+# 是否压缩历史文件
+compress = true
+# 是否启用基于redis list的elk日志写入
+enable_elk_with_redis_list = true
+# redis list的elk日志写入的key
+redis_list_key = ""
+
+# ::http服务配置::
+[http_server]
+addr = ":8080"
+enable_swagger = true
+# prometheus配置
+[http_server.prometheus_conf]
+# 是否启用
+enable = false
+# 监听地址
+addr = ":1910"
+
+# ::数据库配置::
+[datasource]
+driver_name = "mysql"
+# 是否自动同步表结构
+auto_miragte = false
+# 日志级别 silent | info | warn | error
+log_level = "info"
+
+# ::数据库连接池配置::
+[datasource.connection_pool]
+# 最大开启连接数
+max_open_conn_count = 100
+# 最大闲置数量
+max_idle_conn_count = 10
+# 连接最大存活时间(分钟)
+conn_max_life_time_minutes = 30
+# 连接最大空闲时间(分钟)
+conn_max_idle_time_minutes = 10
+
+# mysql配置
+[datasource.mysql.read]
+host = "localhost"
+port = 3306
+username = "fool"
+password = "bar"
+database = "default"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"
+
+[datasource.mysql.write]
+host = "localhost"
+port = 3306
+username = "fool"
+password = "bar"
+database = "default"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"
+
+# postgres配置
+[datasource.postgres.read]
+host = "localhost"
+port = 9920
+username = "fool"
+password = "bar"
+database = "default"
+ssl_mode = "disable" # enable | disable
+timezone = "Asia/Shanghai"
+
+# postgres配置
+[datasource.postgres.write]
+host = "localhost"
+port = 9920
+username = "fool"
+password = "bar"
+database = "default"
+ssl_mode = "disable" # enable | disable
+timezone = "Asia/Shanghai"
+
+# sqlserver配置
+[datasource.sqlserver.read]
+host = "localhost"
+port = 9930
+username = "fool"
+password = "bar"
+database = "default"
+
+[datasource.sqlserver.write]
+host = "localhost"
+port = 9930
+username = "fool"
+password = "bar"
+database = "default"
+
+# clickhouse配置
+[datasource.clickhouse.read]
+host = "localhost"
+port = 9000
+username = "fool"
+password = "bar"
+database = "default"
+read_timeout = 20
+write_timeout = 20
+
+[datasource.clickhouse.write]
+host = "localhost"
+port = 9000
+username = "fool"
+password = "bar"
+database = "default"
+read_timeout = 20
+write_timeout = 20
+
+# sqlite配置
+[datasource.sqlite.read]
+file = "sqlite.db"
+
+[datasource.sqlite.write]
+file = "sqlite.db"
+
+# ::redis配置::
+[redis]
+host = "localhost"
+username = ""
+port = 6379
+password = ""
+database = 0
+ssl_enable = false
+
+# ::redis cluster配置::
+[redis_cluster]
+ssl_enable = false
+[[redis_cluster.addr_list]]
+host = "localhost1"
+username = ""
+port = 6379
+password = ""
+[[redis_cluster.addr_list]]
+host = "localhost2"
+username = ""
+port = 6379
+password = ""
+[[redis_cluster.addr_list]]
+host = "localhost3"
+username = ""
+port = 6379
+password = ""

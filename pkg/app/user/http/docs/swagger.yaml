@@ -1,0 +1,360 @@
+basePath: /api/v1
+definitions:
+  api.Error400:
+    properties:
+      code:
+        description: |-
+          错误码
+          in: body
+          required: true
+        example: 100000
+        format: int
+        type: integer
+      data:
+        description: |-
+          业务数据
+          in: body
+          required: true
+      message:
+        description: |-
+          提示信息
+          in: body
+          required: true
+        example: Bad request parameters
+        format: string
+        type: string
+      requestId:
+        description: |-
+          请求id
+          in: body
+          required: false
+        example: "1234567890123456789"
+        format: string
+        type: string
+      success:
+        description: |-
+          是否成功
+          in: body
+          required: true
+        example: false
+        format: bool
+        type: boolean
+      ts:
+        description: |-
+          服务器时间(毫秒时间戳)
+          in: body
+          required: true
+        example: 1670899688591
+        format: int64
+        type: integer
+    required:
+    - code
+    - data
+    - message
+    - success
+    - ts
+    type: object
+  api.Error500:
+    properties:
+      code:
+        description: |-
+          错误码
+          in: body
+          required: true
+        example: 999999
+        format: int
+        type: integer
+      data:
+        description: |-
+          业务数据
+          in: body
+          required: true
+      message:
+        description: |-
+          提示信息
+          in: body
+          required: true
+        example: Internal server error
+        format: string
+        type: string
+      requestId:
+        description: |-
+          请求id
+          in: body
+          required: false
+        example: "1234567890123456789"
+        format: string
+        type: string
+      success:
+        description: |-
+          是否成功
+          in: body
+          required: true
+        example: false
+        format: bool
+        type: boolean
+      ts:
+        description: |-
+          服务器时间(毫秒时间戳)
+          in: body
+          required: true
+        example: 1670899688591
+        format: int64
+        type: integer
+    required:
+    - code
+    - data
+    - message
+    - success
+    - ts
+    type: object
+  response.GetUserInfo:
+    properties:
+      code:
+        description: |-
+          错误码
+          in: body
+          required: true
+        example: 0
+        format: int
+        type: integer
+      data:
+        description: |-
+          数据体
+          in: body
+          required: true
+        properties:
+          user:
+            $ref: '#/definitions/response.UserInfo'
+          wallet:
+            $ref: '#/definitions/response.WalletInfo'
+        type: object
+      message:
+        description: |-
+          提示信息
+          in: body
+          required: true
+        example: SUCCESS
+        format: string
+        type: string
+      requestId:
+        description: |-
+          请求id
+          in: body
+          required: false
+        example: "1234567890123456789"
+        format: string
+        type: string
+      success:
+        description: |-
+          是否成功
+          in: body
+          required: true
+        example: true
+        format: bool
+        type: boolean
+      ts:
+        description: |-
+          服务器时间(毫秒时间戳)
+          in: body
+          required: true
+        example: 1670899688591
+        format: int64
+        type: integer
+    required:
+    - code
+    - data
+    - message
+    - success
+    - ts
+    type: object
+  response.SayHello:
+    properties:
+      code:
+        description: |-
+          错误码
+          in: body
+          required: true
+        example: 0
+        format: int
+        type: integer
+      data:
+        description: |-
+          数据体
+          in: body
+          required: true
+        type: string
+      message:
+        description: |-
+          提示信息
+          in: body
+          required: true
+        example: SUCCESS
+        format: string
+        type: string
+      requestId:
+        description: |-
+          请求id
+          in: body
+          required: false
+        example: "1234567890123456789"
+        format: string
+        type: string
+      success:
+        description: |-
+          是否成功
+          in: body
+          required: true
+        example: true
+        format: bool
+        type: boolean
+      ts:
+        description: |-
+          服务器时间(毫秒时间戳)
+          in: body
+          required: true
+        example: 1670899688591
+        format: int64
+        type: integer
+    required:
+    - code
+    - data
+    - data
+    - message
+    - success
+    - ts
+    type: object
+  response.UserInfo:
+    properties:
+      status:
+        description: |-
+          账号状态
+
+          UserStatusCodeNormal    = UserStatusCode(0) //正常
+          UserStatusCodeForbidden = UserStatusCode(1) //禁用
+
+          in: body
+          required: true
+        enum:
+        - 0
+        - 1
+        type: integer
+      userId:
+        description: 用户id
+        type: integer
+      userInfo:
+        description: |-
+          用户昵称
+          in: body
+          required: true
+        type: string
+    required:
+    - status
+    - userId
+    - userInfo
+    type: object
+  response.WalletInfo:
+    properties:
+      amount:
+        description: |-
+          账户余额
+          in: body
+          required: true
+        type: number
+      status:
+        description: |-
+          钱包状态
+
+          WalletStatusCodeNormal    = WalletStatusCode(0) //正常
+          WalletStatusCodeForbidden = WalletStatusCode(1) //禁用
+
+          in: body
+          required: true
+        enum:
+        - 0
+        - 1
+        type: integer
+    required:
+    - amount
+    - status
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: keepchen2016@gmail.com
+    name: keepchen
+    url: https://blog.keepchen.com
+  description: This is an api document of go-sail.
+  license:
+    name: MIT
+    url: https://github.com/keepchen/go-sail/LICENSE
+  termsOfService: https://blog.keepchen.com
+  title: user - <go-sail>
+  version: "1.0"
+paths:
+  /say-hello:
+    get:
+      consumes:
+      - application/json
+      description: 欢迎语
+      parameters:
+      - description: 昵称
+        in: query
+        name: nickname
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SayHello'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error400'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error500'
+      summary: say-hello / 说你好
+      tags:
+      - welcome / 欢迎语
+  /user/info:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户信息
+      parameters:
+      - description: 用户id
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserInfo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error400'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error500'
+      security:
+      - ApiKeyAuth: []
+      summary: user-info / 获取用户信息
+      tags:
+      - user / 用户相关
+securityDefinitions:
+  ApiKeyAuth:
+    description: Access Token protects our entity endpoints
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

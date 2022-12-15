@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  nacos:
+    image: nacos/nacos-server:2.0.3
+    container_name: nacos
+    restart: always
+    env_file:
+      - nacos_env_file
+    volumes:
+      - ./logs/nacos/:/home/nacos/logs
+      - ./conf/nacos/custom.properties:/home/nacos/init.d/custom.properties
+    ports:
+      - "8848:8848"
+      - "9849:9849"
+      - "9848:9848"
+
+  mysql-server:
+    container_name: mysql-server-8
+    image: "mysql:8.0.23"
+    command: >
+      mysqld --lower-case-table-names=1 --sql-mode="" --default-time-zone="+08:00" --innodb_buffer_pool_size=1073741824 --max_allowed_packet=67108864	--bulk_insert_buffer_size=536870912 --local_infile="on" --binlog_expire_logs_seconds=604800 --skip-name-resolve
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=nacos_config
+    ports:
+      - "33061:3306"
+    restart: always
+    volumes:
+      - ./database/nacos.sql:/docker-entrypoint-initdb.d/nacos.sql:ro
+      - ./data/mysql:/var/lib/mysql:delegated
+      - ./conf/mysql:/etc/mysql/conf.d:delegated
+      - ./logs/mysql:/var/log/mysql:delegated

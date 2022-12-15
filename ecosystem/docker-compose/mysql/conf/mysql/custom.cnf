@@ -1,0 +1,7 @@
+[mysqld]
+default_authentication_plugin=mysql_native_password
+slow_query_log=on
+long_query_time=3
+#log_queries_not_using_indexes=on
+max_connections=1000
+log_bin_trust_function_creators=1

@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  mysql-server:
+    container_name: mysql-server-8
+    image: "mysql:8.0.23"
+    command: >
+      mysqld --lower-case-table-names=1 --sql-mode="" --default-time-zone="+08:00" --innodb_buffer_pool_size=1073741824 --max_allowed_packet=67108864	--bulk_insert_buffer_size=536870912 --local_infile="on" --binlog_expire_logs_seconds=604800 --skip-name-resolve
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=go_sail
+    ports:
+      - "33060:3306"
+    restart: always
+    volumes:
+      - ./data/mysql:/var/lib/mysql:delegated
+      - ./conf/mysql:/etc/mysql/conf.d:delegated
+      - ./logs/mysql:/var/log/mysql:delegated
