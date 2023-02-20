@@ -11,6 +11,9 @@
 `go-sail user`启动用户服务，`go-sail order`启动订单服务，……  
 正如它的名字一般，你可以把它视作自己在golang生态的一个开始。go-sail将助力你从轻出发，扬帆起航。  
 
+## 安装
+[go-sail cli](./cli/cmd/go-sail)
+
 ## 功能特点  
 
 #### Http接口  

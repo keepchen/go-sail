@@ -16,6 +16,9 @@ Moving from monolithic architecture to the era of microservices.
 
 Just like its name, you can regard it as the beginning of your golang ecology. go-sail will help you start lightly and set sail.
 
+## Installation  
+[go-sail cli](./cli/cmd/go-sail)
+
 ## Features
 
 #### Http api
