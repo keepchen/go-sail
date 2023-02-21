@@ -6,11 +6,12 @@ go install github.com/keepchen/go-sail/cli/cmd/go-sail@latest
 ```  
 
 #### Usage  
+- Init project
 ```shell
-go-sail gen -v ${goVersion} -d ${workDir} -n ${appName} -s ${serviceName}  
+go-sail init -v ${goVersion} -d ${workDir} -n ${appName} -s ${serviceName}  
 
 # example
-gen -v 1.17 -d /var/www/kupo-ha -n pets -s corgi
+go-sail init -v 1.17 -d /var/www/kupo-ha -n pets -s corgi
 ```  
 
 #### Finish  
@@ -32,5 +33,13 @@ pets
     ├── constants
     ├── lib
     └── utils
-```
+```  
+
+- Add new service (sub application)
+```shell
+go-sail add -v ${goVersion} -d ${workDir} -n ${appName} -s ${serviceName}  
+
+# example
+go-sail add -v 1.17 -d /var/www/kupo-ha -n pets -s bourne
+```  
 

@@ -4,51 +4,32 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"runtime"
 
 	"github.com/keepchen/go-sail/cli/cmd/go-sail/generator/templates"
 )
 
-func registerFiles(opts Options) []File {
+func registerFiles4Add(opts Options) []File {
 	return []File{
-		//~/workdir/appName/go.mod
-		{Path: fmt.Sprintf("%s/go.mod", opts.AppName), Template: templates.GoModTpl},
-		//~/workdir/appName/main.go
-		{Path: fmt.Sprintf("%s/main.go", opts.AppName), Template: templates.MainTpl},
-		//~/workdir/appName/cmd
-		{Path: fmt.Sprintf("%s/cmd", opts.AppName), Template: ""},
-		//~/workdir/appName/cmd/root.go
-		{Path: fmt.Sprintf("%s/cmd/root.go", opts.AppName), Template: templates.CmdRootTpl},
 		//~/workdir/appName/cmd/serviceName.go
 		{Path: fmt.Sprintf("%s/cmd/%s.go", opts.AppName, opts.ServiceName), Template: templates.CmdSrvTpl},
-		//~/workdir/appName/logs
-		{Path: fmt.Sprintf("%s/logs", opts.AppName), Template: ""},
-		//~/workdir/appName/logs/.gitignore
-		{Path: fmt.Sprintf("%s/logs/.gitignore", opts.AppName), Template: templates.GitIgnoreAllTpl},
 		//~/workdir/appName/pkg/serviceName.go
 		{Path: fmt.Sprintf("%s/pkg/app/%s/%s.go", opts.AppName, opts.ServiceName, opts.ServiceName), Template: templates.AppRoorSrvTpl},
-		//~/workdir/appName/pkg/config
+		//~/workdir/appName/pkg/serviceName/config
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config", opts.AppName, opts.ServiceName), Template: ""},
-		//~/workdir/appName/pkg/app/config/config.go
+		//~/workdir/appName/pkg/app/serviceName/config/config.go
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config/config.go", opts.AppName, opts.ServiceName), Template: templates.AppConfigTpl},
-		//~/workdir/appName/pkg/app/config/config.sample.toml
+		//~/workdir/appName/pkg/app/serviceName/config/config.sample.toml
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config/config.sample.toml", opts.AppName, opts.ServiceName), Template: templates.AppConfigTomlTpl},
-		//~/workdir/appName/pkg/app/config/parser.go
+		//~/workdir/appName/pkg/app/serviceName/config/parser.go
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config/parser.go", opts.AppName, opts.ServiceName), Template: templates.AppConfigParserTpl},
-		//~/workdir/appName/pkg/app/config/utils.go
+		//~/workdir/appName/pkg/app/serviceName/config/utils.go
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config/utils.go", opts.AppName, opts.ServiceName), Template: templates.AppConfigUtilsTpl},
-		//~/workdir/appName/pkg/app/common
-		{Path: fmt.Sprintf("%s/pkg/common", opts.AppName), Template: ""},
-		//~/workdir/appName/pkg/app/constants
-		{Path: fmt.Sprintf("%s/pkg/constants", opts.AppName), Template: ""},
-		//~/workdir/appName/pkg/app/lib
-		{Path: fmt.Sprintf("%s/pkg/lib", opts.AppName), Template: ""},
-		//~/workdir/appName/pkg/app/utils
-		{Path: fmt.Sprintf("%s/pkg/utils", opts.AppName), Template: ""},
 	}
 }
 
-func Gen(goVersion, workDir, appName, serviceName string) {
+func Add(goVersion, workDir, appName, serviceName string) {
 	if len(goVersion) == 0 {
 		goVersion = runtime.Version()
 		log.Printf("[!] Go version is empty,use current version: %s\n", goVersion)
@@ -61,6 +42,12 @@ func Gen(goVersion, workDir, appName, serviceName string) {
 		log.Println("[x] App name is empty,process exited.")
 		return
 	}
+	if _, err := os.Stat(filepath.Join(workDir, appName)); os.IsNotExist(err) {
+		log.Println("[x] App work directory is not exist,process exited.")
+		log.Println("---------------------------------------------------")
+		log.Println("Try `go-sail init` command first.")
+		return
+	}
 	if len(serviceName) == 0 {
 		serviceName = "demo"
 		log.Println("[!] Service name is empty,use default name: demo")
@@ -71,11 +58,11 @@ func Gen(goVersion, workDir, appName, serviceName string) {
 		AppName:     appName,
 		ServiceName: serviceName,
 	}
-	err := New(opts).Generate(registerFiles(opts))
+	err := New(opts).Generate(registerFiles4Add(opts))
 	if err != nil {
 		log.Printf("[!] Process finished,error occurred: %s", err.Error())
 	} else {
-		log.Printf("[√] Proccess finished,create application success! :)")
+		log.Printf("[√] Proccess finished,add service success! :)")
 		log.Printf(`
 -------------------------------------------------------------------------------------------
 Start service steps:
