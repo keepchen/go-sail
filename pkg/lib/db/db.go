@@ -1,8 +1,9 @@
 package db
 
 import (
-	"github.com/keepchen/go-sail/pkg/lib/logger"
 	"time"
+
+	"github.com/keepchen/go-sail/pkg/lib/logger"
 
 	"gorm.io/gorm"
 )
@@ -12,10 +13,10 @@ type Instance struct {
 	W *gorm.DB //写实例
 }
 
-//数据库连接实例
+// 数据库连接实例
 var dbInstance *Instance
 
-//InitDB 初始化数据库连接
+// InitDB 初始化数据库连接
 func InitDB(conf Conf) {
 	dialectR, dialectW := conf.GenDialector()
 	//read instance
@@ -27,6 +28,18 @@ func InitDB(conf Conf) {
 		R: dbPtrR,
 		W: dbPtrW,
 	}
+}
+
+// NewFreshDB 实例化全新的数据库链接
+//
+// 直接返回原生的连接实例
+//
+// rInstance为读实例,wInstance为写实例
+func NewFreshDB(conf Conf) (rInstance, wInstance *gorm.DB) {
+	dialectR, dialectW := conf.GenDialector()
+	rInstance, wInstance = initDB(conf, dialectR), initDB(conf, dialectW)
+
+	return
 }
 
 func initDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
@@ -52,7 +65,7 @@ func initDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 	return dbPtr
 }
 
-//GetInstance 获取数据库实例
+// GetInstance 获取数据库实例
 func GetInstance() *Instance {
 	return dbInstance
 }

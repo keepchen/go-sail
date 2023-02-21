@@ -79,8 +79,9 @@ func Gen(goVersion, workDir, appName, serviceName string) {
 		log.Printf(`
 -------------------------------------------------------------------------------------------
 Start service steps:
-[1/2] cd %s
-[2/2] go run main.go %s -c pkg/app/%s/config/config.sample.toml
+[1/3] cd %s
+[2/3] go mod tidy
+[3/3] go run main.go %s -c pkg/app/%s/config/config.sample.toml
 
 Enjoy it. :)
 `, workDir, serviceName, serviceName)
