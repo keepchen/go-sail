@@ -15,6 +15,10 @@ func registerFiles4Gen(opts Options) []File {
 		{Path: fmt.Sprintf("%s/go.mod", opts.AppName), Template: templates.GoModTpl},
 		//~/workdir/appName/main.go
 		{Path: fmt.Sprintf("%s/main.go", opts.AppName), Template: templates.MainTpl},
+		//~/workdir/appName/Makefile
+		{Path: fmt.Sprintf("%s/Makefile", opts.AppName), Template: templates.MakefileTpl},
+		//~/workdir/appName/Dockerfile
+		{Path: fmt.Sprintf("%s/Dockerfile", opts.AppName), Template: templates.DockerfileTpl},
 		//~/workdir/appName/cmd
 		{Path: fmt.Sprintf("%s/cmd", opts.AppName), Template: ""},
 		//~/workdir/appName/cmd/root.go
