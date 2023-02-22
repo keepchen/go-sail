@@ -22,6 +22,8 @@ var initErrorCodeMsgMap = map[CodeType]string{
 
 // String 获取错误信息字符
 func (ct CodeType) String() string {
+	ctm.mux.RLock()
+	defer ctm.mux.RUnlock()
 	if msg, ok := ctm.maps[ct]; ok {
 		return msg
 	}

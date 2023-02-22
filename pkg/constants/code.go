@@ -12,7 +12,7 @@ type ICodeType interface {
 type CodeType int
 
 type errorCodeTypeMsgMap struct {
-	mux  *sync.Mutex
+	mux  *sync.RWMutex
 	maps map[CodeType]string
 }
 
@@ -30,7 +30,7 @@ func RegisterCode(code CodeType, msg string) {
 func init() {
 	(&sync.Once{}).Do(func() {
 		ctm = &errorCodeTypeMsgMap{
-			mux:  &sync.Mutex{},
+			mux:  &sync.RWMutex{},
 			maps: make(map[CodeType]string),
 		}
 
