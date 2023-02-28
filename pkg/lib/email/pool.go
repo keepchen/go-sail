@@ -83,6 +83,7 @@ func (p *Pool) Done() {
 		close(p.workers[index])
 	}
 	p.exit <- struct{}{}
+	close(p.exit)
 }
 
 // 初始化发送协程
