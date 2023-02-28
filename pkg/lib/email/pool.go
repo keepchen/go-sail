@@ -19,20 +19,22 @@ type Envelope struct {
 
 // Pool 发送池
 type Pool struct {
-	workers  []chan *Envelope
-	throttle time.Duration
-	count    int
-	conf     Conf
-	wg       *sync.WaitGroup
+	workers      []chan *Envelope
+	throttle     time.Duration
+	workersCount int
+	conf         Conf
+	wg           *sync.WaitGroup
+	exit         chan struct{}
 }
 
 // NewPool 实例化
 func NewPool(conf Conf) *Pool {
 	pool := &Pool{
-		conf:     conf,
-		count:    conf.Workers,
-		throttle: time.Duration(conf.WorkerThrottleSeconds) * time.Second,
-		wg:       &sync.WaitGroup{},
+		conf:         conf,
+		workersCount: conf.Workers,
+		throttle:     time.Duration(conf.WorkerThrottleSeconds) * time.Second,
+		wg:           &sync.WaitGroup{},
+		exit:         make(chan struct{}),
 	}
 	pool.makeWorkers()
 
@@ -43,7 +45,7 @@ func NewPool(conf Conf) *Pool {
 func (p *Pool) Mount(index int, envelope *Envelope) {
 	p.wg.Add(1)
 	go func(ep *Envelope) {
-		p.workers[index%p.count] <- ep
+		p.workers[index%p.workersCount] <- ep
 	}(envelope)
 }
 
@@ -66,6 +68,8 @@ func (p *Pool) Emit() {
 					if p.throttle > 0 {
 						time.Sleep(p.throttle)
 					}
+				case <-p.exit:
+					break
 				}
 			}
 		}(index, worker)
@@ -78,17 +82,18 @@ func (p *Pool) Done() {
 	for index, _ := range p.workers {
 		close(p.workers[index])
 	}
+	p.exit <- struct{}{}
 }
 
 // 初始化发送协程
 func (p *Pool) makeWorkers() {
-	if p.count < 1 {
-		p.count = 1
+	if p.workersCount < 1 {
+		p.workersCount = 1
 	}
 
-	log.Printf("[!] Init {%d} worker(s), throttle {%d} second(s)", p.count, p.conf.WorkerThrottleSeconds)
+	log.Printf("[!] Init {%d} worker(s), throttle {%d} second(s)", p.workersCount, p.conf.WorkerThrottleSeconds)
 
-	var workers = make([]chan *Envelope, p.count)
+	var workers = make([]chan *Envelope, p.workersCount)
 	for index, _ := range workers {
 		workers[index] = make(chan *Envelope)
 	}
