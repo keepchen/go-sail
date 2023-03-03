@@ -252,7 +252,10 @@ docker build --tag go-sail:v1.0.0 .
 - 本地构建  
 ```shell
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./go-sail
-```
+```  
+
+#### 其他插件  
+[README.md](plugins/README.md)
 
 ## 使用案例  
 <img src="https://assets.pikaster-metaland.com/web/homepage/assets/img/logo.png" alt="Pikaster" width="600" />

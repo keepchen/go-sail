@@ -45,6 +45,10 @@ import (
 )
 
 // StartServer 启动服务
+//
+//go:generate swag init --dir ./ --output ./http/docs --parseDependency --parseInternal --generalInfo user.go
+//go:generate redoc-cli build-docs ./http/docs/*.yaml -o ./http/docs/apidoc.html
+//go:generate node ../../../plugins/redocly/redocly-copy.js ./http/docs/apidoc.html
 func StartServer(wg *sync.WaitGroup) {
 	defer func() {
 		if err := recover(); err != nil {
