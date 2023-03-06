@@ -24,6 +24,8 @@ RUN mkdir -p /output \
 
 FROM alpine
 
+RUN apk update && apk add tzdata
+
 ENV TZ=Asia/Shanghai
 ARG SERVE_MODE
 ENV SUB_CMD=SERVE_MODE
