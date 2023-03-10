@@ -2,7 +2,9 @@ package email
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
+	"log"
 	"net"
 	"net/smtp"
 )
@@ -25,6 +27,9 @@ func New(conf Conf) *Client {
 
 // SendMailWithTLS 使用tls方式发送
 func (c *Client) SendMailWithTLS(to []string, msg []byte) error {
+	if c.cli == nil {
+		return errors.New("smtp client is nil")
+	}
 	if ok, _ := c.cli.Extension("AUTH"); ok {
 		if err := c.cli.Auth(c.auth); err != nil {
 			return err
@@ -59,7 +64,8 @@ func initSmtpClient(conf Conf) *smtp.Client {
 	addr := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
 	conn, err := tls.Dial("tcp", addr, nil)
 	if err != nil {
-		panic(err)
+		log.Println("initialize smtp client failed:", err.Error())
+		return nil
 	}
 
 	host, _, _ := net.SplitHostPort(addr)

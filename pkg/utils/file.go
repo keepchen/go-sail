@@ -48,6 +48,24 @@ func FilePutContents(content []byte, dst string) error {
 	return os.WriteFile(dst, content, 0644)
 }
 
+// FileAppendContents 将内容写入文件(追加写)
+//
+// content []byte 写入的内容
+//
+// dst string 写入的目标地址
+func FileAppendContents(content []byte, dst string) error {
+	f, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+	//defer func() {
+	//	_ = f.Close()
+	//}()
+	_, err = f.Write(content)
+
+	return err
+}
+
 // FileExists 检查文件上是否存在
 //
 // dst string 目标地址
