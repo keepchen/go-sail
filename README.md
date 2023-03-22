@@ -174,7 +174,7 @@ For the quick start of the project service, you can refer to [docker-compose.yml
 ## How to use?
 
 #### golang version
-version >= 1.17.5
+version >= 1.18
 
 #### Start service
 

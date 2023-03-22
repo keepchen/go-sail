@@ -15,7 +15,7 @@ func registerFiles4Add(opts Options) []File {
 		//~/workdir/appName/cmd/serviceName.go
 		{Path: fmt.Sprintf("%s/cmd/%s.go", opts.AppName, opts.ServiceName), Template: templates.CmdSrvTpl},
 		//~/workdir/appName/pkg/serviceName.go
-		{Path: fmt.Sprintf("%s/pkg/app/%s/%s.go", opts.AppName, opts.ServiceName, opts.ServiceName), Template: templates.AppRoorSrvTpl},
+		{Path: fmt.Sprintf("%s/pkg/app/%s/%s.go", opts.AppName, opts.ServiceName, opts.ServiceName), Template: templates.AppRootSrvTpl},
 		//~/workdir/appName/pkg/serviceName/config
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config", opts.AppName, opts.ServiceName), Template: ""},
 		//~/workdir/appName/pkg/app/serviceName/config/config.go

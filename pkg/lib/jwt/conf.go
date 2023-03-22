@@ -2,13 +2,14 @@ package jwt
 
 import (
 	"crypto/rsa"
-	"github.com/keepchen/go-sail/pkg/constants"
 	"strings"
+
+	"github.com/keepchen/go-sail/pkg/constants"
 
 	jwtLib "github.com/golang-jwt/jwt"
 )
 
-//Conf 配置信息
+// Conf 配置信息
 type Conf struct {
 	PublicKey   string `yaml:"public_key" toml:"public_key" json:"public_key"`       //公钥字符串或公钥文件地址
 	PrivateKey  string `yaml:"private_key" toml:"private_key" json:"private_key"`    //私钥字符串或私钥文件地址
@@ -19,7 +20,7 @@ type Conf struct {
 	publicKey   *rsa.PublicKey
 }
 
-//Load 载入配置
+// Load 载入配置
 func (c *Conf) Load() {
 	if len(c.PrivateKey) == 0 || len(c.PublicKey) == 0 {
 		return
@@ -67,4 +68,14 @@ func (c *Conf) Load() {
 	}
 	c.privateKey = pri
 	c.publicKey = pub
+}
+
+// GetPrivateKeyObj 获取私钥对象
+func (c *Conf) GetPrivateKeyObj() *rsa.PrivateKey {
+	return c.privateKey
+}
+
+// GetPublicKeyObj 获取公钥对象
+func (c *Conf) GetPublicKeyObj() *rsa.PublicKey {
+	return c.publicKey
 }

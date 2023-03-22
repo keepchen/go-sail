@@ -30,7 +30,7 @@ func registerFiles4Gen(opts Options) []File {
 		//~/workdir/appName/logs/.gitignore
 		{Path: fmt.Sprintf("%s/logs/.gitignore", opts.AppName), Template: templates.GitIgnoreAllTpl},
 		//~/workdir/appName/pkg/serviceName.go
-		{Path: fmt.Sprintf("%s/pkg/app/%s/%s.go", opts.AppName, opts.ServiceName, opts.ServiceName), Template: templates.AppRoorSrvTpl},
+		{Path: fmt.Sprintf("%s/pkg/app/%s/%s.go", opts.AppName, opts.ServiceName, opts.ServiceName), Template: templates.AppRootSrvTpl},
 		//~/workdir/appName/pkg/serviceName/config
 		{Path: fmt.Sprintf("%s/pkg/app/%s/config", opts.AppName, opts.ServiceName), Template: ""},
 		//~/workdir/appName/pkg/serviceName/app/config/config.go

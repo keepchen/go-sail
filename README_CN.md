@@ -169,7 +169,7 @@ go-sail提供了`Dockerfile`docker镜像构建脚本，同时也提供了快速�
 ## 如何使用？  
 
 #### golang版本  
-version >= 1.17.5
+version >= 1.18
 
 #### 启动服务  
 

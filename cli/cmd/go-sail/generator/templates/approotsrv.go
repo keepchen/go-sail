@@ -1,6 +1,6 @@
 package templates
 
-var AppRoorSrvTpl = `package {{ .ServiceName }}
+var AppRootSrvTpl = `package {{ .ServiceName }}
 
 import (
 	"context"

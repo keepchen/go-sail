@@ -76,6 +76,10 @@ var (
 			Issuer:    defaultTokenIssuer,
 		},
 	}
+
+	mapClaim = MapClaims(map[string]interface{}{
+		"name": "test",
+	})
 )
 
 func TestSign(t *testing.T) {
@@ -84,7 +88,11 @@ func TestSign(t *testing.T) {
 		conf.Load()
 		token, err := Sign(appClaim, conf)
 		t.Log(err)
-		t.Log(token)
+		t.Log("struct claim:", token)
+		assert.NoError(t, err)
+		token2, err := SignWithMap(mapClaim, conf)
+		t.Log(err)
+		t.Log("map claim:", token2)
 		assert.NoError(t, err)
 	}
 }
@@ -95,12 +103,22 @@ func TestVerify(t *testing.T) {
 		conf.Load()
 		token, err := Sign(appClaim, conf)
 		t.Log(err)
-		t.Log(token)
+		t.Log("struct claim:", token)
 		assert.NoError(t, err)
 
 		claim, err := Verify(token, conf)
 		t.Log(err)
-		t.Log(claim)
+		t.Log("struct claim:", claim)
+		assert.NoError(t, err)
+
+		token2, err := SignWithMap(mapClaim, conf)
+		t.Log(err)
+		t.Log("map claim:", token2)
+		assert.NoError(t, err)
+
+		claim2, err := VerifyFromMap(token2, conf)
+		t.Log(err)
+		t.Log("map claim:", claim2)
 		assert.NoError(t, err)
 	}
 }
