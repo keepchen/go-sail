@@ -264,8 +264,8 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./go-sail
 [README.md](plugins/README.md)
 
 ## Use Cases
-<img src="https://assets.pikaster-metaland.com/web/homepage/assets/img/logo.png" alt="Pikaster" width="600" />
-<img src="https://www.wingoal-metaland.io/assets/images/text_a.png" alt="WinGoal" width="600" />
+<img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="600" />
+<img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="600" />
 
 
 

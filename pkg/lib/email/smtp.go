@@ -71,7 +71,8 @@ func initSmtpClient(conf Conf) *smtp.Client {
 	host, _, _ := net.SplitHostPort(addr)
 	client, err := smtp.NewClient(conn, host)
 	if err != nil {
-		panic(err)
+		return nil
+		//panic(err)
 	}
 
 	return client
