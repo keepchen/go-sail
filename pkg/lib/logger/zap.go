@@ -55,7 +55,7 @@ var (
 	loggerSvcHolders *svcHolders
 )
 
-//GetLogger 获取日志服务实例
+// GetLogger 获取日志服务实例
 func GetLogger(modeName ...string) *zap.Logger {
 	if len(modeName) < 1 {
 		return loggerSvcHolders.load(defaultModeName).instance
@@ -64,15 +64,15 @@ func GetLogger(modeName ...string) *zap.Logger {
 	return loggerSvcHolders.load(modeName[0]).instance
 }
 
-//InitLoggerZap 初始化zap日志服务
+// InitLoggerZap 初始化zap日志服务
 //
-//会加入默认的一个模块空间，当不传参调用GetLogger()时，
-//就是使用默认的模块空间
+// 会加入默认的一个模块空间，当不传参调用GetLogger()时，
+// 就是使用默认的模块空间
 //
-//当启用elk时，logger使用redis队列作为媒介，需要在logstash侧配置对应的pipeline
-//队列的key取决于日志文件名和appName的组合，如：
-//日志文件名=logs/app.log，appName=app
-//则，队列名称为=> app:logs/app.log
+// 当启用elk时，logger使用redis队列作为媒介，需要在logstash侧配置对应的pipeline
+// 队列的key取决于日志文件名和appName的组合，如：
+// 日志文件名=logs/app.log，appName=app
+// 则，队列名称为=> app:logs/app.log
 func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 	//注入默认的空间模块
 	modeName = append(modeName, defaultModeName)

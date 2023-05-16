@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"github.com/keepchen/go-sail/pkg/app/user/config"
 	"log"
 	"time"
+
+	"github.com/keepchen/go-sail/pkg/constants"
 )
 
 type TIM struct {
@@ -11,12 +12,15 @@ type TIM struct {
 	datetimeLayout string
 }
 
+// NewTimeWithTimeZone 根据时区初始化时间
+//
+// 默认时区: Asia/Shanghai
 func NewTimeWithTimeZone(timeZone ...string) *TIM {
 	var tz string
 	if len(timeZone) > 0 {
 		tz = timeZone[0]
 	} else {
-		tz = config.GetGlobalConfig().Timezone
+		tz = constants.DefaultTimeZone
 	}
 
 	loc, err := time.LoadLocation(tz)
