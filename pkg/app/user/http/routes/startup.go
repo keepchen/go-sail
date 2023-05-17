@@ -10,6 +10,9 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/keepchen/go-sail/pkg/common/http/api"
+	"github.com/keepchen/go-sail/pkg/constants"
+
 	"github.com/gin-gonic/gin"
 	"github.com/keepchen/go-sail/pkg/app/user/config"
 	"github.com/keepchen/go-sail/pkg/lib/logger"
@@ -20,7 +23,9 @@ import (
 	"go.uber.org/zap"
 )
 
-//RunServer 启动路由服务
+const AnotherErrNone = constants.CodeType(200)
+
+// RunServer 启动路由服务
 func RunServer(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -33,6 +38,9 @@ func RunServer(ctx context.Context, wg *sync.WaitGroup) {
 		gin.DisableConsoleColor()
 		r = gin.New()
 	}
+
+	//改写默认成功code码
+	api.OverrideErrNoneCode(AnotherErrNone, "SUCCEED")
 
 	//注册路由
 	registerRoutes(ctx, r)
@@ -87,9 +95,9 @@ func runSwaggerServerOnDebugMode(_ context.Context, r *gin.Engine) {
 	r.StaticFile("/favicon.ico", "sailboat-solid.svg")
 }
 
-//prometheus指标收集服务
+// prometheus指标收集服务
 //
-//当配置文件指明启用时才会启动
+// 当配置文件指明启用时才会启动
 func runPrometheusServerWhileEnable(_ context.Context) {
 	if !config.GetGlobalConfig().HttpServer.Prometheus.Enable {
 		return

@@ -23,7 +23,7 @@ type Base struct {
 	// 错误码
 	// in: body
 	// required: true
-	Code int `json:"code" example:"0" format:"int" validate:"required"`
+	Code constants.ICodeType `json:"code" example:"0" format:"int" validate:"required"`
 	// 是否成功
 	// in: body
 	// required: true
@@ -54,13 +54,37 @@ func New(c *gin.Context) API {
 	}
 }
 
+var anotherErrNoneCode constants.ICodeType = constants.ErrNone
+
+// OverrideErrNoneCode 改写默认的成功code码
+//
+// Usage example:
+//
+//	const AnotherErrNone = constants.CodeType(200)
+//
+//	api.OverrideErrNoneCode(AnotherErrNone, "some letters")
+func OverrideErrNoneCode(errNoneCode constants.ICodeType, msg string) {
+	constants.RegisterCode(constants.CodeType(errNoneCode.Int()), msg)
+	anotherErrNoneCode = errNoneCode
+}
+
+// Assemble 组装返回数据
+//
+// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.Before中间件)
 func (a API) Assemble(code constants.ICodeType, resp IResponse, message ...string) API {
 	var b Base
-	b.Code = code.Int()
-	b.Message = code.String()
+	if requestId, ok := a.engine.Get("requestId"); ok {
+		b.RequestID = requestId.(string)
+	}
+	b.Code = code
+	if code == constants.ErrNone && anotherErrNoneCode != constants.ErrNone {
+		//改写了默认成功code码，且当前code码为None时，需要使用改写后的值
+		b.Code = anotherErrNoneCode
+	}
+	b.Message = b.Code.String()
 	b.Timestamp = time.Now().UnixMilli()
 	switch code {
-	case constants.ErrNone:
+	case constants.ErrNone, anotherErrNoneCode:
 		b.Success = constants.Success
 		a.httpCode = http.StatusOK
 	case constants.ErrRequestParamsInvalid:
@@ -91,11 +115,6 @@ func (a API) Assemble(code constants.ICodeType, resp IResponse, message ...strin
 
 	if resp != nil {
 		b.Data = resp.GetData()
-	}
-
-	requestID := a.engine.GetHeader("X-Request-Id")
-	if len(requestID) != 0 {
-		b.RequestID = requestID
 	}
 
 	a.data = b

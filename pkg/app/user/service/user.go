@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/keepchen/go-sail/pkg/app/user/http/vo/request"
 	"github.com/keepchen/go-sail/pkg/app/user/http/vo/response"
@@ -10,14 +11,19 @@ import (
 	"github.com/keepchen/go-sail/pkg/constants"
 	"github.com/keepchen/go-sail/pkg/lib/db"
 	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 func GetUserInfoSvc(c *gin.Context) {
 	var (
-		form request.GetUserInfo
-		resp response.GetUserInfo
+		form             request.GetUserInfo
+		resp             response.GetUserInfo
+		loggerWithFields = logger.GetLogger()
 	)
+	if newLogger, ok := c.Get("logger"); ok {
+		loggerWithFields = newLogger.(*zap.Logger)
+	}
 	if err := c.ShouldBind(&form); err != nil {
 		api.New(c).Assemble(constants.ErrRequestParamsInvalid, nil).Send()
 		return
@@ -28,7 +34,7 @@ func GetUserInfoSvc(c *gin.Context) {
 		return
 	}
 
-	userAndWallet, sqlErr := usersSvc.NewUserSvcImpl(db.GetInstance().R, db.GetInstance().W, logger.GetLogger()).GetUserAndWallet(form.UserID)
+	userAndWallet, sqlErr := usersSvc.NewUserSvcImpl(db.GetInstance().R, db.GetInstance().W, loggerWithFields).GetUserAndWallet(form.UserID)
 	if sqlErr != nil && errors.Is(sqlErr, gorm.ErrRecordNotFound) {
 		api.New(c).Assemble(constants.ErrRequestParamsInvalid, nil, "user not found").Send()
 		return
