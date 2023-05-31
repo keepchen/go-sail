@@ -56,13 +56,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.Error400"
+                            "$ref": "#/definitions/dto.Error400"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.Error500"
+                            "$ref": "#/definitions/dto.Error500"
                         }
                     }
                 }
@@ -105,13 +105,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.Error400"
+                            "$ref": "#/definitions/dto.Error400"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.Error500"
+                            "$ref": "#/definitions/dto.Error500"
                         }
                     }
                 }
@@ -119,7 +119,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "api.Error400": {
+        "dto.Error400": {
             "type": "object",
             "required": [
                 "code",
@@ -136,7 +136,8 @@ const docTemplate = `{
                     "example": 100000
                 },
                 "data": {
-                    "description": "业务数据\nin: body\nrequired: true"
+                    "description": "业务数据\nin: body\nrequired: true",
+                    "format": "object|array|string"
                 },
                 "message": {
                     "description": "提示信息\nin: body\nrequired: true",
@@ -164,7 +165,7 @@ const docTemplate = `{
                 }
             }
         },
-        "api.Error500": {
+        "dto.Error500": {
             "type": "object",
             "required": [
                 "code",
@@ -181,7 +182,8 @@ const docTemplate = `{
                     "example": 999999
                 },
                 "data": {
-                    "description": "业务数据\nin: body\nrequired: true"
+                    "description": "业务数据\nin: body\nrequired: true",
+                    "format": "object|array|string"
                 },
                 "message": {
                     "description": "提示信息\nin: body\nrequired: true",
@@ -221,13 +223,12 @@ const docTemplate = `{
             "properties": {
                 "code": {
                     "description": "错误码\nin: body\nrequired: true",
-                    "type": "integer",
-                    "format": "int",
-                    "example": 0
+                    "format": "int"
                 },
                 "data": {
                     "description": "数据体\nin: body\nrequired: true",
                     "type": "object",
+                    "format": "object",
                     "properties": {
                         "user": {
                             "$ref": "#/definitions/response.UserInfo"
@@ -276,13 +277,13 @@ const docTemplate = `{
             "properties": {
                 "code": {
                     "description": "错误码\nin: body\nrequired: true",
-                    "type": "integer",
-                    "format": "int",
-                    "example": 0
+                    "format": "int"
                 },
                 "data": {
                     "description": "数据体\nin: body\nrequired: true",
-                    "type": "string"
+                    "type": "string",
+                    "format": "string",
+                    "example": ""
                 },
                 "message": {
                     "description": "提示信息\nin: body\nrequired: true",

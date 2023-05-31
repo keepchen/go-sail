@@ -4,6 +4,7 @@ import (
 	"github.com/keepchen/go-sail/pkg/lib/db"
 	"github.com/keepchen/go-sail/pkg/lib/jwt"
 	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"github.com/keepchen/go-sail/pkg/lib/nats"
 	"github.com/keepchen/go-sail/pkg/lib/redis"
 )
 
@@ -13,9 +14,11 @@ type Config struct {
 	Timezone     string            `yaml:"timezone" toml:"timezone" json:"timezone"`                //服务器时区
 	Debug        bool              `yaml:"debug" toml:"debug" json:"debug"`                         //是否是调试模式
 	Logger       logger.Conf       `yaml:"logger" toml:"logger" json:"logger"`                      //日志
+	LoggerV2     logger.ConfV2     `yaml:"loggerV2" toml:"loggerV2" json:"loggerV2"`                //日志v2
 	Datasource   db.Conf           `yaml:"datasource" toml:"datasource" json:"datasource"`          //数据库配置
 	Redis        redis.Conf        `yaml:"redis" toml:"redis" json:"redis"`                         //redis配置
 	RedisCluster redis.ClusterConf `yaml:"redis_cluster" toml:"redis_cluster" json:"redis_cluster"` //redis集群配置
+	Nats         nats.Conf         `yaml:"nats" toml:"nats" json:"nats"`                            //nats配置
 	JWT          jwt.Conf          `yaml:"jwt" toml:"jwt" json:"jwt"`                               //jwt配置
 	HttpServer   HttpServerConf    `yaml:"http_server" toml:"http_server" json:"http_server"`       //http服务配置
 }

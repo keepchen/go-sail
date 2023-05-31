@@ -39,8 +39,12 @@ func RunServer(ctx context.Context, wg *sync.WaitGroup) {
 		r = gin.New()
 	}
 
-	//改写默认成功code码
-	api.OverrideErrNoneCode(AnotherErrNone, "SUCCEED")
+	//设置api返回选项
+	api.SetupOption(api.Option{
+		EmptyDataStruct: api.DefaultEmptyDataStructObject,
+		ErrNoneCode:     AnotherErrNone,
+		ErrNoneCodeMsg:  "SUCCEED",
+	})
 
 	//注册路由
 	registerRoutes(ctx, r)

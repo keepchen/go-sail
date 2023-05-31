@@ -1,4 +1,4 @@
-package api
+package dto
 
 // Error400 错误返回参数
 // swagger: model
@@ -26,7 +26,7 @@ type Error400 struct {
 	// 业务数据
 	// in: body
 	// required: true
-	Data interface{} `json:"data" validate:"required"`
+	Data interface{} `json:"data" format:"object|array|string" validate:"required"`
 }
 
 // Error500 错误返回参数
@@ -55,5 +55,5 @@ type Error500 struct {
 	// 业务数据
 	// in: body
 	// required: true
-	Data interface{} `json:"data" validate:"required"`
+	Data interface{} `json:"data" format:"object|array|string" validate:"required"`
 }

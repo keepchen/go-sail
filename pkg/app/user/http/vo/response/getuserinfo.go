@@ -2,20 +2,20 @@ package response
 
 import (
 	modelsEnum "github.com/keepchen/go-sail/pkg/common/enum/models"
-	"github.com/keepchen/go-sail/pkg/common/http/api"
+	"github.com/keepchen/go-sail/pkg/common/http/pojo/dto"
 )
 
 // GetUserInfo 获取用户信息返回数据结构
 // swagger: model
 type GetUserInfo struct {
-	api.Base
+	dto.Base
 	// 数据体
 	// in: body
 	// required: true
 	Data struct {
 		User   UserInfo   `json:"user"`
 		Wallet WalletInfo `json:"wallet"`
-	} `json:"data"`
+	} `json:"data" format:"object"`
 }
 
 // UserInfo 用户基础信息数据结构
@@ -57,4 +57,4 @@ func (v GetUserInfo) GetData() interface{} {
 	return v.Data
 }
 
-var _ api.IResponse = &GetUserInfo{}
+var _ dto.IResponse = &GetUserInfo{}

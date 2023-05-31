@@ -78,7 +78,7 @@ conn_max_idle_time_minutes = 10
 [datasource.mysql.read]
 host = "localhost"
 port = 3306
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 charset = "utf8mb4"
@@ -88,7 +88,7 @@ loc = "Local"
 [datasource.mysql.write]
 host = "localhost"
 port = 3306
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 charset = "utf8mb4"
@@ -99,7 +99,7 @@ loc = "Local"
 [datasource.postgres.read]
 host = "localhost"
 port = 9920
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 ssl_mode = "disable" # enable | disable
@@ -109,7 +109,7 @@ timezone = "Asia/Shanghai"
 [datasource.postgres.write]
 host = "localhost"
 port = 9920
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 ssl_mode = "disable" # enable | disable
@@ -119,14 +119,14 @@ timezone = "Asia/Shanghai"
 [datasource.sqlserver.read]
 host = "localhost"
 port = 9930
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 
 [datasource.sqlserver.write]
 host = "localhost"
 port = 9930
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 
@@ -134,7 +134,7 @@ database = "default"
 [datasource.clickhouse.read]
 host = "localhost"
 port = 9000
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 read_timeout = 20
@@ -143,7 +143,7 @@ write_timeout = 20
 [datasource.clickhouse.write]
 host = "localhost"
 port = 9000
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 read_timeout = 20

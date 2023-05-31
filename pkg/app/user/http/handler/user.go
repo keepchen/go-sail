@@ -14,8 +14,8 @@ import (
 // @Produce     json
 // @Param       query query    request.GetUserInfo true "查询参数"
 // @Success     200   {object} response.GetUserInfo
-// @Failure     400   {object} api.Error400
-// @Failure     500   {object} api.Error500
+// @Failure     400   {object} dto.Error400
+// @Failure     500   {object} dto.Error500
 // @Router      /user/info [get]
 func GetUserInfo(c *gin.Context) {
 	service.GetUserInfoSvc(c)

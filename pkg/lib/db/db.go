@@ -32,8 +32,6 @@ func InitDB(conf Conf) {
 
 // NewFreshDB 实例化全新的数据库链接
 //
-// 直接返回原生的连接实例
-//
 // rInstance为读实例,wInstance为写实例
 func NewFreshDB(conf Conf) (rInstance, wInstance *gorm.DB) {
 	dialectR, dialectW := conf.GenDialector()
@@ -66,6 +64,17 @@ func initDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 }
 
 // GetInstance 获取数据库实例
+//
+// 获取由InitDB实例化后的连接
 func GetInstance() *Instance {
 	return dbInstance
+}
+
+// New 初始化化全新的数据库链接
+//
+// rInstance为读实例,wInstance为写实例
+func New(conf Conf) (rInstance, wInstance *gorm.DB) {
+	rInstance, wInstance = NewFreshDB(conf)
+
+	return
 }

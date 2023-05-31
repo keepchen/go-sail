@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"log"
+	"os"
+	"sync"
+
 	"github.com/keepchen/go-sail/pkg/app/user"
 	"github.com/keepchen/go-sail/pkg/app/user/config"
 	"github.com/keepchen/go-sail/pkg/common/db/mock"
@@ -8,12 +12,10 @@ import (
 	"github.com/keepchen/go-sail/pkg/lib/db"
 	"github.com/keepchen/go-sail/pkg/lib/logger"
 	"github.com/keepchen/go-sail/pkg/lib/nacos"
+	"github.com/keepchen/go-sail/pkg/lib/nats"
 	"github.com/keepchen/go-sail/pkg/lib/redis"
 	"github.com/keepchen/go-sail/pkg/utils"
 	"github.com/spf13/cobra"
-	"log"
-	"os"
-	"sync"
 )
 
 func userCMD() *cobra.Command {
@@ -40,8 +42,10 @@ func userCMD() *cobra.Command {
 			config.ParseConfig(cfgPath)
 			//::初始化redis集群连接
 			redis.InitRedisCluster(config.GetGlobalConfig().RedisCluster)
+			//::初始化nats
+			nats.Init(config.GetGlobalConfig().Nats)
 			//::初始化日志组件
-			logger.InitLoggerZap(config.GetGlobalConfig().Logger, config.GetGlobalConfig().AppName)
+			logger.InitLoggerZapV2(config.GetGlobalConfig().LoggerV2, config.GetGlobalConfig().AppName)
 			//::初始化数据库
 			db.InitDB(config.GetGlobalConfig().Datasource)
 			//当数据库配置了主从自动同步的情况下，只对写库进行结构同步

@@ -13,8 +13,8 @@ import (
 // @Produce     json
 // @Param       query query    request.SayHello true "查询参数"
 // @Success     200   {object} response.SayHello
-// @Failure     400   {object} api.Error400
-// @Failure     500   {object} api.Error500
+// @Failure     400   {object} dto.Error400
+// @Failure     500   {object} dto.Error500
 // @Router      /say-hello [get]
 func SayHello(c *gin.Context) {
 	service.SayHelloSvc(c)

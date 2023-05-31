@@ -1,0 +1,32 @@
+version: "3.5"
+services:
+  nats:
+    image: nats:2.9.17
+    ports:
+      - "8222:8222"
+      - "4222:4222"
+    command: "--cluster_name NATS --config /conf/cluster.conf --http_port 8222 -js"
+    networks: ["nats"]
+    volumes:
+      - ./data/nats-1:/data
+      - ./conf/nats-1:/conf
+  nats-1:
+    image: nats:2.9.17
+    command: "--cluster_name NATS --config /conf/cluster.conf -js"
+    networks: ["nats"]
+    volumes:
+      - ./data/nats-2:/data
+      - ./conf/nats-2:/conf
+    depends_on: ["nats"]
+  nats-2:
+    image: nats:2.9.17
+    command: "--cluster_name NATS --config /conf/cluster.conf -js"
+    networks: ["nats"]
+    volumes:
+      - ./data/nats-3:/data
+      - ./conf/nats-3:/conf
+    depends_on: ["nats"]
+
+networks:
+  nats:
+    name: nats

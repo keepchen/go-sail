@@ -10,6 +10,27 @@ logger:
   compress: true
   enable_elk_with_redis_list: false
   redis_list_key: go-sail:logs/user_running.log
+
+loggerV2:
+  env: dev
+  level: debug
+  filename: logs/user_running.log
+  max_size: 100
+  max_backups: 10
+  compress: true
+  elk_bus:
+    provider: "redis"
+    nats:
+      subject: "logger"
+    redis:
+      list_key: "logger"
+
+nats:
+  servers:
+    - "nats://127.0.0.1:4222"
+  username: admin
+  password: changeme
+
 datasource:
   diver_name: mysql
   auto_migrate: true
@@ -25,7 +46,7 @@ datasource:
     conn_max_idle_time_minutes: 10
   mysql:
     read:
-      host: 192.168.224.114
+      host: 127.0.0.1
       port: 33060
       username: root
       password: root
@@ -34,7 +55,7 @@ datasource:
       parseTime: true
       loc: Local
     write:
-      host: 192.168.224.114
+      host: 127.0.0.1
       port: 33060
       username: root
       password: root
@@ -46,33 +67,33 @@ datasource:
 redis_cluster:
   ssl_enable: false
   addr_list:
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6379
       username: ""
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6380
       username: ""
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6381
       username: ""
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6382
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6383
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6384
       username: ""
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6385
       username: ""
       password: changeme
-    - host: 192.168.224.114
+    - host: 127.0.0.1
       port: 6386
       username: ""
       password: changeme

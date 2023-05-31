@@ -1,6 +1,6 @@
 basePath: /api/v1
 definitions:
-  api.Error400:
+  dto.Error400:
     properties:
       code:
         description: |-
@@ -15,6 +15,7 @@ definitions:
           业务数据
           in: body
           required: true
+        format: object|array|string
       message:
         description: |-
           提示信息
@@ -54,7 +55,7 @@ definitions:
     - success
     - ts
     type: object
-  api.Error500:
+  dto.Error500:
     properties:
       code:
         description: |-
@@ -69,6 +70,7 @@ definitions:
           业务数据
           in: body
           required: true
+        format: object|array|string
       message:
         description: |-
           提示信息
@@ -115,14 +117,13 @@ definitions:
           错误码
           in: body
           required: true
-        example: 0
         format: int
-        type: integer
       data:
         description: |-
           数据体
           in: body
           required: true
+        format: object
         properties:
           user:
             $ref: '#/definitions/response.UserInfo'
@@ -175,14 +176,14 @@ definitions:
           错误码
           in: body
           required: true
-        example: 0
         format: int
-        type: integer
       data:
         description: |-
           数据体
           in: body
           required: true
+        example: ""
+        format: string
         type: string
       message:
         description: |-
@@ -312,11 +313,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.Error400'
+            $ref: '#/definitions/dto.Error400'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.Error500'
+            $ref: '#/definitions/dto.Error500'
       summary: say-hello / 说你好
       tags:
       - welcome / 欢迎语
@@ -341,11 +342,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.Error400'
+            $ref: '#/definitions/dto.Error400'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.Error500'
+            $ref: '#/definitions/dto.Error500'
       security:
       - ApiKeyAuth: []
       summary: user-info / 获取用户信息

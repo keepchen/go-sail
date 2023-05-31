@@ -42,6 +42,33 @@ enable_elk_with_redis_list = true
 # redis list的elk日志写入的key
 redis_list_key = ""
 
+# ::zap日志组件配置 v2::
+[loggerV2]
+# 日志环境 dev,prod
+env = "dev"
+# 日志级别 debug,info,warn,error,dpanic,panic,fatal
+level = "info"
+# 日志文件名称 需要跟上路径
+filename = "logs/running.log"
+# 单文件日志大小限制，单位MB
+max_size = 100
+# 最大历史文件保留数量
+max_backups = 10
+# 是否压缩历史文件
+compress = true
+# elk配置
+[loggerV2.elk_bus]
+# elk写入桥接媒介
+provider = "redis"
+# nats桥接配置
+[loggerV2.nats]
+# nats主题
+subject = "logger"
+# redis桥接配置
+[loggerV2.redis]
+# list键名
+list_key = "logger"
+
 # ::http服务配置::
 [http_server]
 addr = ":8080"
@@ -76,7 +103,7 @@ conn_max_idle_time_minutes = 10
 [datasource.mysql.read]
 host = "localhost"
 port = 3306
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 charset = "utf8mb4"
@@ -86,7 +113,7 @@ loc = "Local"
 [datasource.mysql.write]
 host = "localhost"
 port = 3306
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 charset = "utf8mb4"
@@ -97,7 +124,7 @@ loc = "Local"
 [datasource.postgres.read]
 host = "localhost"
 port = 9920
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 ssl_mode = "disable" # enable | disable
@@ -107,7 +134,7 @@ timezone = "Asia/Shanghai"
 [datasource.postgres.write]
 host = "localhost"
 port = 9920
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 ssl_mode = "disable" # enable | disable
@@ -117,14 +144,14 @@ timezone = "Asia/Shanghai"
 [datasource.sqlserver.read]
 host = "localhost"
 port = 9930
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 
 [datasource.sqlserver.write]
 host = "localhost"
 port = 9930
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 
@@ -132,7 +159,7 @@ database = "default"
 [datasource.clickhouse.read]
 host = "localhost"
 port = 9000
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 read_timeout = 20
@@ -141,7 +168,7 @@ write_timeout = 20
 [datasource.clickhouse.write]
 host = "localhost"
 port = 9000
-username = "fool"
+username = "foo"
 password = "bar"
 database = "default"
 read_timeout = 20
@@ -180,4 +207,13 @@ password = ""
 host = "localhost3"
 username = ""
 port = 6379
+password = ""
+
+# ::nats配置::
+[nats]
+# 服务实例地址
+servers = ["nats://127.0.0.1:4222"]
+# 认证用户名
+username = ""
+# 认证密码
 password = ""

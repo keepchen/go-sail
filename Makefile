@@ -23,6 +23,7 @@ EXTRA_BUILD_ARGS=
 GOLINT=$(shell which golangci-lint || echo '')
 SWAG=$(shell which swag || echo '')
 REDOCCLI=$(shell which redoc-cli || echo '')
+NODEJS=$(shell which node || echo '')
 
 export GOCACHE=
 export GOPROXY=https://goproxy.cn,direct
@@ -83,14 +84,17 @@ gen-swag-user:
  		--output pkg/app/user/http/docs \
  		--parseDependency --parseInternal \
  		--generalInfo user.go && \
- 	redoc-cli bundle pkg/app/user/http/docs/*.yaml -o pkg/app/user/http/docs/apidoc.html
+ 	redoc-cli bundle pkg/app/user/http/docs/*.yaml -o pkg/app/user/http/docs/apidoc.html && \
+ 	node plugins/redocly/redocly-copy.js pkg/app/user/http/docs/*.html
 
 gen-swag-order:
 	@echo "+ $@"
 	@$(if $(SWAG), , \
 		$(error Please install swag cli, using go: "go get -u github.com/swaggo/swag/cmd/swag@v1.8.4"))
 	@$(if $(REDOCCLI), , \
-        $(error Please install redoc cli, using npm or yarn: "npm i -g @redocly/cli@latest"))
+        $(error Please install redoc cli, using npm or yarn: "npm i -g @redocly/cli@latest")) \
+    @$(if $(NODEJS), , \
+            $(error Please install nodejs(version >= 16.14), website: "https://nodejs.org/"))
 	swag init --dir pkg/app/order \
  		--output pkg/app/order/http/docs \
  		--parseDependency --parseInternal \
