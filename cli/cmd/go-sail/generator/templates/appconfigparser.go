@@ -64,7 +64,7 @@ func ParseConfigFromFile(cfgPath string) {
 // nacosNamespaceID=f0c2f58d-54e3-45df-94cd-a6fb3a8fa534
 func ParseConfigFromNacos() {
 	var (
-		dataID = "{{ .AppName }}-{{ .ServiceName }}user.yml"
+		dataID = "{{ .AppName }}-{{ .ServiceName }}.yml"
 		group  = "{{ .AppName }}"
 	)
 	cc := nacos.GetConfigClient()

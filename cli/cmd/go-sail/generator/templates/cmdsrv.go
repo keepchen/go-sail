@@ -45,6 +45,8 @@ func {{ .ServiceName }}CMD() *cobra.Command {
 			//redis.InitRedisCluster(config.GetGlobalConfig().RedisCluster)
 			//::初始化日志组件
 			logger.InitLoggerZap(config.GetGlobalConfig().Logger, config.GetGlobalConfig().AppName)
+			//::初始化日志组件 v2
+			//logger.InitLoggerZapV2(config.GetGlobalConfig().LoggerV2, config.GetGlobalConfig().AppName)
 			////::初始化数据库
 			//db.InitDB(config.GetGlobalConfig().Datasource)
 			////当数据库配置了主从自动同步的情况下，只对写库进行结构同步

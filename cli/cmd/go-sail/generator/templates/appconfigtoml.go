@@ -44,6 +44,33 @@ enable_elk_with_redis_list = true
 # redis list的elk日志写入的key
 redis_list_key = ""
 
+# ::zap日志组件配置 v2::
+[loggerV2]
+# 日志环境 dev,prod
+env = "dev"
+# 日志级别 debug,info,warn,error,dpanic,panic,fatal
+level = "info"
+# 日志文件名称 需要跟上路径
+filename = "logs/running.log"
+# 单文件日志大小限制，单位MB
+max_size = 100
+# 最大历史文件保留数量
+max_backups = 10
+# 是否压缩历史文件
+compress = true
+# elk配置
+[loggerV2.elk_bus]
+# elk写入桥接媒介
+provider = "redis"
+# nats桥接配置
+[loggerV2.nats]
+# nats主题
+subject = "logger"
+# redis桥接配置
+[loggerV2.redis]
+# list键名
+list_key = "logger"
+
 # ::http服务配置::
 [http_server]
 addr = ":8080"

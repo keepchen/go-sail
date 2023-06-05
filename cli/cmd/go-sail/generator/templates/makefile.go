@@ -25,6 +25,7 @@ EXTRA_BUILD_ARGS=
 GOLINT=$(shell which golangci-lint || echo '')
 SWAG=$(shell which swag || echo '')
 REDOCCLI=$(shell which redoc-cli || echo '')
+NODEJS=$(shell which node || echo '')
 
 export GOCACHE=
 export GOPROXY=https://goproxy.cn,direct
@@ -81,9 +82,12 @@ gen-rsa-key-pkcs8:
 #		$(error Please install swag cli, using go: "go get -u github.com/swaggo/swag/cmd/swag@v1.8.4"))
 #	@$(if $(REDOCCLI), , \
 #            		$(error Please install redoc cli, using npm or yarn: "npm i -g @redocly/cli@latest"))
-#	swag init --dir pkg/app/user \
+#	@$(if $(NODEJS), , \
+#            		$(error Please install node js (version >= 16), official website: "https://nodejs.org"))
+#	swag init --dir pkg/app/{{ .ServiceName }} \
 # 		--output pkg/app/{{ .ServiceName }}/http/docs \
 # 		--parseDependency --parseInternal \
 # 		--generalInfo {{ .ServiceName }}.go && \
-# 	redoc-cli bundle pkg/app/{{ .ServiceName }}/http/docs/*.yaml -o pkg/app/{{ .ServiceName }}/http/docs/apidoc.html
+# 	redoc-cli bundle pkg/app/{{ .ServiceName }}/http/docs/*.yaml -o pkg/app/{{ .ServiceName }}/http/docs/apidoc.html && \
+# 	node plugins/redocly/redocly-copy.js pkg/app/{{ .ServiceName }}/http/docs/apidoc.html
 `

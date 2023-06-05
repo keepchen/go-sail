@@ -1,14 +1,14 @@
-# go-sail 命令行工具  
+# go-sail cli  
 
-简体中文 | [English](./README_EN.md)
+English | [简体中文](./README.md)
 
-#### 安装  
+#### Installation  
 ```shell
 go install github.com/keepchen/go-sail/cli/cmd/go-sail@latest
 ```  
 
-#### 使用方法  
-- 初始化工程目录
+#### Usage  
+- Init project
 ```shell
 go-sail init -v ${goVersion} -d ${workDir} -n ${appName} -s ${serviceName}  
 
@@ -16,8 +16,8 @@ go-sail init -v ${goVersion} -d ${workDir} -n ${appName} -s ${serviceName}
 go-sail init -v 1.17 -d /var/www/kupo-ha -n pets -s corgi
 ```  
 
-#### 完成  
-工程目录被成功创建，目录结构大致如下:  
+#### Finish  
+A golang project will be created,structures like this:  
 ```text
 pets
 ├── cmd
@@ -37,7 +37,7 @@ pets
     └── utils
 ```  
 
-- 在已有的工程中添加新的服务 (即子应用)
+- Add new service (sub application)
 ```shell
 go-sail add -v ${goVersion} -d ${workDir} -n ${appName} -s ${serviceName}  
 
