@@ -1,11 +1,11 @@
 package config
 
 import (
-	"github.com/keepchen/go-sail/pkg/lib/db"
-	"github.com/keepchen/go-sail/pkg/lib/jwt"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
-	"github.com/keepchen/go-sail/pkg/lib/nats"
-	"github.com/keepchen/go-sail/pkg/lib/redis"
+	"github.com/keepchen/go-sail/v2/pkg/lib/db"
+	"github.com/keepchen/go-sail/v2/pkg/lib/jwt"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/lib/nats"
+	"github.com/keepchen/go-sail/v2/pkg/lib/redis"
 )
 
 // Config 整体的配置信息

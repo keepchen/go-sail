@@ -79,7 +79,7 @@ func (p *Pool) Emit() {
 // Done 发送完成
 func (p *Pool) Done() {
 	p.wg.Wait()
-	for index, _ := range p.workers {
+	for index := range p.workers {
 		close(p.workers[index])
 	}
 	p.exit <- struct{}{}
@@ -95,7 +95,7 @@ func (p *Pool) makeWorkers() {
 	log.Printf("[!] Init {%d} worker(s), throttle {%d} second(s)", p.workersCount, p.conf.WorkerThrottleSeconds)
 
 	var workers = make([]chan *Envelope, p.workersCount)
-	for index, _ := range workers {
+	for index := range workers {
 		workers[index] = make(chan *Envelope)
 	}
 

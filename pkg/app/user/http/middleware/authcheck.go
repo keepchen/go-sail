@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/pkg/common/http/api"
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/common/http/api"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 )
 
 // AuthCheck 授权检查

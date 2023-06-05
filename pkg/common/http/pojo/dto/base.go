@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/keepchen/go-sail/pkg/constants"
+import "github.com/keepchen/go-sail/v2/pkg/constants"
 
 // Base 公共返回参数
 // swagger: model

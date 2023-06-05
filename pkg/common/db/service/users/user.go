@@ -1,10 +1,10 @@
 package users
 
 import (
-	"github.com/keepchen/go-sail/pkg/common/db/models/users"
-	modelsEnum "github.com/keepchen/go-sail/pkg/common/enum/models"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
-	"github.com/keepchen/go-sail/pkg/utils"
+	"github.com/keepchen/go-sail/v2/pkg/common/db/models/users"
+	modelsEnum "github.com/keepchen/go-sail/v2/pkg/common/enum/models"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -26,7 +26,7 @@ type UserSvcImpl struct {
 
 var _ UserSvc = &UserSvcImpl{}
 
-//NewUserSvcImpl 实例化服务
+// NewUserSvcImpl 实例化服务
 var NewUserSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) UserSvc {
 	return &UserSvcImpl{
 		dbr:    dbr,

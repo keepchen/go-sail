@@ -4,7 +4,7 @@
 
 #### 安装  
 ```shell
-go install github.com/keepchen/go-sail/cli/cmd/go-sail@latest
+go install github.com/keepchen/go-sail/cli/cmd/go-sail/v2@latest
 ```  
 
 #### 使用方法  

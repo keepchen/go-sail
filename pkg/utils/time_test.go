@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 )
 
 var timezones = []string{

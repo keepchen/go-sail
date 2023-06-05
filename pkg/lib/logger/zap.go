@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/keepchen/go-sail/pkg/lib/nats"
+	"github.com/keepchen/go-sail/v2/pkg/lib/nats"
 
-	"github.com/keepchen/go-sail/pkg/lib/redis"
+	"github.com/keepchen/go-sail/v2/pkg/lib/redis"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"

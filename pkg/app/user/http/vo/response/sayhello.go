@@ -1,7 +1,7 @@
 package response
 
 import (
-	"github.com/keepchen/go-sail/pkg/common/http/pojo/dto"
+	"github.com/keepchen/go-sail/v2/pkg/common/http/pojo/dto"
 )
 
 // SayHello 欢迎返回数据结构

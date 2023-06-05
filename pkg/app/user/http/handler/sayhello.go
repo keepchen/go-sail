@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/pkg/app/user/service"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/service"
 )
 
 // SayHello 欢迎语

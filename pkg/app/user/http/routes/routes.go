@@ -4,14 +4,14 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/keepchen/go-sail/pkg/app/user/http/middleware"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/http/middleware"
 
 	"github.com/gin-contrib/pprof"
-	"github.com/keepchen/go-sail/pkg/app/user/config"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/config"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/pkg/app/user/http/handler"
-	mdlw "github.com/keepchen/go-sail/pkg/common/http/middleware"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/http/handler"
+	mdlw "github.com/keepchen/go-sail/v2/pkg/common/http/middleware"
 )
 
 // 注册路由

@@ -4,7 +4,7 @@ English | [简体中文](./README.md)
 
 #### Installation  
 ```shell
-go install github.com/keepchen/go-sail/cli/cmd/go-sail@latest
+go install github.com/keepchen/go-sail/cli/cmd/go-sail/v2@latest
 ```  
 
 #### Usage  

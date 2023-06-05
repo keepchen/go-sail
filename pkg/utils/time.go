@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 )
 
 type TIM struct {

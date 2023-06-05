@@ -53,7 +53,7 @@ if errorCode, err := form.Validator(); err != nil {
 
 - 统一返回  
 ```go
-import "github.com/keepchen/go-sail/pkg/common/http/api"
+import "github.com/keepchen/go-sail/v2/pkg/common/http/api"
 
 //根据业务错误码自动设置http状态码
 api.New(c).Assemble(constants.ErrNone, anyResponseData).Send() // <- 200
@@ -98,7 +98,7 @@ zap.Any("value", logger.MarshalInterfaceValue(userAndWallet)), zap.Errors("error
 go-sail基于`gorm.io/gorm`的数据库类库，实现了读写分离功能。得益于gorm丰富的driver支持，go-sail支持`mysql`、`sqlserver`、`postgresql`、`sqlite`、`clickhouse`数据库操作。  
 
 ```go
-import "github.com/keepchen/go-sail/pkg/lib/db"
+import "github.com/keepchen/go-sail/v2/pkg/lib/db"
 
 dbInstance := db.GetInstance()
 dbR := dbInstance.R // <- 读实例
@@ -112,7 +112,7 @@ err := dbW.Where(...).Updates(...).Error
 go-sail基于`go-redis/redis`的redis类库，实现了对redis单实例和集群访问功能。  
 
 ```go
-import "github.com/keepchen/go-sail/pkg/lib/redis"
+import "github.com/keepchen/go-sail/v2/pkg/lib/redis"
 
 redisInstance := redis.GetInstance()
 redisInstance.Set(context.Background(), key, string(value), expired).Result()
@@ -259,5 +259,5 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./go-sail
 
 ## 使用案例  
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="600" />
-<img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="600" />
+<img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="450" />
 

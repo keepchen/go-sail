@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/keepchen/go-sail/cli/cmd/go-sail/generator"
+	"github.com/keepchen/go-sail/cli/cmd/go-sail/v2/generator"
 	"github.com/spf13/cobra"
 )
 

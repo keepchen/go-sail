@@ -1,17 +1,17 @@
 package mock
 
 import (
-	"github.com/keepchen/go-sail/pkg/common/db/models"
-	modelsUsers "github.com/keepchen/go-sail/pkg/common/db/models/users"
-	usersSvc "github.com/keepchen/go-sail/pkg/common/db/service/users"
-	modelsEnum "github.com/keepchen/go-sail/pkg/common/enum/models"
-	"github.com/keepchen/go-sail/pkg/lib/db"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/common/db/models"
+	modelsUsers "github.com/keepchen/go-sail/v2/pkg/common/db/models/users"
+	usersSvc "github.com/keepchen/go-sail/v2/pkg/common/db/service/users"
+	modelsEnum "github.com/keepchen/go-sail/v2/pkg/common/enum/models"
+	"github.com/keepchen/go-sail/v2/pkg/lib/db"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 )
 
-//CreateUserAndWalletData mock用户及钱包数据
+// CreateUserAndWalletData mock用户及钱包数据
 //
-//生成三条数据
+// 生成三条数据
 func CreateUserAndWalletData() {
 	users := []modelsUsers.User{
 		{

@@ -3,15 +3,16 @@ package nacos
 import (
 	"errors"
 	"fmt"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"strconv"
+	"strings"
+
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 	nacosV2Clients "github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients/naming_client"
 	nacosV2Constant "github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	"go.uber.org/zap"
-	"strconv"
-	"strings"
 )
 
 var (
@@ -19,11 +20,11 @@ var (
 	iNamingClient naming_client.INamingClient
 )
 
-//InitClient 初始化客户端
+// InitClient 初始化客户端
 //
-//注意addrStr支持多个地址，以英文逗号分隔，如：
+// 注意addrStr支持多个地址，以英文逗号分隔，如：
 //
-//192.168.224.2:8848,192.168.224.3:8848
+// 192.168.224.2:8848,192.168.224.3:8848
 func InitClient(appName, addrStr, namespace string) {
 	if len(addrStr) == 0 || len(namespace) == 0 {
 		panic(errors.New("[addrStr] or [namespace] is empty"))
@@ -81,17 +82,17 @@ func InitClient(appName, addrStr, namespace string) {
 	iNamingClient = nc
 }
 
-//GetConfigClient 获取nacos配置实例
+// GetConfigClient 获取nacos配置实例
 func GetConfigClient() config_client.IConfigClient {
 	return iConfigClient
 }
 
-//GetNamingClient 获取nacos服务发现实例
+// GetNamingClient 获取nacos服务发现实例
 func GetNamingClient() naming_client.INamingClient {
 	return iNamingClient
 }
 
-//GetHealthyInstanceUrl 获取健康实例url地址
+// GetHealthyInstanceUrl 获取健康实例url地址
 func GetHealthyInstanceUrl(groupName, serviceName string, loggerSvc *zap.Logger) string {
 	var param vo.SelectOneHealthInstanceParam
 	if len(groupName) != 0 {

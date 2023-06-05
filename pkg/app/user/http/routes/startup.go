@@ -10,12 +10,12 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/keepchen/go-sail/pkg/common/http/api"
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/common/http/api"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/pkg/app/user/config"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/config"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

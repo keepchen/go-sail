@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 	"go.uber.org/zap"
 )
 

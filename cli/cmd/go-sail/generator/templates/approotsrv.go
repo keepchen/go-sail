@@ -13,12 +13,12 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/keepchen/go-sail/pkg/lib/nacos"
-	"github.com/keepchen/go-sail/pkg/utils"
+	"github.com/keepchen/go-sail/v2/pkg/lib/nacos"
+	"github.com/keepchen/go-sail/v2/pkg/utils"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 
 	"{{ .AppName }}/pkg/app/{{ .ServiceName }}/config"
-	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 	"go.uber.org/zap"
 )
 

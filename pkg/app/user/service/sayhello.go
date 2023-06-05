@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/pkg/app/user/http/vo/request"
-	"github.com/keepchen/go-sail/pkg/app/user/http/vo/response"
-	"github.com/keepchen/go-sail/pkg/common/http/api"
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/http/vo/request"
+	"github.com/keepchen/go-sail/v2/pkg/app/user/http/vo/response"
+	"github.com/keepchen/go-sail/v2/pkg/common/http/api"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 )
 
 func SayHelloSvc(c *gin.Context) {

@@ -1,6 +1,6 @@
 package api
 
-import "github.com/keepchen/go-sail/pkg/constants"
+import "github.com/keepchen/go-sail/v2/pkg/constants"
 
 var (
 	anotherErrNoneCode constants.ICodeType = constants.ErrNone //被改写后的成功code码

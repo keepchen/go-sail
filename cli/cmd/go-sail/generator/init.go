@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/keepchen/go-sail/cli/cmd/go-sail/generator/templates"
+	"github.com/keepchen/go-sail/cli/cmd/go-sail/v2/generator/templates"
 )
 
 func registerFiles4Gen(opts Options) []File {

@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/keepchen/go-sail/pkg/utils"
+	"github.com/keepchen/go-sail/v2/pkg/utils"
 )
 
 type value struct {

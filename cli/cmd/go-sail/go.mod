@@ -1,4 +1,4 @@
-module github.com/keepchen/go-sail/cli/cmd/go-sail
+module github.com/keepchen/go-sail/cli/cmd/go-sail/v2
 
 go 1.19
 

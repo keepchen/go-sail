@@ -7,8 +7,8 @@ import (
 	"log"
 
 	"github.com/jinzhu/configor"
-	"github.com/keepchen/go-sail/pkg/constants"
-	"github.com/keepchen/go-sail/pkg/lib/nacos"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/lib/nacos"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	yaml "gopkg.in/yaml.v2"
 )

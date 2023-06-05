@@ -3,7 +3,7 @@ package db
 import (
 	"time"
 
-	"github.com/keepchen/go-sail/pkg/lib/logger"
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 
 	"gorm.io/gorm"
 )

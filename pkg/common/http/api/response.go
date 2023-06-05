@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/pkg/common/http/pojo/dto"
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/common/http/pojo/dto"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 )
 
 type API struct {

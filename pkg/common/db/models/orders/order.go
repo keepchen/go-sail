@@ -3,9 +3,9 @@ package orders
 import (
 	"fmt"
 
-	"github.com/keepchen/go-sail/pkg/common/db/models"
-	modelsEnum "github.com/keepchen/go-sail/pkg/common/enum/models"
-	"github.com/keepchen/go-sail/pkg/utils"
+	"github.com/keepchen/go-sail/v2/pkg/common/db/models"
+	modelsEnum "github.com/keepchen/go-sail/v2/pkg/common/enum/models"
+	"github.com/keepchen/go-sail/v2/pkg/utils"
 	"gorm.io/gorm"
 )
 

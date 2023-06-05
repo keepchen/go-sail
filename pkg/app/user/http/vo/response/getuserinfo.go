@@ -1,8 +1,8 @@
 package response
 
 import (
-	modelsEnum "github.com/keepchen/go-sail/pkg/common/enum/models"
-	"github.com/keepchen/go-sail/pkg/common/http/pojo/dto"
+	modelsEnum "github.com/keepchen/go-sail/v2/pkg/common/enum/models"
+	"github.com/keepchen/go-sail/v2/pkg/common/http/pojo/dto"
 )
 
 // GetUserInfo 获取用户信息返回数据结构

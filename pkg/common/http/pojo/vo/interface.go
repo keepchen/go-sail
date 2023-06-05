@@ -1,6 +1,8 @@
 package vo
 
-import "github.com/keepchen/go-sail/pkg/constants"
+import (
+	"github.com/keepchen/go-sail/v2/pkg/constants"
+)
 
 // IRequest 统一请求接口
 type IRequest interface {

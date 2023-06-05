@@ -1,12 +1,13 @@
 package utils
 
 import (
-	"github.com/keepchen/go-sail/pkg/lib/logger"
-	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
+	"go.uber.org/zap"
 )
 
 // ListeningExitSignal 监听系统退出信号

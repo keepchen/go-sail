@@ -3,7 +3,7 @@ package request
 import (
 	"fmt"
 
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 )
 
 // GetUserInfo 获取用户信息请求参数

@@ -1,6 +1,6 @@
 package request
 
-import "github.com/keepchen/go-sail/pkg/constants"
+import "github.com/keepchen/go-sail/v2/pkg/constants"
 
 // SayHello 欢迎请求参数
 // swagger: model

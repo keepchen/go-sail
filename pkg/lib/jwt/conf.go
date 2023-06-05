@@ -4,7 +4,7 @@ import (
 	"crypto/rsa"
 	"strings"
 
-	"github.com/keepchen/go-sail/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/constants"
 
 	jwtLib "github.com/golang-jwt/jwt"
 )
