@@ -266,7 +266,7 @@ func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 		cores = append(cores, fileCore)
 
 		//logstash订阅的key只定义一个，与modeName无关
-		writer := busProvider(cfg)
+		writer := exporterProvider(cfg)
 		if writer != nil {
 			coreWithWriter := zapcore.NewCore(
 				zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(writer), atomicLevel,
@@ -290,15 +290,15 @@ func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 	}()
 }
 
-func busProvider(cfg ConfV2) zapcore.WriteSyncer {
+func exporterProvider(cfg ConfV2) zapcore.WriteSyncer {
 	var writer zapcore.WriteSyncer
 
-	switch strings.ToLower(cfg.ELKBus.Provider) {
+	switch strings.ToLower(cfg.Exporter.Provider) {
 	case "redis":
 		if redis.GetInstance() != nil {
 			redisWriter := &redisWriterStd{
 				cli:     redis.GetInstance(),
-				listKey: cfg.ELKBus.Redis.ListKey,
+				listKey: cfg.Exporter.Redis.ListKey,
 			}
 
 			writer = redisWriter
@@ -307,7 +307,7 @@ func busProvider(cfg ConfV2) zapcore.WriteSyncer {
 		if redis.GetClusterInstance() != nil {
 			redisWriter := &redisClusterWriterStd{
 				cli:     redis.GetClusterInstance(),
-				listKey: cfg.ELKBus.Redis.ListKey,
+				listKey: cfg.Exporter.Redis.ListKey,
 			}
 
 			writer = redisWriter
@@ -318,7 +318,7 @@ func busProvider(cfg ConfV2) zapcore.WriteSyncer {
 		if nats.GetInstance() != nil {
 			natsWriter := &natsWriterStd{
 				cli:        nats.GetInstance(),
-				subjectKey: cfg.ELKBus.Nats.Subject,
+				subjectKey: cfg.Exporter.Nats.Subject,
 			}
 
 			writer = natsWriter

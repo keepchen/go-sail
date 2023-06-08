@@ -20,13 +20,13 @@ type ConfV2 struct {
 	MaxSize    int    `yaml:"max_size" toml:"max_size" json:"max_size" default:"100"`              //日志大小限制，单位MB
 	MaxBackups int    `yaml:"max_backups" toml:"max_backups" json:"max_backups" default:"10"`      //最大历史文件保留数量
 	Compress   bool   `yaml:"compress" toml:"compress" json:"compress" default:"true"`             //是否压缩历史日志文件
-	ELKBus     struct {
-		Provider string `yaml:"provider" toml:"provider" json:"provider" default:""` //媒介提供者，目前支持redis和nats
+	Exporter   struct {
+		Provider string `yaml:"provider" toml:"provider" json:"provider" default:""` //导出提供者，目前支持redis和nats
 		Redis    struct {
 			ListKey string `yaml:"list_key" toml:"list_key" json:"list_key"` //redis list的elk日志写入的key
 		} `json:"redis"`
 		Nats struct {
 			Subject string `yaml:"subject" toml:"subject" json:"subject"` //nats的发布主题
 		} `yaml:"nats"`
-	} `yaml:"elk_bus" toml:"elk_bus" json:"elk_bus" default:"redis"` //elk总线（媒介）
+	} `yaml:"exporter" toml:"exporter" json:"exporter"` //导出器
 }

@@ -57,15 +57,15 @@ max_backups = 10
 # 是否压缩历史文件
 compress = true
 # elk配置
-[loggerV2.elk_bus]
+[loggerV2.exporter]
 # elk写入桥接媒介
 provider = "redis"
 # nats桥接配置
-[loggerV2.nats]
+[loggerV2.exporter.nats]
 # nats主题
 subject = "logger"
 # redis桥接配置
-[loggerV2.redis]
+[loggerV2.exporter.redis]
 # list键名
 list_key = "logger"
 
