@@ -1,6 +1,222 @@
 package db
 
 // Conf 配置信息
+//
+// <yaml example>
+//
+// datasource:
+//
+//	driver_name: mysql
+//	auto_migrate: true
+//	log_level: warn
+//	connection_pool:
+//	  # 最大开启连接数
+//	  max_open_conn_count: 100
+//	  # 最大闲置数量
+//	  max_idle_conn_count: 10
+//	  # 连接最大存活时间(分钟)
+//	  conn_max_life_time_minutes: 30
+//	  # 连接最大空闲时间(分钟)
+//	  conn_max_idle_time_minutes: 10
+//	mysql:
+//	  read:
+//	      host: 127.0.0.1
+//	      port: 33060
+//	      username: foo
+//	      password: bar
+//	      database: go_sail
+//	      charset: utf8mb4
+//	      parseTime: true
+//	      loc: Local
+//	  write:
+//	      host: 127.0.0.1
+//	      port: 33060
+//	      username: foo
+//	      password: bar
+//	      database: go_sail
+//	      charset: utf8mb4
+//	      parseTime: true
+//	      loc: Local
+//
+// <toml example>
+//
+// # ::数据库配置::
+//
+// [datasource]
+//
+// driver_name = "mysql"
+//
+// # 是否自动同步表结构
+//
+// auto_migrate = false
+//
+// # 日志级别 silent | info | warn | error
+//
+// log_level = "info"
+//
+// # ::数据库连接池配置::
+//
+// [datasource.connection_pool]
+//
+// # 最大开启连接数
+//
+// max_open_conn_count = 100
+//
+// # 最大闲置数量
+//
+// max_idle_conn_count = 10
+//
+// # 连接最大存活时间(分钟)
+//
+// conn_max_life_time_minutes = 30
+//
+// # 连接最大空闲时间(分钟)
+//
+// conn_max_idle_time_minutes = 10
+//
+// # mysql配置
+//
+// [datasource.mysql.read]
+//
+// host = "localhost"
+//
+// port = 3306
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "default"
+//
+// charset = "utf8mb4"
+//
+// parse_time = true
+//
+// loc = "Local"
+//
+// [datasource.mysql.write]
+//
+// host = "localhost"
+//
+// port = 3306
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// charset = "utf8mb4"
+//
+// parse_time = true
+//
+// loc = "Local"
+//
+// # postgres配置
+//
+// [datasource.postgres.read]
+//
+// host = "localhost"
+//
+// port = 9920
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// ssl_mode = "disable" # enable | disable
+//
+// timezone = "Asia/Shanghai"
+//
+// # postgres配置
+//
+// [datasource.postgres.write]
+//
+// host = "localhost"
+//
+// port = 9920
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// ssl_mode = "disable" # enable | disable
+//
+// timezone = "Asia/Shanghai"
+//
+// # sqlserver配置
+//
+// [datasource.sqlserver.read]
+//
+// host = "localhost"
+//
+// port = 9930
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// [datasource.sqlserver.write]
+//
+// host = "localhost"
+//
+// port = 9930
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// # clickhouse配置
+//
+// [datasource.clickhouse.read]
+//
+// host = "localhost"
+//
+// port = 9000
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// read_timeout = 20
+//
+// write_timeout = 20
+//
+// [datasource.clickhouse.write]
+//
+// host = "localhost"
+//
+// port = 9000
+//
+// username = "foo"
+//
+// password = "bar"
+//
+// database = "go_sail"
+//
+// read_timeout = 20
+//
+// write_timeout = 20
+//
+// # sqlite配置
+//
+// [datasource.sqlite.read]
+//
+// file = "sqlite.db"
+//
+// [datasource.sqlite.write]
+//
+// file = "sqlite.db"
 type Conf struct {
 	DriverName     string             `yaml:"driver_name" toml:"driver_name" json:"driver_name" default:"mysql"`    //数据库类型
 	AutoMigrate    bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"auto_migrate" default:"false"` //是否自动同步表结构

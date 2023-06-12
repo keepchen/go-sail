@@ -1,6 +1,57 @@
 package logger
 
 // Conf 日志配置
+//
+// <yaml example>
+//
+// logger:
+//
+//	env: dev
+//	level: debug
+//	filename: logs/user_running.log
+//	max_size: 100
+//	max_backups: 10
+//	compress: true
+//	enable_elk_with_redis_list: false
+//	redis_list_key: goal-sail:logs/user_running.log
+//
+// <toml example>
+//
+// # ::zap日志组件配置::
+//
+// [logger]
+//
+// # 日志环境 dev,prod
+//
+// env = "dev"
+//
+// # 日志级别 debug,info,warn,error,dpanic,panic,fatal
+//
+// level = "info"
+//
+// # 日志文件名称 需要跟上路径
+//
+// filename = "logs/running.log"
+//
+// # 单文件日志大小限制，单位MB
+//
+// max_size = 100
+//
+// # 最大历史文件保留数量
+//
+// max_backups = 10
+//
+// # 是否压缩历史文件
+//
+// compress = true
+//
+// # 是否启用基于redis list的elk日志写入
+//
+// enable_elk_with_redis_list = true
+//
+// # redis list的elk日志写入的key
+//
+// redis_list_key = ""
 type Conf struct {
 	Env                    string `yaml:"env" toml:"env" json:"env" default:"prod"`                                                                       //日志环境，prod：生产环境，dev：开发环境
 	Level                  string `yaml:"level" toml:"level" json:"level" default:"info"`                                                                 //日志级别，debug，info，warn，error
@@ -13,6 +64,77 @@ type Conf struct {
 }
 
 // ConfV2 日志配置
+//
+// <yaml example>
+//
+// loggerV2:
+//
+//	env: dev
+//	level: debug
+//	filename: logs/user_running.log
+//	max_size: 100
+//	max_backups: 10
+//	compress: true
+//	exporter:
+//	  provider: "redis"
+//	  nats:
+//	    subject: "logger"
+//	  redis:
+//	    list_key: "go-sail:logger"
+//
+// <toml example>
+//
+// # ::zap日志组件配置 v2::
+//
+// [loggerV2]
+//
+// # 日志环境 dev,prod
+//
+// env = "dev"
+//
+// # 日志级别 debug,info,warn,error,dpanic,panic,fatal
+//
+// level = "info"
+//
+// # 日志文件名称 需要跟上路径
+//
+// filename = "logs/running.log"
+//
+// # 单文件日志大小限制，单位MB
+//
+// max_size = 100
+//
+// # 最大历史文件保留数量
+//
+// max_backups = 10
+//
+// # 是否压缩历史文件
+//
+// compress = true
+//
+// # 日志导出器配置
+//
+// [loggerV2.exporter]
+//
+// # 日志导出器介质
+//
+// provider = "redis"
+//
+// # nats导出器配置
+//
+// [loggerV2.exporter.nats]
+//
+// # nats主题
+//
+// subject = "logger"
+//
+// # redis导出器配置
+//
+// [loggerV2.exporter.redis]
+//
+// # list键名
+//
+// list_key = "logger"
 type ConfV2 struct {
 	Env        string `yaml:"env" toml:"env" json:"env" default:"prod"`                            //日志环境，prod：生产环境，dev：开发环境
 	Level      string `yaml:"level" toml:"level" json:"level" default:"info"`                      //日志级别，debug，info，warn，error
@@ -21,7 +143,7 @@ type ConfV2 struct {
 	MaxBackups int    `yaml:"max_backups" toml:"max_backups" json:"max_backups" default:"10"`      //最大历史文件保留数量
 	Compress   bool   `yaml:"compress" toml:"compress" json:"compress" default:"true"`             //是否压缩历史日志文件
 	Exporter   struct {
-		Provider string `yaml:"provider" toml:"provider" json:"provider" default:""` //导出提供者，目前支持redis和nats
+		Provider string `yaml:"provider" toml:"provider" json:"provider" default:""` //导出器，目前支持redis和nats
 		Redis    struct {
 			ListKey string `yaml:"list_key" toml:"list_key" json:"list_key"` //redis list的elk日志写入的key
 		} `json:"redis"`

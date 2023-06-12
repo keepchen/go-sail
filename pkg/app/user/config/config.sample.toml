@@ -84,7 +84,7 @@ addr = ":1910"
 [datasource]
 driver_name = "mysql"
 # 是否自动同步表结构
-auto_miragte = false
+auto_migrate = false
 # 日志级别 silent | info | warn | error
 log_level = "info"
 

@@ -1,6 +1,45 @@
 package email
 
 // Conf 配置
+//
+// <yaml example>
+//
+// email:
+//
+//	workers:
+//	work_throttle_seconds: 5
+//	host:
+//	port:
+//	username:
+//	password:
+//	from:
+//	subject:
+//	params:
+//		variables:
+//
+// <toml example>
+//
+// [email]
+//
+// workers =
+//
+// work_throttle_seconds = 5
+//
+// host =
+//
+// port =
+//
+// username =
+//
+// password =
+//
+// from =
+//
+// subject =
+//
+// [email.params]
+//
+//	variables =
 type Conf struct {
 	Workers               int    `yaml:"workers" toml:"workers" json:"workers"`                                                 //协程数量
 	WorkerThrottleSeconds int    `yaml:"worker_throttle_seconds" toml:"worker_throttle_seconds" json:"worker_throttle_seconds"` //每个协程内发送间隔，单位秒

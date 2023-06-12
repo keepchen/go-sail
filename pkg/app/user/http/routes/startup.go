@@ -41,9 +41,10 @@ func RunServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	//设置api返回选项
 	api.SetupOption(api.Option{
-		EmptyDataStruct: api.DefaultEmptyDataStructObject,
-		ErrNoneCode:     AnotherErrNone,
-		ErrNoneCodeMsg:  "SUCCEED",
+		EmptyDataStruct:  api.DefaultEmptyDataStructObject,
+		ErrNoneCode:      AnotherErrNone,
+		ErrNoneCodeMsg:   "SUCCEED",
+		ForceHttpCode200: true,
 	})
 
 	//注册路由

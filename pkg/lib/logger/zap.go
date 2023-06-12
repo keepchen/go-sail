@@ -53,17 +53,18 @@ func (sc *svcHolders) store(modeName string, lg *zap.Logger) {
 }
 
 var (
-	defaultModeName  = "<defaultModeName>"
-	loggerSvcHolders *svcHolders
+	gDefaultModeName  = "<defaultModeName>"
+	gLoggerSvcHolders *svcHolders
+	gWriterSyncers    = make([]zapcore.WriteSyncer, 0, 1)
 )
 
 // GetLogger 获取日志服务实例
 func GetLogger(modeName ...string) *zap.Logger {
 	if len(modeName) < 1 {
-		return loggerSvcHolders.load(defaultModeName).instance
+		return gLoggerSvcHolders.load(gDefaultModeName).instance
 	}
 
-	return loggerSvcHolders.load(modeName[0]).instance
+	return gLoggerSvcHolders.load(modeName[0]).instance
 }
 
 // InitLoggerZap 初始化zap日志服务
@@ -75,9 +76,13 @@ func GetLogger(modeName ...string) *zap.Logger {
 // 队列的key取决于日志文件名和appName的组合，如：
 // 日志文件名=logs/app.log，appName=app
 // 则，队列名称为=> app:logs/app.log
+//
+// <此方法已弃用，将在未来版本中删除>
+//
+// Deprecated
 func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 	//注入默认的空间模块
-	modeName = append(modeName, defaultModeName)
+	modeName = append(modeName, gDefaultModeName)
 	sc := &svcHolders{}
 
 	//定义全局日志组件配置
@@ -130,7 +135,7 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 			filename string
 			cores    []zapcore.Core
 		)
-		if mn != defaultModeName {
+		if mn != gDefaultModeName {
 			filename = strings.Replace(cfg.Filename, ".log", fmt.Sprintf("_%s.log", mn), 1)
 		} else {
 			filename = cfg.Filename
@@ -183,13 +188,22 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 		sc.store(mn, loggerWithFields)
 	}
 
-	loggerSvcHolders = sc
+	gLoggerSvcHolders = sc
 
 	defer func() {
 		for _, mn := range modeName {
-			_ = loggerSvcHolders.load(mn).instance.Sync()
+			_ = gLoggerSvcHolders.load(mn).instance.Sync()
 		}
 	}()
+}
+
+// SetExporters 设置导出器
+//
+// 设置自定义的导出器
+func SetExporters(syncers []zapcore.WriteSyncer) {
+	if len(syncers) > 0 {
+		gWriterSyncers = append(gWriterSyncers, syncers...)
+	}
 }
 
 // InitLoggerZapV2 初始化zap日志服务v2
@@ -203,7 +217,7 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 // 则，队列名称为=> app:logs/app.log
 func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 	//注入默认的空间模块
-	modeName = append(modeName, defaultModeName)
+	modeName = append(modeName, gDefaultModeName)
 	sc := &svcHolders{}
 
 	//定义全局日志组件配置
@@ -245,7 +259,7 @@ func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 			filename string
 			cores    []zapcore.Core
 		)
-		if mn != defaultModeName {
+		if mn != gDefaultModeName {
 			filename = strings.Replace(cfg.Filename, ".log", fmt.Sprintf("_%s.log", mn), 1)
 		} else {
 			filename = cfg.Filename
@@ -274,6 +288,14 @@ func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 			cores = append(cores, coreWithWriter)
 		}
 
+		//读取外部配置的syncer并加入到cores中
+		for _, syncer := range gWriterSyncers {
+			coreWithWriter := zapcore.NewCore(
+				zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(syncer), atomicLevel,
+			)
+			cores = append(cores, coreWithWriter)
+		}
+
 		zapCore := zapcore.NewTee(cores...)
 
 		loggerWithFields := zap.New(zapCore, zap.AddCaller()).With(zap.String("serviceName", fmt.Sprintf("%s:%s", appName, mn)))
@@ -281,11 +303,11 @@ func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 		sc.store(mn, loggerWithFields)
 	}
 
-	loggerSvcHolders = sc
+	gLoggerSvcHolders = sc
 
 	defer func() {
 		for _, mn := range modeName {
-			_ = loggerSvcHolders.load(mn).instance.Sync()
+			_ = gLoggerSvcHolders.load(mn).instance.Sync()
 		}
 	}()
 }
@@ -326,7 +348,7 @@ func exporterProvider(cfg ConfV2) zapcore.WriteSyncer {
 		}
 		return writer
 	default:
-		log.Println("[logger] writer not set,ignore emit bus")
+		log.Println("[logger] writer not set,ignore emit exporter")
 		return writer
 	}
 }

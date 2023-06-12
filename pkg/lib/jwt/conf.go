@@ -10,6 +10,42 @@ import (
 )
 
 // Conf 配置信息
+//
+// <yaml example>
+//
+// jwt:
+//
+//	public_key:
+//	private_key:
+//	algorithm: RS256
+//	hmac_secret: example
+//	token_issuer: authority
+//
+// <toml example>
+//
+// # ::jwt密钥配置::
+//
+// [jwt]
+//
+// # 公钥文件或字符串
+//
+// public_key = ""
+//
+// # 私钥文件或字符串
+//
+// private_key = ""
+//
+// # 加密算法: RS256 | RS512 | HS512
+//
+// algorithm = "RS256"
+//
+// # 密钥，当algorithm = "HS512"时需要配置此项
+//
+// hmac_secret = "example"
+//
+// # 令牌颁发者
+//
+// token_issuer = "authority"
 type Conf struct {
 	PublicKey   string `yaml:"public_key" toml:"public_key" json:"public_key"`       //公钥字符串或公钥文件地址
 	PrivateKey  string `yaml:"private_key" toml:"private_key" json:"private_key"`    //私钥字符串或私钥文件地址

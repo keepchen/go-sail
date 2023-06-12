@@ -27,7 +27,7 @@ func New(c *gin.Context) API {
 // 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.Before中间件)
 func (a API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) API {
 	var (
-		b         dto.Base
+		body      dto.Base
 		requestId string
 		httpCode  int
 	)
@@ -43,35 +43,39 @@ func (a API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...s
 			requestId = r3Id.(string)
 		}
 	}
-	b.RequestID = requestId
-	b.Code = code
+	body.RequestID = requestId
+	body.Code = code
 	if code == constants.ErrNone && anotherErrNoneCode != constants.ErrNone {
 		//改写了默认成功code码，且当前code码为None时，需要使用改写后的值
-		b.Code = anotherErrNoneCode
+		body.Code = anotherErrNoneCode
 	}
-	b.Message = b.Code.String()
-	b.Timestamp = time.Now().UnixMilli()
+	body.Message = body.Code.String()
+	body.Timestamp = time.Now().UnixMilli()
 	switch code {
 	case constants.ErrNone, anotherErrNoneCode:
-		b.Success = constants.Success
+		body.Success = constants.Success
 		httpCode = http.StatusOK
 	case constants.ErrRequestParamsInvalid:
-		b.Success = constants.Failure
+		body.Success = constants.Failure
 		httpCode = http.StatusBadRequest
 	case constants.ErrAuthorizationTokenInvalid:
-		b.Success = constants.Failure
+		body.Success = constants.Failure
 		httpCode = http.StatusUnauthorized
 	case constants.ErrInternalSeverError:
-		b.Success = constants.Failure
+		body.Success = constants.Failure
 		httpCode = http.StatusInternalServerError
 	default:
-		b.Success = constants.Failure
+		body.Success = constants.Failure
 		httpCode = http.StatusBadRequest
 	}
 
 	//如果没有单独调用Status方法设置http状态码，则从code码中解析出http状态码
 	if a.httpCode == 0 {
 		a.httpCode = httpCode
+		//开启了强制使用200作为http状态码
+		if forceHttpCode200 {
+			a.httpCode = http.StatusOK
+		}
 	}
 
 	//如果message有值，则覆盖默认错误码所代表的错误信息
@@ -83,16 +87,16 @@ func (a API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...s
 				_, _ = msg.Write([]byte(";"))
 			}
 		}
-		b.Message = msg.String()
+		body.Message = msg.String()
 	}
 
 	if resp != nil {
-		b.Data = resp.GetData()
+		body.Data = resp.GetData()
 	} else {
-		b.Data = emptyDataField
+		body.Data = emptyDataField
 	}
 
-	a.data = b
+	a.data = body
 
 	return a
 }

@@ -5,13 +5,21 @@ import "github.com/keepchen/go-sail/v2/pkg/constants"
 var (
 	anotherErrNoneCode constants.ICodeType = constants.ErrNone //被改写后的成功code码
 	emptyDataField     interface{}         = nil               //空data字段
+	forceHttpCode200                       = false             //强制使用200作为http的状态码
 )
 
 // Option 配置项
 type Option struct {
-	ErrNoneCode     constants.ICodeType //成功code码
-	ErrNoneCodeMsg  string              //成功提示语
-	EmptyDataStruct int                 //空data序列化结构
+	//成功code码，默认成功code码为0，配置此项后，成功code码将使用这个值。
+	ErrNoneCode constants.ICodeType
+	//成功提示语，默认成功提示语为SUCCESS，配置此项后，成功提示语将使用这个值。
+	ErrNoneCodeMsg string
+	//空data序列化结构，默认返回的data字段为空时为null值，配置此项后，空data序列化格式将使用这个值。
+	EmptyDataStruct int
+	//强制使用200作为http的状态码，配置此项后，http状态码将不从业务code码中解析。
+	//
+	//注意，调用Status()方法和SendWithCode()方法时的优先级高于此项配置。
+	ForceHttpCode200 bool
 }
 
 const (
@@ -44,5 +52,8 @@ func SetupOption(opt Option) {
 		emptyDataField = ""
 	default:
 		emptyDataField = nil
+	}
+	if opt.ForceHttpCode200 {
+		forceHttpCode200 = opt.ForceHttpCode200
 	}
 }
