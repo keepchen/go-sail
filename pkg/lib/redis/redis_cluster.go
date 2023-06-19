@@ -4,10 +4,11 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+
 	redisLib "github.com/go-redis/redis/v8"
 )
 
-//OptionsClusterFields 配置项字段
+// OptionsClusterFields 配置项字段
 type OptionsClusterFields struct {
 	Addrs    []string //连接地址
 	Password string   //密码
@@ -15,8 +16,19 @@ type OptionsClusterFields struct {
 
 var redisClusterInstance *redisLib.ClusterClient
 
-//InitRedisCluster 初始化redis集群连接
+// InitRedisCluster 初始化redis集群连接
 func InitRedisCluster(conf ClusterConf) {
+	rdb := initRedisCluster(conf)
+
+	redisClusterInstance = rdb
+}
+
+// GetClusterInstance 获取redis集群连接实例
+func GetClusterInstance() *redisLib.ClusterClient {
+	return redisClusterInstance
+}
+
+func initRedisCluster(conf ClusterConf) *redisLib.ClusterClient {
 	var (
 		addrs    = make([]string, len(conf.AddrList))
 		username string
@@ -56,10 +68,10 @@ func InitRedisCluster(conf ClusterConf) {
 		panic(err)
 	}
 
-	redisClusterInstance = rdb
+	return rdb
 }
 
-//GetClusterInstance 获取redis集群连接实例
-func GetClusterInstance() *redisLib.ClusterClient {
-	return redisClusterInstance
+// NewCluster 实例化新的实例
+func NewCluster(conf ClusterConf) *redisLib.ClusterClient {
+	return initRedisCluster(conf)
 }

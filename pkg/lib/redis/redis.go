@@ -10,8 +10,21 @@ import (
 
 var redisInstance *redisLib.Client
 
-//InitRedis 初始化redis连接
+// InitRedis 初始化redis连接
 func InitRedis(conf Conf) {
+	rdb := initRedis(conf)
+
+	redisInstance = rdb
+}
+
+// GetInstance 获取redis连接实例
+//
+// 获取由InitRedis方法实例化后的连接
+func GetInstance() *redisLib.Client {
+	return redisInstance
+}
+
+func initRedis(conf Conf) *redisLib.Client {
 	opts := &redisLib.Options{
 		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
 		Username: conf.Username,
@@ -32,10 +45,10 @@ func InitRedis(conf Conf) {
 		panic(err)
 	}
 
-	redisInstance = rdb
+	return rdb
 }
 
-//GetInstance 获取redis连接实例
-func GetInstance() *redisLib.Client {
-	return redisInstance
+// New 实例化新的实例
+func New(conf Conf) *redisLib.Client {
+	return initRedis(conf)
 }

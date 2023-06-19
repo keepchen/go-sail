@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/keepchen/go-sail/pkg/lib/nats"
 	"github.com/keepchen/go-sail/pkg/lib/redis"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -51,17 +52,18 @@ func (sc *svcHolders) store(modeName string, lg *zap.Logger) {
 }
 
 var (
-	defaultModeName  = "<defaultModeName>"
-	loggerSvcHolders *svcHolders
+	gDefaultModeName  = "<defaultModeName>"
+	gLoggerSvcHolders *svcHolders
+	gWriterSyncers    = make([]zapcore.WriteSyncer, 0, 1)
 )
 
 // GetLogger 获取日志服务实例
 func GetLogger(modeName ...string) *zap.Logger {
 	if len(modeName) < 1 {
-		return loggerSvcHolders.load(defaultModeName).instance
+		return gLoggerSvcHolders.load(gDefaultModeName).instance
 	}
 
-	return loggerSvcHolders.load(modeName[0]).instance
+	return gLoggerSvcHolders.load(modeName[0]).instance
 }
 
 // InitLoggerZap 初始化zap日志服务
@@ -75,7 +77,7 @@ func GetLogger(modeName ...string) *zap.Logger {
 // 则，队列名称为=> app:logs/app.log
 func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 	//注入默认的空间模块
-	modeName = append(modeName, defaultModeName)
+	modeName = append(modeName, gDefaultModeName)
 	sc := &svcHolders{}
 
 	//定义全局日志组件配置
@@ -128,7 +130,7 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 			filename string
 			cores    []zapcore.Core
 		)
-		if mn != defaultModeName {
+		if mn != gDefaultModeName {
 			filename = strings.Replace(cfg.Filename, ".log", fmt.Sprintf("_%s.log", mn), 1)
 		} else {
 			filename = cfg.Filename
@@ -181,11 +183,154 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 		sc.store(mn, loggerWithFields)
 	}
 
-	loggerSvcHolders = sc
+	gLoggerSvcHolders = sc
 
 	defer func() {
 		for _, mn := range modeName {
-			_ = loggerSvcHolders.load(mn).instance.Sync()
+			_ = gLoggerSvcHolders.load(mn).instance.Sync()
 		}
 	}()
+}
+
+// InitLoggerZapV2 初始化zap日志服务v2
+//
+// 会加入默认的一个模块空间，当不传参调用GetLogger()时，
+// 就是使用默认的模块空间
+//
+// 当启用elk时，logger根据provider配置使用redis队列或nats publish等作为媒介，需要在logstash侧配置对应的pipeline
+// 队列的key取决于日志文件名和appName的组合，如：
+// 日志文件名=logs/app.log，appName=app
+// 则，队列名称为=> app:logs/app.log
+func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
+	//注入默认的空间模块
+	modeName = append(modeName, gDefaultModeName)
+	sc := &svcHolders{}
+
+	//定义全局日志组件配置
+	atomicLevel := zap.NewAtomicLevel()
+	switch strings.ToLower(cfg.Level) {
+	case "debug":
+		atomicLevel.SetLevel(zapcore.DebugLevel)
+	case "info":
+		atomicLevel.SetLevel(zapcore.InfoLevel)
+	case "warn":
+		atomicLevel.SetLevel(zapcore.WarnLevel)
+	case "error":
+		atomicLevel.SetLevel(zapcore.ErrorLevel)
+	case "dpanic":
+		atomicLevel.SetLevel(zapcore.DPanicLevel)
+	case "panic":
+		atomicLevel.SetLevel(zapcore.PanicLevel)
+	case "fatal":
+		atomicLevel.SetLevel(zapcore.FatalLevel)
+	}
+	encoderConfig := zapcore.EncoderConfig{
+		TimeKey:        "time",
+		LevelKey:       "level",
+		NameKey:        "name",
+		CallerKey:      "line",
+		MessageKey:     "msg",
+		FunctionKey:    "func",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.FullCallerEncoder,
+		EncodeName:     zapcore.FullNameEncoder,
+	}
+
+	for _, mn := range modeName {
+		var (
+			filename string
+			cores    []zapcore.Core
+		)
+		if mn != gDefaultModeName {
+			filename = strings.Replace(cfg.Filename, ".log", fmt.Sprintf("_%s.log", mn), 1)
+		} else {
+			filename = cfg.Filename
+		}
+
+		fileWriter := &lumberjack.Logger{
+			Filename:   filename,
+			MaxSize:    cfg.MaxSize,
+			MaxBackups: cfg.MaxBackups,
+			LocalTime:  true,
+			Compress:   cfg.Compress,
+		}
+
+		fileCore := zapcore.NewCore(
+			zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(fileWriter), atomicLevel,
+		)
+
+		cores = append(cores, fileCore)
+
+		//logstash订阅的key只定义一个，与modeName无关
+		writer := exporterProvider(cfg)
+		if writer != nil {
+			coreWithWriter := zapcore.NewCore(
+				zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(writer), atomicLevel,
+			)
+			cores = append(cores, coreWithWriter)
+		}
+
+		//读取外部配置的syncer并加入到cores中
+		for _, syncer := range gWriterSyncers {
+			coreWithWriter := zapcore.NewCore(
+				zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(syncer), atomicLevel,
+			)
+			cores = append(cores, coreWithWriter)
+		}
+
+		zapCore := zapcore.NewTee(cores...)
+
+		loggerWithFields := zap.New(zapCore, zap.AddCaller()).With(zap.String("serviceName", fmt.Sprintf("%s:%s", appName, mn)))
+
+		sc.store(mn, loggerWithFields)
+	}
+
+	gLoggerSvcHolders = sc
+
+	defer func() {
+		for _, mn := range modeName {
+			_ = gLoggerSvcHolders.load(mn).instance.Sync()
+		}
+	}()
+}
+
+func exporterProvider(cfg ConfV2) zapcore.WriteSyncer {
+	var writer zapcore.WriteSyncer
+
+	switch strings.ToLower(cfg.Exporter.Provider) {
+	case "redis":
+		redisWriter := &redisWriterStd{
+			cli:     redis.New(cfg.Exporter.Redis.ConnConf),
+			listKey: cfg.Exporter.Redis.ListKey,
+		}
+
+		writer = redisWriter
+		log.Println("[logger] using (redis) writer")
+		return writer
+	case "redis-cluster":
+		redisWriter := &redisClusterWriterStd{
+			cli:     redis.NewCluster(cfg.Exporter.Redis.ConnClusterConf),
+			listKey: cfg.Exporter.Redis.ListKey,
+		}
+
+		writer = redisWriter
+		log.Println("[logger] using (redis-cluster) writer")
+		return writer
+	case "nats":
+		natsWriter := &natsWriterStd{
+			cli:        nats.New(cfg.Exporter.Nats.ConnConf),
+			subjectKey: cfg.Exporter.Nats.Subject,
+		}
+
+		writer = natsWriter
+		log.Println("[logger] using (nats) writer")
+		return writer
+	default:
+		log.Println("[logger] writer not set,ignore emit exporter")
+		return writer
+	}
 }
