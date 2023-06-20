@@ -1,5 +1,10 @@
 package logger
 
+import (
+	"github.com/keepchen/go-sail/v2/pkg/lib/nats"
+	"github.com/keepchen/go-sail/v2/pkg/lib/redis"
+)
+
 // Conf 日志配置
 //
 // <yaml example>
@@ -76,11 +81,35 @@ type Conf struct {
 //	max_backups: 10
 //	compress: true
 //	exporter:
-//	  provider: "redis"
+//	  provider: "redis-cluster"
 //	  nats:
 //	    subject: "logger"
+//	    conn_conf:
+//	        servers:
+//	          - "nats://192.168.134.116:4222"
+//	        username: admin
+//	        password: changeme
 //	  redis:
-//	    list_key: "go-sail:logger"
+//	    list_key: "go-sail-user:logger"
+//	    conn_conf:
+//	        addr:
+//	          host: ""
+//	          port: 0
+//	          username: ""
+//	          password: ""
+//	        database: 0
+//	        ssl_enable: false
+//	    cluster_conn_conf:
+//	      ssl_enable: false
+//	      addr_list:
+//	        - host: 192.168.224.114
+//	          port: 6379
+//	          username: ""
+//	          password: 123456
+//	        - host: 192.168.224.114
+//	          port: 6380
+//	          username: ""
+//	          password: 123456
 //
 // <toml example>
 //
@@ -135,6 +164,42 @@ type Conf struct {
 // # list键名
 //
 // list_key = "logger"
+//
+// [loggerV2.exporter.redis.conn_conf]
+//
+// host = "localhost"
+//
+// username = ""
+//
+// port = 6379
+//
+// password = ""
+//
+// database = 0
+//
+// ssl_enable = false
+//
+// [loggerV2.exporter.redis.cluster_conn_conf]
+//
+// [[loggerV2.exporter.redis.cluster_conn_conf.addr_list]]
+//
+// host = "localhost"
+//
+// username = ""
+//
+// port = 6380
+//
+// password = ""
+//
+// [[loggerV2.exporter.redis.cluster_conn_conf.addr_list]]
+//
+// host = "localhost"
+//
+// username = ""
+//
+// port = 6381
+//
+// password = ""
 type ConfV2 struct {
 	Env        string `yaml:"env" toml:"env" json:"env" default:"prod"`                            //日志环境，prod：生产环境，dev：开发环境
 	Level      string `yaml:"level" toml:"level" json:"level" default:"info"`                      //日志级别，debug，info，warn，error
@@ -143,12 +208,15 @@ type ConfV2 struct {
 	MaxBackups int    `yaml:"max_backups" toml:"max_backups" json:"max_backups" default:"10"`      //最大历史文件保留数量
 	Compress   bool   `yaml:"compress" toml:"compress" json:"compress" default:"true"`             //是否压缩历史日志文件
 	Exporter   struct {
-		Provider string `yaml:"provider" toml:"provider" json:"provider" default:""` //导出器，目前支持redis和nats
+		Provider string `yaml:"provider" toml:"provider" json:"provider" default:""` //导出器，目前支持redis、redis-cluster和nats
 		Redis    struct {
-			ListKey string `yaml:"list_key" toml:"list_key" json:"list_key"` //redis list的elk日志写入的key
+			ListKey         string            `yaml:"list_key" toml:"list_key" json:"list_key"`                            //redis list的elk日志写入的key
+			ConnConf        redis.Conf        `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"`                         //redis连接配置（单机）
+			ClusterConnConf redis.ClusterConf `yaml:"cluster_conn_conf" toml:"cluster_conn_conf" json:"cluster_conn_conf"` //redis连接配置（集群）
 		} `json:"redis"`
 		Nats struct {
-			Subject string `yaml:"subject" toml:"subject" json:"subject"` //nats的发布主题
+			Subject  string    `yaml:"subject" toml:"subject" json:"subject"`       //nats的发布主题
+			ConnConf nats.Conf `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"` //nats连接配置
 		} `yaml:"nats"`
 	} `yaml:"exporter" toml:"exporter" json:"exporter"` //导出器
 }

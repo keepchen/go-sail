@@ -312,40 +312,37 @@ func InitLoggerZapV2(cfg ConfV2, appName string, modeName ...string) {
 	}()
 }
 
+// 设置导出器
 func exporterProvider(cfg ConfV2) zapcore.WriteSyncer {
 	var writer zapcore.WriteSyncer
 
 	switch strings.ToLower(cfg.Exporter.Provider) {
 	case "redis":
-		if redis.GetInstance() != nil {
-			redisWriter := &redisWriterStd{
-				cli:     redis.GetInstance(),
-				listKey: cfg.Exporter.Redis.ListKey,
-			}
-
-			writer = redisWriter
-			log.Println("[logger] using (redis) writer")
+		redisWriter := &redisWriterStd{
+			cli:     redis.New(cfg.Exporter.Redis.ConnConf),
+			listKey: cfg.Exporter.Redis.ListKey,
 		}
-		if redis.GetClusterInstance() != nil {
-			redisWriter := &redisClusterWriterStd{
-				cli:     redis.GetClusterInstance(),
-				listKey: cfg.Exporter.Redis.ListKey,
-			}
 
-			writer = redisWriter
-			log.Println("[logger] using (redis cluster) writer")
+		writer = redisWriter
+		log.Println("[logger] using (redis) writer")
+		return writer
+	case "redis-cluster":
+		redisWriter := &redisClusterWriterStd{
+			cli:     redis.NewCluster(cfg.Exporter.Redis.ClusterConnConf),
+			listKey: cfg.Exporter.Redis.ListKey,
 		}
+
+		writer = redisWriter
+		log.Println("[logger] using (redis-cluster) writer")
 		return writer
 	case "nats":
-		if nats.GetInstance() != nil {
-			natsWriter := &natsWriterStd{
-				cli:        nats.GetInstance(),
-				subjectKey: cfg.Exporter.Nats.Subject,
-			}
-
-			writer = natsWriter
-			log.Println("[logger] using (nats) writer")
+		natsWriter := &natsWriterStd{
+			cli:        nats.New(cfg.Exporter.Nats.ConnConf),
+			subjectKey: cfg.Exporter.Nats.Subject,
 		}
+
+		writer = natsWriter
+		log.Println("[logger] using (nats) writer")
 		return writer
 	default:
 		log.Println("[logger] writer not set,ignore emit exporter")

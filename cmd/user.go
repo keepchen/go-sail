@@ -5,6 +5,8 @@ import (
 	"os"
 	"sync"
 
+	"github.com/keepchen/go-sail/v2/pkg/lib/nats"
+
 	"github.com/keepchen/go-sail/v2/pkg/app/user"
 	"github.com/keepchen/go-sail/v2/pkg/app/user/config"
 	"github.com/keepchen/go-sail/v2/pkg/common/db/mock"
@@ -12,7 +14,6 @@ import (
 	"github.com/keepchen/go-sail/v2/pkg/lib/db"
 	"github.com/keepchen/go-sail/v2/pkg/lib/logger"
 	"github.com/keepchen/go-sail/v2/pkg/lib/nacos"
-	"github.com/keepchen/go-sail/v2/pkg/lib/nats"
 	"github.com/keepchen/go-sail/v2/pkg/lib/redis"
 	"github.com/keepchen/go-sail/v2/pkg/utils"
 	"github.com/spf13/cobra"
