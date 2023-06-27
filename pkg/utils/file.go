@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -97,4 +98,24 @@ func FileExistsWithError(dst string) (bool, error) {
 func FileExt(filename string) string {
 	filenameSplit := strings.Split(filename, ".")
 	return filenameSplit[len(filenameSplit)-1]
+}
+
+// FileGetContentsReadLine 逐行读取文件内容
+func FileGetContentsReadLine(dst string) (<-chan string, error) {
+	ch := make(chan string)
+	f, err := os.Open(dst)
+	if err != nil {
+		return nil, err
+	}
+	fileScanner := bufio.NewScanner(f)
+	fileScanner.Split(bufio.ScanLines)
+
+	go func() {
+		for fileScanner.Scan() {
+			ch <- fileScanner.Text()
+		}
+		close(ch)
+	}()
+
+	return ch, nil
 }
