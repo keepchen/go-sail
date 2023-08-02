@@ -1,12 +1,21 @@
 package api
 
-import "github.com/keepchen/go-sail/v2/pkg/constants"
+import (
+	"fmt"
+	"time"
+
+	"github.com/keepchen/go-sail/v2/pkg/constants"
+)
 
 var (
-	anotherErrNoneCode constants.ICodeType = constants.ErrNone //被改写后的成功code码
-	emptyDataField     interface{}         = nil               //空data字段
-	forceHttpCode200                       = false             //强制使用200作为http的状态码
-	timezone           string                                  //时区
+	anotherErrNoneCode constants.ICodeType = constants.ErrNone         //被改写后的成功code码
+	emptyDataField     interface{}         = nil                       //空data字段
+	forceHttpCode200                       = false                     //强制使用200作为http的状态码
+	timezone                               = constants.DefaultTimeZone //时区
+)
+
+var (
+	loc *time.Location
 )
 
 // Option 配置项
@@ -61,7 +70,11 @@ func SetupOption(opt Option) {
 	}
 	if len(opt.Timezone) > 0 {
 		timezone = opt.Timezone
-	} else {
-		timezone = constants.DefaultTimeZone
 	}
+
+	lc, err := time.LoadLocation(timezone)
+	if err != nil {
+		panic(fmt.Errorf("[GO-SAIL] can not load location: %s", timezone))
+	}
+	loc = lc
 }
