@@ -6,6 +6,7 @@ var (
 	anotherErrNoneCode constants.ICodeType = constants.ErrNone //被改写后的成功code码
 	emptyDataField     interface{}         = nil               //空data字段
 	forceHttpCode200                       = false             //强制使用200作为http的状态码
+	timezone           string                                  //时区
 )
 
 // Option 配置项
@@ -20,6 +21,8 @@ type Option struct {
 	//
 	//注意，调用Status()方法和SendWithCode()方法时的优先级高于此项配置。
 	ForceHttpCode200 bool
+	//时区
+	Timezone string
 }
 
 const (
@@ -55,5 +58,10 @@ func SetupOption(opt Option) {
 	}
 	if opt.ForceHttpCode200 {
 		forceHttpCode200 = opt.ForceHttpCode200
+	}
+	if len(opt.Timezone) > 0 {
+		timezone = opt.Timezone
+	} else {
+		timezone = constants.DefaultTimeZone
 	}
 }

@@ -3,11 +3,11 @@ package api
 import (
 	"bytes"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keepchen/go-sail/v2/pkg/common/http/pojo/dto"
 	"github.com/keepchen/go-sail/v2/pkg/constants"
+	"github.com/keepchen/go-sail/v2/pkg/utils"
 )
 
 type API struct {
@@ -50,7 +50,7 @@ func (a API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...s
 		body.Code = anotherErrNoneCode
 	}
 	body.Message = body.Code.String()
-	body.Timestamp = time.Now().UnixMilli()
+	body.Timestamp = utils.NewTimeWithTimeZone(timezone).Now().UnixMilli()
 	switch code {
 	case constants.ErrNone, anotherErrNoneCode:
 		body.Success = constants.Success
