@@ -34,7 +34,6 @@ func RedisLock(appName, key string) bool {
 		for range ticker.C {
 			_, err := redis.GetInstance().Get(innerCtx, WrapRedisKey(appName, key)).Result()
 			if err != nil {
-				ticker.Stop()
 				break
 			}
 			_, _ = redis.GetInstance().Expire(innerCtx, WrapRedisKey(appName, key), lockTTL).Result()
@@ -85,7 +84,6 @@ func RedisClusterLock(appName, key string) bool {
 		for range ticker.C {
 			_, err := redis.GetClusterInstance().Get(innerCtx, WrapRedisKey(appName, key)).Result()
 			if err != nil {
-				ticker.Stop()
 				break
 			}
 			_, _ = redis.GetClusterInstance().Expire(innerCtx, WrapRedisKey(appName, key), lockTTL).Result()
