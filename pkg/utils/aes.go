@@ -9,16 +9,18 @@ import (
 	"io"
 )
 
-//KEY 密钥
+// KEY 密钥
 const KEY = "fakeKeyChangeMe!"
 
-//AesEncode aes加密
+// AesEncode aes加密
 //
-//使用CFB
-func AesEncode(rawString string) (string, error) {
+// 使用CFB
+//
+// key应该是一个16或24或32位长度的字符
+func AesEncode(rawString, key string) (string, error) {
 	plainText := []byte(rawString)
 
-	block, err := aes.NewCipher([]byte(KEY))
+	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", err
 	}
@@ -36,16 +38,18 @@ func AesEncode(rawString string) (string, error) {
 
 }
 
-//AesDecode aes解密
+// AesDecode aes解密
 //
-//使用CFB
-func AesDecode(encryptedString string) (string, error) {
+// 使用CFB
+//
+// key应该是一个16或24或32位长度的字符
+func AesDecode(encryptedString, key string) (string, error) {
 	cipherText, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
 		return "", err
 	}
 
-	block, err := aes.NewCipher([]byte(KEY))
+	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", nil
 	}

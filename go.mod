@@ -3,6 +3,7 @@ module github.com/keepchen/go-sail/v2
 go 1.17
 
 require (
+	github.com/SherClockHolmes/webpush-go v1.2.0
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
