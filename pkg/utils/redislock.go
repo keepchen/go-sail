@@ -8,15 +8,17 @@ import (
 )
 
 var (
-	redisExecuteTimeout  = time.Second * 3
-	lockTTL              = time.Second * 10
-	renewalCheckInterval = time.Second * 3
+	lockTTL                         = time.Second * 10
+	redisExecuteTimeout             = time.Second * 3
+	renewalCheckInterval            = time.Second * 3
+	cancelRenewalFuncChannel        = make(chan struct{})
+	cancelRenewalFuncChannelCluster = make(chan struct{})
 )
 
 // RedisLock redis锁-上锁
 //
 // using SetNX
-func RedisLock(appName, key string) bool {
+func RedisLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	go func() {
 		for range time.After(redisExecuteTimeout) {
@@ -25,24 +27,32 @@ func RedisLock(appName, key string) bool {
 		}
 	}()
 
-	//自动续期
-	go func(appName, key string) {
-		ticker := time.NewTicker(renewalCheckInterval)
-		innerCtx := context.Background()
-		defer ticker.Stop()
-
-		for range ticker.C {
-			_, err := redis.GetInstance().Get(innerCtx, WrapRedisKey(appName, key)).Result()
-			if err != nil {
-				break
-			}
-			_, _ = redis.GetInstance().Expire(innerCtx, WrapRedisKey(appName, key), lockTTL).Result()
-		}
-	}(appName, key)
-
-	ok, err := redis.GetInstance().SetNX(ctx, WrapRedisKey(appName, key), time.Now().Unix(), lockTTL).Result()
+	ok, err := redis.GetInstance().SetNX(ctx, key, time.Now().Unix(), lockTTL).Result()
 	if err != nil {
 		return false
+	}
+
+	if ok {
+		//自动续期
+		go func(key string) {
+			ticker := time.NewTicker(renewalCheckInterval)
+			innerCtx := context.Background()
+			defer ticker.Stop()
+
+		LOOP:
+			for {
+				select {
+				case <-ticker.C:
+					_, redisErr := redis.GetInstance().Get(innerCtx, key).Result()
+					if redisErr != nil {
+						break LOOP
+					}
+					_, _ = redis.GetInstance().Expire(innerCtx, key, lockTTL).Result()
+				case <-cancelRenewalFuncChannel:
+					break LOOP
+				}
+			}
+		}(key)
 	}
 
 	return ok
@@ -51,7 +61,7 @@ func RedisLock(appName, key string) bool {
 // RedisUnlock redis锁-解锁
 //
 // using SetNX
-func RedisUnlock(appName, key string) {
+func RedisUnlock(key string) {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	go func() {
 		for range time.After(redisExecuteTimeout) {
@@ -60,13 +70,17 @@ func RedisUnlock(appName, key string) {
 		}
 	}()
 
-	_, _ = redis.GetInstance().Del(ctx, WrapRedisKey(appName, key)).Result()
+	_, _ = redis.GetInstance().Del(ctx, key).Result()
+
+	go func() {
+		cancelRenewalFuncChannel <- struct{}{}
+	}()
 }
 
 // RedisClusterLock redis锁-上锁（使用cluster）
 //
 // using SetNX
-func RedisClusterLock(appName, key string) bool {
+func RedisClusterLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	go func() {
 		for range time.After(redisExecuteTimeout) {
@@ -75,24 +89,32 @@ func RedisClusterLock(appName, key string) bool {
 		}
 	}()
 
-	//自动续期
-	go func(appName, key string) {
-		ticker := time.NewTicker(renewalCheckInterval)
-		innerCtx := context.Background()
-		defer ticker.Stop()
-
-		for range ticker.C {
-			_, err := redis.GetClusterInstance().Get(innerCtx, WrapRedisKey(appName, key)).Result()
-			if err != nil {
-				break
-			}
-			_, _ = redis.GetClusterInstance().Expire(innerCtx, WrapRedisKey(appName, key), lockTTL).Result()
-		}
-	}(appName, key)
-
-	ok, err := redis.GetClusterInstance().SetNX(ctx, WrapRedisKey(appName, key), time.Now().Unix(), lockTTL).Result()
+	ok, err := redis.GetClusterInstance().SetNX(ctx, key, time.Now().Unix(), lockTTL).Result()
 	if err != nil {
 		return false
+	}
+
+	if ok {
+		//自动续期
+		go func(key string) {
+			ticker := time.NewTicker(renewalCheckInterval)
+			innerCtx := context.Background()
+			defer ticker.Stop()
+
+		LOOP:
+			for {
+				select {
+				case <-ticker.C:
+					_, redisErr := redis.GetClusterInstance().Get(innerCtx, key).Result()
+					if redisErr != nil {
+						break LOOP
+					}
+					_, _ = redis.GetClusterInstance().Expire(innerCtx, key, lockTTL).Result()
+				case <-cancelRenewalFuncChannelCluster:
+					break LOOP
+				}
+			}
+		}(key)
 	}
 
 	return ok
@@ -101,7 +123,7 @@ func RedisClusterLock(appName, key string) bool {
 // RedisClusterUnlock redis锁-解锁（使用cluster）
 //
 // using SetNX
-func RedisClusterUnlock(appName, key string) {
+func RedisClusterUnlock(key string) {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	go func() {
 		for range time.After(redisExecuteTimeout) {
@@ -110,5 +132,9 @@ func RedisClusterUnlock(appName, key string) {
 		}
 	}()
 
-	_, _ = redis.GetClusterInstance().Del(ctx, WrapRedisKey(appName, key)).Result()
+	_, _ = redis.GetClusterInstance().Del(ctx, key).Result()
+
+	go func() {
+		cancelRenewalFuncChannelCluster <- struct{}{}
+	}()
 }
