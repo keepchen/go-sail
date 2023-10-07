@@ -260,4 +260,5 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./go-sail
 ## 使用案例  
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="600" />
 <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="450" />
+<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="350" />
 
