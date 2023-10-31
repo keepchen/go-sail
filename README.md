@@ -12,7 +12,7 @@
 正如它的名字一般，你可以把它视作自己在golang生态的一个开始。go-sail将助力你从轻出发，扬帆起航。  
 
 ## 安装
-[go-sail cli](./cli/cmd/go-sail)
+[go-sail cli](examples/cli/cmd/go-sail)
 
 ## 功能特点  
 
@@ -53,7 +53,7 @@ if errorCode, err := form.Validator(); err != nil {
 
 - 统一返回  
 ```go
-import "github.com/keepchen/go-sail/v2/pkg/common/http/api"
+import "github.com/keepchen/go-sail/v3/pkg/common/http/api"
 
 //根据业务错误码自动设置http状态码
 api.New(c).Assemble(constants.ErrNone, anyResponseData).Send() // <- 200
@@ -98,7 +98,7 @@ zap.Any("value", logger.MarshalInterfaceValue(userAndWallet)), zap.Errors("error
 go-sail基于`gorm.io/gorm`的数据库类库，实现了读写分离功能。得益于gorm丰富的driver支持，go-sail支持`mysql`、`sqlserver`、`postgresql`、`sqlite`、`clickhouse`数据库操作。  
 
 ```go
-import "github.com/keepchen/go-sail/v2/pkg/lib/db"
+import "github.com/keepchen/go-sail/v3/pkg/lib/db"
 
 dbInstance := db.GetInstance()
 dbR := dbInstance.R // <- 读实例
@@ -112,7 +112,7 @@ err := dbW.Where(...).Updates(...).Error
 go-sail基于`go-redis/redis`的redis类库，实现了对redis单实例和集群访问功能。  
 
 ```go
-import "github.com/keepchen/go-sail/v2/pkg/lib/redis"
+import "github.com/keepchen/go-sail/v3/pkg/lib/redis"
 
 redisInstance := redis.GetInstance()
 redisInstance.Set(context.Background(), key, string(value), expired).Result()
@@ -135,13 +135,13 @@ go-sail基于`swaggo/swag`工具，实现了openapi文档生成功能。同时�
 <img src="./static/redoc-ui.png" alt="Redoc UI" />
 
 #### 持续集成  
-go-sail工程使用`harness/drone`CI/CD工具，实现对工程项目的自动化测试、集成与发布。参考[.drone.yml](./.drone.yml)文件配置。关于`drone`ci工具的部署和使用，如果你感兴趣，
+go-sail工程使用`harness/drone`CI/CD工具，实现对工程项目的自动化测试、集成与发布。参考[.drone.yml](examples/.drone.yml)文件配置。关于`drone`ci工具的部署和使用，如果你感兴趣，
 请移步至 [GitLab+Drone使用体验](https://blog.keepchen.com/a/the-gitlab-drone-experience.html)。  
 
 #### 构建与部署  
 go-sail提供了`Dockerfile`docker镜像构建脚本，同时也提供了快速构建命令(shell命令)，帮助你快速方便的完成镜像构建。如需镜像仓库，
 可以参考[keepchen/docker-compose](https://github.com/keepchen/docker-compose/tree/main/harbor)中关于harbor搭建的相关内容。
-关于工程服务的快速启动，可以参考工程目录下的[docker-compose.yml](./docker-compose.yml)。
+关于工程服务的快速启动，可以参考工程目录下的[docker-compose.yml](examples/docker-compose.yml)。
 
 ## 工程依赖  
 

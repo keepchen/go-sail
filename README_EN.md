@@ -17,7 +17,7 @@ Moving from monolithic architecture to the era of microservices.
 Just like its name, you can regard it as the beginning of your golang ecology. go-sail will help you start lightly and set sail.
 
 ## Installation  
-[go-sail cli](./cli/cmd/go-sail)
+[go-sail cli](examples/cli/cmd/go-sail)
 
 ## Features
 
@@ -140,13 +140,13 @@ The go-sail is based on the `swaggo/swag` tool, which implements the openapi doc
 <img src="./static/redoc-ui.png" alt="Redoc UI" />
 
 #### Continuous integration
-The go-sail project uses the `harness/drone` CI/CD tool to realize automated testing, integration, and release of engineering projects. Refer to [.drone.yml](./.drone.yml) file configuration. About the deployment and use of the `drone`ci tool, if you are interested,
+The go-sail project uses the `harness/drone` CI/CD tool to realize automated testing, integration, and release of engineering projects. Refer to [.drone.yml](examples/.drone.yml) file configuration. About the deployment and use of the `drone`ci tool, if you are interested,
 Please move to [GitLab+Drone experience](https://blog.keepchen.com/a/the-gitlab-drone-experience.html)。
 
 #### Build and deploy
 The go-sail provides `Dockerfile` docker image build script, and also provides quick build commands (shell commands) to help you complete image build quickly and conveniently. For a mirror repository,
 You can refer to [keepchen/docker-compose](https://github.com/keepchen/docker-compose/tree/main/harbor) related content about harbor construction.
-For the quick start of the project service, you can refer to [docker-compose.yml](./docker-compose.yml) in the project directory.
+For the quick start of the project service, you can refer to [docker-compose.yml](examples/docker-compose.yml) in the project directory.
 
 ## Project dependencies
 
