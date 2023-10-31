@@ -30,6 +30,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/keepchen/go-sail/v3/sail/config"
+
 	"github.com/keepchen/go-sail/v3/lib/logger"
 
 	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/routes"
@@ -42,7 +44,6 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 
-	"github.com/keepchen/go-sail/v3/config"
 	userConfig "github.com/keepchen/go-sail/v3/examples/pkg/app/user/config"
 )
 

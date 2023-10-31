@@ -10,8 +10,9 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/keepchen/go-sail/v3/sail/config"
+
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/v3/config"
 	"github.com/keepchen/go-sail/v3/http/api"
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"

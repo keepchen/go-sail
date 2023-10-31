@@ -3,7 +3,8 @@ package nacos
 import (
 	"testing"
 
-	"github.com/keepchen/go-sail/v3/config"
+	"github.com/keepchen/go-sail/v3/sail/config"
+
 	"github.com/stretchr/testify/assert"
 )
 

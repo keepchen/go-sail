@@ -3,7 +3,7 @@ package httpserver
 import (
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/v3/config"
+	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
 // EnablePProfOnDebugMode 启动pprof检测

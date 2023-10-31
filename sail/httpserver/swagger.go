@@ -2,7 +2,7 @@ package httpserver
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/keepchen/go-sail/v3/config"
+	"github.com/keepchen/go-sail/v3/sail/config"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )

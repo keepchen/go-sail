@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/keepchen/go-sail/v3/sail/config"
+
 	"github.com/gin-gonic/gin"
 
-	"github.com/keepchen/go-sail/v3/config"
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/utils"
 )

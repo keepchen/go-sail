@@ -3,7 +3,8 @@ package httpserver
 import (
 	"net/http"
 
-	"github.com/keepchen/go-sail/v3/config"
+	"github.com/keepchen/go-sail/v3/sail/config"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
