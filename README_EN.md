@@ -112,8 +112,8 @@ import (
 )
 
 type UserInfo struct {
-	dto.Base
-	Data struct {
+    dto.Base
+    Data struct {
         Nickname string `json:"nickname" validate:"required" format:"string"` //nickname
         Age int `json:"int" validate:"required" format:"number"` //age
     } `json:"data" validate:"required"` //body data
