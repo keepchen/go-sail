@@ -1,6 +1,8 @@
 <div align="center">
-    <h1><img src="./sailboat-solid.svg" alt="sailboat-solid" title="sailboat-solid" width="600" /></h1>
+    <h1><img src="./sailboat-solid.svg" alt="sailboat-solid" title="sailboat-solid" width="300" /></h1>
 </div> 
+
+[![Go](https://github.com/keepchen/go-sail/actions/workflows/go.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/go.yml)  [![Go Report](https://github.com/keepchen/go-sail/actions/workflows/goreport.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/goreport.yml)  [![CodeQL](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml)
 
 English | [简体中文](./README.md)
 
@@ -15,7 +17,9 @@ As its name suggests, you can regard it as the beginning of your own journey in 
 ```go
 import (
     "net/http"
-    "github.com/gin-gonic/gin"	
+    "github.com/gin-gonic/gin"
+    "github.com/keepchen/go-sail/v3/constants"
+    "github.com/keepchen/go-sail/v3/http/api"
     "github.com/keepchen/go-sail/v3/sail"
     "github.com/keepchen/go-sail/v3/sail/config"
 )
@@ -37,8 +41,8 @@ var (
                 Enable:     true,
                 Addr:       ":19100",
                 AccessPath: "/metrics",
-			},
-		},
+            },
+        },
     }
     apiOption = &api.Option{
         EmptyDataStruct:  api.DefaultEmptyDataStructObject,
