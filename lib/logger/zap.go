@@ -5,6 +5,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/keepchen/go-sail/v3/lib/kafka"
+
 	"github.com/keepchen/go-sail/v3/lib/nats"
 
 	"github.com/keepchen/go-sail/v3/lib/redis"
@@ -79,8 +81,8 @@ func SetExporters(syncers []zapcore.WriteSyncer) {
 // Init 初始化
 //
 // InitLoggerZap 方法的语法糖
-func Init(cfg Conf, appName string, modeName ...string) {
-	InitLoggerZap(cfg, appName, modeName...)
+func Init(cfg Conf, appName string) {
+	InitLoggerZap(cfg, appName)
 }
 
 // InitLoggerZap 初始化zap日志服务
@@ -92,9 +94,9 @@ func Init(cfg Conf, appName string, modeName ...string) {
 // 队列的key取决于日志文件名和appName的组合，如：
 // 日志文件名=logs/app.log，appName=app
 // 则，队列名称为=> app:logs/app.log
-func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
+func InitLoggerZap(cfg Conf, appName string) {
 	//注入默认的空间模块
-	modeName = append(modeName, gDefaultModeName)
+	cfg.Modules = append(cfg.Modules, gDefaultModeName)
 	sc := &svcHolders{}
 
 	//定义全局日志组件配置
@@ -131,7 +133,7 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 		EncodeName:     zapcore.FullNameEncoder,
 	}
 
-	for _, mn := range modeName {
+	for _, mn := range cfg.Modules {
 		var (
 			filename string
 			cores    []zapcore.Core
@@ -186,7 +188,7 @@ func InitLoggerZap(cfg Conf, appName string, modeName ...string) {
 	gLoggerSvcHolders = sc
 
 	defer func() {
-		for _, mn := range modeName {
+		for _, mn := range cfg.Modules {
 			_ = gLoggerSvcHolders.load(mn).instance.Sync()
 		}
 	}()
@@ -223,6 +225,15 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 
 		writer = natsWriter
 		log.Println("[logger] using (nats) writer")
+		return writer
+	case "kafka":
+		kafkaWriter := &kafkaWriterStd{
+			writer: kafka.NewWriter(cfg.Exporter.Kafka.ConnConf, cfg.Exporter.Kafka.Topic),
+			topic:  cfg.Exporter.Kafka.Topic,
+		}
+
+		writer = kafkaWriter
+		log.Println("[logger] using (kafka) writer")
 		return writer
 	default:
 		log.Println("[logger] writer not set,ignore emit exporter")

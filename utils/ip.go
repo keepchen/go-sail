@@ -2,6 +2,7 @@ package utils
 
 import "net"
 
+// GetLocalIP 获取本地ip地址（单播地址）
 func GetLocalIP() (string, error) {
 	addrList, err := net.InterfaceAddrs()
 	if err != nil {

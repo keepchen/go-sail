@@ -81,12 +81,15 @@ func StartServer(wg *sync.WaitGroup) {
 			ErrNoneCodeMsg:   "SUCCEED",
 			ForceHttpCode200: true,
 		}
-		fn = func() {
-			fmt.Println("call user function to do something...")
+		before = func() {
+			fmt.Println("call user function [before] to do something...")
+		}
+		after = func() {
+			fmt.Println("call user function [after] to do something...")
 		}
 	)
 
-	sail.WakeupHttp("go-sail", conf, apiOption).Launch(routes.RegisterRoutes, fn)
+	sail.WakeupHttp("go-sail", conf, apiOption).Launch(routes.RegisterRoutes, before, after)
 }
 
 // RegisterServicesToNacos 将服务注册到注册中心

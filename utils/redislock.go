@@ -15,10 +15,42 @@ var (
 	cancelRenewalFuncChannelCluster = make(chan struct{})
 )
 
-// RedisLock redis锁-上锁
+// RedisLock redis锁-上锁（自动推测连接类型）
 //
 // using SetNX
 func RedisLock(key string) bool {
+	if redis.GetInstance() != nil {
+		return RedisStandaloneLock(key)
+	}
+
+	if redis.GetClusterInstance() != nil {
+		return RedisClusterLock(key)
+	}
+
+	panic("using redis lock on nil redis instance")
+}
+
+// RedisUnlock redis锁-解锁（自动推测连接类型）
+//
+// using SetNX
+func RedisUnlock(key string) {
+	if redis.GetInstance() != nil {
+		RedisStandaloneUnlock(key)
+		return
+	}
+
+	if redis.GetClusterInstance() != nil {
+		RedisClusterUnlock(key)
+		return
+	}
+
+	panic("using redis unlock on nil redis instance")
+}
+
+// RedisStandaloneLock redis锁-上锁（使用standalone）
+//
+// using SetNX
+func RedisStandaloneLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	go func() {
 		for range time.After(redisExecuteTimeout) {
@@ -58,10 +90,10 @@ func RedisLock(key string) bool {
 	return ok
 }
 
-// RedisUnlock redis锁-解锁
+// RedisStandaloneUnlock redis锁-解锁（使用standalone）
 //
 // using SetNX
-func RedisUnlock(key string) {
+func RedisStandaloneUnlock(key string) {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	go func() {
 		for range time.After(redisExecuteTimeout) {

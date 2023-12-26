@@ -55,12 +55,15 @@ var (
             c.String(http.StatusOK, "%s", "hello, world!")
         })
     }
-    fn = func() {
-        fmt.Println("call user function to do something...")
+    before = func() {
+        fmt.Println("call user function [before] to do something...")
+    }
+    after = func() {
+        fmt.Println("call user function [after] to do something...")
     }
 )
 
-sail.WakeupHttp("go-sail", conf, apiOption).Launch(registerRoutes, fn)
+sail.WakeupHttp("go-sail", conf, apiOption).Launch(registerRoutes, before, after)
 ```  
 当你看到终端如下图所示内容就表示服务启动成功了：
 <img src="./launch.png" alt="launch.png" title="launch.png" width="600" />  
@@ -130,9 +133,9 @@ func (v UserInfo) GetData() interface{} {
 
 //handler
 func GetUserInfo(c *gin.Context) {
-	var resp UserInfo
-	resp.Data.Nickname = "go-sail"
-	resp.Data.Age = 18
+    var resp UserInfo
+    resp.Data.Nickname = "go-sail"
+    resp.Data.Age = 18
 	
     sail.Response(c).Builder(constants.ErrNone, resp).Send()
 }
@@ -142,7 +145,7 @@ func GetUserInfo(c *gin.Context) {
 [README.md](plugins/README.md)
 
 ## 使用案例  
-<img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="600" />
-<img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="450" />
-<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="350" />
+<img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
+<img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="300" />
+<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="100" />
 

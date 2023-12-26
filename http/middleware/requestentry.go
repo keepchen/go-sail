@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Before 中间件拦截器-before
+// RequestEntry 请求入口
 //
 // 注入内容：
 //
@@ -20,12 +20,25 @@ import (
 // 3.包装了请求id的日志组件实例
 //
 // 作用是在请求入口注入必要的内容到上下文，供后续的请求调用链使用
-func Before() gin.HandlerFunc {
+func RequestEntry() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		requestId := uuid.New().String()
+		var (
+			requestId string
+			spanId    string
+		)
+		requestIdInHeader := c.Request.Header.Get("requestId")
+		if len(requestIdInHeader) > 0 {
+			requestId = requestIdInHeader
+			spanId = uuid.New().String()
+		} else {
+			requestId = uuid.New().String()
+			spanId = requestId
+		}
 		c.Set("requestId", requestId)
+		c.Set("spanId", spanId)
 		c.Set("entryAt", time.Now().UnixNano())
-		c.Set("logger", logger.GetLogger().With(zap.String("requestId", requestId)))
+		c.Set("logger", logger.GetLogger().With(zap.String("requestId", requestId),
+			zap.String("spanId", spanId)))
 
 		c.Next()
 	}

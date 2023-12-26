@@ -4,6 +4,7 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/db"
 	"github.com/keepchen/go-sail/v3/lib/email"
 	"github.com/keepchen/go-sail/v3/lib/jwt"
+	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
@@ -19,6 +20,7 @@ type Config struct {
 	NatsConf         nats.Conf         `yaml:"nats_conf" toml:"nats_conf" json:"nats_conf"`                            //nats配置
 	JwtConf          jwt.Conf          `yaml:"jwt_conf" toml:"jwt_conf" json:"jwt_conf"`                               //jwt配置
 	EmailConf        email.Conf        `yaml:"email_conf" toml:"email_conf" json:"email_conf"`                         //邮件配置
+	KafkaConf        KafkaExtraConf    `yaml:"kafka_conf" toml:"kafka_conf" json:"kafka_conf"`                         //kafka配置
 }
 
 // HttpServerConf http服务配置
@@ -40,4 +42,10 @@ type PrometheusConf struct {
 	Enable     bool   `yaml:"enable" toml:"enable" json:"enable" default:"false"`                   //是否启用
 	Addr       string `yaml:"addr" toml:"addr" json:"addr" default:":19100"`                        //监听地址
 	AccessPath string `yaml:"access_path" toml:"access_path" json:"access_path" default:"/metrics"` //路由地址
+}
+
+type KafkaExtraConf struct {
+	Conf    kafka.Conf `yaml:"conf" toml:"conf" json:"conf"`          //配置
+	Topic   string     `yaml:"topic" toml:"topic" json:"topic"`       //主题
+	GroupID string     `yaml:"groupID" toml:"groupID" json:"groupID"` //分组id
 }

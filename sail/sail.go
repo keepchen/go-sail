@@ -3,6 +3,8 @@ package sail
 import (
 	"sync"
 
+	"github.com/keepchen/go-sail/v3/lib/kafka"
+
 	"github.com/keepchen/go-sail/v3/sail/config"
 
 	"github.com/gin-gonic/gin"
@@ -43,8 +45,10 @@ func WakeupHttp(appName string, conf *config.Config, apiOption *api.Option) *Fra
 //
 // @param registerRoutes 注册路由函数
 //
-// @param fn 自定义处理函数（可选），注意自定义函数是同步执行的
-func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), fn func()) {
+// @param before 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
+//
+// @param after 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
+func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), before, after func()) {
 	defer func() {
 		if err := recover(); err != nil {
 			logger.GetLogger().Error("---- Recovered ----", zap.Any("error", err))
@@ -54,13 +58,20 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), fn func()
 	wg := &sync.WaitGroup{}
 
 	//:: 根据配置一次初始化组件、启动服务 ::
+	//- before
+	if before != nil {
+		before()
+	}
+
 	//- logger
 	logger.InitLoggerZap(f.conf.LoggerConf, f.appName)
 
-	//- redis(cluster or standalone)
+	//- redis(standalone)
 	if len(f.conf.RedisConf.Host) != 0 {
 		redis.InitRedis(f.conf.RedisConf)
 	}
+
+	//- redis(cluster)
 	if len(f.conf.RedisClusterConf.AddrList) != 0 {
 		redis.InitRedisCluster(f.conf.RedisClusterConf)
 	}
@@ -78,6 +89,11 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), fn func()
 	//- nats
 	if len(f.conf.NatsConf.Servers) != 0 {
 		nats.Init(f.conf.NatsConf)
+	}
+
+	//- kafka
+	if len(f.conf.KafkaConf.Conf.AddrList) != 0 {
+		kafka.Init(f.conf.KafkaConf.Conf, f.conf.KafkaConf.Topic, f.conf.KafkaConf.GroupID)
 	}
 
 	//- gin
@@ -103,9 +119,9 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), fn func()
 
 	printSummaryInfo(f.conf.HttpServer, ginEngine)
 
-	//- fn
-	if fn != nil {
-		fn()
+	//- after
+	if after != nil {
+		after()
 	}
 
 	wg.Wait()

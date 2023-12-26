@@ -5,10 +5,12 @@ import (
 	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/http/api"
 	"github.com/keepchen/go-sail/v3/lib/db"
+	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
 	natsLib "github.com/nats-io/nats.go"
+	kafkaLib "github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -59,4 +61,24 @@ func GetLogger() *zap.Logger {
 // Response http响应组件
 func Response(c *gin.Context) api.API {
 	return api.New(c)
+}
+
+// GetKafkaInstance 获取kafka完整实例
+func GetKafkaInstance() *kafka.Instance {
+	return kafka.GetInstance()
+}
+
+// GetKafkaConnections 获取kafka连接
+func GetKafkaConnections() []*kafkaLib.Conn {
+	return kafka.GetConnections()
+}
+
+// GetKafkaWriter 获取kafka写实例
+func GetKafkaWriter() *kafkaLib.Writer {
+	return kafka.GetWriter()
+}
+
+// GetKafkaReader 获取kafka读实例
+func GetKafkaReader() *kafkaLib.Reader {
+	return kafka.GetReader()
 }

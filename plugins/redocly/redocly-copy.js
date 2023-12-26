@@ -60,7 +60,7 @@ setTimeout(function(){ pluginsCopy("http-verb"); }, 5000);
 if (process.argv.length < 3) {
     console.log("Nothing to do.");
     console.log(`------------------------Usage------------------------
-node ${process.argv[1]} path/to/apidoc.html
+node ${process.argv[1]} path/to/docs.html
 `);
     return false;
 }

@@ -44,18 +44,22 @@ func NewTimeWithTimeZone(timeZone ...string) *TIM {
 	}
 }
 
+// Now 获取当前时间对象（带时区）
 func (t *TIM) Now() time.Time {
 	return time.Now().In(t.loc)
 }
 
+// Datetime 获取格式化后的当前日期时间
 func (t *TIM) Datetime() string {
 	return t.Now().Format(t.datetimeLayout)
 }
 
+// Date 获取格式化后的当前日期
 func (t *TIM) Date() string {
 	return t.Now().Format(t.dateLayout)
 }
 
+// Time 获取格式化后的当前时间
 func (t *TIM) Time() string {
 	return t.Now().Format(t.timeLayout)
 }
