@@ -90,6 +90,9 @@ sail.GetRedisCluster()
 
 //nats连接
 sail.GetNats()
+
+//kafka完整连接实例
+sail.GetKafkaInstance()
 ```  
 更多组件持续开发中，也欢迎大家提PR👏🏻👏🏻
 

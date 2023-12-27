@@ -64,7 +64,7 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), before, a
 	}
 
 	//- logger
-	logger.InitLoggerZap(f.conf.LoggerConf, f.appName)
+	logger.Init(f.conf.LoggerConf, f.appName)
 
 	//- redis(standalone)
 	if len(f.conf.RedisConf.Host) != 0 {
@@ -78,7 +78,7 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), before, a
 
 	//- database
 	if len(f.conf.DBConf.DriverName) != 0 {
-		db.InitDB(f.conf.DBConf)
+		db.Init(f.conf.DBConf)
 	}
 
 	//- jwt

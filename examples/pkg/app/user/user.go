@@ -29,8 +29,10 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/keepchen/go-sail/v3/sail/config"
+	"github.com/keepchen/go-sail/v3/schedule"
 
 	"github.com/keepchen/go-sail/v3/lib/logger"
 
@@ -86,6 +88,10 @@ func StartServer(wg *sync.WaitGroup) {
 		}
 		after = func() {
 			fmt.Println("call user function [after] to do something...")
+			cancel := schedule.Job("print now datetime", func() {
+				fmt.Println("now: ", utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN))
+			}).RunAt("* * * * *")
+			time.AfterFunc(time.Minute*3, cancel)
 		}
 	)
 

@@ -31,3 +31,32 @@ func TestValidateEmail(t *testing.T) {
 		assert.Equal(t, valid, ec.valid)
 	}
 }
+
+func TestValidateIdentityCard(t *testing.T) {
+	testCases := []struct {
+		Cid    string
+		Result bool
+	}{
+		{
+			Cid:    "123",
+			Result: false,
+		},
+		{
+			Cid:    "123",
+			Result: false,
+		},
+		{
+			Cid:    "512659199602034568",
+			Result: false,
+		},
+		{
+			Cid:    "110101199003073191",
+			Result: true,
+		},
+	}
+
+	for _, v := range testCases {
+		result := ValidateIdentityCard(v.Cid)
+		assert.Equal(t, v.Result, result)
+	}
+}

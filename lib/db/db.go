@@ -78,3 +78,10 @@ func New(conf Conf) (rInstance, wInstance *gorm.DB) {
 
 	return
 }
+
+// Init 初始化数据库连接
+//
+// InitDB 的语法糖
+func Init(conf Conf) {
+	InitDB(conf)
+}

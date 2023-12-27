@@ -29,3 +29,7 @@ const (
 	TimeZoneUTCPlus11 string = "Pacific/Kosrae"
 	TimeZoneUTCPlus12 string = "Pacific/Nauru"
 )
+
+const (
+	DatetimeLayout = "2006-01-02 15:04:05" //日期时间格式
+)

@@ -14,12 +14,14 @@ require (
 	github.com/nats-io/nats.go v1.26.0
 	github.com/pelletier/go-toml/v2 v2.0.8
 	github.com/prometheus/client_golang v1.14.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/segmentio/kafka-go v0.4.47
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.8
+	github.com/tjfoc/gmsm v1.4.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/net v0.17.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
