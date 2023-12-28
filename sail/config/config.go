@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/keepchen/go-sail/v3/lib/db"
 	"github.com/keepchen/go-sail/v3/lib/email"
+	"github.com/keepchen/go-sail/v3/lib/etcd"
 	"github.com/keepchen/go-sail/v3/lib/jwt"
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
@@ -21,6 +22,7 @@ type Config struct {
 	JwtConf          jwt.Conf          `yaml:"jwt_conf" toml:"jwt_conf" json:"jwt_conf"`                               //jwt配置
 	EmailConf        email.Conf        `yaml:"email_conf" toml:"email_conf" json:"email_conf"`                         //邮件配置
 	KafkaConf        KafkaExtraConf    `yaml:"kafka_conf" toml:"kafka_conf" json:"kafka_conf"`                         //kafka配置
+	EtcdConf         etcd.Conf         `yaml:"etcd_conf" toml:"etcd_conf" json:"etcd_conf"`                            //etcd配置
 }
 
 // HttpServerConf http服务配置
@@ -48,4 +50,11 @@ type KafkaExtraConf struct {
 	Conf    kafka.Conf `yaml:"conf" toml:"conf" json:"conf"`          //配置
 	Topic   string     `yaml:"topic" toml:"topic" json:"topic"`       //主题
 	GroupID string     `yaml:"groupID" toml:"groupID" json:"groupID"` //分组id
+}
+
+var config *Config
+
+// Get 获取配置
+func Get() *Config {
+	return config
 }

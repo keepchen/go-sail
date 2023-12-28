@@ -5,12 +5,14 @@ import (
 	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/http/api"
 	"github.com/keepchen/go-sail/v3/lib/db"
+	"github.com/keepchen/go-sail/v3/lib/etcd"
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
 	natsLib "github.com/nats-io/nats.go"
 	kafkaLib "github.com/segmentio/kafka-go"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -81,4 +83,9 @@ func GetKafkaWriter() *kafkaLib.Writer {
 // GetKafkaReader 获取kafka读实例
 func GetKafkaReader() *kafkaLib.Reader {
 	return kafka.GetReader()
+}
+
+// GetEtcdInstance 获取etcd连接实例
+func GetEtcdInstance() *clientv3.Client {
+	return etcd.GetInstance()
 }

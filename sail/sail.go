@@ -3,6 +3,8 @@ package sail
 import (
 	"sync"
 
+	"github.com/keepchen/go-sail/v3/lib/etcd"
+
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 
 	"github.com/keepchen/go-sail/v3/sail/config"
@@ -57,8 +59,8 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), before, a
 
 	wg := &sync.WaitGroup{}
 
-	//:: 根据配置一次初始化组件、启动服务 ::
-	//- before
+	//:: 根据配置依次初始化组件、启动服务 ::
+	//- before，自定义前置函数调用
 	if before != nil {
 		before()
 	}
@@ -67,33 +69,38 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), before, a
 	logger.Init(f.conf.LoggerConf, f.appName)
 
 	//- redis(standalone)
-	if len(f.conf.RedisConf.Host) != 0 {
+	if len(f.conf.RedisConf.Host) > 0 {
 		redis.InitRedis(f.conf.RedisConf)
 	}
 
 	//- redis(cluster)
-	if len(f.conf.RedisClusterConf.AddrList) != 0 {
+	if len(f.conf.RedisClusterConf.AddrList) > 0 {
 		redis.InitRedisCluster(f.conf.RedisClusterConf)
 	}
 
 	//- database
-	if len(f.conf.DBConf.DriverName) != 0 {
+	if len(f.conf.DBConf.DriverName) > 0 {
 		db.Init(f.conf.DBConf)
 	}
 
 	//- jwt
-	if len(f.conf.JwtConf.PublicKey) != 0 {
+	if len(f.conf.JwtConf.PublicKey) > 0 {
 		f.conf.JwtConf.Load()
 	}
 
 	//- nats
-	if len(f.conf.NatsConf.Servers) != 0 {
+	if len(f.conf.NatsConf.Servers) > 0 {
 		nats.Init(f.conf.NatsConf)
 	}
 
 	//- kafka
-	if len(f.conf.KafkaConf.Conf.AddrList) != 0 {
+	if len(f.conf.KafkaConf.Conf.AddrList) > 0 {
 		kafka.Init(f.conf.KafkaConf.Conf, f.conf.KafkaConf.Topic, f.conf.KafkaConf.GroupID)
+	}
+
+	//- etcd
+	if len(f.conf.EtcdConf.Endpoints) > 0 {
+		etcd.Init(f.conf.EtcdConf)
 	}
 
 	//- gin
@@ -119,7 +126,7 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine), before, a
 
 	printSummaryInfo(f.conf.HttpServer, ginEngine)
 
-	//- after
+	//- after,自定义后置函数调用
 	if after != nil {
 		after()
 	}

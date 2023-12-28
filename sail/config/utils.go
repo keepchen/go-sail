@@ -48,3 +48,30 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 		fmt.Println(string(configStr))
 	}
 }
+
+// ParseConfigFromBytes 从字符串解析配置
+//
+// @param format 内容格式，支持: json|yaml|toml
+//
+// @param writeToFile 写入到目标文件（可选）
+func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
+	var (
+		formatList = [...]string{"json", "yaml", "toml"}
+		conf       Config
+		err        error
+	)
+
+	switch format {
+	case formatList[0]:
+		err = json.Unmarshal(source, &conf)
+	case formatList[1]:
+		err = yaml.Unmarshal(source, &conf)
+	case formatList[2]:
+		err = toml.Unmarshal(source, &conf)
+	default:
+		fmt.Printf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+	}
+
+	return &conf, err
+}

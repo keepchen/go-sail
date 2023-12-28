@@ -76,23 +76,26 @@ import (
     "github.com/keepchen/go-sail/v3/sail"
 )
 
-//日志组件
+//获取日志组件
 sail.GetLogger()
 
-//数据库连接（读、写实例）
+//获取数据库连接（读、写实例）
 sail.GetDB()
 
-//redis连接(单例模式)
+//获取redis连接(单例模式)
 sail.GetRedis()
 
-//redis连接(cluster模式)
+//获取redis连接(cluster模式)
 sail.GetRedisCluster()
 
-//nats连接
+//获取nats连接
 sail.GetNats()
 
-//kafka完整连接实例
+//获取kafka完整连接实例
 sail.GetKafkaInstance()
+
+//获取etcd连接实例
+sail.GetEtcdInstance()
 ```  
 更多组件持续开发中，也欢迎大家提PR👏🏻👏🏻
 

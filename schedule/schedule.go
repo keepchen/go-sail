@@ -43,7 +43,7 @@ func Job(name string, task func()) *TaskJob {
 		go func() {
 			job.cancelTaskChan <- struct{}{}
 			close(job.cancelTaskChan)
-			fmt.Printf("[go-sail] task schedule cancel job {%s} successfully\n", job.name)
+			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", job.name)
 		}()
 	}
 
@@ -284,13 +284,13 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 
 	jobID, jobErr := cronJob.AddFunc(crontabExpr, wrappedTaskFunc)
 	if jobErr != nil {
-		fmt.Printf("[go-sail] task schedule add job failed: %v\n", jobErr.Error())
+		fmt.Printf("[GO-SAIL] <Schedule> add job failed: %v\n", jobErr.Error())
 	}
 
 	cancel = func() {
 		go func() {
 			cronJob.Remove(jobID)
-			fmt.Printf("[go-sail] task schedule cancel job {%s} successfully\n", j.name)
+			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", j.name)
 		}()
 	}
 
