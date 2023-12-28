@@ -52,9 +52,13 @@ func Job(name string, task func()) *TaskJob {
 
 // WithoutOverlapping 禁止并发执行
 //
-// 同一时刻仅允许一个任务线程执行
+// 一个任务仅允许存在一个运行态
 //
-// Note: 该方法使用redis锁来保证唯一性
+// Note: 该方法使用redis锁来保证唯一性，
+//
+// 因此请确保先使用 redis.InitRedis 或
+//
+// redis.InitRedisCluster 实例化redis连接
 func (j *TaskJob) WithoutOverlapping() *TaskJob {
 	j.withoutOverlapping = true
 
@@ -62,7 +66,12 @@ func (j *TaskJob) WithoutOverlapping() *TaskJob {
 }
 
 // Every 每隔多久执行一次
+//
+// Note: interval至少需要大于等于1毫秒，否则将被设置为1毫秒
 func (j *TaskJob) Every(interval time.Duration) (cancel func()) {
+	if interval.Milliseconds() < 1 {
+		interval = time.Millisecond
+	}
 	j.interval = interval
 	j.run()
 
@@ -205,24 +214,30 @@ func (j *TaskJob) Yearly() (cancel func()) {
 func (j *TaskJob) run() {
 	go func() {
 		ticker := time.NewTicker(j.interval)
+		defer ticker.Stop()
+		wrappedFunc := func() {
+			if !j.withoutOverlapping {
+				j.task()
+				return
+			}
+			if utils.RedisLock(j.lockerKey) {
+				func() {
+					defer utils.RedisUnlock(j.lockerKey)
+					j.task()
+				}()
+			}
+		}
+	LISTEN:
 		for {
 			select {
 			case <-ticker.C:
-				if j.withoutOverlapping {
-					if utils.RedisLock(j.lockerKey) {
-						go func() {
-							defer utils.RedisUnlock(j.lockerKey)
-							j.task()
-						}()
-					}
-				} else {
-					go j.task()
-				}
-			//shutdown gracefully.
+				go wrappedFunc()
+			//收到退出信号，终止任务
 			case <-j.cancelTaskChan:
-				utils.RedisUnlock(j.lockerKey)
-				ticker.Stop()
-				break
+				if j.withoutOverlapping {
+					utils.RedisUnlock(j.lockerKey)
+				}
+				break LISTEN
 			}
 		}
 	}()
@@ -253,16 +268,17 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 		cronJob.Start()
 	})
 
+	//因为AddFunc内部是协程启动，因此这里的方法使用同步方式调用
 	wrappedTaskFunc := func() {
-		if j.withoutOverlapping {
-			if utils.RedisLock(j.lockerKey) {
-				go func() {
-					defer utils.RedisUnlock(j.lockerKey)
-					j.task()
-				}()
-			}
-		} else {
+		if !j.withoutOverlapping {
 			j.task()
+			return
+		}
+		if utils.RedisLock(j.lockerKey) {
+			func() {
+				defer utils.RedisUnlock(j.lockerKey)
+				j.task()
+			}()
 		}
 	}
 
