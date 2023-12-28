@@ -15,14 +15,12 @@ type TaskJob struct {
 	task               func()
 	interval           time.Duration
 	lockerKey          string
-	cancelTaskChan     chan struct{}
 	withoutOverlapping bool
+	cancelFunc         func()
+	cancelTaskChan     chan struct{}
 }
 
-var (
-	cancelFunc func()
-	cronJob    *cron.Cron
-)
+var cronJob *cron.Cron
 
 // Job 实例化任务
 //
@@ -39,7 +37,7 @@ func Job(name string, task func()) *TaskJob {
 		cancelTaskChan: make(chan struct{}),
 	}
 
-	cancelFunc = func() {
+	job.cancelFunc = func() {
 		go func() {
 			job.cancelTaskChan <- struct{}{}
 			close(job.cancelTaskChan)
@@ -75,7 +73,7 @@ func (j *TaskJob) Every(interval time.Duration) (cancel func()) {
 	j.interval = interval
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -85,7 +83,7 @@ func (j *TaskJob) EverySecond() (cancel func()) {
 	j.interval = time.Second
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -95,7 +93,7 @@ func (j *TaskJob) EveryFiveSeconds() (cancel func()) {
 	j.interval = time.Second * 5
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -105,7 +103,7 @@ func (j *TaskJob) EveryTenSeconds() (cancel func()) {
 	j.interval = time.Second * 10
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -115,7 +113,7 @@ func (j *TaskJob) EveryThirtySeconds() (cancel func()) {
 	j.interval = time.Second * 30
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -125,7 +123,7 @@ func (j *TaskJob) EveryMinute() (cancel func()) {
 	j.interval = time.Minute
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -135,7 +133,7 @@ func (j *TaskJob) EveryFiveMinutes() (cancel func()) {
 	j.interval = time.Minute * 5
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -145,7 +143,7 @@ func (j *TaskJob) EveryTenMinutes() (cancel func()) {
 	j.interval = time.Minute * 10
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -155,7 +153,7 @@ func (j *TaskJob) EveryThirtyMinutes() (cancel func()) {
 	j.interval = time.Minute * 30
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -165,7 +163,7 @@ func (j *TaskJob) Hourly() (cancel func()) {
 	j.interval = time.Hour
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -175,7 +173,7 @@ func (j *TaskJob) Daily() (cancel func()) {
 	j.interval = time.Hour * 24
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -185,7 +183,7 @@ func (j *TaskJob) Weekly() (cancel func()) {
 	j.interval = time.Hour * 24 * 7
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -195,7 +193,7 @@ func (j *TaskJob) Monthly() (cancel func()) {
 	j.interval = time.Hour * 24 * 30
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }
@@ -205,7 +203,7 @@ func (j *TaskJob) Yearly() (cancel func()) {
 	j.interval = time.Hour * 24 * 365
 	j.run()
 
-	cancel = cancelFunc
+	cancel = j.cancelFunc
 
 	return cancel
 }

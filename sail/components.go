@@ -56,8 +56,8 @@ func GetNats() *natsLib.Conn {
 }
 
 // GetLogger 获取日志实例
-func GetLogger() *zap.Logger {
-	return logger.GetLogger()
+func GetLogger(modules ...string) *zap.Logger {
+	return logger.GetLogger(modules...)
 }
 
 // Response http响应组件
