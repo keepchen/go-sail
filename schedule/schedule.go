@@ -27,8 +27,6 @@ var cronJob *cron.Cron
 // @param name 任务名称唯一标识
 //
 // @param task 任务处理函数
-//
-// Note: 如果需要保证任务同一时刻只有一个运行态，task内部不要使用协程运行主逻辑。
 func Job(name string, task func()) *TaskJob {
 	job := &TaskJob{
 		name:           name,
@@ -108,6 +106,16 @@ func (j *TaskJob) EveryTenSeconds() (cancel func()) {
 	return cancel
 }
 
+// EveryTwentySeconds 每20秒执行一次
+func (j *TaskJob) EveryTwentySeconds() (cancel func()) {
+	j.interval = time.Second * 20
+	j.run()
+
+	cancel = j.cancelFunc
+
+	return cancel
+}
+
 // EveryThirtySeconds 每30秒执行一次
 func (j *TaskJob) EveryThirtySeconds() (cancel func()) {
 	j.interval = time.Second * 30
@@ -148,6 +156,16 @@ func (j *TaskJob) EveryTenMinutes() (cancel func()) {
 	return cancel
 }
 
+// EveryTwentyMinutes 每20分钟执行一次
+func (j *TaskJob) EveryTwentyMinutes() (cancel func()) {
+	j.interval = time.Minute * 20
+	j.run()
+
+	cancel = j.cancelFunc
+
+	return cancel
+}
+
 // EveryThirtyMinutes 每30分钟执行一次
 func (j *TaskJob) EveryThirtyMinutes() (cancel func()) {
 	j.interval = time.Minute * 30
@@ -161,6 +179,36 @@ func (j *TaskJob) EveryThirtyMinutes() (cancel func()) {
 // Hourly 每1小时执行一次
 func (j *TaskJob) Hourly() (cancel func()) {
 	j.interval = time.Hour
+	j.run()
+
+	cancel = j.cancelFunc
+
+	return cancel
+}
+
+// EveryFiveHours 每5小时执行一次
+func (j *TaskJob) EveryFiveHours() (cancel func()) {
+	j.interval = time.Hour * 5
+	j.run()
+
+	cancel = j.cancelFunc
+
+	return cancel
+}
+
+// EveryTenHours 每10小时执行一次
+func (j *TaskJob) EveryTenHours() (cancel func()) {
+	j.interval = time.Hour * 10
+	j.run()
+
+	cancel = j.cancelFunc
+
+	return cancel
+}
+
+// EveryTwentyHours 每20小时执行一次
+func (j *TaskJob) EveryTwentyHours() (cancel func()) {
+	j.interval = time.Hour * 20
 	j.run()
 
 	cancel = j.cancelFunc
@@ -213,7 +261,7 @@ func (j *TaskJob) run() {
 	go func() {
 		ticker := time.NewTicker(j.interval)
 		defer ticker.Stop()
-		wrappedFunc := func() {
+		wrappedTaskFunc := func() {
 			if !j.withoutOverlapping {
 				j.task()
 				return
@@ -229,7 +277,7 @@ func (j *TaskJob) run() {
 		for {
 			select {
 			case <-ticker.C:
-				go wrappedFunc()
+				go wrappedTaskFunc()
 			//收到退出信号，终止任务
 			case <-j.cancelTaskChan:
 				if j.withoutOverlapping {
@@ -293,4 +341,24 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 	}
 
 	return
+}
+
+// TenClockAtWeekday 每个工作日（周一~周五）上午10点
+func (j *TaskJob) TenClockAtWeekday() (cancel func()) {
+	return j.RunAt(TenClockAtWeekday)
+}
+
+// TenClockAtWeekend 每个周末（周六和周日）上午10点
+func (j *TaskJob) TenClockAtWeekend() (cancel func()) {
+	return j.RunAt(TenClockAtWeekend)
+}
+
+// FirstDayOfMonthly 每月1号
+func (j *TaskJob) FirstDayOfMonthly() (cancel func()) {
+	return j.RunAt(FirstDayOfMonth)
+}
+
+// LastDayOfMonthly 每月最后一天
+func (j *TaskJob) LastDayOfMonthly() (cancel func()) {
+	return j.RunAt(LastDayOfMonth)
 }
