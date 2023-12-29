@@ -27,6 +27,9 @@ func RequestEntry() gin.HandlerFunc {
 			spanId    string
 		)
 		requestIdInHeader := c.Request.Header.Get("requestId")
+		if len(requestIdInHeader) == 0 {
+			requestIdInHeader = c.Request.Header.Get("X-Request-Id")
+		}
 		if len(requestIdInHeader) > 0 {
 			requestId = requestIdInHeader
 			spanId = uuid.New().String()

@@ -51,28 +51,30 @@ func (p *Pool) Mount(index int, envelope *Envelope) {
 
 // Emit 启动队列
 func (p *Pool) Emit() {
-	for index, worker := range p.workers {
-		go func(index int, wk chan *Envelope) {
-			for {
-				select {
-				case ep := <-wk:
-					err := p.send(ep)
-					if err != nil {
-						log.Println("[GO-SAIL] <Email> send failure via worker, error:", err)
-					}
-					//处理上层回调函数
-					if ep.Callback != nil {
-						ep.Callback(ep, err)
-					}
-					p.wg.Done()
-					if p.throttle > 0 {
-						time.Sleep(p.throttle)
-					}
-				case <-p.exit:
-					break
+	handler := func(index int, wk chan *Envelope) {
+	LOOP:
+		for {
+			select {
+			case ep := <-wk:
+				err := p.send(ep)
+				if err != nil {
+					log.Println("[GO-SAIL] <Email> send failure via worker, error:", err)
 				}
+				//处理上层回调函数
+				if ep.Callback != nil {
+					ep.Callback(ep, err)
+				}
+				p.wg.Done()
+				if p.throttle > 0 {
+					time.Sleep(p.throttle)
+				}
+			case <-p.exit:
+				break LOOP
 			}
-		}(index, worker)
+		}
+	}
+	for index, worker := range p.workers {
+		go handler(index, worker)
 	}
 }
 

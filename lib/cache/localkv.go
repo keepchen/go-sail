@@ -7,14 +7,14 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 )
 
-type value struct {
+type localCacheValue struct {
 	expiredAt int64
 	content   interface{}
 }
 
 type localCache struct {
 	mux  *sync.Mutex
-	maps map[string]*value
+	maps map[string]*localCacheValue
 }
 
 var lc *localCache
@@ -23,7 +23,7 @@ func init() {
 	(&sync.Once{}).Do(func() {
 		lc = &localCache{
 			mux:  &sync.Mutex{},
-			maps: make(map[string]*value),
+			maps: make(map[string]*localCacheValue),
 		}
 	})
 }
@@ -39,7 +39,7 @@ func Put(key string, val interface{}, expiredTimeDuration ...time.Duration) bool
 		expiredAt = utils.NewTimeWithTimeZone().Now().Add(time.Hour).Unix()
 	}
 	lc.mux.Lock()
-	lc.maps[key] = &value{expiredAt: expiredAt, content: val}
+	lc.maps[key] = &localCacheValue{expiredAt: expiredAt, content: val}
 	lc.mux.Unlock()
 
 	return true
@@ -77,11 +77,16 @@ func Forget(key string) bool {
 
 // Expire 为key设置过期时间
 func Expire(key string, expiredTimeDuration time.Duration) bool {
+	var optOk bool
+
 	expiredAt := utils.NewTimeWithTimeZone().Now().Add(expiredTimeDuration).Unix()
 
 	lc.mux.Lock()
-	lc.maps[key].expiredAt = expiredAt
+	if _, ok := lc.maps[key]; ok {
+		lc.maps[key].expiredAt = expiredAt
+		optOk = true
+	}
 	lc.mux.Unlock()
 
-	return true
+	return optOk
 }

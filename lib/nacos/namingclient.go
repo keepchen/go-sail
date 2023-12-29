@@ -48,8 +48,6 @@ func RegisterService(groupName, serviceName string, ip string, port uint64, meta
 // @param ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
 //
 // @param port 监听的端口
-//
-// @param metadata 元数据信息
 func UnregisterService(groupName, serviceName string, ip string, port uint64) (bool, error) {
 	var param vo.DeregisterInstanceParam
 	param.Ip = ip

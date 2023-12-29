@@ -10,6 +10,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.1
 	github.com/jinzhu/configor v1.2.1
+	github.com/keepchen/message-queue v0.0.5
 	github.com/nacos-group/nacos-sdk-go/v2 v2.1.2
 	github.com/nats-io/nats.go v1.26.0
 	github.com/pelletier/go-toml/v2 v2.0.8
