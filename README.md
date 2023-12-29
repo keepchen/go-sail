@@ -65,8 +65,12 @@ var (
 
 sail.WakeupHttp("go-sail", conf, apiOption).Launch(registerRoutes, before, after)
 ```  
-当你看到终端如下图所示内容就表示服务启动成功了：
+当你看到终端如下图所示内容就表示服务启动成功了：  
+
 <img src="./launch.png" alt="launch.png" title="launch.png" width="600" />  
+
+## 文档  
+[文档传送门](https://blog.keepchen.com/a/go-sail.html?from=github)
 
 ## 特性  
 - 获取组件  
@@ -153,5 +157,5 @@ func GetUserInfo(c *gin.Context) {
 ## 使用案例  
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
 <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="300" />
-<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="100" />
+<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="180" />
 

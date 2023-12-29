@@ -330,7 +330,7 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 
 	jobID, jobErr := cronJob.AddFunc(crontabExpr, wrappedTaskFunc)
 	if jobErr != nil {
-		fmt.Printf("[GO-SAIL] <Schedule> add job failed: %v\n", jobErr.Error())
+		fmt.Printf("[GO-SAIL] <Schedule> add job {%s} failed: %v\n", j.name, jobErr.Error())
 	}
 
 	cancel = func() {

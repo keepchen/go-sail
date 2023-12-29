@@ -65,8 +65,12 @@ var (
 
 sail.WakeupHttp("go-sail", conf, apiOption).Launch(registerRoutes, before, after)
 ```  
-Console screenshot after launched like this:
-<img src="./launch.png" alt="launch.png" title="launch.png" width="600" />
+Console screenshot after launched like this:  
+
+<img src="./launch.png" alt="launch.png" title="launch.png" width="600" />  
+
+## Documentation
+[Docs](https://blog.keepchen.com/a/go-sail.html?from=github)
 
 ## Features
 - Get components
@@ -153,4 +157,4 @@ func GetUserInfo(c *gin.Context) {
 ## Use cases
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
 <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="300" />
-<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="150" />
+<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="180" />
