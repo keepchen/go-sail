@@ -2,7 +2,7 @@
     <h1><img src="./sailboat-solid.svg" alt="sailboat-solid" title="sailboat-solid" width="300" /></h1>
 </div> 
 
-[![Go](https://github.com/keepchen/go-sail/actions/workflows/go.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/go.yml)  [![Go Report](https://github.com/keepchen/go-sail/actions/workflows/goreport.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/goreport.yml)  [![CodeQL](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml)
+[![Go](https://github.com/keepchen/go-sail/actions/workflows/go.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/go.yml)  [![CodeQL](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml)  [![Go Report Card](https://goreportcard.com/badge/github.com/keepchen/go-sail/v3)](https://goreportcard.com/report/github.com/keepchen/go-sail/v3)  
 
 简体中文 | [English](./README_EN.md)
 

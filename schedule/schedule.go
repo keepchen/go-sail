@@ -267,10 +267,8 @@ func (j *TaskJob) run() {
 				return
 			}
 			if utils.RedisLock(j.lockerKey) {
-				func() {
-					defer utils.RedisUnlock(j.lockerKey)
-					j.task()
-				}()
+				defer utils.RedisUnlock(j.lockerKey)
+				j.task()
 			}
 		}
 	LISTEN:
@@ -321,10 +319,8 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 			return
 		}
 		if utils.RedisLock(j.lockerKey) {
-			func() {
-				defer utils.RedisUnlock(j.lockerKey)
-				j.task()
-			}()
+			defer utils.RedisUnlock(j.lockerKey)
+			j.task()
 		}
 	}
 
