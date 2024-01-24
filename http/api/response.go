@@ -10,14 +10,24 @@ import (
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
+type Emitter interface {
+	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter
+	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter
+	Status(httpCode int) Emitter
+	SendWithCode(httpCode int)
+	Send()
+}
+
 type API struct {
 	engine   *gin.Context
 	httpCode int
 	data     interface{}
 }
 
-func New(c *gin.Context) API {
-	return API{
+var _ Emitter = &API{}
+
+func New(c *gin.Context) Emitter {
+	return &API{
 		engine: c,
 	}
 }
@@ -31,21 +41,21 @@ func New(c *gin.Context) API {
 // Response(c).Builder(...).Send()
 //
 // New 方法的语法糖
-func Response(c *gin.Context) API {
+func Response(c *gin.Context) Emitter {
 	return New(c)
 }
 
 // Builder 组装返回数据
 //
 // Assemble 方法的语法糖
-func (a API) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) API {
+func (a *API) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter {
 	return a.Assemble(code, resp, message...)
 }
 
 // Assemble 组装返回数据
 //
 // 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.Before中间件)
-func (a API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) API {
+func (a *API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter {
 	var (
 		body      dto.Base
 		requestId string
@@ -124,18 +134,18 @@ func (a API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...s
 // Status 指定http状态码
 //
 // 该方法会覆盖 Assemble 解析的http状态码值
-func (a API) Status(httpCode int) API {
+func (a *API) Status(httpCode int) Emitter {
 	a.httpCode = httpCode
 
 	return a
 }
 
 // SendWithCode 以指定http状态码响应请求
-func (a API) SendWithCode(httpCode int) {
+func (a *API) SendWithCode(httpCode int) {
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }
 
 // Send 响应请求
-func (a API) Send() {
+func (a *API) Send() {
 	a.SendWithCode(a.httpCode)
 }

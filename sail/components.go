@@ -56,12 +56,12 @@ func GetNats() *natsLib.Conn {
 }
 
 // GetLogger 获取日志实例
-func GetLogger(modules ...string) *zap.Logger {
-	return logger.GetLogger(modules...)
+func GetLogger(module ...string) *zap.Logger {
+	return logger.GetLogger(module...)
 }
 
 // Response http响应组件
-func Response(c *gin.Context) api.API {
+func Response(c *gin.Context) api.Emitter {
 	return api.New(c)
 }
 

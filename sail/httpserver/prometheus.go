@@ -8,10 +8,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// RunPrometheusServer 启动prometheus指标收集服务
+// RunPrometheusServerOnDebugMode 启动prometheus指标收集服务
 //
 // 当配置文件指明启用时才会启动
-func RunPrometheusServer(conf config.PrometheusConf) {
+func RunPrometheusServerOnDebugMode(conf config.PrometheusConf) {
 	if !conf.Enable {
 		return
 	}

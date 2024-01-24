@@ -15,10 +15,16 @@ var (
 	cancelRenewalFuncChannelCluster = make(chan struct{})
 )
 
-// RedisLock redis锁-上锁（自动推测连接类型）
+type CancelFunc func()
+
+// RedisTryLock redis锁-尝试上锁（自动推测连接类型）
 //
 // using SetNX
-func RedisLock(key string) bool {
+//
+// # Note
+//
+// 该方法会立即返回锁定成功与否的结果
+func RedisTryLock(key string) bool {
 	if redis.GetInstance() != nil {
 		return RedisStandaloneLock(key)
 	}
@@ -28,6 +34,51 @@ func RedisLock(key string) bool {
 	}
 
 	panic("using redis lock on nil redis instance")
+}
+
+// RedisLock redis锁-上锁（自动推测连接类型）
+//
+// using SetNX
+//
+// # Note
+//
+// 该方法会阻塞住线程直到上锁成功或者调用cancel取消
+func RedisLock(key string) (cancel CancelFunc) {
+	if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+		panic("using redis lock on nil redis instance")
+	}
+
+	var (
+		locked     = false
+		ticker     = time.NewTicker(time.Millisecond)
+		cancelCh   = make(chan struct{})
+		cancelFunc = func() {
+			cancelCh <- struct{}{}
+			close(cancelCh)
+		}
+	)
+
+LOOP:
+	for {
+		select {
+		case <-ticker.C:
+			if redis.GetInstance() != nil {
+				locked = RedisStandaloneLock(key)
+			}
+			if redis.GetClusterInstance() != nil {
+				locked = RedisClusterLock(key)
+			}
+			if locked {
+				break LOOP
+			}
+		case <-cancelCh:
+			break LOOP
+		}
+	}
+
+	ticker.Stop()
+
+	return cancelFunc
 }
 
 // RedisUnlock redis锁-解锁（自动推测连接类型）

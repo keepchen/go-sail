@@ -18,17 +18,17 @@ import (
 func PrintTemplateConfig(format string, writeToFile ...string) {
 	var (
 		abort      bool
-		configStr  []byte
-		config     = Config{}
+		cfgStr     []byte
+		cfg        = Config{}
 		formatList = [...]string{"json", "yaml", "toml"}
 	)
 	switch format {
 	case formatList[0]:
-		configStr, _ = json.MarshalIndent(&config, "", "    ")
+		cfgStr, _ = json.MarshalIndent(&cfg, "", "    ")
 	case formatList[1]:
-		configStr, _ = yaml.Marshal(&config)
+		cfgStr, _ = yaml.Marshal(&cfg)
 	case formatList[2]:
-		configStr, _ = toml.Marshal(&config)
+		cfgStr, _ = toml.Marshal(&cfg)
 	default:
 		fmt.Printf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
 		abort = true
@@ -39,13 +39,13 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 	}
 
 	if len(writeToFile) > 0 {
-		err := utils.FilePutContents(configStr, writeToFile[0])
+		err := utils.FilePutContents(cfgStr, writeToFile[0])
 		if err != nil {
 			fmt.Printf("[GO-SAIL] <Config> dump config to file {%s} error: %s\n", writeToFile[0], err.Error())
 		}
 	} else {
 		fmt.Printf("[GO-SAIL] <Config> dump config (%s) to stdout:\n", format)
-		fmt.Println(string(configStr))
+		fmt.Println(string(cfgStr))
 	}
 }
 
@@ -57,21 +57,21 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 	var (
 		formatList = [...]string{"json", "yaml", "toml"}
-		conf       Config
+		cfg        Config
 		err        error
 	)
 
 	switch format {
 	case formatList[0]:
-		err = json.Unmarshal(source, &conf)
+		err = json.Unmarshal(source, &cfg)
 	case formatList[1]:
-		err = yaml.Unmarshal(source, &conf)
+		err = yaml.Unmarshal(source, &cfg)
 	case formatList[2]:
-		err = toml.Unmarshal(source, &conf)
+		err = toml.Unmarshal(source, &cfg)
 	default:
 		fmt.Printf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
 		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
 	}
 
-	return &conf, err
+	return &cfg, err
 }

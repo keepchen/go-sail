@@ -9,18 +9,42 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+type CancelFunc func()
+
 // TaskJob 任务
 type TaskJob struct {
 	name               string
 	task               func()
 	interval           time.Duration
 	lockerKey          string
+	lockedByMe         bool
+	running            bool
 	withoutOverlapping bool
-	cancelFunc         func()
+	cancelFunc         CancelFunc
 	cancelTaskChan     chan struct{}
 }
 
+type TaskJobPool struct {
+	mux  *sync.RWMutex
+	pool map[string]*TaskJob
+}
+
+var taskSchedules *TaskJobPool
+
 var cronJob *cron.Cron
+
+func init() {
+	(&sync.Once{}).Do(func() {
+		taskSchedules = &TaskJobPool{
+			mux:  &sync.RWMutex{},
+			pool: make(map[string]*TaskJob),
+		}
+	})
+}
+
+func generateJobNameKey(name string) string {
+	return fmt.Sprintf("go-sail:task-schedule-locker:%s", utils.MD5Encrypt(name))
+}
 
 // Job 实例化任务
 //
@@ -30,7 +54,7 @@ var cronJob *cron.Cron
 func Job(name string, task func()) *TaskJob {
 	job := &TaskJob{
 		name:           name,
-		lockerKey:      fmt.Sprintf("go-sail:task-schedule-locker:%s", utils.MD5Encrypt(name)),
+		lockerKey:      generateJobNameKey(name),
 		task:           task,
 		cancelTaskChan: make(chan struct{}),
 	}
@@ -42,6 +66,10 @@ func Job(name string, task func()) *TaskJob {
 			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", job.name)
 		}()
 	}
+
+	taskSchedules.mux.Lock()
+	taskSchedules.pool[job.lockerKey] = job
+	taskSchedules.mux.Unlock()
 
 	return job
 }
@@ -61,213 +89,28 @@ func (j *TaskJob) WithoutOverlapping() *TaskJob {
 	return j
 }
 
-// Every 每隔多久执行一次
-//
-// Note: interval至少需要大于等于1毫秒，否则将被设置为1毫秒
-func (j *TaskJob) Every(interval time.Duration) (cancel func()) {
-	if interval.Milliseconds() < 1 {
-		interval = time.Millisecond
-	}
-	j.interval = interval
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EverySecond 每秒执行一次
-func (j *TaskJob) EverySecond() (cancel func()) {
-	j.interval = time.Second
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryFiveSeconds 每5秒执行一次
-func (j *TaskJob) EveryFiveSeconds() (cancel func()) {
-	j.interval = time.Second * 5
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryTenSeconds 每10秒执行一次
-func (j *TaskJob) EveryTenSeconds() (cancel func()) {
-	j.interval = time.Second * 10
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryTwentySeconds 每20秒执行一次
-func (j *TaskJob) EveryTwentySeconds() (cancel func()) {
-	j.interval = time.Second * 20
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryThirtySeconds 每30秒执行一次
-func (j *TaskJob) EveryThirtySeconds() (cancel func()) {
-	j.interval = time.Second * 30
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryMinute 每分钟执行一次
-func (j *TaskJob) EveryMinute() (cancel func()) {
-	j.interval = time.Minute
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryFiveMinutes 每5分钟执行一次
-func (j *TaskJob) EveryFiveMinutes() (cancel func()) {
-	j.interval = time.Minute * 5
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryTenMinutes 每10分钟执行一次
-func (j *TaskJob) EveryTenMinutes() (cancel func()) {
-	j.interval = time.Minute * 10
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryTwentyMinutes 每20分钟执行一次
-func (j *TaskJob) EveryTwentyMinutes() (cancel func()) {
-	j.interval = time.Minute * 20
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryThirtyMinutes 每30分钟执行一次
-func (j *TaskJob) EveryThirtyMinutes() (cancel func()) {
-	j.interval = time.Minute * 30
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// Hourly 每1小时执行一次
-func (j *TaskJob) Hourly() (cancel func()) {
-	j.interval = time.Hour
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryFiveHours 每5小时执行一次
-func (j *TaskJob) EveryFiveHours() (cancel func()) {
-	j.interval = time.Hour * 5
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryTenHours 每10小时执行一次
-func (j *TaskJob) EveryTenHours() (cancel func()) {
-	j.interval = time.Hour * 10
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// EveryTwentyHours 每20小时执行一次
-func (j *TaskJob) EveryTwentyHours() (cancel func()) {
-	j.interval = time.Hour * 20
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// Daily 每天执行一次
-func (j *TaskJob) Daily() (cancel func()) {
-	j.interval = time.Hour * 24
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// Weekly 每周执行一次（每7天）
-func (j *TaskJob) Weekly() (cancel func()) {
-	j.interval = time.Hour * 24 * 7
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// Monthly 每月执行一次（每30天）
-func (j *TaskJob) Monthly() (cancel func()) {
-	j.interval = time.Hour * 24 * 30
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
-// Yearly 每年执行一次（每365天）
-func (j *TaskJob) Yearly() (cancel func()) {
-	j.interval = time.Hour * 24 * 365
-	j.run()
-
-	cancel = j.cancelFunc
-
-	return cancel
-}
-
 // 任务执行函数
 func (j *TaskJob) run() {
 	go func() {
 		ticker := time.NewTicker(j.interval)
 		defer ticker.Stop()
 		wrappedTaskFunc := func() {
+			j.running = true
+
+			defer func() {
+				j.running = false
+			}()
+
 			if !j.withoutOverlapping {
 				j.task()
 				return
 			}
-			if utils.RedisLock(j.lockerKey) {
-				defer utils.RedisUnlock(j.lockerKey)
+			if utils.RedisTryLock(j.lockerKey) {
+				defer func() {
+					utils.RedisUnlock(j.lockerKey)
+					j.lockedByMe = false
+				}()
+				j.lockedByMe = true
 				j.task()
 			}
 		}
@@ -278,9 +121,14 @@ func (j *TaskJob) run() {
 				go wrappedTaskFunc()
 			//收到退出信号，终止任务
 			case <-j.cancelTaskChan:
-				if j.withoutOverlapping {
+				if j.withoutOverlapping && j.lockedByMe {
 					utils.RedisUnlock(j.lockerKey)
 				}
+
+				taskSchedules.mux.Lock()
+				delete(taskSchedules.pool, j.lockerKey)
+				taskSchedules.mux.Unlock()
+
 				break LISTEN
 			}
 		}
@@ -297,7 +145,7 @@ func (j *TaskJob) run() {
 //
 // |    |    |    |    |
 //
-// |    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+// |    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7) OR sun...sat
 //
 // |    |    |    +---------- month (1 - 12) OR jan,feb,mar,apr ...
 //
@@ -306,7 +154,7 @@ func (j *TaskJob) run() {
 // |    +-------------------- hour (0 - 23)
 //
 // +------------------------- minute (0 - 59)
-func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
+func (j *TaskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 	(&sync.Once{}).Do(func() {
 		cronJob = cron.New()
 		cronJob.Start()
@@ -314,12 +162,22 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 
 	//因为AddFunc内部是协程启动，因此这里的方法使用同步方式调用
 	wrappedTaskFunc := func() {
+		j.running = true
+
+		defer func() {
+			j.running = false
+		}()
+
 		if !j.withoutOverlapping {
 			j.task()
 			return
 		}
-		if utils.RedisLock(j.lockerKey) {
-			defer utils.RedisUnlock(j.lockerKey)
+		if utils.RedisTryLock(j.lockerKey) {
+			defer func() {
+				utils.RedisUnlock(j.lockerKey)
+				j.lockedByMe = false
+			}()
+			j.lockedByMe = true
 			j.task()
 		}
 	}
@@ -332,6 +190,9 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 	cancel = func() {
 		go func() {
 			cronJob.Remove(jobID)
+			taskSchedules.mux.Lock()
+			delete(taskSchedules.pool, j.lockerKey)
+			taskSchedules.mux.Unlock()
 			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", j.name)
 		}()
 	}
@@ -339,22 +200,17 @@ func (j *TaskJob) RunAt(crontabExpr string) (cancel func()) {
 	return
 }
 
-// TenClockAtWeekday 每个工作日（周一~周五）上午10点
-func (j *TaskJob) TenClockAtWeekday() (cancel func()) {
-	return j.RunAt(TenClockAtWeekday)
-}
+// JobIsRunning 查看任务是否正在执行
+func JobIsRunning(jobName string) bool {
+	var (
+		running = false
+		name    = generateJobNameKey(jobName)
+	)
+	taskSchedules.mux.RLock()
+	if job, ok := taskSchedules.pool[name]; ok {
+		running = job.running
+	}
+	taskSchedules.mux.RUnlock()
 
-// TenClockAtWeekend 每个周末（周六和周日）上午10点
-func (j *TaskJob) TenClockAtWeekend() (cancel func()) {
-	return j.RunAt(TenClockAtWeekend)
-}
-
-// FirstDayOfMonthly 每月1号
-func (j *TaskJob) FirstDayOfMonthly() (cancel func()) {
-	return j.RunAt(FirstDayOfMonth)
-}
-
-// LastDayOfMonthly 每月最后一天
-func (j *TaskJob) LastDayOfMonthly() (cancel func()) {
-	return j.RunAt(LastDayOfMonth)
+	return running
 }

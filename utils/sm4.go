@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/base64"
 	"encoding/hex"
 
 	"github.com/tjfoc/gmsm/sm4"
@@ -20,7 +19,7 @@ func SM4ECBEncrypt(hexKey, raw string) (string, error) {
 		return "", err
 	}
 
-	return base64.StdEncoding.EncodeToString(out), nil
+	return Base64Encode(out), nil
 }
 
 // SM4ECBDecrypt ECB解密
@@ -32,7 +31,7 @@ func SM4ECBDecrypt(hexKey, base64Raw string) (string, error) {
 		return "", err
 	}
 
-	raw, err := base64.StdEncoding.DecodeString(base64Raw)
+	raw, err := Base64Decode(base64Raw)
 	if err != nil {
 		return "", err
 	}

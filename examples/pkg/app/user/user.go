@@ -31,12 +31,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/routes"
+
 	"github.com/keepchen/go-sail/v3/sail/config"
 	"github.com/keepchen/go-sail/v3/schedule"
 
 	"github.com/keepchen/go-sail/v3/lib/logger"
-
-	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/routes"
 
 	"github.com/keepchen/go-sail/v3/constants"
 
@@ -83,24 +83,42 @@ func StartServer(wg *sync.WaitGroup) {
 			ErrNoneCodeMsg:   "SUCCEED",
 			ForceHttpCode200: true,
 		}
-		before = func() {
+		beforeFunc = func() {
 			fmt.Println("call user function [before] to do something...")
 		}
-		after = func() {
+		afterFunc = func() {
 			fmt.Println("call user function [after] to do something...")
-			cancel0 := schedule.Job("print now datetime", func() {
+			job0 := "print now datetime"
+			cancel0 := schedule.Job(job0, func() {
 				fmt.Println("now: ", utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN))
 			}).RunAt(schedule.EveryMinute)
 			time.AfterFunc(time.Minute*3, cancel0)
 
-			cancel1 := schedule.Job("print hello", func() {
+			job1 := "print hello"
+			cancel1 := schedule.Job(job1, func() {
+				time.Sleep(time.Second * 10)
 				fmt.Println(utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN), "hello")
 			}).EverySecond()
-			time.AfterFunc(time.Second*5, cancel1)
+			time.AfterFunc(time.Second*33, cancel1)
+
+			ticker := time.NewTicker(time.Second)
+			times := 0
+		LOOP:
+			for range ticker.C {
+				times++
+				fmt.Printf("job: {%s} is running: %t | job: {%s} is running: %t\n",
+					job0, schedule.JobIsRunning(job0), job1, schedule.JobIsRunning(job1))
+				if times > 50 {
+					break LOOP
+				}
+			}
 		}
 	)
 
-	sail.WakeupHttp("go-sail", conf, apiOption).Launch(routes.RegisterRoutes, before, after)
+	//直接启动
+	//sail.WakeupHttp("go-sail", conf).Launch(routes.RegisterRoutes)
+	//挂载处理方法后启动
+	sail.WakeupHttp("go-sail", conf).SetupApiOption(apiOption).Hook(routes.RegisterRoutes, beforeFunc, afterFunc).Launch()
 }
 
 // RegisterServicesToNacos 将服务注册到注册中心

@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var rawStrArr = []string{
@@ -87,5 +88,96 @@ func TestRandomDigitalChars(t *testing.T) {
 		s := RandomDigitalChars(v)
 		t.Log(s)
 		assert.Equal(t, v, len(s))
+	}
+}
+
+func TestRandomComplexString(t *testing.T) {
+	holders := []int{0, 1, 3, 5, 7, 8, 9, 33, 100}
+	for _, v := range holders {
+		s := RandomComplexString(v)
+		t.Log(s)
+		assert.Equal(t, v, len(s))
+	}
+}
+
+func TestStringReverse(t *testing.T) {
+	holders := []string{"", "a", "ab", "abc", "1234567890"}
+	result := []string{"", "a", "ba", "cba", "0987654321"}
+	for index, v := range holders {
+		s := StringReverse(v)
+		t.Log(s)
+		assert.Equal(t, result[index], s)
+	}
+}
+
+func TestStringShuffle(t *testing.T) {
+	holders := []string{"", "a", "ab", "abc", "1234567890"}
+	for _, v := range holders {
+		s := StringShuffle(v)
+		t.Log(s)
+	}
+}
+
+func TestStringPaddingLeft(t *testing.T) {
+	holders := []struct {
+		raw     string
+		padChar string
+		length  int
+		result  string
+	}{
+		{"", "=", 1, "="},
+		{"", "=", 2, "=="},
+		{"", "=", 3, "==="},
+		{"a", "=", 1, "a"},
+		{"a", "=", 2, "=a"},
+		{"a", "=", 3, "==a"},
+	}
+	for _, v := range holders {
+		s := StringPaddingLeft(v.raw, v.padChar, v.length)
+		t.Log(s)
+		assert.Equal(t, v.result, s)
+	}
+}
+
+func TestStringPaddingRight(t *testing.T) {
+	holders := []struct {
+		raw     string
+		padChar string
+		length  int
+		result  string
+	}{
+		{"", "=", 1, "="},
+		{"", "=", 2, "=="},
+		{"", "=", 3, "==="},
+		{"a", "=", 1, "a"},
+		{"a", "=", 2, "a="},
+		{"a", "=", 3, "a=="},
+	}
+	for _, v := range holders {
+		s := StringPaddingRight(v.raw, v.padChar, v.length)
+		t.Log(s)
+		assert.Equal(t, v.result, s)
+	}
+}
+
+func TestStringPaddingBoth(t *testing.T) {
+	holders := []struct {
+		raw     string
+		padChar string
+		length  int
+		result  string
+	}{
+		{"", "=", 1, "="},
+		{"", "=", 2, "=="},
+		{"", "=", 3, "==="},
+		{"a", "=", 1, "a"},
+		{"a", "=", 2, "a="},
+		{"a", "+=", 3, "+a+"},
+		{"a", "=+", 4, "=a=="},
+	}
+	for _, v := range holders {
+		s := StringPaddingBoth(v.raw, v.padChar, v.length)
+		t.Log(s)
+		assert.Equal(t, v.result, s)
 	}
 }

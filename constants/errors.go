@@ -16,7 +16,7 @@ const (
 var initErrorCodeMsgMap = map[CodeType]string{
 	ErrNone:                      "SUCCESS",
 	ErrRequestParamsInvalid:      "Bad request parameters",
-	ErrAuthorizationTokenInvalid: "Token invalid",
+	ErrAuthorizationTokenInvalid: "Authorization token invalid",
 	ErrInternalServerError:       "Internal server error",
 }
 
