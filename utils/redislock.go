@@ -2,17 +2,22 @@ package utils
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/keepchen/go-sail/v3/lib/redis"
 )
 
+type stateListeners struct {
+	mux       *sync.Mutex
+	listeners map[string]chan struct{}
+}
+
 var (
-	lockTTL                         = time.Second * 10
-	redisExecuteTimeout             = time.Second * 3
-	renewalCheckInterval            = time.Second * 3
-	cancelRenewalFuncChannel        = make(chan struct{})
-	cancelRenewalFuncChannelCluster = make(chan struct{})
+	lockTTL              = time.Second * 10
+	redisExecuteTimeout  = time.Second * 3
+	renewalCheckInterval = time.Second * 1
+	states               = &stateListeners{mux: &sync.Mutex{}, listeners: make(map[string]chan struct{})}
 )
 
 type CancelFunc func()
@@ -51,10 +56,10 @@ func RedisLock(key string) (cancel CancelFunc) {
 	var (
 		locked     = false
 		ticker     = time.NewTicker(time.Millisecond)
-		cancelCh   = make(chan struct{})
+		cancelChan = make(chan struct{})
 		cancelFunc = func() {
-			cancelCh <- struct{}{}
-			close(cancelCh)
+			cancelChan <- struct{}{}
+			close(cancelChan)
 		}
 	)
 
@@ -71,7 +76,7 @@ LOOP:
 			if locked {
 				break LOOP
 			}
-		case <-cancelCh:
+		case <-cancelChan:
 			break LOOP
 		}
 	}
@@ -116,8 +121,12 @@ func RedisStandaloneLock(key string) bool {
 	}
 
 	if ok {
+		cancelChan := make(chan struct{})
+		states.mux.Lock()
+		states.listeners[key] = cancelChan
+		states.mux.Unlock()
 		//自动续期
-		go func(key string) {
+		go func() {
 			ticker := time.NewTicker(renewalCheckInterval)
 			innerCtx := context.Background()
 			defer ticker.Stop()
@@ -131,11 +140,11 @@ func RedisStandaloneLock(key string) bool {
 						break LOOP
 					}
 					_, _ = redis.GetInstance().Expire(innerCtx, key, lockTTL).Result()
-				case <-cancelRenewalFuncChannel:
+				case <-cancelChan:
 					break LOOP
 				}
 			}
-		}(key)
+		}()
 	}
 
 	return ok
@@ -156,7 +165,13 @@ func RedisStandaloneUnlock(key string) {
 	_, _ = redis.GetInstance().Del(ctx, key).Result()
 
 	go func() {
-		cancelRenewalFuncChannel <- struct{}{}
+		states.mux.Lock()
+		if ch, ok := states.listeners[key]; ok {
+			ch <- struct{}{}
+			close(ch)
+			delete(states.listeners, key)
+		}
+		states.mux.Unlock()
 	}()
 }
 
@@ -178,8 +193,12 @@ func RedisClusterLock(key string) bool {
 	}
 
 	if ok {
+		cancelChan := make(chan struct{})
+		states.mux.Lock()
+		states.listeners[key] = cancelChan
+		states.mux.Unlock()
 		//自动续期
-		go func(key string) {
+		go func() {
 			ticker := time.NewTicker(renewalCheckInterval)
 			innerCtx := context.Background()
 			defer ticker.Stop()
@@ -193,11 +212,11 @@ func RedisClusterLock(key string) bool {
 						break LOOP
 					}
 					_, _ = redis.GetClusterInstance().Expire(innerCtx, key, lockTTL).Result()
-				case <-cancelRenewalFuncChannelCluster:
+				case <-cancelChan:
 					break LOOP
 				}
 			}
-		}(key)
+		}()
 	}
 
 	return ok
@@ -218,6 +237,12 @@ func RedisClusterUnlock(key string) {
 	_, _ = redis.GetClusterInstance().Del(ctx, key).Result()
 
 	go func() {
-		cancelRenewalFuncChannelCluster <- struct{}{}
+		states.mux.Lock()
+		if ch, ok := states.listeners[key]; ok {
+			ch <- struct{}{}
+			close(ch)
+			delete(states.listeners, key)
+		}
+		states.mux.Unlock()
 	}()
 }
