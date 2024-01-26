@@ -139,10 +139,10 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine)) {
 	httpserver.EnablePProfOnDebugMode(f.conf.HttpServer, ginEngine)
 
 	//- prometheus
-	httpserver.RunPrometheusServerOnDebugMode(f.conf.HttpServer.Prometheus)
+	httpserver.RunPrometheusServerWhenEnable(f.conf.HttpServer.Prometheus)
 
 	//- swagger
-	httpserver.RunSwaggerServerOnDebugMode(f.conf.HttpServer.Swagger, ginEngine)
+	httpserver.RunSwaggerServerWhenEnable(f.conf.HttpServer.Swagger, ginEngine)
 
 	//- http server
 	wg.Add(1)
@@ -239,10 +239,10 @@ func (l *Launcher) Launch() {
 	httpserver.EnablePProfOnDebugMode(l.fw.conf.HttpServer, ginEngine)
 
 	//- prometheus
-	httpserver.RunPrometheusServerOnDebugMode(l.fw.conf.HttpServer.Prometheus)
+	httpserver.RunPrometheusServerWhenEnable(l.fw.conf.HttpServer.Prometheus)
 
 	//- swagger
-	httpserver.RunSwaggerServerOnDebugMode(l.fw.conf.HttpServer.Swagger, ginEngine)
+	httpserver.RunSwaggerServerWhenEnable(l.fw.conf.HttpServer.Swagger, ginEngine)
 
 	//- http server
 	wg.Add(1)

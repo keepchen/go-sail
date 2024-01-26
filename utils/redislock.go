@@ -57,11 +57,11 @@ func RedisLock(key string) (cancel CancelFunc) {
 		locked     = false
 		ticker     = time.NewTicker(time.Millisecond)
 		cancelChan = make(chan struct{})
-		cancelFunc = func() {
-			cancelChan <- struct{}{}
-			close(cancelChan)
-		}
 	)
+	cancel = func() {
+		cancelChan <- struct{}{}
+		close(cancelChan)
+	}
 
 LOOP:
 	for {
@@ -83,7 +83,7 @@ LOOP:
 
 	ticker.Stop()
 
-	return cancelFunc
+	return
 }
 
 // RedisUnlock redis锁-解锁（自动推测连接类型）
@@ -122,9 +122,7 @@ func RedisStandaloneLock(key string) bool {
 
 	if ok {
 		cancelChan := make(chan struct{})
-		states.mux.Lock()
-		states.listeners[key] = cancelChan
-		states.mux.Unlock()
+
 		//自动续期
 		go func() {
 			ticker := time.NewTicker(renewalCheckInterval)
@@ -135,16 +133,18 @@ func RedisStandaloneLock(key string) bool {
 			for {
 				select {
 				case <-ticker.C:
-					_, redisErr := redis.GetInstance().Get(innerCtx, key).Result()
-					if redisErr != nil {
+					if ok, redisErr := redis.GetInstance().Expire(innerCtx, key, lockTTL).Result(); !ok || redisErr != nil {
 						break LOOP
 					}
-					_, _ = redis.GetInstance().Expire(innerCtx, key, lockTTL).Result()
 				case <-cancelChan:
 					break LOOP
 				}
 			}
 		}()
+
+		states.mux.Lock()
+		states.listeners[key] = cancelChan
+		states.mux.Unlock()
 	}
 
 	return ok
@@ -166,12 +166,15 @@ func RedisStandaloneUnlock(key string) {
 
 	go func() {
 		states.mux.Lock()
-		if ch, ok := states.listeners[key]; ok {
-			ch <- struct{}{}
-			close(ch)
+		ch, ok := states.listeners[key]
+		if ok {
 			delete(states.listeners, key)
 		}
 		states.mux.Unlock()
+		if ok {
+			ch <- struct{}{}
+			close(ch)
+		}
 	}()
 }
 
@@ -194,9 +197,7 @@ func RedisClusterLock(key string) bool {
 
 	if ok {
 		cancelChan := make(chan struct{})
-		states.mux.Lock()
-		states.listeners[key] = cancelChan
-		states.mux.Unlock()
+
 		//自动续期
 		go func() {
 			ticker := time.NewTicker(renewalCheckInterval)
@@ -207,16 +208,18 @@ func RedisClusterLock(key string) bool {
 			for {
 				select {
 				case <-ticker.C:
-					_, redisErr := redis.GetClusterInstance().Get(innerCtx, key).Result()
-					if redisErr != nil {
+					if ok, redisErr := redis.GetClusterInstance().Expire(innerCtx, key, lockTTL).Result(); !ok || redisErr != nil {
 						break LOOP
 					}
-					_, _ = redis.GetClusterInstance().Expire(innerCtx, key, lockTTL).Result()
 				case <-cancelChan:
 					break LOOP
 				}
 			}
 		}()
+
+		states.mux.Lock()
+		states.listeners[key] = cancelChan
+		states.mux.Unlock()
 	}
 
 	return ok
@@ -238,11 +241,14 @@ func RedisClusterUnlock(key string) {
 
 	go func() {
 		states.mux.Lock()
-		if ch, ok := states.listeners[key]; ok {
-			ch <- struct{}{}
-			close(ch)
+		ch, ok := states.listeners[key]
+		if ok {
 			delete(states.listeners, key)
 		}
 		states.mux.Unlock()
+		if ok {
+			ch <- struct{}{}
+			close(ch)
+		}
 	}()
 }

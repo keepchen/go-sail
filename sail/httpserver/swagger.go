@@ -7,10 +7,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// RunSwaggerServerOnDebugMode 启动swagger文档服务
+// RunSwaggerServerWhenEnable 启动swagger文档服务
 //
 // 当配置文件指明启用时才会启动
-func RunSwaggerServerOnDebugMode(conf config.SwaggerConf, ginEngine *gin.Engine) {
+func RunSwaggerServerWhenEnable(conf config.SwaggerConf, ginEngine *gin.Engine) {
 	if !conf.Enable {
 		//如果不是调试模式就不注册swagger路由
 		return
