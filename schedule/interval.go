@@ -5,7 +5,7 @@ import "time"
 // Every 每隔多久执行一次
 //
 // Note: interval至少需要大于等于1毫秒，否则将被设置为1毫秒
-func (j *TaskJob) Every(interval time.Duration) (cancel CancelFunc) {
+func (j *taskJob) Every(interval time.Duration) (cancel CancelFunc) {
 	if interval.Milliseconds() < 1 {
 		interval = time.Millisecond
 	}
@@ -18,7 +18,7 @@ func (j *TaskJob) Every(interval time.Duration) (cancel CancelFunc) {
 }
 
 // EverySecond 每秒执行一次
-func (j *TaskJob) EverySecond() (cancel CancelFunc) {
+func (j *taskJob) EverySecond() (cancel CancelFunc) {
 	j.interval = time.Second
 	j.run()
 
@@ -28,7 +28,7 @@ func (j *TaskJob) EverySecond() (cancel CancelFunc) {
 }
 
 // EveryFiveSeconds 每5秒执行一次
-func (j *TaskJob) EveryFiveSeconds() (cancel CancelFunc) {
+func (j *taskJob) EveryFiveSeconds() (cancel CancelFunc) {
 	j.interval = time.Second * 5
 	j.run()
 
@@ -38,7 +38,7 @@ func (j *TaskJob) EveryFiveSeconds() (cancel CancelFunc) {
 }
 
 // EveryTenSeconds 每10秒执行一次
-func (j *TaskJob) EveryTenSeconds() (cancel CancelFunc) {
+func (j *taskJob) EveryTenSeconds() (cancel CancelFunc) {
 	j.interval = time.Second * 10
 	j.run()
 
@@ -48,7 +48,7 @@ func (j *TaskJob) EveryTenSeconds() (cancel CancelFunc) {
 }
 
 // EveryTwentySeconds 每20秒执行一次
-func (j *TaskJob) EveryTwentySeconds() (cancel CancelFunc) {
+func (j *taskJob) EveryTwentySeconds() (cancel CancelFunc) {
 	j.interval = time.Second * 20
 	j.run()
 
@@ -58,7 +58,7 @@ func (j *TaskJob) EveryTwentySeconds() (cancel CancelFunc) {
 }
 
 // EveryThirtySeconds 每30秒执行一次
-func (j *TaskJob) EveryThirtySeconds() (cancel CancelFunc) {
+func (j *taskJob) EveryThirtySeconds() (cancel CancelFunc) {
 	j.interval = time.Second * 30
 	j.run()
 
@@ -68,7 +68,7 @@ func (j *TaskJob) EveryThirtySeconds() (cancel CancelFunc) {
 }
 
 // EveryMinute 每分钟执行一次
-func (j *TaskJob) EveryMinute() (cancel CancelFunc) {
+func (j *taskJob) EveryMinute() (cancel CancelFunc) {
 	j.interval = time.Minute
 	j.run()
 
@@ -78,7 +78,7 @@ func (j *TaskJob) EveryMinute() (cancel CancelFunc) {
 }
 
 // EveryFiveMinutes 每5分钟执行一次
-func (j *TaskJob) EveryFiveMinutes() (cancel CancelFunc) {
+func (j *taskJob) EveryFiveMinutes() (cancel CancelFunc) {
 	j.interval = time.Minute * 5
 	j.run()
 
@@ -88,7 +88,7 @@ func (j *TaskJob) EveryFiveMinutes() (cancel CancelFunc) {
 }
 
 // EveryTenMinutes 每10分钟执行一次
-func (j *TaskJob) EveryTenMinutes() (cancel CancelFunc) {
+func (j *taskJob) EveryTenMinutes() (cancel CancelFunc) {
 	j.interval = time.Minute * 10
 	j.run()
 
@@ -98,7 +98,7 @@ func (j *TaskJob) EveryTenMinutes() (cancel CancelFunc) {
 }
 
 // EveryTwentyMinutes 每20分钟执行一次
-func (j *TaskJob) EveryTwentyMinutes() (cancel CancelFunc) {
+func (j *taskJob) EveryTwentyMinutes() (cancel CancelFunc) {
 	j.interval = time.Minute * 20
 	j.run()
 
@@ -108,7 +108,7 @@ func (j *TaskJob) EveryTwentyMinutes() (cancel CancelFunc) {
 }
 
 // EveryThirtyMinutes 每30分钟执行一次
-func (j *TaskJob) EveryThirtyMinutes() (cancel CancelFunc) {
+func (j *taskJob) EveryThirtyMinutes() (cancel CancelFunc) {
 	j.interval = time.Minute * 30
 	j.run()
 
@@ -118,7 +118,7 @@ func (j *TaskJob) EveryThirtyMinutes() (cancel CancelFunc) {
 }
 
 // Hourly 每1小时执行一次
-func (j *TaskJob) Hourly() (cancel CancelFunc) {
+func (j *taskJob) Hourly() (cancel CancelFunc) {
 	j.interval = time.Hour
 	j.run()
 
@@ -128,7 +128,7 @@ func (j *TaskJob) Hourly() (cancel CancelFunc) {
 }
 
 // EveryFiveHours 每5小时执行一次
-func (j *TaskJob) EveryFiveHours() (cancel CancelFunc) {
+func (j *taskJob) EveryFiveHours() (cancel CancelFunc) {
 	j.interval = time.Hour * 5
 	j.run()
 
@@ -138,7 +138,7 @@ func (j *TaskJob) EveryFiveHours() (cancel CancelFunc) {
 }
 
 // EveryTenHours 每10小时执行一次
-func (j *TaskJob) EveryTenHours() (cancel CancelFunc) {
+func (j *taskJob) EveryTenHours() (cancel CancelFunc) {
 	j.interval = time.Hour * 10
 	j.run()
 
@@ -148,7 +148,7 @@ func (j *TaskJob) EveryTenHours() (cancel CancelFunc) {
 }
 
 // EveryTwentyHours 每20小时执行一次
-func (j *TaskJob) EveryTwentyHours() (cancel CancelFunc) {
+func (j *taskJob) EveryTwentyHours() (cancel CancelFunc) {
 	j.interval = time.Hour * 20
 	j.run()
 
@@ -158,7 +158,7 @@ func (j *TaskJob) EveryTwentyHours() (cancel CancelFunc) {
 }
 
 // Daily 每天执行一次
-func (j *TaskJob) Daily() (cancel CancelFunc) {
+func (j *taskJob) Daily() (cancel CancelFunc) {
 	j.interval = time.Hour * 24
 	j.run()
 
@@ -168,7 +168,7 @@ func (j *TaskJob) Daily() (cancel CancelFunc) {
 }
 
 // Weekly 每周执行一次（每7天）
-func (j *TaskJob) Weekly() (cancel CancelFunc) {
+func (j *taskJob) Weekly() (cancel CancelFunc) {
 	j.interval = time.Hour * 24 * 7
 	j.run()
 
@@ -178,7 +178,7 @@ func (j *TaskJob) Weekly() (cancel CancelFunc) {
 }
 
 // Monthly 每月执行一次（每30天）
-func (j *TaskJob) Monthly() (cancel CancelFunc) {
+func (j *taskJob) Monthly() (cancel CancelFunc) {
 	j.interval = time.Hour * 24 * 30
 	j.run()
 
@@ -188,7 +188,7 @@ func (j *TaskJob) Monthly() (cancel CancelFunc) {
 }
 
 // Yearly 每年执行一次（每365天）
-func (j *TaskJob) Yearly() (cancel CancelFunc) {
+func (j *taskJob) Yearly() (cancel CancelFunc) {
 	j.interval = time.Hour * 24 * 365
 	j.run()
 

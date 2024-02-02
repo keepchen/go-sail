@@ -10,24 +10,36 @@ import (
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
-type Emitter interface {
-	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter
-	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter
-	Status(httpCode int) Emitter
+// Responder 响应器
+type Responder interface {
+	// Builder 组装返回数据
+	//
+	// Assemble 方法的语法糖
+	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
+	// Assemble 组装返回数据
+	//
+	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.RequestEntry中间件)
+	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
+	// Status 指定http状态码
+	//
+	// 该方法会覆盖 Assemble 解析的http状态码值
+	Status(httpCode int) Responder
+	// SendWithCode 以指定http状态码响应请求
 	SendWithCode(httpCode int)
+	// Send 响应请求
 	Send()
 }
 
-type API struct {
+type responseEngine struct {
 	engine   *gin.Context
 	httpCode int
 	data     interface{}
 }
 
-var _ Emitter = &API{}
+var _ Responder = &responseEngine{}
 
-func New(c *gin.Context) Emitter {
-	return &API{
+func New(c *gin.Context) Responder {
+	return &responseEngine{
 		engine: c,
 	}
 }
@@ -41,26 +53,35 @@ func New(c *gin.Context) Emitter {
 // Response(c).Builder(...).Send()
 //
 // New 方法的语法糖
-func Response(c *gin.Context) Emitter {
+func Response(c *gin.Context) Responder {
 	return New(c)
 }
 
 // Builder 组装返回数据
 //
 // Assemble 方法的语法糖
-func (a *API) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter {
+func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
 	return a.Assemble(code, resp, message...)
 }
 
 // Assemble 组装返回数据
 //
-// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.Before中间件)
-func (a *API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Emitter {
+// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.RequestEntry中间件)
+func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
 	var (
 		body      dto.Base
 		requestId string
 		httpCode  int
+		language  = []string{"en"}
 	)
+	//从上下文中获取语言代码
+	if detectAcceptLanguage {
+		if acceptLanguage, ok := a.engine.Get("language"); ok {
+			if lang, assertOk := acceptLanguage.(string); assertOk {
+				language[0] = lang
+			}
+		}
+	}
 	//从header中读取X-Request-Id
 	if r1Id := a.engine.GetHeader("X-Request-Id"); len(r1Id) > 0 {
 		requestId = r1Id
@@ -79,7 +100,7 @@ func (a *API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...
 		//改写了默认成功code码，且当前code码为None时，需要使用改写后的值
 		body.Code = anotherErrNoneCode
 	}
-	body.Message = body.Code.String()
+	body.Message = body.Code.String(language...)
 	body.Timestamp = time.Now().In(loc).UnixMilli()
 	switch code {
 	case constants.ErrNone, anotherErrNoneCode:
@@ -134,18 +155,18 @@ func (a *API) Assemble(code constants.ICodeType, resp dto.IResponse, message ...
 // Status 指定http状态码
 //
 // 该方法会覆盖 Assemble 解析的http状态码值
-func (a *API) Status(httpCode int) Emitter {
+func (a *responseEngine) Status(httpCode int) Responder {
 	a.httpCode = httpCode
 
 	return a
 }
 
 // SendWithCode 以指定http状态码响应请求
-func (a *API) SendWithCode(httpCode int) {
+func (a *responseEngine) SendWithCode(httpCode int) {
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }
 
 // Send 响应请求
-func (a *API) Send() {
+func (a *responseEngine) Send() {
 	a.SendWithCode(a.httpCode)
 }

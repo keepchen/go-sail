@@ -10,6 +10,8 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/keepchen/go-sail/v3/http/middleware"
+
 	"github.com/keepchen/go-sail/v3/sail/config"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +21,10 @@ import (
 )
 
 // InitGinEngine 初始化gin引擎
+//
+// # Note:
+//
+// 该方法会默认使用 RequestEntry 中间件
 func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 	var r *gin.Engine
 	if conf.Debug {
@@ -29,6 +35,8 @@ func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 		gin.DisableConsoleColor()
 		r = gin.New()
 	}
+
+	r.Use(middleware.RequestEntry())
 
 	return r
 }

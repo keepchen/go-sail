@@ -10,12 +10,13 @@ import (
 //
 // 通过解析请求头中的`Accept-Language`字段得到
 //
-// 默认为`en-US`
+// 默认为`en`
 func DetectUserAgentLanguage() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var language = "en-US"
+		var language = "en"
 		al := c.Request.Header.Get("accept-language")
 		if len(al) > 0 {
+			//example: zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7
 			als := strings.Split(al, ",")
 			if len(als) > 0 {
 				language = als[0]

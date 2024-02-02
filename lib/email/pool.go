@@ -17,8 +17,22 @@ type Envelope struct {
 	Callback func(e *Envelope, err error) //回调函数
 }
 
-// Pool 发送池
-type Pool struct {
+// Sender 发送者
+type Sender interface {
+	// Mount 加入发送队列
+	Mount(index int, envelope *Envelope)
+	// Emit 启动队列
+	Emit()
+	// Done 发送完成
+	Done()
+	// 初始化发送协程
+	makeWorkers()
+	// 执行发送操作
+	send(ep *Envelope) error
+}
+
+// sendPool 发送池
+type sendPool struct {
 	workers      []chan *Envelope
 	throttle     time.Duration
 	workersCount int
@@ -27,9 +41,11 @@ type Pool struct {
 	exit         chan struct{}
 }
 
+var _ Sender = &sendPool{}
+
 // NewPool 实例化
-func NewPool(conf Conf) *Pool {
-	pool := &Pool{
+func NewPool(conf Conf) Sender {
+	pool := &sendPool{
 		conf:         conf,
 		workersCount: conf.Workers,
 		throttle:     time.Duration(conf.WorkerThrottleSeconds) * time.Second,
@@ -42,7 +58,7 @@ func NewPool(conf Conf) *Pool {
 }
 
 // Mount 加入发送队列
-func (p *Pool) Mount(index int, envelope *Envelope) {
+func (p *sendPool) Mount(index int, envelope *Envelope) {
 	p.wg.Add(1)
 	go func(ep *Envelope) {
 		p.workers[index%p.workersCount] <- ep
@@ -50,7 +66,7 @@ func (p *Pool) Mount(index int, envelope *Envelope) {
 }
 
 // Emit 启动队列
-func (p *Pool) Emit() {
+func (p *sendPool) Emit() {
 	handler := func(index int, wk chan *Envelope) {
 	LOOP:
 		for {
@@ -79,7 +95,7 @@ func (p *Pool) Emit() {
 }
 
 // Done 发送完成
-func (p *Pool) Done() {
+func (p *sendPool) Done() {
 	p.wg.Wait()
 	for index := range p.workers {
 		close(p.workers[index])
@@ -89,7 +105,7 @@ func (p *Pool) Done() {
 }
 
 // 初始化发送协程
-func (p *Pool) makeWorkers() {
+func (p *sendPool) makeWorkers() {
 	if p.workersCount < 1 {
 		p.workersCount = 1
 	}
@@ -105,7 +121,7 @@ func (p *Pool) makeWorkers() {
 }
 
 // 执行发送操作
-func (p *Pool) send(ep *Envelope) error {
+func (p *sendPool) send(ep *Envelope) error {
 	headers := map[string]string{
 		"From":         ep.From,
 		"Subject":      ep.Subject,

@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	anotherErrNoneCode constants.ICodeType = constants.ErrNone         //被改写后的成功code码
-	emptyDataField     interface{}         = nil                       //空data字段
-	forceHttpCode200                       = false                     //强制使用200作为http的状态码
-	timezone                               = constants.DefaultTimeZone //时区
+	anotherErrNoneCode   constants.ICodeType = constants.ErrNone         //被改写后的成功code码
+	emptyDataField       interface{}         = nil                       //空data字段
+	forceHttpCode200                         = false                     //强制使用200作为http的状态码
+	timezone                                 = constants.DefaultTimeZone //时区
+	detectAcceptLanguage                     = false                     //是否检测客户端语言
 )
 
 var (
@@ -32,6 +33,8 @@ type Option struct {
 	ForceHttpCode200 bool
 	//时区
 	Timezone string
+	//是否检测客户端语言，用于错误码消息返回
+	DetectAcceptLanguage bool
 }
 
 const (
@@ -50,7 +53,7 @@ const (
 // 2.空数据序列化结构
 func SetupOption(opt Option) {
 	if opt.ErrNoneCode != nil {
-		constants.RegisterCode(constants.CodeType(opt.ErrNoneCode.Int()), opt.ErrNoneCodeMsg)
+		constants.RegisterCode(constants.LanguageEnglish, map[constants.ICodeType]string{opt.ErrNoneCode: opt.ErrNoneCodeMsg})
 		anotherErrNoneCode = opt.ErrNoneCode
 	}
 	switch opt.EmptyDataStruct {
@@ -71,6 +74,8 @@ func SetupOption(opt Option) {
 	if len(opt.Timezone) > 0 {
 		timezone = opt.Timezone
 	}
+
+	detectAcceptLanguage = opt.DetectAcceptLanguage
 
 	lc, err := time.LoadLocation(timezone)
 	if err != nil {
