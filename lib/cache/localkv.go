@@ -17,10 +17,13 @@ type localCache struct {
 	maps map[string]*localCacheValue
 }
 
-var lc *localCache
+var (
+	lc   *localCache
+	once sync.Once
+)
 
 func init() {
-	(&sync.Once{}).Do(func() {
+	once.Do(func() {
 		lc = &localCache{
 			mux:  &sync.Mutex{},
 			maps: make(map[string]*localCacheValue),

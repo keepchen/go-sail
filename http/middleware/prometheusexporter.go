@@ -38,12 +38,13 @@ func (r responseBodyWriter) Write(b []byte) (int, error) {
 }
 
 var (
+	once                        sync.Once
 	metricsSummaryVecLatency    *prometheus.SummaryVec
 	metricsSummaryVecHttpStatus *prometheus.SummaryVec
 )
 
 func init() {
-	(&sync.Once{}).Do(func() {
+	once.Do(func() {
 		svl := prometheus.NewSummaryVec(prometheus.SummaryOpts{
 			Name: "api_durations",
 			Help: "[api] http latency distributions (milliseconds)",

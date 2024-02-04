@@ -16,7 +16,10 @@ type errorCodeTypeMsgMap struct {
 	maps map[LanguageCode]map[ICodeType]string
 }
 
-var ctm *errorCodeTypeMsgMap
+var (
+	ctm  *errorCodeTypeMsgMap
+	once sync.Once
+)
 
 // RegisterCode 注册常量代码
 //
@@ -30,7 +33,7 @@ func RegisterCode(language LanguageCode, i18nMsg map[ICodeType]string) {
 }
 
 func init() {
-	(&sync.Once{}).Do(func() {
+	once.Do(func() {
 		ctm = &errorCodeTypeMsgMap{
 			mux:  &sync.RWMutex{},
 			maps: make(map[LanguageCode]map[ICodeType]string),

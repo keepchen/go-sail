@@ -117,10 +117,14 @@ type taskJobPool struct {
 
 var taskSchedules *taskJobPool
 
-var cronJob *cron.Cron
+var (
+	cronJob       *cron.Cron
+	cronStartOnce sync.Once
+	initOnce      sync.Once
+)
 
 func init() {
-	(&sync.Once{}).Do(func() {
+	initOnce.Do(func() {
 		taskSchedules = &taskJobPool{
 			mux:  &sync.RWMutex{},
 			pool: make(map[string]*taskJob),
@@ -241,7 +245,7 @@ func (j *taskJob) run() {
 //
 // +------------------------- minute (0 - 59)
 func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
-	(&sync.Once{}).Do(func() {
+	cronStartOnce.Do(func() {
 		cronJob = cron.New()
 		cronJob.Start()
 	})
