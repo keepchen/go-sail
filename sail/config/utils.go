@@ -53,7 +53,7 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 //
 // @param format 内容格式，支持: json|yaml|toml
 //
-// @param writeToFile 写入到目标文件（可选）
+// @param source 配置源字符
 func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 	var (
 		formatList = [...]string{"json", "yaml", "toml"}
@@ -74,4 +74,34 @@ func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 	}
 
 	return &cfg, err
+}
+
+// ParseConfigFromBytesToDst 从字符串解析配置到目标结构
+//
+// @param format 内容格式，支持: json|yaml|toml
+//
+// @param source 配置源字符
+//
+// @param dst 目标结构
+//
+// @return 返回值与参数dst类型相同，需要进行断言
+func ParseConfigFromBytesToDst(format string, source []byte, dst interface{}) (interface{}, error) {
+	var (
+		formatList = [...]string{"json", "yaml", "toml"}
+		err        error
+	)
+
+	switch format {
+	case formatList[0]:
+		err = json.Unmarshal(source, dst)
+	case formatList[1]:
+		err = yaml.Unmarshal(source, dst)
+	case formatList[2]:
+		err = toml.Unmarshal(source, dst)
+	default:
+		fmt.Printf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+	}
+
+	return dst, err
 }

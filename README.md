@@ -1,5 +1,5 @@
 <div align="center">
-    <h1><img src="./sailboat-solid.svg" alt="sailboat-solid" title="sailboat-solid" width="300" /></h1>
+    <h1><img src="./sailboat-solid-colorful.svg" alt="sailboat-solid" title="sailboat-solid" width="300" /></h1>
 </div> 
 
 [![Go](https://github.com/keepchen/go-sail/actions/workflows/go.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/go.yml)  [![CodeQL](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml)  [![Go Report Card](https://goreportcard.com/badge/github.com/keepchen/go-sail/v3)](https://goreportcard.com/report/github.com/keepchen/go-sail/v3)  
@@ -20,6 +20,7 @@ import (
     "github.com/gin-gonic/gin"
     "github.com/keepchen/go-sail/v3/constants"
     "github.com/keepchen/go-sail/v3/http/api"
+    "github.com/keepchen/go-sail/v3/lib/logger"
     "github.com/keepchen/go-sail/v3/sail"
     "github.com/keepchen/go-sail/v3/sail/config"
 )
@@ -51,7 +52,7 @@ var (
         ForceHttpCode200: true,
     }
     registerRoutes = func(ginEngine *gin.Engine) {
-        ginEngine.GET("/hello", func(c *gin.Conext){
+        ginEngine.GET("/hello", func(c *gin.Context){
             c.String(http.StatusOK, "%s", "hello, world!")
         })
     }
@@ -63,7 +64,10 @@ var (
     }
 )
 
-sail.WakeupHttp("go-sail", conf, apiOption).Launch(registerRoutes, before, after)
+sail.WakeupHttp("go-sail", conf).
+	SetupApiOption(apiOption).
+	Hook(registerRoutes, before, after).
+	Launch()
 ```  
 当你看到终端如下图所示内容就表示服务启动成功了：  
 
@@ -138,7 +142,7 @@ type UserInfo struct {
 
 //implement dto.IResponse interface
 func (v UserInfo) GetData() interface{} {
-	return v.Data
+    return v.Data
 }
 
 //handler

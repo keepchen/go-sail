@@ -21,9 +21,26 @@ import (
 
 // Sailor 船员就位
 type Sailor interface {
+	// SetupApiOption
+	//
+	// 设置统一返回配置
 	SetupApiOption(opt *api.Option) Sailor
-	Launch(registerRoutes func(ginEngine *gin.Engine))
+	// Hook 挂载相关方法
+	//
+	// @param registerRoutes 注册路由函数
+	//
+	// @param beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
+	//
+	// @param afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
 	Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad
+	// Launch 启动
+	//
+	// @param registerRoutes 注册路由函数
+	//
+	// # Note:
+	//
+	// 未设置前置自动函数、未设置后置自定义函数
+	Launch(registerRoutes func(ginEngine *gin.Engine))
 }
 
 // Framework 框架配置
@@ -37,6 +54,11 @@ var _ Sailor = &Framework{}
 
 // Launchpad 启动台
 type Launchpad interface {
+	// Launch 启动
+	//
+	// # Note:
+	//
+	// 已注册路由、已设置前置自动函数、已设置后置自定义函数
 	Launch()
 }
 

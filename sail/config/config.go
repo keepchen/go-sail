@@ -54,6 +54,11 @@ type KafkaExtraConf struct {
 
 var config *Config
 
+// Set 设置配置
+func Set(conf *Config) {
+	config = conf
+}
+
 // Get 获取配置
 func Get() *Config {
 	return config
