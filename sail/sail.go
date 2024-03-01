@@ -1,6 +1,9 @@
 package sail
 
 import (
+	"fmt"
+	"runtime"
+	"runtime/debug"
 	"sync"
 
 	"github.com/keepchen/go-sail/v3/lib/etcd"
@@ -107,6 +110,13 @@ func (f *Framework) SetupApiOption(opt *api.Option) Sailor {
 func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine)) {
 	defer func() {
 		if err := recover(); err != nil {
+			pc := make([]uintptr, 10)
+			n := runtime.Callers(3, pc)
+			frames := runtime.CallersFrames(pc[:n])
+			frame, _ := frames.Next()
+			fmt.Printf("[GO-SAIL] Try to recover but failed\nReason: %v\nCaller: %s:%d -> %s\nStack:\n",
+				err, frame.File, frame.Line, frame.Function)
+			debug.PrintStack()
 			logger.GetLogger().Error("---- Recovered ----", zap.Any("error", err))
 		}
 	}()
@@ -199,6 +209,13 @@ func (f *Framework) Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc,
 func (l *Launcher) Launch() {
 	defer func() {
 		if err := recover(); err != nil {
+			pc := make([]uintptr, 10)
+			n := runtime.Callers(3, pc)
+			frames := runtime.CallersFrames(pc[:n])
+			frame, _ := frames.Next()
+			fmt.Printf("[GO-SAIL] Try to recover but failed\nReason: %v\nCaller: %s:%d -> %s\nStack:\n",
+				err, frame.File, frame.Line, frame.Function)
+			debug.PrintStack()
 			logger.GetLogger().Error("---- Recovered ----", zap.Any("error", err))
 		}
 	}()
