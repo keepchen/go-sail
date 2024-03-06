@@ -10,12 +10,12 @@ import (
 
 var ctx = context.Background()
 
-//ExampleUsage 使用示例
+// ExampleUsage 使用示例
 //
-//@see https://github.com/go-redis/redis
+// @see https://github.com/go-redis/redis
 func ExampleUsage() {
 	conf := Conf{
-		Addr: Addr{
+		Endpoint: Endpoint{
 			Host:     "localhost",
 			Port:     6379,
 			Password: "",

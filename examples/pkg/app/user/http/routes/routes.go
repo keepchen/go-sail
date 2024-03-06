@@ -20,7 +20,7 @@ func RegisterRoutes(r *gin.Engine) {
 		"Access-Control-Allow-Headers": "Authorization, Content-Type, Content-Length, Some-Other-Headers",
 	}
 	//全局打印请求载荷、放行跨域请求、写入Prometheus exporter
-	r.Use(mdlw.RequestEntry(), mdlw.PrintRequestPayload(), mdlw.WithCors(allowHeaders), mdlw.PrometheusExporter())
+	r.Use(mdlw.LogTrace(), mdlw.PrintRequestPayload(), mdlw.WithCors(allowHeaders), mdlw.PrometheusExporter())
 	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.GET("/say-hello", handler.SayHello)

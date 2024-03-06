@@ -73,8 +73,8 @@ func New(conf Conf, topic, groupID string) ([]*kafkaLib.Conn, *kafkaLib.Writer, 
 
 // InitConnections 初始化连接
 func InitConnections(conf Conf) {
-	var connections = make([]*kafkaLib.Conn, 0, len(conf.AddrList))
-	for _, addr := range conf.AddrList {
+	var connections = make([]*kafkaLib.Conn, 0, len(conf.Endpoints))
+	for _, addr := range conf.Endpoints {
 		var (
 			conn *kafkaLib.Conn
 			err  error
@@ -112,8 +112,8 @@ func InitConnections(conf Conf) {
 
 // NewConnections 实例化新的连接
 func NewConnections(conf Conf) []*kafkaLib.Conn {
-	var connections = make([]*kafkaLib.Conn, 0, len(conf.AddrList))
-	for _, addr := range conf.AddrList {
+	var connections = make([]*kafkaLib.Conn, 0, len(conf.Endpoints))
+	for _, addr := range conf.Endpoints {
 		var (
 			conn *kafkaLib.Conn
 			err  error
@@ -148,7 +148,7 @@ func NewConnections(conf Conf) []*kafkaLib.Conn {
 // InitWriter 初始化写实例
 func InitWriter(conf Conf, topic string) {
 	writer := &kafkaLib.Writer{
-		Addr:     kafkaLib.TCP(conf.AddrList...),
+		Addr:     kafkaLib.TCP(conf.Endpoints...),
 		Topic:    topic,
 		Balancer: &kafkaLib.Murmur2Balancer{},
 	}
@@ -177,7 +177,7 @@ func InitWriter(conf Conf, topic string) {
 // NewWriter 实例化新的写实例
 func NewWriter(conf Conf, topic string) *kafkaLib.Writer {
 	writer := &kafkaLib.Writer{
-		Addr:     kafkaLib.TCP(conf.AddrList...),
+		Addr:     kafkaLib.TCP(conf.Endpoints...),
 		Topic:    topic,
 		Balancer: &kafkaLib.Murmur2Balancer{},
 	}
@@ -222,7 +222,7 @@ func InitReader(conf Conf, topic, groupID string) {
 	}
 
 	reader := kafkaLib.NewReader(kafkaLib.ReaderConfig{
-		Brokers: conf.AddrList,
+		Brokers: conf.Endpoints,
 		GroupID: groupID,
 		Topic:   topic,
 		Dialer:  dialer,
@@ -258,7 +258,7 @@ func NewReader(conf Conf, topic, groupID string) *kafkaLib.Reader {
 	}
 
 	reader := kafkaLib.NewReader(kafkaLib.ReaderConfig{
-		Brokers: conf.AddrList,
+		Brokers: conf.Endpoints,
 		GroupID: groupID,
 		Topic:   topic,
 		Dialer:  dialer,

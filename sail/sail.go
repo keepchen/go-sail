@@ -127,37 +127,37 @@ func (f *Framework) Launch(registerRoutes func(ginEngine *gin.Engine)) {
 	logger.Init(f.conf.LoggerConf, f.appName)
 
 	//- redis(standalone)
-	if len(f.conf.RedisConf.Host) > 0 {
+	if f.conf.RedisConf.Enable {
 		redis.InitRedis(f.conf.RedisConf)
 	}
 
 	//- redis(cluster)
-	if len(f.conf.RedisClusterConf.AddrList) > 0 {
+	if f.conf.RedisClusterConf.Enable {
 		redis.InitRedisCluster(f.conf.RedisClusterConf)
 	}
 
 	//- database
-	if len(f.conf.DBConf.DriverName) > 0 {
+	if f.conf.DBConf.Enable {
 		db.Init(f.conf.DBConf)
 	}
 
 	//- jwt
-	if len(f.conf.JwtConf.PublicKey) > 0 {
+	if f.conf.JwtConf.Enable {
 		f.conf.JwtConf.Load()
 	}
 
 	//- nats
-	if len(f.conf.NatsConf.Servers) > 0 {
+	if f.conf.NatsConf.Enable {
 		nats.Init(f.conf.NatsConf)
 	}
 
 	//- kafka
-	if len(f.conf.KafkaConf.Conf.AddrList) > 0 {
+	if f.conf.KafkaConf.Conf.Enable {
 		kafka.Init(f.conf.KafkaConf.Conf, f.conf.KafkaConf.Topic, f.conf.KafkaConf.GroupID)
 	}
 
 	//- etcd
-	if len(f.conf.EtcdConf.Endpoints) > 0 {
+	if f.conf.EtcdConf.Enable {
 		etcd.Init(f.conf.EtcdConf)
 	}
 
@@ -232,37 +232,37 @@ func (l *Launcher) Launch() {
 	logger.Init(l.fw.conf.LoggerConf, l.fw.appName)
 
 	//- redis(standalone)
-	if len(l.fw.conf.RedisConf.Host) > 0 {
+	if l.fw.conf.RedisConf.Enable {
 		redis.InitRedis(l.fw.conf.RedisConf)
 	}
 
 	//- redis(cluster)
-	if len(l.fw.conf.RedisClusterConf.AddrList) > 0 {
+	if l.fw.conf.RedisClusterConf.Enable {
 		redis.InitRedisCluster(l.fw.conf.RedisClusterConf)
 	}
 
 	//- database
-	if len(l.fw.conf.DBConf.DriverName) > 0 {
+	if l.fw.conf.DBConf.Enable {
 		db.Init(l.fw.conf.DBConf)
 	}
 
 	//- jwt
-	if len(l.fw.conf.JwtConf.PublicKey) > 0 {
+	if l.fw.conf.JwtConf.Enable {
 		l.fw.conf.JwtConf.Load()
 	}
 
 	//- nats
-	if len(l.fw.conf.NatsConf.Servers) > 0 {
+	if l.fw.conf.NatsConf.Enable {
 		nats.Init(l.fw.conf.NatsConf)
 	}
 
 	//- kafka
-	if len(l.fw.conf.KafkaConf.Conf.AddrList) > 0 {
+	if l.fw.conf.KafkaConf.Conf.Enable {
 		kafka.Init(l.fw.conf.KafkaConf.Conf, l.fw.conf.KafkaConf.Topic, l.fw.conf.KafkaConf.GroupID)
 	}
 
 	//- etcd
-	if len(l.fw.conf.EtcdConf.Endpoints) > 0 {
+	if l.fw.conf.EtcdConf.Enable {
 		etcd.Init(l.fw.conf.EtcdConf)
 	}
 

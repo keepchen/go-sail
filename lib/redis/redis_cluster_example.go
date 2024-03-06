@@ -10,13 +10,13 @@ import (
 
 var ctx2 = context.Background()
 
-//ExampleClusterUsage 使用示例
+// ExampleClusterUsage 使用示例
 //
-//@see https://github.com/go-redis/redis
+// @see https://github.com/go-redis/redis
 func ExampleClusterUsage() {
 	conf := ClusterConf{
 		SSLEnable: false,
-		AddrList: []Addr{
+		Endpoints: []Endpoint{
 			{
 				Host:     "localhost",
 				Port:     6379,

@@ -15,17 +15,20 @@ import (
 //
 // jwt:
 //
-//	public_key:
-//	private_key:
-//	algorithm: RS256
-//	hmac_secret: example
-//	token_issuer: authority
+//	 enable: false
+//		public_key:
+//		private_key:
+//		algorithm: RS256
+//		hmac_secret: example
+//		token_issuer: authority
 //
 // <toml example>
 //
 // # ::jwt密钥配置::
 //
 // [jwt]
+//
+// enable = false
 //
 // # 公钥文件或字符串
 //
@@ -47,6 +50,7 @@ import (
 //
 // token_issuer = "authority"
 type Conf struct {
+	Enable      bool   `yaml:"enable" toml:"enable" json:"enable"`                   //是否启用
 	PublicKey   string `yaml:"public_key" toml:"public_key" json:"public_key"`       //公钥字符串或公钥文件地址
 	PrivateKey  string `yaml:"private_key" toml:"private_key" json:"private_key"`    //私钥字符串或私钥文件地址
 	Algorithm   string `yaml:"algorithm" toml:"algorithm" json:"algorithm"`          //加密算法: RS256 | RS512 | HS512

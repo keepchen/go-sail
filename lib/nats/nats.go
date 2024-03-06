@@ -21,7 +21,7 @@ func initNats(conf Conf) *natsLib.Conn {
 		opts = natsLib.UserInfo(conf.Username, conf.Password)
 	}
 
-	conn, err := natsLib.Connect(strings.Join(conf.Servers, ","), opts)
+	conn, err := natsLib.Connect(strings.Join(conf.Endpoints, ","), opts)
 
 	if err != nil {
 		panic(err)

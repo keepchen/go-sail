@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// RequestEntry 请求入口
+// LogTrace 日志追踪
 //
 // 注入内容：
 //
@@ -23,7 +22,7 @@ import (
 // 4.客户端语言代码
 //
 // 作用是在请求入口注入必要的内容到上下文，供后续的请求调用链使用，一般用于日志追踪、链路追踪
-func RequestEntry() gin.HandlerFunc {
+func LogTrace() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
 			requestId string
@@ -45,18 +44,6 @@ func RequestEntry() gin.HandlerFunc {
 		c.Set("entryAt", time.Now().UnixNano())
 		c.Set("logger", logger.GetLogger().With(zap.String("requestId", requestId),
 			zap.String("spanId", spanId)))
-
-		//解析客户端语言并注入上下文
-		var language = "en"
-		al := c.Request.Header.Get("accept-language")
-		if len(al) > 0 {
-			//example: zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7
-			als := strings.Split(al, ",")
-			if len(als) > 0 {
-				language = als[0]
-			}
-		}
-		c.Set("language", language)
 
 		c.Next()
 	}

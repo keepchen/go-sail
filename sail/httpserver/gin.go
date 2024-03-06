@@ -36,7 +36,10 @@ func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 		r = gin.New()
 	}
 
-	r.Use(middleware.RequestEntry())
+	r.Use(middleware.LogTrace())
+	if conf.Prometheus.Enable {
+		r.Use(middleware.PrometheusExporter())
+	}
 
 	return r
 }

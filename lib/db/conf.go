@@ -6,6 +6,7 @@ package db
 //
 // datasource:
 //
+//	enable: false
 //	driver_name: mysql
 //	auto_migrate: true
 //	log_level: warn
@@ -43,6 +44,8 @@ package db
 // # ::数据库配置::
 //
 // [datasource]
+//
+// enable = false
 //
 // driver_name = "mysql"
 //
@@ -218,6 +221,7 @@ package db
 //
 // file = "sqlite.db"
 type Conf struct {
+	Enable         bool               `yaml:"enable" toml:"enable" json:"enable" default:"false"`                   //是否启用
 	DriverName     string             `yaml:"driver_name" toml:"driver_name" json:"driver_name" default:"mysql"`    //数据库类型
 	AutoMigrate    bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"auto_migrate" default:"false"` //是否自动同步表结构
 	LogLevel       string             `yaml:"log_level" toml:"log_level" json:"log_level" default:"info"`           //日志级别

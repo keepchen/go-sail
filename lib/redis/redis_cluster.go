@@ -30,24 +30,24 @@ func GetClusterInstance() *redisLib.ClusterClient {
 
 func initRedisCluster(conf ClusterConf) *redisLib.ClusterClient {
 	var (
-		addrs    = make([]string, len(conf.AddrList))
-		username string
-		password string
+		endpoints = make([]string, len(conf.Endpoints))
+		username  string
+		password  string
 	)
-	for i := 0; i < len(conf.AddrList); i++ {
-		addrs[i] = fmt.Sprintf("%s:%d", conf.AddrList[i].Host, conf.AddrList[i].Port)
-		if len(conf.AddrList[i].Password) != 0 {
-			password = conf.AddrList[i].Password
+	for i := 0; i < len(conf.Endpoints); i++ {
+		endpoints[i] = fmt.Sprintf("%s:%d", conf.Endpoints[i].Host, conf.Endpoints[i].Port)
+		if len(conf.Endpoints[i].Password) != 0 {
+			password = conf.Endpoints[i].Password
 		}
-		if len(conf.AddrList[i].Username) != 0 {
-			username = conf.AddrList[i].Username
+		if len(conf.Endpoints[i].Username) != 0 {
+			username = conf.Endpoints[i].Username
 		}
 	}
 	opts := &redisLib.ClusterOptions{
-		Addrs:        addrs,
+		Addrs:        endpoints,
 		Username:     username,
 		Password:     password,
-		MaxRedirects: len(conf.AddrList) - 1,
+		MaxRedirects: len(conf.Endpoints) - 1,
 	}
 	if opts.MaxRedirects < 3 {
 		opts.MaxRedirects = 3
