@@ -17,14 +17,12 @@ type Scheduler interface {
 	//
 	// 一个任务仅允许存在一个运行态
 	//
-	// Note: 该方法使用redis锁来保证唯一性，
+	// Note: 该方法使用redis锁来保证'全局'唯一性，
 	//
 	// 因此请确保先使用 redis.InitRedis 或
 	//
 	// redis.InitRedisCluster 实例化redis连接
 	WithoutOverlapping() Scheduler
-	//任务执行函数
-	run()
 	// Every 每隔多久执行一次
 	//
 	// Note: interval至少需要大于等于1毫秒，否则将被设置为1毫秒
@@ -65,6 +63,14 @@ type Scheduler interface {
 	Monthly() (cancel CancelFunc)
 	// Yearly 每年执行一次（每365天）
 	Yearly() (cancel CancelFunc)
+
+	// RunAfter 在一定时间后执行
+	//
+	// # Note
+	//
+	// 这是一个一次性任务，不会重复执行
+	RunAfter(delay time.Duration) (cancel CancelFunc)
+
 	// RunAt 在某一时刻执行
 	//
 	// @param crontabExpr Linux crontab风格的表达式
@@ -93,6 +99,10 @@ type Scheduler interface {
 	FirstDayOfMonthly() (cancel CancelFunc)
 	// LastDayOfMonthly 每月最后一天
 	LastDayOfMonthly() (cancel CancelFunc)
+	// FirstDayOfWeek 每周1的00:00
+	FirstDayOfWeek() (cancel CancelFunc)
+	// LastDayOfWeek 每周天的00:00
+	LastDayOfWeek() (cancel CancelFunc)
 }
 
 // taskJob 任务
@@ -136,6 +146,15 @@ func generateJobNameKey(name string) string {
 	return fmt.Sprintf("go-sail:task-schedule-locker:%s", utils.MD5Encrypt(name))
 }
 
+// NewJob 实例化任务
+//
+// @param name 任务名称唯一标识
+//
+// @param task 任务处理函数
+func NewJob(name string, task func()) Scheduler {
+	return Job(name, task)
+}
+
 // Job 实例化任务
 //
 // @param name 任务名称唯一标识
@@ -168,7 +187,7 @@ func Job(name string, task func()) Scheduler {
 //
 // 一个任务仅允许存在一个运行态
 //
-// Note: 该方法使用redis锁来保证唯一性，
+// Note: 该方法使用redis锁来保证'全局'唯一性，
 //
 // 因此请确保先使用 redis.InitRedis 或
 //
@@ -177,117 +196,6 @@ func (j *taskJob) WithoutOverlapping() Scheduler {
 	j.withoutOverlapping = true
 
 	return j
-}
-
-// 任务执行函数
-func (j *taskJob) run() {
-	go func() {
-		ticker := time.NewTicker(j.interval)
-		defer ticker.Stop()
-		wrappedTaskFunc := func() {
-			j.running = true
-
-			defer func() {
-				j.running = false
-			}()
-
-			if !j.withoutOverlapping {
-				j.task()
-				return
-			}
-			if utils.RedisTryLock(j.lockerKey) {
-				defer func() {
-					utils.RedisUnlock(j.lockerKey)
-					j.lockedByMe = false
-				}()
-				j.lockedByMe = true
-				j.task()
-			}
-		}
-	LISTEN:
-		for {
-			select {
-			case <-ticker.C:
-				go wrappedTaskFunc()
-			//收到退出信号，终止任务
-			case <-j.cancelTaskChan:
-				if j.withoutOverlapping && j.lockedByMe {
-					utils.RedisUnlock(j.lockerKey)
-				}
-
-				taskSchedules.mux.Lock()
-				delete(taskSchedules.pool, j.lockerKey)
-				taskSchedules.mux.Unlock()
-
-				break LISTEN
-			}
-		}
-	}()
-}
-
-// RunAt 在某一时刻执行
-//
-// @param crontabExpr Linux crontab风格的表达式
-//
-// *    *    *    *    *
-//
-// -    -    -    -    -
-//
-// |    |    |    |    |
-//
-// |    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7) OR sun...sat
-//
-// |    |    |    +---------- month (1 - 12) OR jan,feb,mar,apr ...
-//
-// |    |    +--------------- day of month (1 - 31)
-//
-// |    +-------------------- hour (0 - 23)
-//
-// +------------------------- minute (0 - 59)
-func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
-	cronStartOnce.Do(func() {
-		cronJob = cron.New()
-		cronJob.Start()
-	})
-
-	//因为AddFunc内部是协程启动，因此这里的方法使用同步方式调用
-	wrappedTaskFunc := func() {
-		j.running = true
-
-		defer func() {
-			j.running = false
-		}()
-
-		if !j.withoutOverlapping {
-			j.task()
-			return
-		}
-		if utils.RedisTryLock(j.lockerKey) {
-			defer func() {
-				utils.RedisUnlock(j.lockerKey)
-				j.lockedByMe = false
-			}()
-			j.lockedByMe = true
-			j.task()
-		}
-	}
-
-	jobID, jobErr := cronJob.AddFunc(crontabExpr, wrappedTaskFunc)
-	if jobErr != nil {
-		fmt.Printf("[GO-SAIL] <Schedule> add job {%s} failed: %v\n", j.name, jobErr.Error())
-	}
-
-	cancel = func() {
-		go func() {
-			cronJob.Remove(jobID)
-			taskSchedules.mux.Lock()
-			delete(taskSchedules.pool, j.lockerKey)
-			taskSchedules.mux.Unlock()
-			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", j.name)
-		}()
-	}
-
-	return
 }
 
 // JobIsRunning 查看任务是否正在执行

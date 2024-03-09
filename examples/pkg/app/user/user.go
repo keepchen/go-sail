@@ -89,13 +89,13 @@ func StartServer(wg *sync.WaitGroup) {
 		afterFunc = func() {
 			fmt.Println("call user function [after] to do something...")
 			job0 := "print now datetime"
-			cancel0 := schedule.Job(job0, func() {
+			cancel0 := schedule.NewJob(job0, func() {
 				fmt.Println("now: ", utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN))
 			}).RunAt(schedule.EveryMinute)
 			time.AfterFunc(time.Minute*3, cancel0)
 
 			job1 := "print hello"
-			cancel1 := schedule.Job(job1, func() {
+			cancel1 := schedule.NewJob(job1, func() {
 				time.Sleep(time.Second * 10)
 				fmt.Println(utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN), "hello")
 			}).EverySecond()

@@ -11,6 +11,8 @@ import (
 
 // LogTrace 日志追踪
 //
+// 作用是在请求入口注入必要的内容到上下文，供后续的请求调用链使用，一般用于日志追踪、链路追踪
+//
 // 注入内容：
 //
 // 1.请求id
@@ -19,9 +21,15 @@ import (
 //
 // 3.包装了请求id的日志组件实例
 //
-// 4.客户端语言代码
+// Example:
 //
-// 作用是在请求入口注入必要的内容到上下文，供后续的请求调用链使用，一般用于日志追踪、链路追踪
+// requestId, ok := ginContext.Get("requestId").(string)
+//
+// spanId, ok := ginContext.Get("spanId").(string)
+//
+// entryAt, ok := ginContext.Get("entryAt").(int64)
+//
+// logger, ok := ginContext.Get("logger").(*zap.Logger)
 func LogTrace() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (

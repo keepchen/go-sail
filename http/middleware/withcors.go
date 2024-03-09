@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// WithCorsOnlyOptions 允许浏览器跨域请求，仅处理options探测请求
+// WithCorsOnlyOptions 允许浏览器跨域请求
+//
+// 仅对options探测请求注入放行headers
 func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var defaultCorsHeaders = map[string]string{
