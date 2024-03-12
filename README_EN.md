@@ -43,6 +43,7 @@ var (
                 Addr:       ":19100",
                 AccessPath: "/metrics",
             },
+            WebSocketRoutePath: "go-sail-ws",
         },
     }
     apiOption = &api.Option{
@@ -65,9 +66,10 @@ var (
 )
 
 sail.WakeupHttp("go-sail", conf).
-	SetupApiOption(apiOption).
-	Hook(registerRoutes, before, after).
-	Launch()
+    SetupApiOption(apiOption).
+    EnableWebsocket(nil, nil).
+    Hook(registerRoutes, before, after).
+    Launch()
 ```  
 Console screenshot after launched like this:  
 

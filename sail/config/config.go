@@ -27,10 +27,11 @@ type Config struct {
 
 // HttpServerConf http服务配置
 type HttpServerConf struct {
-	Debug      bool           `yaml:"debug" toml:"debug" json:"debug" default:"false"`               //是否是debug模式
-	Addr       string         `yaml:"addr" toml:"addr" json:"addr" default:":8080"`                  //监听地址
-	Swagger    SwaggerConf    `yaml:"swagger_conf" toml:"swagger_conf" json:"swagger_conf"`          //swagger文档配置
-	Prometheus PrometheusConf `yaml:"prometheus_conf" toml:"prometheus_conf" json:"prometheus_conf"` //prometheus配置
+	Debug              bool           `yaml:"debug" toml:"debug" json:"debug" default:"false"`                              //是否是debug模式
+	Addr               string         `yaml:"addr" toml:"addr" json:"addr" default:":8080"`                                 //监听地址
+	Swagger            SwaggerConf    `yaml:"swagger_conf" toml:"swagger_conf" json:"swagger_conf"`                         //swagger文档配置
+	Prometheus         PrometheusConf `yaml:"prometheus_conf" toml:"prometheus_conf" json:"prometheus_conf"`                //prometheus配置
+	WebSocketRoutePath string         `yaml:"websocket_route_path" toml:"websocket_route_path" json:"websocket_route_path"` //websocket路由
 }
 
 type SwaggerConf struct {

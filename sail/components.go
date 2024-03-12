@@ -10,6 +10,7 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
+	"github.com/keepchen/go-sail/v3/sail/config"
 	natsLib "github.com/nats-io/nats.go"
 	kafkaLib "github.com/segmentio/kafka-go"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -88,4 +89,45 @@ func GetKafkaReader() *kafkaLib.Reader {
 // GetEtcdInstance 获取etcd连接实例
 func GetEtcdInstance() *clientv3.Client {
 	return etcd.GetInstance()
+}
+
+// 根据配置依次初始化组件
+func componentsStartup(appName string, conf *config.Config) {
+	//- logger
+	logger.Init(conf.LoggerConf, appName)
+
+	//- redis(standalone)
+	if conf.RedisConf.Enable {
+		redis.InitRedis(conf.RedisConf)
+	}
+
+	//- redis(cluster)
+	if conf.RedisClusterConf.Enable {
+		redis.InitRedisCluster(conf.RedisClusterConf)
+	}
+
+	//- database
+	if conf.DBConf.Enable {
+		db.Init(conf.DBConf)
+	}
+
+	//- jwt
+	if conf.JwtConf.Enable {
+		conf.JwtConf.Load()
+	}
+
+	//- nats
+	if conf.NatsConf.Enable {
+		nats.Init(conf.NatsConf)
+	}
+
+	//- kafka
+	if conf.KafkaConf.Conf.Enable {
+		kafka.Init(conf.KafkaConf.Conf, conf.KafkaConf.Topic, conf.KafkaConf.GroupID)
+	}
+
+	//- etcd
+	if conf.EtcdConf.Enable {
+		etcd.Init(conf.EtcdConf)
+	}
 }

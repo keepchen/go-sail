@@ -31,12 +31,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/routes"
-
-	"github.com/keepchen/go-sail/v3/sail/config"
 	"github.com/keepchen/go-sail/v3/schedule"
 
+	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/routes"
+
 	"github.com/keepchen/go-sail/v3/lib/logger"
+	"github.com/keepchen/go-sail/v3/sail/config"
 
 	"github.com/keepchen/go-sail/v3/constants"
 
@@ -75,6 +75,7 @@ func StartServer(wg *sync.WaitGroup) {
 					Addr:       ":19100",
 					AccessPath: "/metrics",
 				},
+				WebSocketRoutePath: "go-sail-ws",
 			},
 		}
 		apiOption = &api.Option{
@@ -115,10 +116,12 @@ func StartServer(wg *sync.WaitGroup) {
 		}
 	)
 
-	//直接启动
-	//sail.WakeupHttp("go-sail", conf).Launch(routes.RegisterRoutes)
 	//挂载处理方法后启动
-	sail.WakeupHttp("go-sail", conf).SetupApiOption(apiOption).Hook(routes.RegisterRoutes, beforeFunc, afterFunc).Launch()
+	sail.WakeupHttp("go-sail", conf).
+		SetupApiOption(apiOption).
+		EnableWebsocket(nil, nil).
+		Hook(routes.RegisterRoutes, beforeFunc, afterFunc).
+		Launch()
 }
 
 // RegisterServicesToNacos 将服务注册到注册中心
