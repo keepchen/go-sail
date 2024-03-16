@@ -24,7 +24,7 @@ import (
 //
 // # Note:
 //
-// 该方法会默认使用 RequestEntry 中间件
+// 该方法会默认使用 middleware.LogTrace 中间件
 func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 	var r *gin.Engine
 	if conf.Debug {

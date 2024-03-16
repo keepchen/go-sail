@@ -18,7 +18,7 @@ type Responder interface {
 	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
 	// Assemble 组装返回数据
 	//
-	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.RequestEntry中间件)
+	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
 	// Status 指定http状态码
 	//
@@ -66,7 +66,7 @@ func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, m
 
 // Assemble 组装返回数据
 //
-// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用middleware.RequestEntry中间件)
+// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
 	var (
 		body      dto.Base
