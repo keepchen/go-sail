@@ -28,7 +28,9 @@ type Sailor interface {
 	// @param ws websocket连接实例，若为空，则启动默认配置连接
 	//
 	// @param handler 处理函数，若为空，则启用默认处理函数（仅打印接收到的message信息）
-	EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn)) Sailor
+	//
+	// @param middlewares 路由中间件
+	EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn), middlewares ...gin.HandlerFunc) Sailor
 	// Hook 挂载相关方法
 	//
 	// @param registerRoutes 注册路由函数
@@ -40,10 +42,11 @@ type Sailor interface {
 }
 
 type websocketConf struct {
-	enable    bool
-	routePath string
-	ws        *websocket.Conn
-	handler   func(ws *websocket.Conn)
+	enable      bool
+	routePath   string
+	ws          *websocket.Conn
+	middlewares []gin.HandlerFunc
+	handler     func(ws *websocket.Conn)
 }
 
 // Sail 框架配置
@@ -102,12 +105,13 @@ func (s *Sail) SetupApiOption(opt *api.Option) Sailor {
 // @param ws websocket连接实例，若为空，则启动默认的连接实例
 //
 // @param handler 处理函数，若为空，则启动`defaultWebsocketHandlerFunc`默认处理函数
-func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn)) Sailor {
+func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn), middlewares ...gin.HandlerFunc) Sailor {
 	s.wsConf = &websocketConf{
-		enable:    true,
-		routePath: s.conf.HttpServer.WebSocketRoutePath,
-		ws:        ws,
-		handler:   handler,
+		enable:      true,
+		routePath:   s.conf.HttpServer.WebSocketRoutePath,
+		ws:          ws,
+		middlewares: middlewares,
+		handler:     handler,
 	}
 
 	return s
@@ -164,7 +168,11 @@ func (l *Launcher) Launch() {
 
 	//- 注册websocket
 	if l.sa.wsConf.enable {
-		ginEngine.GET(l.sa.wsConf.routePath, httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
+		if len(l.sa.wsConf.middlewares) > 0 {
+			ginEngine.Use(l.sa.wsConf.middlewares...).GET(l.sa.wsConf.routePath, httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
+		} else {
+			ginEngine.GET(l.sa.wsConf.routePath, httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
+		}
 	}
 
 	//- pprof
