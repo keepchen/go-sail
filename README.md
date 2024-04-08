@@ -14,13 +14,11 @@
 ## 如何使用  
 > 推荐go version >= 1.19  
 
+> go get -u github.com/keepchen/go-sail/v3
+
 ```go
 import (
-    "net/http"
     "github.com/gin-gonic/gin"
-    "github.com/keepchen/go-sail/v3/constants"
-    "github.com/keepchen/go-sail/v3/http/api"
-    "github.com/keepchen/go-sail/v3/lib/logger"
     "github.com/keepchen/go-sail/v3/sail"
     "github.com/keepchen/go-sail/v3/sail/config"
 )
@@ -28,47 +26,22 @@ import (
 var (
     conf = &config.Config{
         LoggerConf: logger.Conf{
-            Filename: "examples/logs/running.log",
+            Filename: "logs/running.log",
         },
         HttpServer: config.HttpServerConf{
             Debug: true,
             Addr:  ":8000",
-            Swagger: config.SwaggerConf{
-                Enable:      true,
-                RedocUIPath: "examples/pkg/app/user/http/docs/docs.html",
-                JsonPath:    "examples/pkg/app/user/http/docs/swagger.json",
-            },
-            Prometheus: config.PrometheusConf{
-                Enable:     true,
-                Addr:       ":19100",
-                AccessPath: "/metrics",
-            },
-            WebSocketRoutePath: "go-sail-ws",
         },
-    }
-    apiOption = &api.Option{
-        EmptyDataStruct:  api.DefaultEmptyDataStructObject,
-        ErrNoneCode:      constants.CodeType(200),
-        ErrNoneCodeMsg:   "SUCCEED",
-        ForceHttpCode200: true,
     }
     registerRoutes = func(ginEngine *gin.Engine) {
         ginEngine.GET("/hello", func(c *gin.Context){
             c.String(http.StatusOK, "%s", "hello, world!")
         })
     }
-    before = func() {
-        fmt.Println("call user function [before] to do something...")
-    }
-    after = func() {
-        fmt.Println("call user function [after] to do something...")
-    }
 )
 
 sail.WakeupHttp("go-sail", conf).
-    SetupApiOption(apiOption).
-    EnableWebsocket(nil, nil).
-    Hook(registerRoutes, before, after).
+    Hook(registerRoutes, nil, nil).
     Launch()
 ```  
 当你看到终端如下图所示内容就表示服务启动成功了：  
