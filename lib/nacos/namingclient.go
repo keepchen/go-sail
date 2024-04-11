@@ -11,15 +11,15 @@ import (
 
 // RegisterService 将服务注册到注册中心
 //
-// @param groupName 分组名称
+// groupName 分组名称
 //
-// @param serviceName 服务名称
+// serviceName 服务名称
 //
-// @param ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
+// ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
 //
-// @param port 监听的端口
+// port 监听的端口
 //
-// @param metadata 元数据信息
+// metadata 元数据信息
 func RegisterService(groupName, serviceName string, ip string, port uint64, metadata map[string]string) (bool, error) {
 	var param vo.RegisterInstanceParam
 	param.Ip = ip
@@ -43,11 +43,11 @@ func RegisterService(groupName, serviceName string, ip string, port uint64, meta
 
 // UnregisterService 将服务从注册中心下线
 //
-// @param serviceName 服务名称
+// serviceName 服务名称
 //
-// @param ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
+// ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
 //
-// @param port 监听的端口
+// port 监听的端口
 func UnregisterService(groupName, serviceName string, ip string, port uint64) (bool, error) {
 	var param vo.DeregisterInstanceParam
 	param.Ip = ip
@@ -67,11 +67,11 @@ func UnregisterService(groupName, serviceName string, ip string, port uint64) (b
 
 // GetHealthyInstanceUrl 获取健康实例url地址
 //
-// @param groupName 分组名称
+// groupName 分组名称
 //
-// @param serviceName 服务名称
+// serviceName 服务名称
 //
-// @param loggerSvc 日志组件
+// loggerSvc 日志组件
 func GetHealthyInstanceUrl(groupName, serviceName string, loggerSvc *zap.Logger) string {
 	var param vo.SelectOneHealthInstanceParam
 	param.GroupName = groupName

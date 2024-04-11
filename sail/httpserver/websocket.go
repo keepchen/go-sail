@@ -11,9 +11,9 @@ import (
 
 // WrapWebsocketHandler 包装websocket处理函数
 //
-// @param ws websocket连接实例
+// ws websocket连接实例
 //
-// @param handler websocket消息处理函数
+// handler websocket消息处理函数
 func WrapWebsocketHandler(ws *websocket.Conn, handler func(ws *websocket.Conn)) func(ginContext *gin.Context) {
 	return func(ginContext *gin.Context) {
 		if ws == nil {

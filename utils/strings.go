@@ -136,33 +136,33 @@ func StringShuffle(s string) string {
 
 // StringPaddingLeft 向左填充字符串
 //
-// @param rawString 原字符
+// rawString 原字符
 //
-// @param padChar 填充字符
+// padChar 填充字符
 //
-// @param length 最终字符长度
+// length 最终字符长度
 func StringPaddingLeft(rawString, padChar string, length int) string {
 	return paddingString(rawString, padChar, length, 0)
 }
 
 // StringPaddingRight 向右填充字符串
 //
-// @param rawString 原字符
+// rawString 原字符
 //
-// @param padChar 填充字符
+// padChar 填充字符
 //
-// @param length 最终字符长度
+// length 最终字符长度
 func StringPaddingRight(rawString, padChar string, length int) string {
 	return paddingString(rawString, padChar, length, 1)
 }
 
 // StringPaddingBoth 向两端填充字符串
 //
-// @param rawString 原字符
+// rawString 原字符
 //
-// @param padChar 填充字符
+// padChar 填充字符
 //
-// @param length 最终字符长度
+// length 最终字符长度
 //
 // # Note
 //
@@ -179,13 +179,13 @@ func StringPaddingBoth(rawString, padChar string, length int) string {
 
 // paddingString 填充字符串
 //
-// @param rawString 原字符
+// rawString 原字符
 //
-// @param padChar 填充字符
+// padChar 填充字符
 //
-// @param length 最终字符长度
+// length 最终字符长度
 //
-// @param padType 0:向左填充,1:向右填充,2:向两端填充
+// padType 0:向左填充,1:向右填充,2:向两端填充
 func paddingString(rawString, padChar string, length, padType int) string {
 	if length < 1 || len(padChar) == 0 {
 		return rawString

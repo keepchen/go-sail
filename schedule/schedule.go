@@ -73,7 +73,7 @@ type Scheduler interface {
 
 	// RunAt 在某一时刻执行
 	//
-	// @param crontabExpr Linux crontab风格的表达式
+	// crontabExpr Linux crontab风格的表达式
 	//
 	// *    *    *    *    *
 	//
@@ -148,18 +148,18 @@ func generateJobNameKey(name string) string {
 
 // NewJob 实例化任务
 //
-// @param name 任务名称唯一标识
+// name 任务名称唯一标识
 //
-// @param task 任务处理函数
+// task 任务处理函数
 func NewJob(name string, task func()) Scheduler {
 	return Job(name, task)
 }
 
 // Job 实例化任务
 //
-// @param name 任务名称唯一标识
+// name 任务名称唯一标识
 //
-// @param task 任务处理函数
+// task 任务处理函数
 func Job(name string, task func()) Scheduler {
 	job := &taskJob{
 		name:           name,

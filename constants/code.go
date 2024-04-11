@@ -23,7 +23,7 @@ var (
 
 // RegisterCode 注册常量代码
 //
-// @param i18nMsg key为错误码值，value为错误信息
+// i18nMsg key为错误码值，value为错误信息
 //
 // 当code码重复时，后者覆盖前者
 func RegisterCode(language LanguageCode, i18nMsg map[ICodeType]string) {

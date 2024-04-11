@@ -26,19 +26,19 @@ type Sailor interface {
 	SetupApiOption(opt *api.Option) Sailor
 	// EnableWebsocket 启动websocket服务
 	//
-	// @param ws websocket连接实例，若为空，则启动默认配置连接
+	// ws websocket连接实例，若为空，则启动默认配置连接
 	//
-	// @param handler 处理函数，若为空，则启用默认处理函数（仅打印接收到的message信息）
+	// handler 处理函数，若为空，则启用默认处理函数（仅打印接收到的message信息）
 	//
-	// @param middlewares 路由中间件
+	// middlewares 路由中间件
 	EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn), middlewares ...gin.HandlerFunc) Sailor
 	// Hook 挂载相关方法
 	//
-	// @param registerRoutes 注册路由函数
+	// registerRoutes 注册路由函数
 	//
-	// @param beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
+	// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
 	//
-	// @param afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
+	// afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
 	Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad
 }
 
@@ -80,9 +80,9 @@ var _ Launchpad = &Launcher{}
 //
 // 启动前的配置准备
 //
-// @param appName 应用名称
+// appName 应用名称
 //
-// @param conf 配置文件
+// conf 配置文件
 func WakeupHttp(appName string, conf *config.Config) Sailor {
 	return &Sail{
 		appName: appName,
@@ -101,11 +101,11 @@ func (s *Sail) SetupApiOption(opt *api.Option) Sailor {
 
 // EnableWebsocket 启动websocket服务
 //
-// @param routePath 路由地址
+// routePath 路由地址
 //
-// @param ws websocket连接实例，若为空，则启动默认的连接实例
+// ws websocket连接实例，若为空，则启动默认的连接实例
 //
-// @param handler 处理函数，若为空，则启动`defaultWebsocketHandlerFunc`默认处理函数
+// handler 处理函数，若为空，则启动`defaultWebsocketHandlerFunc`默认处理函数
 func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn), middlewares ...gin.HandlerFunc) Sailor {
 	s.wsConf = &websocketConf{
 		enable:      true,
@@ -120,11 +120,11 @@ func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Co
 
 // Hook 挂载相关方法
 //
-// @param registerRoutes 注册路由函数
+// registerRoutes 注册路由函数
 //
-// @param beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
+// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
 //
-// @param afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
+// afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
 func (s *Sail) Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad {
 	return &Launcher{
 		sa:                 s,

@@ -8,13 +8,13 @@ import (
 
 // GetConfig 获取配置
 //
-// @param groupName 所属分组
+// groupName 所属分组
 //
-// @param dataID 配置文件id
+// dataID 配置文件id
 //
-// @param appConfig 解析到目标
+// appConfig 解析到目标
 //
-// @param format 配置文件格式，支持: json|yaml|toml
+// format 配置文件格式，支持: json|yaml|toml
 func GetConfig(groupName, dataID string, appConfig interface{}, format string) error {
 	content, err := GetConfigClient().GetConfig(vo.ConfigParam{
 		DataId: dataID,
@@ -29,13 +29,13 @@ func GetConfig(groupName, dataID string, appConfig interface{}, format string) e
 
 // ListenConfig 监听配置
 //
-// @param groupName 所属分组
+// groupName 所属分组
 //
-// @param dataID 配置文件id
+// dataID 配置文件id
 //
-// @param appConfig 解析到目标
+// appConfig 解析到目标
 //
-// @param format 配置文件格式，支持: json|yaml|toml
+// format 配置文件格式，支持: json|yaml|toml
 func ListenConfig(groupName, dataID string, appConfig interface{}, format string) error {
 	err := GetConfigClient().ListenConfig(vo.ConfigParam{
 		DataId: dataID,

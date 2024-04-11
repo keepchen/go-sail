@@ -7,8 +7,8 @@ import (
 )
 
 // SM4ECBEncrypt ECB加密
-// @param hexKey 16进制key 长度32位
-// @param raw 待加密内容
+// hexKey 16进制key 长度32位
+// raw 待加密内容
 func SM4ECBEncrypt(hexKey, raw string) (string, error) {
 	key, err := hex.DecodeString(hexKey)
 	if err != nil {
@@ -23,8 +23,8 @@ func SM4ECBEncrypt(hexKey, raw string) (string, error) {
 }
 
 // SM4ECBDecrypt ECB解密
-// @param hexKey 16进制key 长度32位
-// @param base64Raw 加密内容 base64格式
+// hexKey 16进制key 长度32位
+// base64Raw 加密内容 base64格式
 func SM4ECBDecrypt(hexKey, base64Raw string) (string, error) {
 	key, err := hex.DecodeString(hexKey)
 	if err != nil {

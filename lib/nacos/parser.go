@@ -10,11 +10,11 @@ import (
 
 // ParseConfig 解析配置字符
 //
-// @param configBytes 配置字符byte数组
+// configBytes 配置字符byte数组
 //
-// @param appConfig 解析到目标
+// appConfig 解析到目标
 //
-// @param format 内容格式，支持: json|yaml|toml
+// format 内容格式，支持: json|yaml|toml
 func ParseConfig(configBytes []byte, appConfig interface{}, format string) error {
 	var (
 		err        error

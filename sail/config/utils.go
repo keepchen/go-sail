@@ -12,9 +12,9 @@ import (
 
 // PrintTemplateConfig 打印配置信息模板
 //
-// @param format 内容格式，支持: json|yaml|toml
+// format 内容格式，支持: json|yaml|toml
 //
-// @param writeToFile 写入到目标文件（可选）
+// writeToFile 写入到目标文件（可选）
 func PrintTemplateConfig(format string, writeToFile ...string) {
 	var (
 		abort      bool
@@ -51,9 +51,9 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 
 // ParseConfigFromBytes 从字符串解析配置
 //
-// @param format 内容格式，支持: json|yaml|toml
+// format 内容格式，支持: json|yaml|toml
 //
-// @param source 配置源字符
+// source 配置源字符
 func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 	var (
 		formatList = [...]string{"json", "yaml", "toml"}
@@ -78,11 +78,11 @@ func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 
 // ParseConfigFromBytesToDst 从字符串解析配置到目标结构
 //
-// @param format 内容格式，支持: json|yaml|toml
+// format 内容格式，支持: json|yaml|toml
 //
-// @param source 配置源字符
+// source 配置源字符
 //
-// @param dst 目标结构
+// dst 目标结构
 //
 // @return 返回值与参数dst类型相同，需要进行断言
 func ParseConfigFromBytesToDst(format string, source []byte, dst interface{}) (interface{}, error) {

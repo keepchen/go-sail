@@ -9,7 +9,7 @@ import (
 
 // RunAt 在某一时刻执行
 //
-// @param crontabExpr Linux crontab风格的表达式
+// crontabExpr Linux crontab风格的表达式
 //
 // *    *    *    *    *
 //
