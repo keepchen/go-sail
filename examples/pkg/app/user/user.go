@@ -38,9 +38,6 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/sail/config"
 
-	"github.com/keepchen/go-sail/v3/constants"
-
-	"github.com/keepchen/go-sail/v3/http/api"
 	"github.com/keepchen/go-sail/v3/lib/nacos"
 	"github.com/keepchen/go-sail/v3/sail"
 	"github.com/keepchen/go-sail/v3/utils"
@@ -78,12 +75,12 @@ func StartServer(wg *sync.WaitGroup) {
 				WebSocketRoutePath: "go-sail-ws",
 			},
 		}
-		apiOption = &api.Option{
-			EmptyDataStruct:  api.DefaultEmptyDataStructObject,
-			ErrNoneCode:      constants.CodeType(200),
-			ErrNoneCodeMsg:   "SUCCEED",
-			ForceHttpCode200: true,
-		}
+		//apiOption = &api.Option{
+		//	EmptyDataStruct:  api.DefaultEmptyDataStructObject,
+		//	ErrNoneCode:      constants.CodeType(200),
+		//	ErrNoneCodeMsg:   "SUCCEED",
+		//	ForceHttpCode200: true,
+		//}
 		beforeFunc = func() {
 			fmt.Println("call user function [before] to do something...")
 		}
@@ -118,8 +115,8 @@ func StartServer(wg *sync.WaitGroup) {
 
 	//挂载处理方法后启动
 	sail.WakeupHttp("go-sail", conf).
-		SetupApiOption(apiOption).
-		EnableWebsocket(nil, nil).
+		//SetupApiOption(apiOption).
+		//EnableWebsocket(nil, nil).
 		Hook(routes.RegisterRoutes, beforeFunc, afterFunc).
 		Launch()
 }

@@ -6,15 +6,16 @@ import (
 	"runtime/debug"
 	"sync"
 
+	"github.com/keepchen/go-sail/v3/lib/logger"
+	"go.uber.org/zap"
+
 	"github.com/gorilla/websocket"
 
 	"github.com/keepchen/go-sail/v3/sail/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keepchen/go-sail/v3/http/api"
-	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/sail/httpserver"
-	"go.uber.org/zap"
 )
 
 // Sailor 船员就位
@@ -167,7 +168,7 @@ func (l *Launcher) Launch() {
 	}
 
 	//- 注册websocket
-	if l.sa.wsConf.enable {
+	if l.sa.wsConf != nil && l.sa.wsConf.enable {
 		if len(l.sa.wsConf.middlewares) > 0 {
 			ginEngine.Use(l.sa.wsConf.middlewares...).GET(l.sa.wsConf.routePath, httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
 		} else {

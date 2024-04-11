@@ -6,6 +6,27 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 )
 
+// GetConfig 获取配置
+//
+// @param groupName 所属分组
+//
+// @param dataID 配置文件id
+//
+// @param appConfig 解析到目标
+//
+// @param format 配置文件格式，支持: json|yaml|toml
+func GetConfig(groupName, dataID string, appConfig interface{}, format string) error {
+	content, err := GetConfigClient().GetConfig(vo.ConfigParam{
+		DataId: dataID,
+		Group:  groupName,
+	})
+	if err != nil {
+		return err
+	}
+
+	return ParseConfig([]byte(content), appConfig, format)
+}
+
 // ListenConfig 监听配置
 //
 // @param groupName 所属分组
