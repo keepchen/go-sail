@@ -101,7 +101,12 @@ func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, 
 		body.Code = anotherErrNoneCode
 	}
 	body.Message = body.Code.String(language...)
-	body.Timestamp = time.Now().In(loc).UnixMilli()
+	if loc != nil {
+		body.Timestamp = time.Now().In(loc).UnixMilli()
+		//loc可能用于后续其他字段，这里暂时这样调用
+	} else {
+		body.Timestamp = time.Now().UnixMilli()
+	}
 	switch code {
 	case constants.ErrNone, anotherErrNoneCode:
 		body.Success = constants.Success
