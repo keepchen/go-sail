@@ -52,3 +52,20 @@ func ListenConfig(groupName, dataID string, appConfig interface{}, format string
 
 	return err
 }
+
+// ListenConfigWithCallback 监听配置-自定义回调函数方式
+//
+// groupName 所属分组
+//
+// dataID 配置文件id
+//
+// callback 回调函数
+func ListenConfigWithCallback(groupName, dataID string, callback func(namespace, group, dataId, data string)) error {
+	err := GetConfigClient().ListenConfig(vo.ConfigParam{
+		DataId:   dataID,
+		Group:    groupName,
+		OnChange: callback,
+	})
+
+	return err
+}

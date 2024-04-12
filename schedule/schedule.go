@@ -143,7 +143,7 @@ func init() {
 }
 
 func generateJobNameKey(name string) string {
-	return fmt.Sprintf("go-sail:task-schedule-locker:%s", utils.MD5Encrypt(name))
+	return fmt.Sprintf("go-sail:task-schedule-locker:%s", utils.MD5Encode(name))
 }
 
 // NewJob 实例化任务
