@@ -10,7 +10,7 @@ import (
 //
 // <yaml example>
 //
-// logger:
+// logger_conf:
 //
 //		env: dev
 //		level: debug
@@ -63,7 +63,7 @@ import (
 //
 // # ::zap日志组件配置 v2::
 //
-// [logger]
+// [logger_conf]
 //
 // # 日志环境 dev,prod
 //
@@ -95,7 +95,7 @@ import (
 //
 // # 日志导出器配置
 //
-// [logger.exporter]
+// [logger_conf.exporter]
 //
 // # 日志导出器介质
 //
@@ -103,7 +103,7 @@ import (
 //
 // # nats导出器配置
 //
-// [logger.exporter.nats]
+// [logger_conf.exporter.nats]
 //
 // # nats主题
 //
@@ -111,7 +111,7 @@ import (
 //
 // # kafka导出器配置
 //
-// [logger.exporter.kafka]
+// [logger_conf.exporter.kafka]
 //
 // # kafka主题
 //
@@ -119,13 +119,13 @@ import (
 //
 // # redis导出器配置
 //
-// [logger.exporter.redis]
+// [logger_conf.exporter.redis]
 //
 // # list键名
 //
 // list_key = "logger"
 //
-// [logger.exporter.redis.conn_conf]
+// [logger_conf.exporter.redis.conn_conf]
 //
 // host = "localhost"
 //
@@ -139,9 +139,9 @@ import (
 //
 // ssl_enable = false
 //
-// [logger.exporter.redis.cluster_conn_conf]
+// [logger_conf.exporter.redis.cluster_conn_conf]
 //
-// [[logger.exporter.redis.cluster_conn_conf.addr_list]]
+// [[logger_conf.exporter.redis.cluster_conn_conf.addr_list]]
 //
 // host = "localhost"
 //
@@ -151,7 +151,7 @@ import (
 //
 // password = ""
 //
-// [[logger.exporter.redis.cluster_conn_conf.addr_list]]
+// [[logger_conf.exporter.redis.cluster_conn_conf.addr_list]]
 //
 // host = "localhost"
 //

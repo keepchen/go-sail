@@ -4,7 +4,7 @@ package email
 //
 // <yaml example>
 //
-// email:
+// email_conf:
 //
 //	workers:
 //	work_throttle_seconds: 5
@@ -19,7 +19,7 @@ package email
 //
 // <toml example>
 //
-// [email]
+// [email_conf]
 //
 // workers =
 //
@@ -37,9 +37,9 @@ package email
 //
 // subject =
 //
-// [email.params]
+// [email_conf.params]
 //
-//	variables =
+// variables =
 type Conf struct {
 	Workers               int    `yaml:"workers" toml:"workers" json:"workers"`                                                 //协程数量
 	WorkerThrottleSeconds int    `yaml:"worker_throttle_seconds" toml:"worker_throttle_seconds" json:"worker_throttle_seconds"` //每个协程内发送间隔，单位秒

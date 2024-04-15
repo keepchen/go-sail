@@ -4,7 +4,7 @@ package nats
 //
 // <yaml example>
 //
-// nats:
+// nats_conf:
 //
 //	endpoints:
 //	  - "nats://127.0.0.1:4222"
@@ -15,7 +15,7 @@ package nats
 //
 // # ::nats配置::
 //
-// [nats]
+// [nats_conf]
 //
 // # 服务实例地址
 //

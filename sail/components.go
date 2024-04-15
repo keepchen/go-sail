@@ -23,6 +23,8 @@ import (
 // GetDB 获取数据库实例
 //
 // 该方法依次返回读实例、写实例
+//
+// 注意，使用前请确保db组件已初始化成功。
 func GetDB() (read *gorm.DB, write *gorm.DB) {
 	read, write = db.GetInstance().R, db.GetInstance().W
 
@@ -30,11 +32,15 @@ func GetDB() (read *gorm.DB, write *gorm.DB) {
 }
 
 // GetDBR 获取数据库读实例
+//
+// 注意，使用前请确保db组件已初始化成功。
 func GetDBR() *gorm.DB {
 	return db.GetInstance().R
 }
 
 // GetDBW 获取数据库写实例
+//
+// 注意，使用前请确保db组件已初始化成功。
 func GetDBW() *gorm.DB {
 	return db.GetInstance().W
 }
@@ -42,6 +48,8 @@ func GetDBW() *gorm.DB {
 // GetRedis 获取redis连接(standalone)
 //
 // 单实例模式
+//
+// 注意，使用前请确保redis(standalone)组件已初始化成功。
 func GetRedis() *redisLib.Client {
 	return redis.GetInstance()
 }
@@ -49,16 +57,22 @@ func GetRedis() *redisLib.Client {
 // GetRedisCluster 获取redis连接(cluster)
 //
 // cluster集群模式
+//
+// 注意，使用前请确保redis(cluster)组件已初始化成功。
 func GetRedisCluster() *redisLib.ClusterClient {
 	return redis.GetClusterInstance()
 }
 
 // GetNats 获取nats连接实例
+//
+// 注意，使用前请确保nats组件已初始化成功。
 func GetNats() *natsLib.Conn {
 	return nats.GetInstance()
 }
 
 // GetLogger 获取日志实例
+//
+// 注意，使用前请确保logger组件已初始化成功。
 func GetLogger(module ...string) *zap.Logger {
 	return logger.GetLogger(module...)
 }
@@ -69,26 +83,36 @@ func Response(c *gin.Context) api.Responder {
 }
 
 // GetKafkaInstance 获取kafka完整实例
+//
+// 注意，使用前请确保kafka组件已初始化成功。
 func GetKafkaInstance() *kafka.Instance {
 	return kafka.GetInstance()
 }
 
 // GetKafkaConnections 获取kafka连接
+//
+// 注意，使用前请确保kafka组件已初始化成功。
 func GetKafkaConnections() []*kafkaLib.Conn {
 	return kafka.GetConnections()
 }
 
 // GetKafkaWriter 获取kafka写实例
+//
+// 注意，使用前请确保kafka组件已初始化成功。
 func GetKafkaWriter() *kafkaLib.Writer {
 	return kafka.GetWriter()
 }
 
 // GetKafkaReader 获取kafka读实例
+//
+// 注意，使用前请确保kafka组件已初始化成功。
 func GetKafkaReader() *kafkaLib.Reader {
 	return kafka.GetReader()
 }
 
 // GetEtcdInstance 获取etcd连接实例
+//
+// 注意，使用前请确保etcd组件已初始化成功。
 func GetEtcdInstance() *clientv3.Client {
 	return etcd.GetInstance()
 }

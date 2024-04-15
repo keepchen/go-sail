@@ -13,7 +13,7 @@ import (
 //
 // <yaml example>
 //
-// jwt:
+// jwt_conf:
 //
 //	 enable: false
 //		public_key:
@@ -26,7 +26,7 @@ import (
 //
 // # ::jwt密钥配置::
 //
-// [jwt]
+// [jwt_conf]
 //
 // enable = false
 //

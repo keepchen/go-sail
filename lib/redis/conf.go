@@ -4,7 +4,7 @@ package redis
 //
 // <yaml example>
 //
-// redis:
+// redis_conf:
 //
 // enable = false
 //
@@ -20,7 +20,7 @@ package redis
 //
 // # ::redis配置::
 //
-// [redis]
+// [redis_conf]
 //
 // redis = false
 //
@@ -46,7 +46,7 @@ type Conf struct {
 //
 // <yaml example>
 //
-// redis_cluster:
+// redis_cluster_conf:
 //
 //	 enable: false
 //		ssl_enable: false
@@ -68,13 +68,13 @@ type Conf struct {
 //
 // # ::redis cluster配置::
 //
-// [redis_cluster]
+// [redis_cluster_conf]
 //
 // enable = false
 //
 // ssl_enable = false
 //
-// [[redis_cluster.endpoints]]
+// [[redis_cluster_conf.endpoints]]
 //
 // host = "localhost"
 //
@@ -84,7 +84,7 @@ type Conf struct {
 //
 // password = ""
 //
-// [[redis_cluster.endpoints]]
+// [[redis_cluster_conf.endpoints]]
 //
 // host = "localhost"
 //
@@ -94,7 +94,7 @@ type Conf struct {
 //
 // password = ""
 //
-// [[redis_cluster.endpoints]]
+// [[redis_cluster_conf.endpoints]]
 //
 // host = "localhost"
 //

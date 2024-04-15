@@ -76,7 +76,7 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 	}()
 
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-quit
 	logger.GetLogger().Info("Shutting down server...")
 

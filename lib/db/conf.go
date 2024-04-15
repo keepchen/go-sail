@@ -4,7 +4,7 @@ package db
 //
 // <yaml example>
 //
-// datasource:
+// db_conf:
 //
 //	enable: false
 //	driver_name: mysql
@@ -43,7 +43,7 @@ package db
 //
 // # ::数据库配置::
 //
-// [datasource]
+// [db_conf]
 //
 // enable = false
 //
@@ -59,7 +59,7 @@ package db
 //
 // # ::数据库连接池配置::
 //
-// [datasource.connection_pool]
+// [db_conf.connection_pool]
 //
 // # 最大开启连接数
 //
@@ -79,7 +79,7 @@ package db
 //
 // # mysql配置
 //
-// [datasource.mysql.read]
+// [db_conf.mysql.read]
 //
 // host = "localhost"
 //
@@ -97,7 +97,7 @@ package db
 //
 // loc = "Local"
 //
-// [datasource.mysql.write]
+// [db_conf.mysql.write]
 //
 // host = "localhost"
 //
@@ -117,7 +117,7 @@ package db
 //
 // # postgres配置
 //
-// [datasource.postgres.read]
+// [db_conf.postgres.read]
 //
 // host = "localhost"
 //
@@ -135,7 +135,7 @@ package db
 //
 // # postgres配置
 //
-// [datasource.postgres.write]
+// [db_conf.postgres.write]
 //
 // host = "localhost"
 //
@@ -153,7 +153,7 @@ package db
 //
 // # sqlserver配置
 //
-// [datasource.sqlserver.read]
+// [db_conf.sqlserver.read]
 //
 // host = "localhost"
 //
@@ -165,7 +165,7 @@ package db
 //
 // database = "go_sail"
 //
-// [datasource.sqlserver.write]
+// [db_conf.sqlserver.write]
 //
 // host = "localhost"
 //
@@ -179,7 +179,7 @@ package db
 //
 // # clickhouse配置
 //
-// [datasource.clickhouse.read]
+// [db_conf.clickhouse.read]
 //
 // host = "localhost"
 //
@@ -195,7 +195,7 @@ package db
 //
 // write_timeout = 20
 //
-// [datasource.clickhouse.write]
+// [db_conf.clickhouse.write]
 //
 // host = "localhost"
 //
@@ -213,11 +213,11 @@ package db
 //
 // # sqlite配置
 //
-// [datasource.sqlite.read]
+// [db_conf.sqlite.read]
 //
 // file = "sqlite.db"
 //
-// [datasource.sqlite.write]
+// [db_conf.sqlite.write]
 //
 // file = "sqlite.db"
 type Conf struct {
