@@ -122,9 +122,9 @@ func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Co
 //
 // registerRoutes 注册路由函数
 //
-// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的
+// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行，注意自定义函数是同步执行的且在组件初始化之前执行
 //
-// afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的
+// afterFunc 后置自定义处理函数（可选），在框架函数之后执行，注意自定义函数是同步执行的且在组件初始化之后执行
 func (s *Sail) Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad {
 	return &Launcher{
 		sa:                 s,

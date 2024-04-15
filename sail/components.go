@@ -1,6 +1,8 @@
 package sail
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/http/api"
@@ -95,39 +97,47 @@ func GetEtcdInstance() *clientv3.Client {
 func componentsStartup(appName string, conf *config.Config) {
 	//- logger
 	logger.Init(conf.LoggerConf, appName)
+	fmt.Println("[GO-SAIL] <Components> initialize [logger] successfully")
 
 	//- redis(standalone)
 	if conf.RedisConf.Enable {
 		redis.InitRedis(conf.RedisConf)
+		fmt.Println("[GO-SAIL] <Components> initialize [redis standalone] successfully")
 	}
 
 	//- redis(cluster)
 	if conf.RedisClusterConf.Enable {
 		redis.InitRedisCluster(conf.RedisClusterConf)
+		fmt.Println("[GO-SAIL] <Components> initialize [redis cluster] successfully")
 	}
 
 	//- database
 	if conf.DBConf.Enable {
 		db.Init(conf.DBConf)
+		fmt.Println("[GO-SAIL] <Components> initialize [db] successfully")
 	}
 
 	//- jwt
 	if conf.JwtConf.Enable {
 		conf.JwtConf.Load()
+		fmt.Println("[GO-SAIL] <Components> initialize [jwt] successfully")
 	}
 
 	//- nats
 	if conf.NatsConf.Enable {
 		nats.Init(conf.NatsConf)
+		fmt.Println("[GO-SAIL] <Components> initialize [nats] successfully")
 	}
 
 	//- kafka
 	if conf.KafkaConf.Conf.Enable {
 		kafka.Init(conf.KafkaConf.Conf, conf.KafkaConf.Topic, conf.KafkaConf.GroupID)
+		fmt.Println("[GO-SAIL] <Components> initialize [kafka] successfully")
 	}
 
 	//- etcd
 	if conf.EtcdConf.Enable {
 		etcd.Init(conf.EtcdConf)
+		fmt.Println("[GO-SAIL] <Components> initialize [etcd] successfully")
 	}
 }
