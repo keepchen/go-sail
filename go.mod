@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/SherClockHolmes/webpush-go v1.2.0
+	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis/v8 v8.11.5

@@ -3,6 +3,8 @@ package routes
 import (
 	"net/http"
 
+	"github.com/gin-contrib/gzip"
+
 	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -19,8 +21,8 @@ func RegisterRoutes(r *gin.Engine) {
 	allowHeaders := map[string]string{
 		"Access-Control-Allow-Headers": "Authorization, Content-Type, Content-Length, Some-Other-Headers",
 	}
-	//全局打印请求载荷、放行跨域请求、写入Prometheus exporter
-	r.Use(mdlw.LogTrace(), mdlw.PrintRequestPayload(), mdlw.WithCors(allowHeaders), mdlw.PrometheusExporter())
+	//全局打印请求载荷、放行跨域请求、gzip压缩
+	r.Use(mdlw.LogTrace(), mdlw.PrintRequestPayload(), mdlw.WithCors(allowHeaders), gzip.Gzip(gzip.DefaultCompression))
 	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.GET("/say-hello", handler.SayHello)
