@@ -95,12 +95,12 @@ func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, 
 		}
 	}
 	body.RequestID = requestId
-	body.Code = code
+	body.Code = code.Int()
 	if code == constants.ErrNone && anotherErrNoneCode != constants.ErrNone {
 		//改写了默认成功code码，且当前code码为None时，需要使用改写后的值
-		body.Code = anotherErrNoneCode
+		body.Code = anotherErrNoneCode.Int()
 	}
-	body.Message = body.Code.String(language...)
+	body.Message = constants.CodeType(body.Code).String(language...)
 	if loc != nil {
 		body.Timestamp = time.Now().In(loc).UnixMilli()
 		//loc可能用于后续其他字段，这里暂时这样调用

@@ -1,7 +1,5 @@
 package dto
 
-import "github.com/keepchen/go-sail/v3/constants"
-
 // Base 公共返回参数
 // swagger: model
 type Base struct {
@@ -12,7 +10,7 @@ type Base struct {
 	// 错误码
 	// in: body
 	// required: true
-	Code constants.ICodeType `json:"code" format:"int" validate:"required"`
+	Code int `json:"code" format:"int" example:"200" validate:"required"`
 	// 是否成功
 	// in: body
 	// required: true
