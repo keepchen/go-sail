@@ -6,11 +6,11 @@ type Base struct {
 	// 请求id
 	// in: body
 	// required: false
-	RequestID string `json:"requestId" example:"1234567890123456789" format:"string"`
+	RequestID string `json:"requestId" example:"5686efa5-c747-4f63-8657-e6052f8181a9" format:"string"`
 	// 错误码
 	// in: body
 	// required: true
-	Code int `json:"code" format:"int" example:"200" validate:"required"`
+	Code int `json:"code" format:"int" example:"0" validate:"required"`
 	// 是否成功
 	// in: body
 	// required: true
