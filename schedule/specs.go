@@ -9,6 +9,8 @@ import (
 
 // RunAt 在某一时刻执行
 //
+// 重复地在某个时间点执行任务
+//
 // crontabExpr Linux crontab风格的表达式
 //
 // *    *    *    *    *

@@ -3,6 +3,12 @@ package schedule
 // 一些常用的crontab表达式
 const (
 	EveryMinute                           = "* * * * *"             //每分钟的开始第0秒
+	EveryFiveMinute                       = "*/5 * * * *"           //每5分钟的开始第0秒
+	EveryTenMinute                        = "*/10 * * * *"          //每10分钟的开始第0秒
+	EveryFifteenMinute                    = "*/15 * * * *"          //每15分钟的开始第0秒
+	EveryTwentyMinute                     = "*/20 * * * *"          //每20分钟的开始第0秒
+	EveryThirtyMinute                     = "*/30 * * * *"          //每30分钟的开始第0秒
+	EveryFortyFiveMinute                  = "*/45 * * * *"          //每45分钟的开始第0秒
 	FirstDayOfMonth                       = "0 0 1 * *"             //每月的第一天的0点0分
 	LastDayOfMonth                        = "0 0 L * *"             //每月的最后一天的0点0分
 	FirstDayOfWeek                        = "0 0 * * 1"             //每周的第一天（周一）的0点0分

@@ -102,6 +102,15 @@ func (j *taskJob) EveryTenSeconds() (cancel CancelFunc) {
 	return
 }
 
+// EveryFifteenSeconds 每15秒执行一次
+func (j *taskJob) EveryFifteenSeconds() (cancel CancelFunc) {
+	j.setInterval(time.Second * 15).run()
+
+	cancel = j.cancelFunc
+
+	return
+}
+
 // EveryTwentySeconds 每20秒执行一次
 func (j *taskJob) EveryTwentySeconds() (cancel CancelFunc) {
 	j.setInterval(time.Second * 20).run()
@@ -132,6 +141,15 @@ func (j *taskJob) EveryMinute() (cancel CancelFunc) {
 // EveryFiveMinutes 每5分钟执行一次
 func (j *taskJob) EveryFiveMinutes() (cancel CancelFunc) {
 	j.setInterval(time.Minute * 5).run()
+
+	cancel = j.cancelFunc
+
+	return
+}
+
+// EveryFifteenMinutes 每15分钟执行一次
+func (j *taskJob) EveryFifteenMinutes() (cancel CancelFunc) {
+	j.setInterval(time.Minute * 15).run()
 
 	cancel = j.cancelFunc
 
@@ -201,7 +219,7 @@ func (j *taskJob) EveryTwentyHours() (cancel CancelFunc) {
 	return
 }
 
-// Daily 每天执行一次
+// Daily 每天执行一次（每24小时）
 func (j *taskJob) Daily() (cancel CancelFunc) {
 	j.setInterval(time.Hour * 24).run()
 

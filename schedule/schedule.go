@@ -33,6 +33,8 @@ type Scheduler interface {
 	EveryFiveSeconds() (cancel CancelFunc)
 	// EveryTenSeconds 每10秒执行一次
 	EveryTenSeconds() (cancel CancelFunc)
+	// EveryFifteenSeconds 每15秒执行一次
+	EveryFifteenSeconds() (cancel CancelFunc)
 	// EveryTwentySeconds 每20秒执行一次
 	EveryTwentySeconds() (cancel CancelFunc)
 	// EveryThirtySeconds 每30秒执行一次
@@ -43,6 +45,8 @@ type Scheduler interface {
 	EveryFiveMinutes() (cancel CancelFunc)
 	// EveryTenMinutes 每10分钟执行一次
 	EveryTenMinutes() (cancel CancelFunc)
+	// EveryFifteenMinutes 每15分钟执行一次
+	EveryFifteenMinutes() (cancel CancelFunc)
 	// EveryTwentyMinutes 每20分钟执行一次
 	EveryTwentyMinutes() (cancel CancelFunc)
 	// EveryThirtyMinutes 每30分钟执行一次
@@ -55,7 +59,7 @@ type Scheduler interface {
 	EveryTenHours() (cancel CancelFunc)
 	// EveryTwentyHours 每20小时执行一次
 	EveryTwentyHours() (cancel CancelFunc)
-	// Daily 每天执行一次
+	// Daily 每天执行一次（每24小时）
 	Daily() (cancel CancelFunc)
 	// Weekly 每周执行一次（每7天）
 	Weekly() (cancel CancelFunc)
@@ -63,15 +67,15 @@ type Scheduler interface {
 	Monthly() (cancel CancelFunc)
 	// Yearly 每年执行一次（每365天）
 	Yearly() (cancel CancelFunc)
-
 	// RunAfter 在一定时间后执行
 	//
 	// # Note
 	//
 	// 这是一个一次性任务，不会重复执行
 	RunAfter(delay time.Duration) (cancel CancelFunc)
-
 	// RunAt 在某一时刻执行
+	//
+	//重复地在某个时间点执行任务
 	//
 	// crontabExpr Linux crontab风格的表达式
 	//

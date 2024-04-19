@@ -1,5 +1,5 @@
 <div align="center">
-    <h1><img src="./sailboat-solid-colorful.svg" alt="sailboat-solid" title="sailboat-solid" width="300" /></h1>
+    <h1><img src="static/sailboat-solid-colorful.svg" alt="sailboat-solid" title="sailboat-solid" width="300" /></h1>
 </div> 
 
 [![Go](https://github.com/keepchen/go-sail/actions/workflows/go.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/go.yml)  [![CodeQL](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml/badge.svg)](https://github.com/keepchen/go-sail/actions/workflows/codeql.yml)  [![Go Report Card](https://goreportcard.com/badge/github.com/keepchen/go-sail/v3)](https://goreportcard.com/report/github.com/keepchen/go-sail/v3)  
@@ -46,7 +46,7 @@ sail.WakeupHttp("go-sail", conf).
 ```  
 当你看到终端如下图所示内容就表示服务启动成功了：  
 
-<img src="./launch.png" alt="launch.png" title="launch.png" width="600" />  
+<img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
 ## 文档  
 [文档传送门](https://blog.keepchen.com/a/go-sail.html?from=github)
