@@ -8,7 +8,7 @@ English | [简体中文](./README.md)
 
 ## Whats the go-sail？
 
-**go-sail** is a lightweight progressive web framework implemented using golang language. It is not the product of reinventing the wheel, but stands on the shoulders of giants and integrates existing excellent components to help users build stable and reliable services in the simplest way.
+**go-sail** is a lightweight progressive web framework implemented using Go language. It is not the product of reinventing the wheel, but stands on the shoulders of giants and integrates existing excellent components to help users build stable and reliable services in the simplest way.
 As its name suggests, you can regard it as the beginning of your own journey in the golang ecosystem. go-sail will help you start lightly and set sail.
 
 ## How to use

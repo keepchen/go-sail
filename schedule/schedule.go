@@ -9,6 +9,10 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// CancelFunc 取消函数
+//
+// 尚未启动或未在运行中的任务将被直接取消。
+// 正在运行中的任务将等待其运行结束，之后便不再启动。
 type CancelFunc func()
 
 // Scheduler 调度器
