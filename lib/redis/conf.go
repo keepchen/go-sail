@@ -8,7 +8,7 @@ package redis
 //
 // enable = false
 //
-//	addr:
+//	endpoint:
 //	  host: "127.0.0.1"
 //	  port: 6379
 //	  username: ""
@@ -22,7 +22,9 @@ package redis
 //
 // [redis_conf]
 //
-// redis = false
+// enable = false
+//
+// [redis_conf.endpoint]
 //
 // host = "localhost"
 //
@@ -36,7 +38,7 @@ package redis
 //
 // ssl_enable = false
 type Conf struct {
-	Endpoint
+	Endpoint  `yaml:"endpoint" toml:"endpoint" json:"endpoint"`
 	Enable    bool `yaml:"enable" toml:"enable" json:"enable" default:"false"` //是否启用
 	Database  int  `yaml:"database" toml:"database" json:"database"`           //数据库名
 	SSLEnable bool `yaml:"ssl_enable" toml:"ssl_enable" json:"ssl_enable"`     //是否启用ssl
@@ -48,21 +50,21 @@ type Conf struct {
 //
 // redis_cluster_conf:
 //
-//	 enable: false
-//		ssl_enable: false
-//		endpoints:
+//		 enable: false
+//		 ssl_enable: false
+//		 endpoints:
+//	   - host: 127.0.0.1
+//			port: 6379
+//			username: ""
+//			password: Mt583611
+//	   - host: 127.0.0.1
+//			port: 6380
+//			username: ""
+//			password: Mt583611
 //		  - host: 127.0.0.1
-//		    port: 6379
-//		    username: ""
-//		    password: Mt583611
-//		  - host: 127.0.0.1
-//		    port: 6380
-//		    username: ""
-//		    password: Mt583611
-//		  - host: 127.0.0.1
-//		    port: 6381
-//		    username: ""
-//		    password: Mt583611
+//			port: 6381
+//			username: ""
+//			password: Mt583611
 //
 // <toml example>
 //

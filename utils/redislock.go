@@ -26,6 +26,8 @@ type CancelFunc func()
 //
 // using SetNX
 //
+// 与之对应的是使用 RedisUnlock 解锁
+//
 // # Note
 //
 // 该方法会立即返回锁定成功与否的结果
@@ -45,23 +47,20 @@ func RedisTryLock(key string) bool {
 //
 // using SetNX
 //
+// 与之对应的是使用 RedisUnlock 解锁
+//
 // # Note
 //
-// 该方法会阻塞住线程直到上锁成功或者调用cancel取消
-func RedisLock(key string) (cancel CancelFunc) {
+// 该方法会阻塞住线程直到上锁成功 或者 触发ctx.Done()
+func RedisLock(ctx context.Context, key string) {
 	if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
 		panic("using redis lock on nil redis instance")
 	}
 
 	var (
-		locked     = false
-		ticker     = time.NewTicker(time.Millisecond)
-		cancelChan = make(chan struct{})
+		locked = false
+		ticker = time.NewTicker(time.Millisecond)
 	)
-	cancel = func() {
-		cancelChan <- struct{}{}
-		close(cancelChan)
-	}
 
 LOOP:
 	for {
@@ -76,14 +75,12 @@ LOOP:
 			if locked {
 				break LOOP
 			}
-		case <-cancelChan:
+		case <-ctx.Done():
 			break LOOP
 		}
 	}
 
 	ticker.Stop()
-
-	return
 }
 
 // RedisUnlock redis锁-解锁（自动推测连接类型）

@@ -40,7 +40,7 @@ import (
 //		  redis:
 //		    list_key: "go-sail-user:logger"
 //		    conn_conf:
-//		        addr:
+//		        endpoint:
 //		          host: ""
 //		          port: 0
 //		          username: ""
@@ -49,7 +49,7 @@ import (
 //		        ssl_enable: false
 //		    cluster_conn_conf:
 //		      ssl_enable: false
-//		      addr_list:
+//		      endpoints:
 //		        - host: 192.168.224.114
 //		          port: 6379
 //		          username: ""
