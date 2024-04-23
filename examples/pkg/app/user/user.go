@@ -31,6 +31,8 @@ import (
 	"sync"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/keepchen/go-sail/v3/schedule"
 
 	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/http/routes"
@@ -57,7 +59,8 @@ func StartServer(wg *sync.WaitGroup) {
 	var (
 		conf = &config.Config{
 			LoggerConf: logger.Conf{
-				Filename: "examples/logs/running.log",
+				ConsoleOutput: true,
+				Filename:      "examples/logs/running.log",
 			},
 			HttpServer: config.HttpServerConf{
 				Debug: true,
@@ -85,6 +88,8 @@ func StartServer(wg *sync.WaitGroup) {
 			fmt.Println("call user function [before] to do something...")
 		}
 		afterFunc = func() {
+			sail.GetLogger().Info("print log info to console")
+
 			fmt.Println("call user function [after] to do something...")
 			job0 := "print now datetime"
 			cancel0 := schedule.NewJob(job0, func() {
@@ -96,6 +101,9 @@ func StartServer(wg *sync.WaitGroup) {
 			cancel1 := schedule.NewJob(job1, func() {
 				time.Sleep(time.Second * 10)
 				fmt.Println(utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN), "hello")
+				sail.GetLogger().Info("print log info to console",
+					zap.String("value", "go-sail"),
+					zap.Errors("errors", []error{nil}))
 			}).EverySecond()
 			time.AfterFunc(time.Second*33, cancel1)
 

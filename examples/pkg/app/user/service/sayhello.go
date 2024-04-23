@@ -36,4 +36,5 @@ func SayHelloSvc(c *gin.Context) {
 	resp.Data = fmt.Sprintf("hello, %s", nickname)
 
 	sail.Response(c).Assemble(constants.ErrNone, resp).Send()
+	//sail.Response(c).Data(resp.Data)
 }

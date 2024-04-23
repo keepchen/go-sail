@@ -165,3 +165,56 @@ func componentsStartup(appName string, conf *config.Config) {
 		fmt.Println("[GO-SAIL] <Components> initialize [etcd] successfully")
 	}
 }
+
+// 根据配置依次停止组件服务
+func componentsShutdown(conf *config.Config) {
+	//- redis(standalone)
+	if conf.RedisConf.Enable && redis.GetInstance() != nil {
+		_ = redis.GetInstance().Close()
+		fmt.Println("[GO-SAIL] <Components> shutdown [redis standalone] successfully")
+	}
+
+	//- redis(cluster)
+	if conf.RedisClusterConf.Enable && redis.GetClusterInstance() != nil {
+		_ = redis.GetClusterInstance().Close()
+		fmt.Println("[GO-SAIL] <Components> shutdown [redis cluster] successfully")
+	}
+
+	//- database
+	if conf.DBConf.Enable && db.GetInstance() != nil {
+		if db.GetInstance().R != nil {
+			if rawDB, err := db.GetInstance().R.DB(); err == nil {
+				_ = rawDB.Close()
+			}
+		}
+		if db.GetInstance().W != nil {
+			if rawDB, err := db.GetInstance().W.DB(); err == nil {
+				_ = rawDB.Close()
+			}
+		}
+		fmt.Println("[GO-SAIL] <Components> shutdown [db] successfully")
+	}
+
+	//- nats
+	if conf.NatsConf.Enable && nats.GetInstance() != nil {
+		nats.GetInstance().Close()
+		fmt.Println("[GO-SAIL] <Components> shutdown [nats] successfully")
+	}
+
+	//- kafka
+	if conf.KafkaConf.Conf.Enable && kafka.GetInstance() != nil {
+		if reader := kafka.GetInstance().Reader; reader != nil {
+			_ = reader.Close()
+		}
+		if writer := kafka.GetInstance().Reader; writer != nil {
+			_ = writer.Close()
+		}
+		fmt.Println("[GO-SAIL] <Components> shutdown [kafka] successfully")
+	}
+
+	//- etcd
+	if conf.EtcdConf.Enable && etcd.GetInstance() != nil {
+		_ = etcd.GetInstance().Close()
+		fmt.Println("[GO-SAIL] <Components> shutdown [etcd] successfully")
+	}
+}

@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/keepchen/go-sail/v3/lib/kafka"
@@ -155,17 +156,34 @@ func InitLoggerZap(cfg Conf, appName string) {
 			Compress:   cfg.Compress,
 		}
 
+		//输出到文件
 		fileCore := zapcore.NewCore(
-			zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(fileWriter), atomicLevel,
+			zapcore.NewJSONEncoder(encoderConfig), zapcore.Lock(zapcore.AddSync(fileWriter)), atomicLevel,
 		)
 
 		cores = append(cores, fileCore)
+
+		//输出到终端(如果配置启用)
+		if cfg.ConsoleOutput {
+			//consoleEncoder := zapcore.NewJSONEncoder(encoderConfig)
+			consoleEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+
+			consoleDebugging := zapcore.Lock(os.Stdout)
+			consoleErrors := zapcore.Lock(os.Stderr)
+
+			consoleCore := zapcore.NewTee(
+				zapcore.NewCore(consoleEncoder, consoleErrors, zapcore.ErrorLevel),
+				zapcore.NewCore(consoleEncoder, consoleDebugging, zapcore.DebugLevel),
+			)
+
+			cores = append(cores, consoleCore)
+		}
 
 		//logstash订阅的key只定义一个，与modeName无关
 		writer := exporterProvider(cfg)
 		if writer != nil {
 			coreWithWriter := zapcore.NewCore(
-				zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(writer), atomicLevel,
+				zapcore.NewJSONEncoder(encoderConfig), zapcore.Lock(zapcore.AddSync(writer)), atomicLevel,
 			)
 			cores = append(cores, coreWithWriter)
 		}
@@ -173,7 +191,7 @@ func InitLoggerZap(cfg Conf, appName string) {
 		//读取外部配置的syncer并加入到cores中
 		for _, syncer := range gWriterSyncers {
 			coreWithWriter := zapcore.NewCore(
-				zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(syncer), atomicLevel,
+				zapcore.NewJSONEncoder(encoderConfig), zapcore.Lock(zapcore.AddSync(syncer)), atomicLevel,
 			)
 			cores = append(cores, coreWithWriter)
 		}

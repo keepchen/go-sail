@@ -203,4 +203,7 @@ func (l *Launcher) Launch() {
 	}
 
 	wg.Wait()
+
+	//关闭响应的组件
+	componentsShutdown(l.sa.conf)
 }

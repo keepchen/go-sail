@@ -28,6 +28,60 @@ type Responder interface {
 	SendWithCode(httpCode int)
 	// Send 响应请求
 	Send()
+	// SimpleAssemble 组装返回数据(轻量版)
+	//
+	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+	SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder
+	// Data 返回数据
+	//
+	// 此方法直接返回响应数据，其中：
+	//
+	// 1.http状态码为200
+	//
+	// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
+	// 否则业务code为 constants.ErrNone
+	Data(data interface{})
+	// Success 返回成功
+	//
+	// 此方法直接返回成功状态，响应默认数据(data为空)，其中：
+	//
+	// 1.http状态码为200
+	//
+	// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
+	// 否则业务code为 constants.ErrNone
+	Success()
+	// Failure 返回失败
+	//
+	// 此方法响应默认数据(data为空)，其中：
+	//
+	// 1.http状态码为200
+	//
+	// 2.业务code码为 constants.ErrRequestParamsInvalid
+	Failure()
+	// Failure200 返回失败
+	//
+	// 此方法响应默认数据(data为空)，其中：
+	//
+	// 1.http状态码为200
+	//
+	// 2.业务码为code
+	Failure200(code constants.ICodeType)
+	// Failure400 返回失败
+	//
+	// 此方法响应默认数据(data为空)，其中：
+	//
+	// 1.http状态码为400
+	//
+	// 2.业务码为code
+	Failure400(code constants.ICodeType)
+	// Failure500 返回失败
+	//
+	// 此方法响应默认数据(data为空)，其中：
+	//
+	// 1.http状态码为500
+	//
+	// 2.业务码为code
+	Failure500(code constants.ICodeType)
 }
 
 type responseEngine struct {
@@ -64,10 +118,97 @@ func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, m
 	return a.Assemble(code, resp, message...)
 }
 
+// Success 返回成功
+//
+// 此方法直接返回成功状态，响应默认数据(data为空)，其中：
+//
+// 1.http状态码为200
+//
+// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
+// 否则业务code为 constants.ErrNone
+func (a *responseEngine) Success() {
+	a.Data(nil)
+}
+
+// Failure 返回失败
+//
+// 此方法响应默认数据(data为空)，其中：
+//
+// 1.http状态码为200
+//
+// 2.业务code码为 constants.ErrRequestParamsInvalid
+func (a *responseEngine) Failure() {
+	a.Failure200(constants.ErrRequestParamsInvalid)
+}
+
+// Failure200 返回失败
+//
+// 此方法响应默认数据(data为空)，其中：
+//
+// 1.http状态码为200
+//
+// 2.业务码为code
+func (a *responseEngine) Failure200(code constants.ICodeType) {
+	a.SimpleAssemble(code, nil).SendWithCode(http.StatusOK)
+}
+
+// Failure400 返回失败
+//
+// 此方法响应默认数据(data为空)，其中：
+//
+// 1.http状态码为400
+//
+// 2.业务码为code
+func (a *responseEngine) Failure400(code constants.ICodeType) {
+	a.SimpleAssemble(code, nil).SendWithCode(http.StatusBadRequest)
+}
+
+// Failure500 返回失败
+//
+// 此方法响应默认数据(data为空)，其中：
+//
+// 1.http状态码为500
+//
+// 2.业务码为code
+func (a *responseEngine) Failure500(code constants.ICodeType) {
+	a.SimpleAssemble(code, nil).SendWithCode(http.StatusInternalServerError)
+}
+
+// Data 返回数据
+//
+// 此方法直接返回响应数据，其中：
+//
+// 1.http状态码为200
+//
+// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
+// 否则业务code为 constants.ErrNone
+func (a *responseEngine) Data(data interface{}) {
+	var code constants.ICodeType
+	if anotherErrNoneCode != nil {
+		code = anotherErrNoneCode
+	} else {
+		code = constants.ErrNone
+	}
+
+	a.SimpleAssemble(code, data).Send()
+}
+
+// SimpleAssemble 组装返回数据(轻量版)
+//
+// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+func (a *responseEngine) SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder {
+	return a.mergeBody(code, data, message...)
+}
+
 // Assemble 组装返回数据
 //
 // 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
+	return a.mergeBody(code, resp, message...)
+}
+
+// 合并处理响应体
+func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, message ...string) Responder {
 	var (
 		body      dto.Base
 		requestId string
@@ -102,8 +243,8 @@ func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, 
 	}
 	body.Message = constants.CodeType(body.Code).String(language...)
 	if loc != nil {
-		body.Timestamp = time.Now().In(loc).UnixMilli()
 		//loc可能用于后续其他字段，这里暂时这样调用
+		body.Timestamp = time.Now().In(loc).UnixMilli()
 	} else {
 		body.Timestamp = time.Now().UnixMilli()
 	}
@@ -146,8 +287,10 @@ func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, 
 		body.Message = msg.String()
 	}
 
-	if resp != nil {
-		body.Data = resp.GetData()
+	if iResp, ok := resp.(dto.IResponse); resp != nil && ok {
+		body.Data = iResp.GetData()
+	} else if resp != nil {
+		body.Data = resp
 	} else {
 		body.Data = emptyDataField
 	}
