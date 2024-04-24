@@ -66,7 +66,10 @@ func Verify(tokenString string, conf Conf) (AppClaims, error) {
 
 		if _, ok := token.Method.(*jwtLib.SigningMethodRSA); ok {
 			//私钥加密，公钥解密，因此这里返回公钥
-			return conf.privateKey.Public(), nil
+			return conf.publicKey, nil
+
+			//从私钥中解析公钥并返回
+			//return conf.privateKey.Public(), nil
 		}
 
 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -92,7 +95,10 @@ func VerifyFromMap(tokenString string, conf Conf) (MapClaims, error) {
 
 		if _, ok := token.Method.(*jwtLib.SigningMethodRSA); ok {
 			//私钥加密，公钥解密，因此这里返回公钥
-			return conf.privateKey.Public(), nil
+			return conf.publicKey, nil
+
+			//从私钥中解析公钥并返回
+			//return conf.privateKey.Public(), nil
 		}
 
 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
