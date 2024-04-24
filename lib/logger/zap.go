@@ -170,7 +170,7 @@ func InitLoggerZap(cfg Conf, appName string) {
 		//输出到终端(如果配置启用)
 		if cfg.ConsoleOutput {
 			//consoleEncoder := zapcore.NewJSONEncoder(encoderConfig)
-			consoleEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+			consoleEncoder := zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
 
 			consoleDebugging := zapcore.Lock(os.Stdout)
 			consoleErrors := zapcore.Lock(os.Stderr)
