@@ -142,7 +142,7 @@ func componentsStartup(appName string, conf *config.Config) {
 	}
 
 	//- jwt
-	if conf.JwtConf.Enable {
+	if conf.JwtConf != nil && conf.JwtConf.Enable {
 		conf.JwtConf.Load()
 		fmt.Println("[GO-SAIL] <Components> initialize [jwt] successfully")
 	}
