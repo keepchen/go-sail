@@ -19,7 +19,7 @@ type Config struct {
 	RedisConf        redis.Conf        `yaml:"redis_conf" toml:"redis_conf" json:"redis_conf"`                         //redis配置(standalone)
 	RedisClusterConf redis.ClusterConf `yaml:"redis_cluster_conf" toml:"redis_cluster_conf" json:"redis_cluster_conf"` //redis配置(cluster)
 	NatsConf         nats.Conf         `yaml:"nats_conf" toml:"nats_conf" json:"nats_conf"`                            //nats配置
-	JwtConf          jwt.Conf          `yaml:"jwt_conf" toml:"jwt_conf" json:"jwt_conf"`                               //jwt配置
+	JwtConf          *jwt.Conf         `yaml:"jwt_conf" toml:"jwt_conf" json:"jwt_conf"`                               //jwt配置
 	EmailConf        email.Conf        `yaml:"email_conf" toml:"email_conf" json:"email_conf"`                         //邮件配置
 	KafkaConf        KafkaExtraConf    `yaml:"kafka_conf" toml:"kafka_conf" json:"kafka_conf"`                         //kafka配置
 	EtcdConf         etcd.Conf         `yaml:"etcd_conf" toml:"etcd_conf" json:"etcd_conf"`                            //etcd配置
