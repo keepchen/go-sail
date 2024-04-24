@@ -77,9 +77,28 @@ var (
 		},
 	}
 
-	mapClaim = MapClaims(map[string]interface{}{
-		"name": "test",
-	})
+	mapClaims = []MapClaims{
+		{
+			"name":  "test",
+			"aud":   "test-user",
+			"exp":   time.Now().Add(time.Hour * 24).Unix(),
+			"iat":   time.Now().Unix(),
+			"iss":   "go-sail",
+			"nbf":   time.Now().Add(10 * time.Minute).Unix(),
+			"sub":   "tester",
+			"valid": false,
+		},
+		{
+			"name":  "test",
+			"aud":   "test-user",
+			"exp":   time.Now().Add(time.Hour * 24).Unix(),
+			"iat":   time.Now().Unix(),
+			"iss":   "go-sail",
+			"nbf":   time.Now().Add(-10 * time.Minute).Unix(),
+			"sub":   "tester",
+			"valid": true,
+		},
+	}
 )
 
 func TestSign(t *testing.T) {
@@ -90,10 +109,12 @@ func TestSign(t *testing.T) {
 		t.Log(err)
 		t.Log("struct claim:", token)
 		assert.NoError(t, err)
-		token2, err := SignWithMap(mapClaim, conf)
-		t.Log(err)
-		t.Log("map claim:", token2)
-		assert.NoError(t, err)
+		for _, claim := range mapClaims {
+			token2, err := SignWithMap(claim, conf)
+			t.Log(err)
+			t.Log("map claim:", token2)
+			assert.NoError(t, err)
+		}
 	}
 }
 
@@ -111,14 +132,20 @@ func TestVerify(t *testing.T) {
 		t.Log("struct claim:", claim)
 		assert.NoError(t, err)
 
-		token2, err := SignWithMap(mapClaim, conf)
-		t.Log(err)
-		t.Log("map claim:", token2)
-		assert.NoError(t, err)
+		for _, claim := range mapClaims {
+			token2, err := SignWithMap(claim, conf)
+			t.Log(err)
+			t.Log("map claim:", token2)
+			assert.NoError(t, err)
 
-		claim2, err := VerifyFromMap(token2, conf)
-		t.Log(err)
-		t.Log("map claim:", claim2)
-		assert.NoError(t, err)
+			claim2, err := VerifyFromMap(token2, conf)
+			t.Log(err)
+			t.Log("map claim:", claim2)
+			if claim["valid"].(bool) {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+			}
+		}
 	}
 }

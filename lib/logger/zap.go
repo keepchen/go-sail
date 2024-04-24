@@ -62,6 +62,10 @@ var (
 )
 
 // GetLogger 获取日志服务实例
+//
+// 要使用对应modeName，请初始化时指定 Conf.Modules 配置
+//
+// 如果modeName未被初始化，那么将使用默认module
 func GetLogger(modeName ...string) *zap.Logger {
 	if len(modeName) < 1 {
 		return gLoggerSvcHolders.load(gDefaultModeName).instance
