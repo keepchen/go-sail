@@ -36,12 +36,16 @@ func GetConfig(groupName, dataID string, appConfig interface{}, format string) e
 // appConfig 解析到目标
 //
 // format 配置文件格式，支持: json|yaml|toml
-func ListenConfig(groupName, dataID string, appConfig interface{}, format string) error {
+//
+// printData 打印配置内容(可选项)，为true将打印配置内容，注意隐私保护
+func ListenConfig(groupName, dataID string, appConfig interface{}, format string, printData ...bool) error {
 	err := GetConfigClient().ListenConfig(vo.ConfigParam{
 		DataId: dataID,
 		Group:  groupName,
 		OnChange: func(namespace, group, dataId, data string) {
-			log.Printf("[GO-SAIL] <Nacos> listen config change,data:\n%s", data)
+			if len(printData) > 0 && printData[0] {
+				log.Printf("[GO-SAIL] <Nacos> listen config change,data:\n%s", data)
+			}
 			err := ParseConfig([]byte(data), &appConfig, format)
 			if err != nil {
 				log.Printf("[GO-SAIL] <Nacos> listen config {%s:%s} change,but can't be unmarshal: %s\n", group, dataId, err.Error())

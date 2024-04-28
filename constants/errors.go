@@ -36,9 +36,8 @@ var initErrorCodeMsgMap = map[LanguageCode]map[ICodeType]string{
 
 // String 获取错误信息字符
 func (ct CodeType) String(language ...string) string {
-	var lang = LanguageEnglish
+	var lang = LanguageEnglish //默认使用英语
 	if len(language) > 0 {
-		//TODO 这里需要考虑当语言不存在时，是否强制使用某种存在的语言代码
 		lang = LanguageCode(language[0])
 	}
 	ctm.mux.RLock()

@@ -29,7 +29,7 @@ type Option struct {
 	EmptyDataStruct int
 	//强制使用200作为http的状态码，配置此项后，http状态码将不从业务code码中解析。
 	//
-	//注意，调用Status()方法和SendWithCode()方法时的优先级高于此项配置。
+	//注意，调用 Responder.Status 方法和 Responder.SendWithCode 方法时的优先级高于此项配置。
 	ForceHttpCode200 bool
 	//时区
 	Timezone string

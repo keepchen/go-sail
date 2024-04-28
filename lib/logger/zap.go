@@ -21,28 +21,28 @@ type svcHolders struct {
 }
 
 type svcStd struct {
-	modeName string
+	module   string
 	instance *zap.Logger
 }
 
-func (sc *svcHolders) load(modeName string) svcStd {
+func (sc *svcHolders) load(module string) svcStd {
 	for _, svc := range sc.instances {
-		if svc.modeName == modeName {
+		if svc.module == module {
 			return svc
 		}
 	}
 
-	//panic(fmt.Sprintf("GetLogger failure:logger instance [%s] not initialize", modeName))
+	//panic(fmt.Sprintf("GetLogger failure:logger instance [%s] not initialize", module))
 
-	//使用默认modeName
+	//使用默认module
 	return sc.instances[0]
 }
 
-func (sc *svcHolders) store(modeName string, lg *zap.Logger) {
+func (sc *svcHolders) store(module string, lg *zap.Logger) {
 	var exist bool
 	for k, svc := range sc.instances {
 		//已存在，则更新
-		if svc.modeName == modeName {
+		if svc.module == module {
 			sc.instances[k].instance = lg
 			exist = true
 			break
@@ -51,55 +51,47 @@ func (sc *svcHolders) store(modeName string, lg *zap.Logger) {
 
 	//不存在，则新增
 	if !exist {
-		sc.instances = append(sc.instances, svcStd{modeName: modeName, instance: lg})
+		sc.instances = append(sc.instances, svcStd{module: module, instance: lg})
 	}
 }
 
 var (
 	gDefaultModeName  = "<defaultModeName>"
 	gLoggerSvcHolders *svcHolders
-	gWriterSyncers    = make([]zapcore.WriteSyncer, 0, 1)
+	gWriterSyncers    = make([]zapcore.WriteSyncer, 0, 2)
 )
 
 // GetLogger 获取日志服务实例
 //
-// 要使用对应modeName，请初始化时指定 Conf.Modules 配置
+// 要使用对应module，请初始化时指定 Conf.Modules 配置
 //
-// 如果modeName未被初始化，那么将使用默认module
-func GetLogger(modeName ...string) *zap.Logger {
-	if len(modeName) < 1 {
+// 如果module未被初始化，那么将使用默认module
+func GetLogger(module ...string) *zap.Logger {
+	if len(module) < 1 {
 		return gLoggerSvcHolders.load(gDefaultModeName).instance
 	}
 
-	return gLoggerSvcHolders.load(modeName[0]).instance
-}
-
-// SetExporters 设置导出器
-//
-// 设置自定义的导出器
-func SetExporters(syncers []zapcore.WriteSyncer) {
-	if len(syncers) > 0 {
-		gWriterSyncers = append(gWriterSyncers, syncers...)
-	}
+	return gLoggerSvcHolders.load(module[0]).instance
 }
 
 // Init 初始化
 //
 // InitLoggerZap 方法的语法糖
-func Init(cfg Conf, appName string) {
-	InitLoggerZap(cfg, appName)
+func Init(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
+	InitLoggerZap(cfg, appName, syncers...)
 }
 
 // InitLoggerZap 初始化zap日志服务
 //
-// 会加入默认的一个模块空间，当不传参调用GetLogger()时，
+// 会加入默认的一个模块空间，当不传参调用 GetLogger 时，
 // 就是使用默认的模块空间
 //
-// 当启用elk时，logger根据provider配置使用redis队列或nats publish等作为媒介，需要在logstash侧配置对应的pipeline
-// 队列的key取决于日志文件名和appName的组合，如：
-// 日志文件名=logs/app.log，appName=app
-// 则，队列名称为=> app:logs/app.log
-func InitLoggerZap(cfg Conf, appName string) {
+// 当启用exporter时，Exporter.Provider 字段值将作为exporter方案，
+// 为空则表示不启用exporter。
+// 目前Provider字段支持:
+//
+// 'redis'、'redis-cluster'、'nats'、'kafka'
+func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 	//注入默认的空间模块
 	cfg.Modules = append(cfg.Modules, gDefaultModeName)
 	sc := &svcHolders{}
@@ -183,13 +175,18 @@ func InitLoggerZap(cfg Conf, appName string) {
 			cores = append(cores, consoleCore)
 		}
 
-		//logstash订阅的key只定义一个，与modeName无关
+		//logstash订阅的key只定义一个，与module无关
 		writer := exporterProvider(cfg)
 		if writer != nil {
 			coreWithWriter := zapcore.NewCore(
 				zapcore.NewJSONEncoder(encoderConfig), zapcore.Lock(zapcore.AddSync(writer)), atomicLevel,
 			)
 			cores = append(cores, coreWithWriter)
+		}
+
+		//设置自定义exporter
+		if len(syncers) > 0 {
+			gWriterSyncers = append(gWriterSyncers, syncers...)
 		}
 
 		//读取外部配置的syncer并加入到cores中
@@ -228,7 +225,7 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		}
 
 		writer = redisWriter
-		log.Println("[logger] using (redis) writer")
+		log.Println("[logger] using (redis) exporter")
 		return writer
 	case "redis-cluster":
 		redisWriter := &redisClusterWriterStd{
@@ -237,7 +234,7 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		}
 
 		writer = redisWriter
-		log.Println("[logger] using (redis-cluster) writer")
+		log.Println("[logger] using (redis-cluster) exporter")
 		return writer
 	case "nats":
 		natsWriter := &natsWriterStd{
@@ -246,7 +243,7 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		}
 
 		writer = natsWriter
-		log.Println("[logger] using (nats) writer")
+		log.Println("[logger] using (nats) exporter")
 		return writer
 	case "kafka":
 		kafkaWriter := &kafkaWriterStd{
@@ -255,10 +252,10 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		}
 
 		writer = kafkaWriter
-		log.Println("[logger] using (kafka) writer")
+		log.Println("[logger] using (kafka) exporter")
 		return writer
 	default:
-		log.Println("[logger] writer not set,ignore emit exporter")
+		log.Println("[logger] exporter not set,ignore emit exporter")
 		return writer
 	}
 }
