@@ -63,6 +63,10 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 		api.SetupOption(*apiOption)
 	}
 
+	if len(conf.Addr) == 0 {
+		conf.Addr = ":8080"
+	}
+
 	//手动监听服务并检测退出信号从而实现优雅退出
 	srv := &http.Server{
 		Addr:    conf.Addr,
@@ -71,18 +75,18 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-			logger.GetLogger().Info("listen error", zap.Errors("error", []error{err}))
+			logger.GetLogger().Info("Http listen error", zap.Errors("error", []error{err}))
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	logger.GetLogger().Info("Shutting down server...")
+	logger.GetLogger().Info("Http Shutting down server...")
 
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.GetLogger().Error("Server forced to shutdown", zap.Errors("errors", []error{err}))
+		logger.GetLogger().Error("Http Server forced to shutdown", zap.Errors("errors", []error{err}))
 	}
 
-	logger.GetLogger().Info("Server exiting")
+	logger.GetLogger().Info("Http Server exiting")
 }

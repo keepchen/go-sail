@@ -1,7 +1,15 @@
 package httpserver
 
 import (
+	"context"
+	"errors"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/keepchen/go-sail/v3/lib/logger"
+	"go.uber.org/zap"
 
 	"github.com/keepchen/go-sail/v3/sail/config"
 
@@ -19,8 +27,28 @@ func RunPrometheusServerWhenEnable(conf config.PrometheusConf) {
 	if len(path) == 0 {
 		path = "/metrics"
 	}
+
+	mux := http.NewServeMux()
+	mux.Handle(path, promhttp.Handler())
+	srv := &http.Server{
+		Addr:    conf.Addr,
+		Handler: mux,
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		http.Handle(path, promhttp.Handler())
-		panic(http.ListenAndServe(conf.Addr, nil))
+		if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
+			logger.GetLogger().Info("Prometheus listen error", zap.Errors("error", []error{err}))
+		}
+	}()
+
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		<-c
+		cancel()
+		if err := srv.Shutdown(ctx); err != nil {
+			logger.GetLogger().Error("Prometheus Server forced to shutdown", zap.Errors("errors", []error{err}))
+		}
 	}()
 }
