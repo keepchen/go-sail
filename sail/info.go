@@ -35,13 +35,15 @@ func printSummaryInfo(conf config.HttpServerConf, ginEngine *gin.Engine) {
 	messages.Write([]byte(sMgs))
 	if conf.Debug {
 		ginEngine.GET("/go-sail", func(c *gin.Context) {
-			c.String(http.StatusOK, constants.GoSailLogo)
+			c.String(http.StatusOK, fmt.Sprintf("%s\r\n\r\n/** This route only enabled in debug mode **/", constants.GoSailLogo))
 		})
 		msg := fmt.Sprintf(">\t%s//%s%s%s\n", protocol, localIp, conf.Addr, "/go-sail")
 		messages.Write([]byte(msg))
 	}
 	if conf.Swagger.Enable {
-		msg := fmt.Sprintf("[Swagger] Enabled:\n>\t%s//%s%s%s\n", protocol, localIp, conf.Addr, "/redoc/docs.html")
+		msg := fmt.Sprintf("[Swagger] Enabled:\n>\t%s//%s%s%s     (Redocly UI)\n>\t%s//%s%s%s  (Swagger UI)\n",
+			protocol, localIp, conf.Addr, "/redoc/docs.html",
+			protocol, localIp, conf.Addr, "/swagger/index.html")
 		messages.Write([]byte(msg))
 	}
 	if conf.Prometheus.Enable {
