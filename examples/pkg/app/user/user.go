@@ -105,6 +105,10 @@ func StartServer(wg *sync.WaitGroup) {
 					zap.String("value", "go-sail"),
 					zap.Errors("errors", []error{nil}))
 			}).EverySecond()
+			//duplicate job name
+			//schedule.NewJob(job1, func() {
+			//	fmt.Println("This task will be panic")
+			//}).EverySecond()
 			time.AfterFunc(time.Second*33, cancel1)
 
 			ticker := time.NewTicker(time.Second)

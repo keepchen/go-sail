@@ -13,6 +13,8 @@ import (
 //
 // 尚未启动或未在运行中的任务将被直接取消。
 // 正在运行中的任务将等待其运行结束，之后便不再启动。
+//
+// 调用此方法后，任务将从任务列表中移除。
 type CancelFunc func()
 
 // Scheduler 调度器
@@ -159,6 +161,10 @@ func generateJobNameKey(name string) string {
 // name 任务名称唯一标识
 //
 // task 任务处理函数
+//
+// # Note:
+//
+// 如果name重复，将会panic
 func NewJob(name string, task func()) Scheduler {
 	return Job(name, task)
 }
@@ -168,6 +174,10 @@ func NewJob(name string, task func()) Scheduler {
 // name 任务名称唯一标识
 //
 // task 任务处理函数
+//
+// # Note:
+//
+// 如果name重复，将会panic
 func Job(name string, task func()) Scheduler {
 	job := &taskJob{
 		name:           name,
@@ -180,12 +190,20 @@ func Job(name string, task func()) Scheduler {
 		go func() {
 			job.cancelTaskChan <- struct{}{}
 			close(job.cancelTaskChan)
+			taskSchedules.mux.Lock()
+			delete(taskSchedules.pool, job.lockerKey)
+			taskSchedules.mux.Unlock()
 			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", job.name)
 		}()
 	}
 
 	taskSchedules.mux.Lock()
-	taskSchedules.pool[job.lockerKey] = job
+	if _, ok := taskSchedules.pool[job.lockerKey]; !ok {
+		taskSchedules.pool[job.lockerKey] = job
+	} else {
+		taskSchedules.mux.Unlock()
+		panic(fmt.Errorf("[GO-SAIL] Duplicate schedule, task name: %s", job.name))
+	}
 	taskSchedules.mux.Unlock()
 
 	return job
