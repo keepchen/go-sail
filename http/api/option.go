@@ -83,3 +83,13 @@ func SetupOption(opt Option) {
 	}
 	loc = lc
 }
+
+// DefaultSetupOption 默认设置
+func DefaultSetupOption() *Option {
+	return &Option{
+		Timezone:         constants.DefaultTimeZone,
+		ErrNoneCode:      constants.ErrNone,
+		ErrNoneCodeMsg:   "SUCCESS",
+		ForceHttpCode200: true,
+	}
+}

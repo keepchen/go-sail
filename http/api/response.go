@@ -57,7 +57,7 @@ type Responder interface {
 	// 1.http状态码为200
 	//
 	// 2.业务code码为 constants.ErrRequestParamsInvalid
-	Failure()
+	Failure(message ...string)
 	// Failure200 返回失败
 	//
 	// 此方法响应默认数据(data为空)，其中：
@@ -65,7 +65,7 @@ type Responder interface {
 	// 1.http状态码为200
 	//
 	// 2.业务码为code
-	Failure200(code constants.ICodeType)
+	Failure200(code constants.ICodeType, message ...string)
 	// Failure400 返回失败
 	//
 	// 此方法响应默认数据(data为空)，其中：
@@ -73,7 +73,7 @@ type Responder interface {
 	// 1.http状态码为400
 	//
 	// 2.业务码为code
-	Failure400(code constants.ICodeType)
+	Failure400(code constants.ICodeType, message ...string)
 	// Failure500 返回失败
 	//
 	// 此方法响应默认数据(data为空)，其中：
@@ -81,7 +81,7 @@ type Responder interface {
 	// 1.http状态码为500
 	//
 	// 2.业务码为code
-	Failure500(code constants.ICodeType)
+	Failure500(code constants.ICodeType, message ...string)
 }
 
 type responseEngine struct {
@@ -137,8 +137,8 @@ func (a *responseEngine) Success() {
 // 1.http状态码为200
 //
 // 2.业务code码为 constants.ErrRequestParamsInvalid
-func (a *responseEngine) Failure() {
-	a.Failure200(constants.ErrRequestParamsInvalid)
+func (a *responseEngine) Failure(message ...string) {
+	a.Failure200(constants.ErrRequestParamsInvalid, message...)
 }
 
 // Failure200 返回失败
@@ -148,8 +148,8 @@ func (a *responseEngine) Failure() {
 // 1.http状态码为200
 //
 // 2.业务码为code
-func (a *responseEngine) Failure200(code constants.ICodeType) {
-	a.SimpleAssemble(code, nil).SendWithCode(http.StatusOK)
+func (a *responseEngine) Failure200(code constants.ICodeType, message ...string) {
+	a.SimpleAssemble(code, nil, message...).SendWithCode(http.StatusOK)
 }
 
 // Failure400 返回失败
@@ -159,8 +159,8 @@ func (a *responseEngine) Failure200(code constants.ICodeType) {
 // 1.http状态码为400
 //
 // 2.业务码为code
-func (a *responseEngine) Failure400(code constants.ICodeType) {
-	a.SimpleAssemble(code, nil).SendWithCode(http.StatusBadRequest)
+func (a *responseEngine) Failure400(code constants.ICodeType, message ...string) {
+	a.SimpleAssemble(code, nil, message...).SendWithCode(http.StatusBadRequest)
 }
 
 // Failure500 返回失败
@@ -170,8 +170,8 @@ func (a *responseEngine) Failure400(code constants.ICodeType) {
 // 1.http状态码为500
 //
 // 2.业务码为code
-func (a *responseEngine) Failure500(code constants.ICodeType) {
-	a.SimpleAssemble(code, nil).SendWithCode(http.StatusInternalServerError)
+func (a *responseEngine) Failure500(code constants.ICodeType, message ...string) {
+	a.SimpleAssemble(code, nil, message...).SendWithCode(http.StatusInternalServerError)
 }
 
 // Data 返回数据

@@ -38,10 +38,11 @@ type Sailor interface {
 	//
 	// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行
 	//
-	//注意beforeFunc是同步执行的，因此切勿在此函数内执行阻塞性的任务，否则将导致整个进程阻塞，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
+	//注意beforeFunc是异步执行的，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
 	//
 	// afterFunc 后置自定义处理函数（可选），在框架函数之后执行
-	//注意afterFunc是同步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
+	//
+	//注意afterFunc是异步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
 	Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad
 }
 
@@ -127,10 +128,11 @@ func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Co
 //
 // beforeFunc 前置自定义处理函数（可选），在框架函数之前执行
 //
-// 注意beforeFunc是同步执行的，因此切勿在此函数内执行阻塞性的任务，否则将导致整个进程阻塞，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
+// 注意beforeFunc是异步执行的，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
 //
 // afterFunc 后置自定义处理函数（可选），在框架函数之后执行
-// 注意afterFunc是同步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
+//
+// 注意afterFunc是异步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
 func (s *Sail) Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad {
 	return &Launcher{
 		sa:                 s,
@@ -159,7 +161,7 @@ func (l *Launcher) Launch() {
 
 	//- before，自定义前置函数调用
 	if l.beforeFunc != nil {
-		l.beforeFunc()
+		go l.beforeFunc()
 	}
 
 	//:: 根据配置依次初始化组件、启动服务 ::
@@ -199,7 +201,7 @@ func (l *Launcher) Launch() {
 
 	//- after,自定义后置函数调用
 	if l.afterFunc != nil {
-		l.afterFunc()
+		go l.afterFunc()
 	}
 
 	wg.Wait()
