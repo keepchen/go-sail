@@ -49,7 +49,7 @@ sail.WakeupHttp("go-sail", conf).
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
 ## 文档  
-[文档传送门](https://blog.keepchen.com/a/go-sail.html?from=github)
+[文档传送门](https://go-sail.keepchen.com)
 
 ## 特性  
 - 获取组件  

@@ -49,7 +49,7 @@ Console screenshot after launched like this:
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
 ## Documentation
-[Docs](https://blog.keepchen.com/a/go-sail.html?from=github)
+[Docs](https://go-sail.keepchen.com)
 
 ## Features
 - Get components
