@@ -63,12 +63,14 @@ func Init(conf Conf, topic, groupID string) {
 // New 初始化连接
 //
 // 该方法会初始化连接、读实例、写实例
-func New(conf Conf, topic, groupID string) ([]*kafkaLib.Conn, *kafkaLib.Writer, *kafkaLib.Reader) {
-	connections := NewConnections(conf)
-	writer := NewWriter(conf, topic)
-	reader := NewReader(conf, topic, groupID)
+func New(conf Conf, topic, groupID string) (connections []*kafkaLib.Conn,
+	writer *kafkaLib.Writer, wErr error,
+	reader *kafkaLib.Reader, rErr error) {
+	connections = NewConnections(conf)
+	writer, wErr = NewWriter(conf, topic)
+	reader, rErr = NewReader(conf, topic, groupID)
 
-	return connections, writer, reader
+	return
 }
 
 // InitConnections 初始化连接
@@ -175,7 +177,7 @@ func InitWriter(conf Conf, topic string) {
 }
 
 // NewWriter 实例化新的写实例
-func NewWriter(conf Conf, topic string) *kafkaLib.Writer {
+func NewWriter(conf Conf, topic string) (*kafkaLib.Writer, error) {
 	writer := &kafkaLib.Writer{
 		Addr:     kafkaLib.TCP(conf.Endpoints...),
 		Topic:    topic,
@@ -189,14 +191,14 @@ func NewWriter(conf Conf, topic string) *kafkaLib.Writer {
 	if len(conf.Username) != 0 && len(conf.Password) != 0 {
 		mechanism, mErr := getMechanism(conf)
 		if mErr != nil {
-			panic(mErr)
+			return nil, mErr
 		}
 		transport.SASL = mechanism
 	}
 
 	writer.Transport = transport
 
-	return writer
+	return writer, nil
 }
 
 // InitReader 初始化读实例
@@ -236,7 +238,7 @@ func InitReader(conf Conf, topic, groupID string) {
 }
 
 // NewReader 实例化新的读实例
-func NewReader(conf Conf, topic, groupID string) *kafkaLib.Reader {
+func NewReader(conf Conf, topic, groupID string) (*kafkaLib.Reader, error) {
 	if conf.Timeout < 1 {
 		conf.Timeout = 10000
 	}
@@ -252,7 +254,7 @@ func NewReader(conf Conf, topic, groupID string) *kafkaLib.Reader {
 	if len(conf.Username) != 0 && len(conf.Password) != 0 {
 		mechanism, mErr := getMechanism(conf)
 		if mErr != nil {
-			panic(mErr)
+			return nil, mErr
 		}
 		dialer.SASLMechanism = mechanism
 	}
@@ -264,7 +266,7 @@ func NewReader(conf Conf, topic, groupID string) *kafkaLib.Reader {
 		Dialer:  dialer,
 	})
 
-	return reader
+	return reader, nil
 }
 
 // 根据SASL授权类型获取认证装置

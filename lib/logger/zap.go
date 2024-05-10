@@ -219,8 +219,13 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 
 	switch strings.ToLower(cfg.Exporter.Provider) {
 	case "redis":
+		redisInstance, err := redis.New(cfg.Exporter.Redis.ConnConf)
+		if err != nil {
+			log.Println("[logger] using (redis) exporter, but initialize connection error: ", err)
+			return writer
+		}
 		redisWriter := &redisWriterStd{
-			cli:     redis.New(cfg.Exporter.Redis.ConnConf),
+			cli:     redisInstance,
 			listKey: cfg.Exporter.Redis.ListKey,
 		}
 
@@ -228,8 +233,13 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		log.Println("[logger] using (redis) exporter")
 		return writer
 	case "redis-cluster":
+		redisInstance, err := redis.NewCluster(cfg.Exporter.Redis.ClusterConnConf)
+		if err != nil {
+			log.Println("[logger] using (redis-cluster) exporter, but initialize connection error: ", err)
+			return writer
+		}
 		redisWriter := &redisClusterWriterStd{
-			cli:     redis.NewCluster(cfg.Exporter.Redis.ClusterConnConf),
+			cli:     redisInstance,
 			listKey: cfg.Exporter.Redis.ListKey,
 		}
 
@@ -237,8 +247,13 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		log.Println("[logger] using (redis-cluster) exporter")
 		return writer
 	case "nats":
+		natsInstance, err := nats.New(cfg.Exporter.Nats.ConnConf)
+		if err != nil {
+			log.Println("[logger] using (nats) exporter, but initialize connection error: ", err)
+			return writer
+		}
 		natsWriter := &natsWriterStd{
-			cli:        nats.New(cfg.Exporter.Nats.ConnConf),
+			cli:        natsInstance,
 			subjectKey: cfg.Exporter.Nats.Subject,
 		}
 
@@ -246,8 +261,13 @@ func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 		log.Println("[logger] using (nats) exporter")
 		return writer
 	case "kafka":
+		kafkaInstance, err := kafka.NewWriter(cfg.Exporter.Kafka.ConnConf, cfg.Exporter.Kafka.Topic)
+		if err != nil {
+			log.Println("[logger] using (kafka) exporter, but initialize writer error: ", err)
+			return writer
+		}
 		kafkaWriter := &kafkaWriterStd{
-			writer: kafka.NewWriter(cfg.Exporter.Kafka.ConnConf, cfg.Exporter.Kafka.Topic),
+			writer: kafkaInstance,
 			topic:  cfg.Exporter.Kafka.Topic,
 		}
 

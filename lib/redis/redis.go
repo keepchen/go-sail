@@ -12,7 +12,7 @@ var redisInstance *redisLib.Client
 
 // InitRedis 初始化redis连接
 func InitRedis(conf Conf) {
-	rdb := initRedis(conf)
+	rdb := mustInitRedis(conf)
 
 	redisInstance = rdb
 }
@@ -24,7 +24,7 @@ func GetInstance() *redisLib.Client {
 	return redisInstance
 }
 
-func initRedis(conf Conf) *redisLib.Client {
+func mustInitRedis(conf Conf) *redisLib.Client {
 	opts := &redisLib.Options{
 		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
 		Username: conf.Username,
@@ -48,7 +48,28 @@ func initRedis(conf Conf) *redisLib.Client {
 	return rdb
 }
 
+func initRedis(conf Conf) (*redisLib.Client, error) {
+	opts := &redisLib.Options{
+		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
+		Username: conf.Username,
+		Password: conf.Password,
+		DB:       conf.Database,
+	}
+	if conf.SSLEnable {
+		//https://redis.uptrace.dev/guide/go-redis.html#using-tls
+		//
+		//To enable TLS/SSL, you need to provide an empty tls.Config.
+		//If you're using private certs, you need to specify them in the tls.Config
+		opts.TLSConfig = &tls.Config{}
+	}
+	rdb := redisLib.NewClient(opts)
+
+	err := rdb.Ping(context.Background()).Err()
+
+	return rdb, err
+}
+
 // New 实例化新的实例
-func New(conf Conf) *redisLib.Client {
+func New(conf Conf) (*redisLib.Client, error) {
 	return initRedis(conf)
 }

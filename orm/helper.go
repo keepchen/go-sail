@@ -1,6 +1,10 @@
-package model
+package orm
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 // AutoMigrate 自动同步表结构
 func AutoMigrate(db *gorm.DB, tables ...interface{}) error {
@@ -25,4 +29,22 @@ func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 
 		return db.Offset(page * pageSize).Limit(pageSize)
 	}
+}
+
+// IgnoreErrRecordNotFound 忽略记录未找到的错误
+//
+// @docs https://gorm.io/docs/v2_release_note.html#ErrRecordNotFound
+//
+// Example:
+//
+// err := IgnoreErrRecordNotFound(db.First())
+func IgnoreErrRecordNotFound(db *gorm.DB) error {
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		if db.Statement != nil {
+			db.Statement.RaiseErrorOnNotFound = false
+		}
+		db.Error = nil
+	}
+
+	return db.Error
 }

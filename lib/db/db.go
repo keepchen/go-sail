@@ -20,9 +20,9 @@ var dbInstance *Instance
 func InitDB(conf Conf) {
 	dialectR, dialectW := conf.GenDialector()
 	//read instance
-	dbPtrR := initDB(conf, dialectR)
+	dbPtrR := mustInitDB(conf, dialectR)
 	//write instance
-	dbPtrW := initDB(conf, dialectW)
+	dbPtrW := mustInitDB(conf, dialectW)
 
 	dbInstance = &Instance{
 		R: dbPtrR,
@@ -33,14 +33,15 @@ func InitDB(conf Conf) {
 // NewFreshDB 实例化全新的数据库链接
 //
 // rInstance为读实例,wInstance为写实例
-func NewFreshDB(conf Conf) (rInstance, wInstance *gorm.DB) {
+func NewFreshDB(conf Conf) (rInstance *gorm.DB, rErr error, wInstance *gorm.DB, wErr error) {
 	dialectR, dialectW := conf.GenDialector()
-	rInstance, wInstance = initDB(conf, dialectR), initDB(conf, dialectW)
+	rInstance, rErr = initDB(conf, dialectR)
+	wInstance, wErr = initDB(conf, dialectW)
 
 	return
 }
 
-func initDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
+func mustInitDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 	loggerSvc := NewZapLoggerForGorm(logger.GetLogger(), conf)
 	loggerSvc.SetAsDefault()
 	dbPtr, err := gorm.Open(dialect, &gorm.Config{
@@ -63,6 +64,29 @@ func initDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 	return dbPtr
 }
 
+func initDB(conf Conf, dialect gorm.Dialector) (*gorm.DB, error) {
+	loggerSvc := NewZapLoggerForGorm(logger.GetLogger(), conf)
+	loggerSvc.SetAsDefault()
+	dbPtr, err := gorm.Open(dialect, &gorm.Config{
+		Logger: loggerSvc,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	sqlDB, err := dbPtr.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	sqlDB.SetMaxOpenConns(conf.ConnectionPool.MaxOpenConnCount)
+	sqlDB.SetMaxIdleConns(conf.ConnectionPool.MaxIdleConnCount)
+	sqlDB.SetConnMaxLifetime(time.Minute * time.Duration(conf.ConnectionPool.ConnMaxLifeTimeMinutes))
+	sqlDB.SetConnMaxIdleTime(time.Minute * time.Duration(conf.ConnectionPool.ConnMaxIdleTimeMinutes))
+
+	return dbPtr, nil
+}
+
 // GetInstance 获取数据库实例
 //
 // 获取由InitDB实例化后的连接
@@ -73,10 +97,8 @@ func GetInstance() *Instance {
 // New 初始化化全新的数据库链接
 //
 // rInstance为读实例,wInstance为写实例
-func New(conf Conf) (rInstance, wInstance *gorm.DB) {
-	rInstance, wInstance = NewFreshDB(conf)
-
-	return
+func New(conf Conf) (rInstance *gorm.DB, rErr error, wInstance *gorm.DB, wErr error) {
+	return NewFreshDB(conf)
 }
 
 // Init 初始化数据库连接

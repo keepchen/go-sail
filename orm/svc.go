@@ -2,50 +2,50 @@
 //注意，这个包的存在并而不是为了替代gorm。
 //
 //目前已经包装了常规的创建、查询、更新、删除和分页方法。并且接受传入外部logger，此间的操
-//作方法日志会由传入的外部logger收集和输出。
+//作产生的日志会由传入的外部logger收集和输出。
 //
-//要指定读、写实例可以调用 R() 或者 W() 方法，请查阅orm_example.go文件。
+//要指定读、写实例可以调用 R() 或者 W() 方法，请查阅svc_test.go文件。
 //
 //更高阶的方法调用，请使用gorm库提供的语法糖。
 
-package service
+package orm
 
 import (
 	"database/sql"
 	"errors"
 
 	"github.com/keepchen/go-sail/v3/lib/logger"
-	"github.com/keepchen/go-sail/v3/orm/model"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-type ORMSvc interface {
-	Model(value interface{}) ORMSvc
-	Where(query interface{}, args ...interface{}) ORMSvc
-	Or(query interface{}, args ...interface{}) ORMSvc
-	Not(query interface{}, args ...interface{}) ORMSvc
-	Joins(query string, args ...interface{}) ORMSvc
-	Select(query interface{}, args ...interface{}) ORMSvc
-	Omit(columns ...string) ORMSvc
-	Order(value interface{}) ORMSvc
-	Group(name string) ORMSvc
-	Offset(offset int) ORMSvc
-	Limit(limit int) ORMSvc
-	Having(query interface{}, args ...interface{}) ORMSvc
-	Scopes(fns ...func(*gorm.DB) *gorm.DB) ORMSvc
+type Svc interface {
+	Model(value interface{}) Svc
+	Where(query interface{}, args ...interface{}) Svc
+	Or(query interface{}, args ...interface{}) Svc
+	Not(query interface{}, args ...interface{}) Svc
+	Joins(query string, args ...interface{}) Svc
+	Select(query interface{}, args ...interface{}) Svc
+	Omit(columns ...string) Svc
+	Order(value interface{}) Svc
+	Group(name string) Svc
+	Offset(offset int) Svc
+	Limit(limit int) Svc
+	Having(query interface{}, args ...interface{}) Svc
+	Scopes(fns ...func(*gorm.DB) *gorm.DB) Svc
 
 	Create(value interface{}) error
 	Find(dest interface{}, conditions ...interface{}) error
+
 	First(dest interface{}, conditions ...interface{}) error
 	Updates(values interface{}) error
 	Delete(value interface{}, conditions ...interface{}) error
 	Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error)
 
 	//R 使用读实例
-	R() ORMSvc
+	R() Svc
 	//W 使用写实例
-	W() ORMSvc
+	W() Svc
 	//Paginate 分页查询（多行）
 	//
 	//参数:
@@ -58,26 +58,34 @@ type ORMSvc interface {
 	//
 	//总条数和错误
 	Paginate(dest interface{}, page, pageSize int) (int64, error)
+	//FindOrNil 查询多条记录
+	//
+	//如果记录不存在忽略 gorm.ErrRecordNotFound 错误
+	FindOrNil(dest interface{}, conditions ...interface{}) error
+	//FirstOrNil 查询单条记录
+	//
+	//如果记录不存在忽略 gorm.ErrRecordNotFound 错误
+	FirstOrNil(dest interface{}, conditions ...interface{}) error
 }
 
-type ORMSvcImpl struct {
+type SvcImpl struct {
 	dbr    *gorm.DB
 	dbw    *gorm.DB
 	tx     *gorm.DB
 	logger *zap.Logger
 }
 
-var _ ORMSvc = (*ORMSvcImpl)(nil)
+var _ Svc = (*SvcImpl)(nil)
 
-var NewORMSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) ORMSvc {
-	return &ORMSvcImpl{
+var NewORMSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) Svc {
+	return &SvcImpl{
 		dbr:    dbr,
 		dbw:    dbw,
 		logger: logger,
 	}
 }
 
-func (a *ORMSvcImpl) Model(value interface{}) ORMSvc {
+func (a *SvcImpl) Model(value interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -87,7 +95,7 @@ func (a *ORMSvcImpl) Model(value interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Where(query interface{}, args ...interface{}) ORMSvc {
+func (a *SvcImpl) Where(query interface{}, args ...interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -97,7 +105,7 @@ func (a *ORMSvcImpl) Where(query interface{}, args ...interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Or(query interface{}, args ...interface{}) ORMSvc {
+func (a *SvcImpl) Or(query interface{}, args ...interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -107,7 +115,7 @@ func (a *ORMSvcImpl) Or(query interface{}, args ...interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Not(query interface{}, args ...interface{}) ORMSvc {
+func (a *SvcImpl) Not(query interface{}, args ...interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -117,7 +125,7 @@ func (a *ORMSvcImpl) Not(query interface{}, args ...interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Joins(query string, args ...interface{}) ORMSvc {
+func (a *SvcImpl) Joins(query string, args ...interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -127,7 +135,7 @@ func (a *ORMSvcImpl) Joins(query string, args ...interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Select(query interface{}, args ...interface{}) ORMSvc {
+func (a *SvcImpl) Select(query interface{}, args ...interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -137,7 +145,7 @@ func (a *ORMSvcImpl) Select(query interface{}, args ...interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Omit(columns ...string) ORMSvc {
+func (a *SvcImpl) Omit(columns ...string) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -147,7 +155,7 @@ func (a *ORMSvcImpl) Omit(columns ...string) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Order(value interface{}) ORMSvc {
+func (a *SvcImpl) Order(value interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -157,7 +165,7 @@ func (a *ORMSvcImpl) Order(value interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Group(name string) ORMSvc {
+func (a *SvcImpl) Group(name string) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -167,7 +175,7 @@ func (a *ORMSvcImpl) Group(name string) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Having(query interface{}, args ...interface{}) ORMSvc {
+func (a *SvcImpl) Having(query interface{}, args ...interface{}) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -177,7 +185,7 @@ func (a *ORMSvcImpl) Having(query interface{}, args ...interface{}) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Offset(offset int) ORMSvc {
+func (a *SvcImpl) Offset(offset int) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -187,7 +195,7 @@ func (a *ORMSvcImpl) Offset(offset int) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Limit(limit int) ORMSvc {
+func (a *SvcImpl) Limit(limit int) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -197,7 +205,7 @@ func (a *ORMSvcImpl) Limit(limit int) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Scopes(fns ...func(*gorm.DB) *gorm.DB) ORMSvc {
+func (a *SvcImpl) Scopes(fns ...func(*gorm.DB) *gorm.DB) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -207,7 +215,7 @@ func (a *ORMSvcImpl) Scopes(fns ...func(*gorm.DB) *gorm.DB) ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Create(value interface{}) error {
+func (a *SvcImpl) Create(value interface{}) error {
 	err := a.dbw.Create(value).Error
 
 	if err != nil {
@@ -219,12 +227,12 @@ func (a *ORMSvcImpl) Create(value interface{}) error {
 	return err
 }
 
-func (a *ORMSvcImpl) Find(dest interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) Find(dest interface{}, conditions ...interface{}) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
 
-	err := a.tx.Find(&dest, conditions...).Error
+	err := a.tx.Find(dest, conditions...).Error
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		a.logger.Error("[Database service]:Find:Error",
@@ -236,7 +244,24 @@ func (a *ORMSvcImpl) Find(dest interface{}, conditions ...interface{}) error {
 	return err
 }
 
-func (a *ORMSvcImpl) First(dest interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) FindOrNil(dest interface{}, conditions ...interface{}) error {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	err := IgnoreErrRecordNotFound(a.tx.Find(dest, conditions...))
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		a.logger.Error("[Database service]:Find:Error",
+			zap.String("value", logger.MarshalInterfaceValue(dest)),
+			zap.String("conditions", logger.MarshalInterfaceValue(conditions)),
+			zap.Errors("errors", []error{err}))
+	}
+
+	return err
+}
+
+func (a *SvcImpl) First(dest interface{}, conditions ...interface{}) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -253,7 +278,24 @@ func (a *ORMSvcImpl) First(dest interface{}, conditions ...interface{}) error {
 	return err
 }
 
-func (a *ORMSvcImpl) Updates(values interface{}) error {
+func (a *SvcImpl) FirstOrNil(dest interface{}, conditions ...interface{}) error {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	err := IgnoreErrRecordNotFound(a.tx.First(dest, conditions...))
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		a.logger.Error("[Database service]:First:Error",
+			zap.String("value", logger.MarshalInterfaceValue(dest)),
+			zap.String("conditions", logger.MarshalInterfaceValue(conditions)),
+			zap.Errors("errors", []error{err}))
+	}
+
+	return err
+}
+
+func (a *SvcImpl) Updates(values interface{}) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -269,7 +311,7 @@ func (a *ORMSvcImpl) Updates(values interface{}) error {
 	return err
 }
 
-func (a *ORMSvcImpl) Delete(value interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) Delete(value interface{}, conditions ...interface{}) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -285,7 +327,7 @@ func (a *ORMSvcImpl) Delete(value interface{}, conditions ...interface{}) error 
 	return err
 }
 
-func (a *ORMSvcImpl) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error) {
+func (a *SvcImpl) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error) {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -299,7 +341,7 @@ func (a *ORMSvcImpl) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOpti
 	return
 }
 
-func (a *ORMSvcImpl) R() ORMSvc {
+func (a *SvcImpl) R() Svc {
 	if a.tx == nil {
 		a.tx = a.dbr
 	}
@@ -307,7 +349,7 @@ func (a *ORMSvcImpl) R() ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) W() ORMSvc {
+func (a *SvcImpl) W() Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -315,7 +357,7 @@ func (a *ORMSvcImpl) W() ORMSvc {
 	return a
 }
 
-func (a *ORMSvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, error) {
+func (a *SvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, error) {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -323,7 +365,7 @@ func (a *ORMSvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, erro
 	var total int64
 	a.tx.Count(&total)
 
-	err := a.tx.Scopes(model.Paginate(page, pageSize)).Find(&dest).Error
+	err := a.tx.Scopes(Paginate(page, pageSize)).Find(dest).Error
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		a.logger.Error("[Database service]:Paginate:Error",
