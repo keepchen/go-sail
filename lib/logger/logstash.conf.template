@@ -60,7 +60,7 @@ input {
 output{
     elasticsearch {
             hosts => "elasticsearch:9200"
-            index => "football-ecosystem-bet-%{+YYYY.MM.dd}"
+            index => "app-name-%{+YYYY.MM.dd}"
             user => "elastic"
             password => "changeme"
     }

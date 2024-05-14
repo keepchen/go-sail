@@ -30,16 +30,16 @@ func InitClient(appName, addrStr, namespace string) {
 
 	var servers []nacosV2Constant.ServerConfig
 
-	nacosAddrsSplit := strings.Split(addrStr, ",")
-	for _, nacosAddr := range nacosAddrsSplit {
-		nacosAddrSplit := strings.Split(nacosAddr, ":")
-		if len(nacosAddrSplit) == 2 {
-			port, err := strconv.Atoi(nacosAddrSplit[1])
+	addrSlice := strings.Split(addrStr, ",")
+	for _, adr := range addrSlice {
+		adrSlice := strings.Split(adr, ":")
+		if len(adrSlice) == 2 {
+			port, err := strconv.Atoi(adrSlice[1])
 			if err != nil {
 				panic(err)
 			}
 			servers = append(servers, nacosV2Constant.ServerConfig{
-				IpAddr: nacosAddrSplit[0],
+				IpAddr: adrSlice[0],
 				Port:   uint64(port),
 			})
 		}
@@ -55,7 +55,7 @@ func InitClient(appName, addrStr, namespace string) {
 		NotLoadCacheAtStart: true,
 		LogDir:              fmt.Sprintf("logs/nacos/log_%s", appName),
 		CacheDir:            fmt.Sprintf("logs/nacos/cache_%s", appName),
-		LogLevel:            "debug",
+		LogLevel:            "warn",
 	}
 
 	cc, err := nacosV2Clients.NewConfigClient(vo.NacosClientParam{
@@ -80,12 +80,12 @@ func InitClient(appName, addrStr, namespace string) {
 	iNamingClient = nc
 }
 
-// GetConfigClient 获取nacos配置实例
+// GetConfigClient 获取配置实例
 func GetConfigClient() config_client.IConfigClient {
 	return iConfigClient
 }
 
-// GetNamingClient 获取nacos服务发现实例
+// GetNamingClient 获取服务发现实例
 func GetNamingClient() naming_client.INamingClient {
 	return iNamingClient
 }

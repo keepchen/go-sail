@@ -63,7 +63,7 @@ func (c *MapClaims) Valid() error {
 	}
 	if value, ok := (*c)["sub"]; ok {
 		if sub, ok := value.(string); ok {
-			standardClaim.Id = sub
+			standardClaim.Subject = sub
 		}
 	}
 
