@@ -11,7 +11,7 @@ import (
 )
 
 type User struct {
-	Base
+	BaseModel
 	UserID   int64  `gorm:"column:user_id;type:bigint;not null;index:,unique;comment:用户ID"`
 	Nickname string `gorm:"column:nickname;type:varchar(30);comment:用户昵称"`
 	Status   int    `gorm:"column:status;type:tinyint;default:0;comment:用户状态"`
