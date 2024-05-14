@@ -100,7 +100,7 @@ func TestSvcUsage(t *testing.T) {
 		Nickname: "go-sail",
 		Status:   2,
 	}
-	err = svc.W().Select("*").Omit("id", "deleted_at").Updates(&user3)
+	err = svc.W().Select("*").Omit("id", "created_at", "deleted_at").Updates(&user3)
 	assert.NoError(t, err)
 	t.Log("Updates:", user3)
 

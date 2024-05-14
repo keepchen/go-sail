@@ -39,6 +39,7 @@ type Svc interface {
 
 	First(dest interface{}, conditions ...interface{}) error
 	Updates(values interface{}) error
+	Save(values interface{}) error
 	Delete(value interface{}, conditions ...interface{}) error
 	Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error)
 
@@ -304,6 +305,22 @@ func (a *SvcImpl) Updates(values interface{}) error {
 
 	if err != nil {
 		a.logger.Error("[Database service]:Updates:Error",
+			zap.String("value", logger.MarshalInterfaceValue(values)),
+			zap.Errors("errors", []error{err}))
+	}
+
+	return err
+}
+
+func (a *SvcImpl) Save(values interface{}) error {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	err := a.tx.Save(values).Error
+
+	if err != nil {
+		a.logger.Error("[Database service]:Save:Error",
 			zap.String("value", logger.MarshalInterfaceValue(values)),
 			zap.Errors("errors", []error{err}))
 	}

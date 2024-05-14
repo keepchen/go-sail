@@ -86,6 +86,19 @@ func RandomDigitalChars(length int) string {
 	return string(b)
 }
 
+// RandomString 随机字符串(字母+数字)
+func RandomString(length int) string {
+	var s = fmt.Sprintf("%s%s", letters, digitalChars)
+
+	b := make([]byte, length)
+
+	for i := range b {
+		b[i] = s[rand.Intn(len(s))]
+	}
+
+	return string(b)
+}
+
 // RandomComplexString 随机字符串(可带特殊符号)
 func RandomComplexString(length int) string {
 	var s = fmt.Sprintf("%s%s%s", letters, digitalChars, specificSymbols)
