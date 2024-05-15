@@ -11,8 +11,8 @@
 package orm
 
 import (
+	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"
@@ -33,6 +33,8 @@ type Svc interface {
 	Limit(limit int) Svc
 	Having(query interface{}, args ...interface{}) Svc
 	Scopes(fns ...func(*gorm.DB) *gorm.DB) Svc
+	Session(session *gorm.Session) Svc
+	WithContext(ctx context.Context) Svc
 
 	Create(value interface{}) error
 	Find(dest interface{}, conditions ...interface{}) error
@@ -42,6 +44,9 @@ type Svc interface {
 	Save(values interface{}) error
 	Delete(value interface{}, conditions ...interface{}) error
 	Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error)
+
+	//Unwrap 返回gorm原生实例
+	Unwrap() *gorm.DB
 
 	//R 使用读实例
 	R() Svc
@@ -216,6 +221,34 @@ func (a *SvcImpl) Scopes(fns ...func(*gorm.DB) *gorm.DB) Svc {
 	return a
 }
 
+func (a *SvcImpl) Session(session *gorm.Session) Svc {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	a.tx = a.tx.Session(session)
+
+	return a
+}
+
+func (a *SvcImpl) WithContext(ctx context.Context) Svc {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	a.tx = a.tx.WithContext(ctx)
+
+	return a
+}
+
+func (a *SvcImpl) Unwrap() *gorm.DB {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	return a.tx
+}
+
 func (a *SvcImpl) Create(value interface{}) error {
 	err := a.dbw.Create(value).Error
 
@@ -233,9 +266,9 @@ func (a *SvcImpl) Find(dest interface{}, conditions ...interface{}) error {
 		a.tx = a.dbw
 	}
 
-	err := a.tx.Find(dest, conditions...).Error
+	err := IgnoreErrRecordNotFound(a.tx.Find(dest, conditions...))
 
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err != nil {
 		a.logger.Error("[Database service]:Find:Error",
 			zap.String("value", logger.MarshalInterfaceValue(dest)),
 			zap.String("conditions", logger.MarshalInterfaceValue(conditions)),
@@ -252,8 +285,8 @@ func (a *SvcImpl) FindOrNil(dest interface{}, conditions ...interface{}) error {
 
 	err := IgnoreErrRecordNotFound(a.tx.Find(dest, conditions...))
 
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		a.logger.Error("[Database service]:Find:Error",
+	if err != nil {
+		a.logger.Error("[Database service]:FindOrNil:Error",
 			zap.String("value", logger.MarshalInterfaceValue(dest)),
 			zap.String("conditions", logger.MarshalInterfaceValue(conditions)),
 			zap.Errors("errors", []error{err}))
@@ -267,9 +300,9 @@ func (a *SvcImpl) First(dest interface{}, conditions ...interface{}) error {
 		a.tx = a.dbw
 	}
 
-	err := a.tx.First(dest, conditions...).Error
+	err := IgnoreErrRecordNotFound(a.tx.First(dest, conditions...))
 
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err != nil {
 		a.logger.Error("[Database service]:First:Error",
 			zap.String("value", logger.MarshalInterfaceValue(dest)),
 			zap.String("conditions", logger.MarshalInterfaceValue(conditions)),
@@ -286,8 +319,8 @@ func (a *SvcImpl) FirstOrNil(dest interface{}, conditions ...interface{}) error 
 
 	err := IgnoreErrRecordNotFound(a.tx.First(dest, conditions...))
 
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		a.logger.Error("[Database service]:First:Error",
+	if err != nil {
+		a.logger.Error("[Database service]:FirstOrNil:Error",
 			zap.String("value", logger.MarshalInterfaceValue(dest)),
 			zap.String("conditions", logger.MarshalInterfaceValue(conditions)),
 			zap.Errors("errors", []error{err}))
@@ -382,9 +415,9 @@ func (a *SvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, error) 
 	var total int64
 	a.tx.Count(&total)
 
-	err := a.tx.Scopes(Paginate(page, pageSize)).Find(dest).Error
+	err := IgnoreErrRecordNotFound(a.tx.Scopes(Paginate(page, pageSize)).Find(dest))
 
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err != nil {
 		a.logger.Error("[Database service]:Paginate:Error",
 			zap.String("value", logger.MarshalInterfaceValue(dest)),
 			zap.Errors("errors", []error{err}))

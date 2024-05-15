@@ -8,7 +8,7 @@ English | [简体中文](./README.md)
 
 ## Whats the go-sail？
 
-**go-sail** is a lightweight progressive web framework implemented using Go language. It is not the product of reinventing the wheel, but stands on the shoulders of giants and integrates existing excellent components to help users build stable and reliable services in the simplest way.
+**go-sail** is a lightweight progressive web framework implemented using Go language. **It is not the product of reinventing the wheel**, but stands on the shoulders of giants and integrates existing excellent components to help users build stable and reliable services in the simplest way.
 As its name suggests, you can regard it as the beginning of your own journey in the golang ecosystem. go-sail will help you start lightly and set sail.
 
 ## How to use
@@ -53,7 +53,8 @@ Console screenshot after launched like this:
 
 ## Features
 - Get components
-> go-sail启动时，会根据配置文件启动相应的应用组件，可使用`sail`关键字统一获取
+> When go-sail is started, the corresponding application components will be started according to the configuration file, 
+> which can be obtained uniformly using the `sail` keyword.
 ```go
 import (
     "github.com/keepchen/go-sail/v3/sail"

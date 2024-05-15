@@ -79,7 +79,7 @@ func GetLogger(module ...string) *zap.Logger {
 
 // Response http响应组件
 func Response(c *gin.Context) api.Responder {
-	return api.New(c)
+	return api.Response(c)
 }
 
 // GetKafkaInstance 获取kafka完整实例

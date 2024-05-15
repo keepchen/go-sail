@@ -13,10 +13,12 @@ import (
 // Responder 响应器
 type Responder interface {
 	// Builder 组装返回数据
-	//
-	// Assemble 方法的语法糖
 	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
 	// Assemble 组装返回数据
+	//
+	// Deprecated: Assemble is deprecated,it will be removed in the future.
+	//
+	// Please use Builder instead.
 	//
 	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
@@ -28,7 +30,17 @@ type Responder interface {
 	SendWithCode(httpCode int)
 	// Send 响应请求
 	Send()
+	// Wrap 组装返回数据
+	//
+	//该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
+	//
+	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+	Wrap(code constants.ICodeType, data interface{}, message ...string) Responder
 	// SimpleAssemble 组装返回数据(轻量版)
+	//
+	// Deprecated: SimpleAssemble is deprecated,it will be removed in the future.
+	//
+	// Please use Wrap instead.
 	//
 	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder
@@ -115,7 +127,7 @@ func Response(c *gin.Context) Responder {
 //
 // Assemble 方法的语法糖
 func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
-	return a.Assemble(code, resp, message...)
+	return a.mergeBody(code, resp, message...)
 }
 
 // Success 返回成功
@@ -149,7 +161,7 @@ func (a *responseEngine) Failure(message ...string) {
 //
 // 2.业务码为code
 func (a *responseEngine) Failure200(code constants.ICodeType, message ...string) {
-	a.SimpleAssemble(code, nil, message...).SendWithCode(http.StatusOK)
+	a.Wrap(code, nil, message...).SendWithCode(http.StatusOK)
 }
 
 // Failure400 返回失败
@@ -160,7 +172,7 @@ func (a *responseEngine) Failure200(code constants.ICodeType, message ...string)
 //
 // 2.业务码为code
 func (a *responseEngine) Failure400(code constants.ICodeType, message ...string) {
-	a.SimpleAssemble(code, nil, message...).SendWithCode(http.StatusBadRequest)
+	a.Wrap(code, nil, message...).SendWithCode(http.StatusBadRequest)
 }
 
 // Failure500 返回失败
@@ -171,7 +183,7 @@ func (a *responseEngine) Failure400(code constants.ICodeType, message ...string)
 //
 // 2.业务码为code
 func (a *responseEngine) Failure500(code constants.ICodeType, message ...string) {
-	a.SimpleAssemble(code, nil, message...).SendWithCode(http.StatusInternalServerError)
+	a.Wrap(code, nil, message...).SendWithCode(http.StatusInternalServerError)
 }
 
 // Data 返回数据
@@ -190,10 +202,23 @@ func (a *responseEngine) Data(data interface{}) {
 		code = constants.ErrNone
 	}
 
-	a.SimpleAssemble(code, data).Send()
+	a.Wrap(code, data).Send()
+}
+
+// Wrap 组装返回数据(轻量版)
+//
+// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
+//
+// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+func (a *responseEngine) Wrap(code constants.ICodeType, data interface{}, message ...string) Responder {
+	return a.mergeBody(code, data, message...)
 }
 
 // SimpleAssemble 组装返回数据(轻量版)
+//
+// Deprecated: SimpleAssemble is deprecated,it will be removed in the future.
+//
+// Please use Wrap instead.
 //
 // 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 func (a *responseEngine) SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder {
@@ -201,6 +226,10 @@ func (a *responseEngine) SimpleAssemble(code constants.ICodeType, data interface
 }
 
 // Assemble 组装返回数据
+//
+// Deprecated: Assemble is deprecated,it will be removed in the future.
+//
+// Please use Builder instead.
 //
 // 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
