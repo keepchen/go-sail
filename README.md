@@ -131,7 +131,18 @@ func GetUserInfo(c *gin.Context) {
 ```
 
 #### 其他插件  
-[README.md](plugins/README.md)
+[README.md](plugins/README.md)  
+
+## 大感谢  
+感谢在体验、使用过程中提出宝贵建议和意见以及提供过其他各种帮助的各位小伙伴！  
+- 配置模块化优化 [@fujilin](https://github.com/fujilin)  
+- 响应器语法糖增强优化 [@lichuanzhang](https://github.com/lichuanzhang)  
+- Logo美化 [@ShuaiRen34](https://twitter.com/ShuaiRen34)  
+
+## 其他  
+- 欢迎大家提PR: [pull request](https://github.com/keepchen/go-sail/compare)  
+- 欢迎大家提出自己的想法: [issue](https://github.com/keepchen/go-sail/issues/new/choose)  
+- 感谢你的star如果你喜欢这个项目的话 :)  
 
 ## 使用案例  
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
