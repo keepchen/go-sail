@@ -32,12 +32,33 @@ type CancelFunc func()
 //
 // 该方法会立即返回锁定成功与否的结果
 func RedisTryLock(key string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
+	go func() {
+		for range time.After(redisExecuteTimeout) {
+			cancel()
+			break
+		}
+	}()
+
+	return RedisTryLockWithContext(ctx, key)
+}
+
+// RedisTryLockWithContext redis锁-尝试上锁（自动推测连接类型）
+//
+// using SetNX
+//
+// 与之对应的是使用 RedisUnlock 解锁
+//
+// # Note
+//
+// 该方法会立即返回锁定成功与否的结果
+func RedisTryLockWithContext(ctx context.Context, key string) bool {
 	if redis.GetInstance() != nil {
-		return RedisStandaloneLock(key)
+		return RedisStandaloneLockWithContext(ctx, key)
 	}
 
 	if redis.GetClusterInstance() != nil {
-		return RedisClusterLock(key)
+		return RedisClusterLockWithContext(ctx, key)
 	}
 
 	panic("using redis lock on nil redis instance")
@@ -87,13 +108,28 @@ LOOP:
 //
 // using SetNX
 func RedisUnlock(key string) {
+	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
+	go func() {
+		for range time.After(redisExecuteTimeout) {
+			cancel()
+			break
+		}
+	}()
+
+	RedisUnlockWithContext(ctx, key)
+}
+
+// RedisUnlockWithContext redis锁-解锁（自动推测连接类型）
+//
+// using SetNX
+func RedisUnlockWithContext(ctx context.Context, key string) {
 	if redis.GetInstance() != nil {
-		RedisStandaloneUnlock(key)
+		RedisStandaloneUnlockWithContext(ctx, key)
 		return
 	}
 
 	if redis.GetClusterInstance() != nil {
-		RedisClusterUnlock(key)
+		RedisClusterUnlockWithContext(ctx, key)
 		return
 	}
 
@@ -112,6 +148,13 @@ func RedisStandaloneLock(key string) bool {
 		}
 	}()
 
+	return RedisStandaloneLockWithContext(ctx, key)
+}
+
+// RedisStandaloneLockWithContext redis锁-上锁（使用standalone）
+//
+// using SetNX
+func RedisStandaloneLockWithContext(ctx context.Context, key string) bool {
 	ok, err := redis.GetInstance().SetNX(ctx, key, time.Now().Unix(), lockTTL).Result()
 	if err != nil {
 		return false
@@ -159,6 +202,13 @@ func RedisStandaloneUnlock(key string) {
 		}
 	}()
 
+	RedisStandaloneUnlockWithContext(ctx, key)
+}
+
+// RedisStandaloneUnlockWithContext redis锁-解锁（使用standalone）
+//
+// using SetNX
+func RedisStandaloneUnlockWithContext(ctx context.Context, key string) {
 	_, _ = redis.GetInstance().Del(ctx, key).Result()
 
 	go func() {
@@ -187,6 +237,13 @@ func RedisClusterLock(key string) bool {
 		}
 	}()
 
+	return RedisClusterLockWithContext(ctx, key)
+}
+
+// RedisClusterLockWithContext redis锁-上锁（使用cluster）
+//
+// using SetNX
+func RedisClusterLockWithContext(ctx context.Context, key string) bool {
 	ok, err := redis.GetClusterInstance().SetNX(ctx, key, time.Now().Unix(), lockTTL).Result()
 	if err != nil {
 		return false
@@ -234,6 +291,13 @@ func RedisClusterUnlock(key string) {
 		}
 	}()
 
+	RedisClusterUnlockWithContext(ctx, key)
+}
+
+// RedisClusterUnlockWithContext redis锁-解锁（使用cluster）
+//
+// using SetNX
+func RedisClusterUnlockWithContext(ctx context.Context, key string) {
 	_, _ = redis.GetClusterInstance().Del(ctx, key).Result()
 
 	go func() {
