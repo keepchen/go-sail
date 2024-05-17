@@ -83,7 +83,13 @@ type SvcImpl struct {
 
 var _ Svc = (*SvcImpl)(nil)
 
-var NewORMSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) Svc {
+// New 初始化
+//
+// NewSvcImpl 的语法糖
+var New = NewSvcImpl
+
+// NewSvcImpl 初始化
+var NewSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) Svc {
 	return &SvcImpl{
 		dbr:    dbr,
 		dbw:    dbw,

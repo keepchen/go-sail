@@ -68,7 +68,7 @@ func TestSvcUsage(t *testing.T) {
 	}
 	_ = AutoMigrate(dbw, &User{})
 
-	svc := NewORMSvcImpl(dbr, dbw, logger.GetLogger())
+	svc := New(dbr, dbw, logger.GetLogger())
 
 	dbw.Exec(fmt.Sprintf("truncate table %s", (&User{}).TableName()))
 
