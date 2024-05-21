@@ -31,5 +31,8 @@ const (
 )
 
 const (
-	DatetimeLayout = "2006-01-02 15:04:05" //日期时间格式
+	DateLayout       string = "2006-01-02"           //日期格式
+	TimeLayout       string = "15:04:05"             //时间格式
+	DatetimeLayout   string = "2006-01-02 15:04:05"  //日期时间格式
+	DatetimeTZLayout string = "2006-01-02T15:04:05Z" //日期时间格式-tz
 )

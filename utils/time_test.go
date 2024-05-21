@@ -44,6 +44,11 @@ func TestNewTimeWithTimeZone(t *testing.T) {
 			assert.Equal(t, true, tim.dirtyTimezone)
 		} else {
 			assert.Equal(t, false, tim.dirtyTimezone)
+			t.Log("now unix", tim.Now().Unix())
+			t.Log("datetime with tz", tim.DatetimeTZ())
+			t.Log("datetime", tim.Datetime())
+			t.Log("date", tim.Date())
+			t.Log("time", tim.Time())
 		}
 	}
 }
