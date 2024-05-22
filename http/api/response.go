@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -316,12 +317,27 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		body.Message = msg.String()
 	}
 
+	//设置用户响应体
 	if iResp, ok := resp.(dto.IResponse); resp != nil && ok {
 		body.Data = iResp.GetData()
-	} else if resp != nil {
-		body.Data = resp
 	} else {
-		body.Data = emptyDataField
+		body.Data = resp
+	}
+
+	//当空data配置项不为nil时，需要判断用户响应体数据类型并覆盖空data配置项
+	if emptyDataField != nil {
+		vf := reflect.ValueOf(body.Data)
+		switch true {
+		//为空
+		case body.Data == nil:
+			body.Data = emptyDataField
+		//为指针类型且为空
+		case vf.Kind() == reflect.Pointer && vf.IsNil():
+			body.Data = emptyDataField
+		//数组或切片类型且长度为0
+		case (vf.Kind() == reflect.Slice || vf.Kind() == reflect.Array) && vf.Len() == 0:
+			body.Data = emptyDataField
+		}
 	}
 
 	a.data = body
