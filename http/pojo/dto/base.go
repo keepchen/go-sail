@@ -5,8 +5,8 @@ package dto
 type Base struct {
 	// 请求id
 	// in: body
-	// required: false
-	RequestID string `json:"requestId" example:"5686efa5-c747-4f63-8657-e6052f8181a9" format:"string"`
+	// required: true
+	RequestID string `json:"requestId" example:"5686efa5-c747-4f63-8657-e6052f8181a9" format:"string" validate:"required"`
 	// 错误码
 	// in: body
 	// required: true

@@ -38,11 +38,11 @@ type Sailor interface {
 	//
 	// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行
 	//
-	//注意beforeFunc是异步执行的，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
+	// 注意beforeFunc是异步执行的，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
 	//
 	// afterFunc 后置自定义处理函数（可选），在框架函数之后执行
 	//
-	//注意afterFunc是异步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
+	// 注意afterFunc是异步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
 	Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad
 }
 
@@ -178,7 +178,8 @@ func (l *Launcher) Launch() {
 	//- 注册websocket
 	if l.sa.wsConf != nil && l.sa.wsConf.enable {
 		if len(l.sa.wsConf.middlewares) > 0 {
-			ginEngine.Use(l.sa.wsConf.middlewares...).GET(l.sa.wsConf.routePath, httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
+			ginEngine.Use(l.sa.wsConf.middlewares...).GET(l.sa.wsConf.routePath,
+				httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
 		} else {
 			ginEngine.GET(l.sa.wsConf.routePath, httpserver.WrapWebsocketHandler(l.sa.wsConf.ws, l.sa.wsConf.handler))
 		}
@@ -206,6 +207,6 @@ func (l *Launcher) Launch() {
 
 	wg.Wait()
 
-	//关闭响应的组件
+	//关闭相应的组件
 	componentsShutdown(l.sa.conf)
 }
