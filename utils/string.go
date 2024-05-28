@@ -231,3 +231,21 @@ func paddingString(rawString, padChar string, length, padType int) string {
 		return fmt.Sprintf("%s%s%s", strings.Repeat(padChar, left), rawString, strings.Repeat(padChar, right))
 	}
 }
+
+// FromCharCode 返回ASCII码对应的字符
+//
+// # Note
+//
+// 常规ASCII码表范围为0~127
+//
+// 扩展ASCII码表范围为128~255
+//
+// more: https://www.rfc-editor.org/rfc/rfc698.txt
+func FromCharCode(code int32) string {
+	return fmt.Sprintf("%c", code)
+}
+
+// CharCodeAt 返回字符对应的ASCII码
+func CharCodeAt(character string) rune {
+	return ([]rune(character))[0]
+}

@@ -33,7 +33,7 @@ type Responder interface {
 	Send()
 	// Wrap 组装返回数据
 	//
-	//该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
+	// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
 	//
 	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	Wrap(code constants.ICodeType, data interface{}, message ...string) Responder

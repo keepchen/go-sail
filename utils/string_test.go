@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -188,5 +189,56 @@ func TestStringPaddingBoth(t *testing.T) {
 		s := StringPaddingBoth(v.raw, v.padChar, v.length)
 		t.Log(s)
 		assert.Equal(t, v.result, s)
+	}
+}
+
+var a2zLowercase = "abcdefghijklmnopqrstuvwxyz"
+
+func TestCharCodeAt(t *testing.T) {
+	arr := strings.Split(a2zLowercase, "")
+	asciiLowercase := int32(97)
+	asciiUppercase := int32(65)
+	for _, letter := range arr {
+		//lowercase
+		code := CharCodeAt(letter)
+		t.Log(letter, ":", code)
+		assert.Equal(t, code, asciiLowercase)
+		asciiLowercase++
+
+		//uppercase
+		upLetter := strings.ToUpper(letter)
+		codeUp := CharCodeAt(upLetter)
+		t.Log(upLetter, ":", codeUp)
+		assert.Equal(t, codeUp, asciiUppercase)
+		asciiUppercase++
+	}
+}
+
+func TestFromCharCode(t *testing.T) {
+	arr := strings.Split(a2zLowercase, "")
+	asciiLowercase := int32(97)
+	asciiUppercase := int32(65)
+	for _, letter := range arr {
+		//lowercase
+		character := FromCharCode(asciiLowercase)
+		t.Log(asciiLowercase, ":", character)
+		assert.Equal(t, letter, character)
+		asciiLowercase++
+
+		//uppercase
+		upLetter := strings.ToUpper(letter)
+		characterUp := FromCharCode(asciiUppercase)
+		t.Log(asciiUppercase, ":", characterUp)
+		assert.Equal(t, upLetter, characterUp)
+		asciiUppercase++
+	}
+}
+
+func TestCharCodeRange(t *testing.T) {
+	for i := 0; i < 256; i++ {
+		character := FromCharCode(int32(i))
+		code := CharCodeAt(character)
+		t.Log("character:", character, "code:", code, []byte(character), int32(i))
+		assert.Equal(t, int32(i), code)
 	}
 }
