@@ -53,7 +53,7 @@ const (
 // 2.空数据序列化结构
 func SetupOption(opt Option) {
 	if opt.ErrNoneCode != nil {
-		constants.RegisterCode(constants.LanguageEnglish, map[constants.ICodeType]string{opt.ErrNoneCode: opt.ErrNoneCodeMsg})
+		constants.RegisterCodeSingle(constants.LanguageEnglish, opt.ErrNoneCode, opt.ErrNoneCodeMsg)
 		anotherErrNoneCode = opt.ErrNoneCode
 	}
 	switch opt.EmptyDataStruct {
