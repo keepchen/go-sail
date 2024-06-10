@@ -26,15 +26,28 @@ import (
 //
 // 注意，使用前请确保db组件已初始化成功。
 func GetDB() (read *gorm.DB, write *gorm.DB) {
-	read, write = db.GetInstance().R, db.GetInstance().W
+	if db.GetInstance() == nil {
+		read, write = nil, nil
+	} else {
+		read, write = db.GetInstance().R, db.GetInstance().W
+	}
 
 	return
+}
+
+// NewDB 创建新的数据实例
+func NewDB(conf db.Conf) (read *gorm.DB, rErr error, write *gorm.DB, wErr error) {
+	return db.New(conf)
 }
 
 // GetDBR 获取数据库读实例
 //
 // 注意，使用前请确保db组件已初始化成功。
 func GetDBR() *gorm.DB {
+	if db.GetInstance() == nil {
+		return nil
+	}
+
 	return db.GetInstance().R
 }
 
@@ -42,6 +55,10 @@ func GetDBR() *gorm.DB {
 //
 // 注意，使用前请确保db组件已初始化成功。
 func GetDBW() *gorm.DB {
+	if db.GetInstance() == nil {
+		return nil
+	}
+
 	return db.GetInstance().W
 }
 
@@ -75,6 +92,13 @@ func GetNats() *natsLib.Conn {
 // 注意，使用前请确保logger组件已初始化成功。
 func GetLogger(module ...string) *zap.Logger {
 	return logger.GetLogger(module...)
+}
+
+// MarshalInterfaceValue 将interface序列化成字符串
+//
+// 主要用于日志记录
+func MarshalInterfaceValue(obj interface{}) string {
+	return logger.MarshalInterfaceValue(obj)
 }
 
 // Response http响应组件

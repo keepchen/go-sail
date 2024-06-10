@@ -272,12 +272,16 @@ var i18n = []LanguageCode{
 	LanguageZulu,
 }
 
+func (lc LanguageCode) String() string {
+	return string(lc)
+}
+
 func (lc LanguageCode) ToLowerCase() string {
-	return strings.ToLower(string(lc))
+	return strings.ToLower(lc.String())
 }
 
 func (lc LanguageCode) ToUpperCase() string {
-	return strings.ToUpper(string(lc))
+	return strings.ToUpper(lc.String())
 }
 
 func (lc LanguageCode) Exist() bool {

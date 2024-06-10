@@ -13,6 +13,7 @@ var (
 	forceHttpCode200                         = false                     //强制使用200作为http的状态码
 	timezone                                 = constants.DefaultTimeZone //时区
 	detectAcceptLanguage                     = false                     //是否检测客户端语言
+	languageCode                             = constants.LanguageEnglish //语言代码
 )
 
 var (
@@ -35,6 +36,10 @@ type Option struct {
 	Timezone string
 	//是否检测客户端语言，用于错误码消息返回
 	DetectAcceptLanguage bool
+	//语言代码
+	//
+	//当没有启用 DetectAcceptLanguage 时，使用该语言代码
+	LanguageCode constants.LanguageCode
 }
 
 const (
@@ -91,5 +96,6 @@ func DefaultSetupOption() *Option {
 		ErrNoneCode:      constants.ErrNone,
 		ErrNoneCodeMsg:   "SUCCESS",
 		ForceHttpCode200: true,
+		LanguageCode:     constants.LanguageEnglish,
 	}
 }

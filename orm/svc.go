@@ -36,23 +36,23 @@ type Svc interface {
 	Session(session *gorm.Session) Svc
 	WithContext(ctx context.Context) Svc
 
+	Count(count *int64)
 	Create(value interface{}) error
 	Find(dest interface{}, conditions ...interface{}) error
-
 	First(dest interface{}, conditions ...interface{}) error
 	Updates(values interface{}) error
 	Save(values interface{}) error
 	Delete(value interface{}, conditions ...interface{}) error
 	Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error)
 
-	//Unwrap 返回gorm原生实例
+	// Unwrap 返回gorm原生实例
 	Unwrap() *gorm.DB
 
-	//R 使用读实例
+	// R 使用读实例
 	R() Svc
-	//W 使用写实例
+	// W 使用写实例
 	W() Svc
-	//Paginate 分页查询（多行）
+	// Paginate 分页查询（多行）
 	//
 	//参数:
 	//
@@ -64,11 +64,11 @@ type Svc interface {
 	//
 	//总条数和错误
 	Paginate(dest interface{}, page, pageSize int) (int64, error)
-	//FindOrNil 查询多条记录
+	// FindOrNil 查询多条记录
 	//
 	//如果记录不存在忽略 gorm.ErrRecordNotFound 错误
 	FindOrNil(dest interface{}, conditions ...interface{}) error
-	//FirstOrNil 查询单条记录
+	// FirstOrNil 查询单条记录
 	//
 	//如果记录不存在忽略 gorm.ErrRecordNotFound 错误
 	FirstOrNil(dest interface{}, conditions ...interface{}) error
@@ -255,8 +255,22 @@ func (a *SvcImpl) Unwrap() *gorm.DB {
 	return a.tx
 }
 
+func (a *SvcImpl) Count(count *int64) {
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	a.tx.Count(count)
+	a.clearTx()
+}
+
 func (a *SvcImpl) Create(value interface{}) error {
-	err := a.dbw.Create(value).Error
+	if a.tx == nil {
+		a.tx = a.dbw
+	}
+
+	err := a.tx.Create(value).Error
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Create:Error",
@@ -273,6 +287,7 @@ func (a *SvcImpl) Find(dest interface{}, conditions ...interface{}) error {
 	}
 
 	err := IgnoreErrRecordNotFound(a.tx.Find(dest, conditions...))
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Find:Error",
@@ -290,6 +305,7 @@ func (a *SvcImpl) FindOrNil(dest interface{}, conditions ...interface{}) error {
 	}
 
 	err := IgnoreErrRecordNotFound(a.tx.Find(dest, conditions...))
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:FindOrNil:Error",
@@ -307,6 +323,7 @@ func (a *SvcImpl) First(dest interface{}, conditions ...interface{}) error {
 	}
 
 	err := IgnoreErrRecordNotFound(a.tx.First(dest, conditions...))
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:First:Error",
@@ -324,6 +341,7 @@ func (a *SvcImpl) FirstOrNil(dest interface{}, conditions ...interface{}) error 
 	}
 
 	err := IgnoreErrRecordNotFound(a.tx.First(dest, conditions...))
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:FirstOrNil:Error",
@@ -341,6 +359,7 @@ func (a *SvcImpl) Updates(values interface{}) error {
 	}
 
 	err := a.tx.Updates(values).Error
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Updates:Error",
@@ -357,6 +376,7 @@ func (a *SvcImpl) Save(values interface{}) error {
 	}
 
 	err := a.tx.Save(values).Error
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Save:Error",
@@ -371,7 +391,9 @@ func (a *SvcImpl) Delete(value interface{}, conditions ...interface{}) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
+
 	err := a.tx.Delete(value, conditions...).Error
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Delete:Error",
@@ -387,7 +409,9 @@ func (a *SvcImpl) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
+
 	err = a.tx.Transaction(fc, opts...)
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Transaction:Error",
@@ -418,10 +442,15 @@ func (a *SvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, error) 
 		a.tx = a.dbw
 	}
 
-	var total int64
-	a.tx.Count(&total)
+	var count int64
+	if a.tx.Statement.Model == nil {
+		a.tx.Model(dest).Count(&count)
+	} else {
+		a.tx.Count(&count)
+	}
 
 	err := IgnoreErrRecordNotFound(a.tx.Scopes(Paginate(page, pageSize)).Find(dest))
+	a.clearTx()
 
 	if err != nil {
 		a.logger.Error("[Database service]:Paginate:Error",
@@ -429,5 +458,9 @@ func (a *SvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, error) 
 			zap.Errors("errors", []error{err}))
 	}
 
-	return total, err
+	return count, err
+}
+
+func (a *SvcImpl) clearTx() {
+	a.tx = nil
 }

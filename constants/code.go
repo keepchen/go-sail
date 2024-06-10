@@ -62,6 +62,9 @@ func RegisterCodeTable(language LanguageCode, i18nMsg map[ICodeType]string) {
 // # 此方法适用于【动态】注入单个错误码的场景
 func RegisterCodeSingle(language LanguageCode, code ICodeType, msg string) {
 	ctm.mux.Lock()
+	if _, ok := ctm.maps[language][code]; !ok {
+		ctm.maps[language] = make(map[ICodeType]string)
+	}
 	ctm.maps[language][code] = msg
 	ctm.mux.Unlock()
 }

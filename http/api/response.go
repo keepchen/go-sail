@@ -243,7 +243,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		body      dto.Base
 		requestId string
 		httpCode  int
-		language  = []string{"en"}
+		language  = []string{languageCode.String()}
 	)
 	//从上下文中获取语言代码
 	if detectAcceptLanguage {
