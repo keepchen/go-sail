@@ -16,7 +16,7 @@
 
 > go get -u github.com/keepchen/go-sail/v3
 
-```go
+```go  
 import (
     "github.com/gin-gonic/gin"
     "github.com/keepchen/go-sail/v3/sail"
@@ -24,15 +24,7 @@ import (
 )
 
 var (
-    conf = &config.Config{
-        LoggerConf: logger.Conf{
-            Filename: "logs/running.log",
-        },
-        HttpServer: config.HttpServerConf{
-            Debug: true,
-            Addr:  ":8000",
-        },
-    }
+    conf = &config.Config{}
     registerRoutes = func(ginEngine *gin.Engine) {
         ginEngine.GET("/hello", func(c *gin.Context){
             c.String(http.StatusOK, "%s", "hello, world!")
@@ -40,9 +32,9 @@ var (
     }
 )
 
-sail.WakeupHttp("go-sail", conf).
-    Hook(registerRoutes, nil, nil).
-    Launch()
+func main() {
+    sail.WakeupHttp("go-sail", conf).Hook(registerRoutes, nil, nil).Launch()
+}
 ```  
 当你看到终端如下图所示内容就表示服务启动成功了：  
 
@@ -51,84 +43,51 @@ sail.WakeupHttp("go-sail", conf).
 ## 文档  
 [文档传送门](https://go-sail.keepchen.com)
 
-## 特性  
-- 获取组件  
-> go-sail启动时，会根据配置文件启动相应的应用组件，可使用`sail`关键字统一获取  
-```go
-import (
-    "github.com/keepchen/go-sail/v3/sail"
-)
-
-//获取日志组件
-sail.GetLogger()
-
-//获取数据库连接（读、写实例）
-sail.GetDB()
-
-//获取redis连接(单例模式)
-sail.GetRedis()
-
-//获取redis连接(cluster模式)
-sail.GetRedisCluster()
-
-//获取nats连接
-sail.GetNats()
-
-//获取kafka完整连接实例
-sail.GetKafkaInstance()
-
-//获取etcd连接实例
-sail.GetEtcdInstance()
-```  
-更多组件持续开发中，也欢迎大家提PR👏🏻👏🏻
-
-- 返回响应  
-```go
-import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "github.com/keepchen/go-sail/v3/constants"
-    "github.com/keepchen/go-sail/v3/sail"
-)
-
-//handler
-func SayHello(c *gin.Context) {
-    sail.Response(c).Builder(constants.ErrNone, nil, "OK").Send()
-}
-```  
-
-- 返回响应实体  
-```go
-import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "github.com/keepchen/go-sail/v3/constants"
-    "github.com/keepchen/go-sail/v3/http/pojo/dto"
-    "github.com/keepchen/go-sail/v3/sail"
-)
-
-type UserInfo struct {
-    dto.Base
-    Data struct {
-        Nickname string `json:"nickname" validate:"required" format:"string"` //nickname
-        Age int `json:"int" validate:"required" format:"number"` //age
-    } `json:"data" validate:"required"` //body data
-}
-
-//implement dto.IResponse interface
-func (v UserInfo) GetData() interface{} {
-    return v.Data
-}
-
-//handler
-func GetUserInfo(c *gin.Context) {
-    var resp UserInfo
-    resp.Data.Nickname = "go-sail"
-    resp.Data.Age = 18
-	
-    sail.Response(c).Builder(constants.ErrNone, resp).Send()
-}
-```
+## 功能特性  
+- [x] HTTP响应器  
+  - 统一响应字段  
+  - 管理HTTP状态码  
+  - 管理业务码  
+- [x] 常用的组件库  
+  - database  
+  - email  
+  - jwt  
+  - kafka  
+  - logger  
+  - nacos  
+  - etcd  
+  - nats  
+  - redis  
+- [x] 服务注册与发现  
+  - Nacos  
+  - Etcd  
+- [x] 常用的工具类  
+  - 加解密  
+  - 文件  
+  - ip  
+  - 字符串  
+  - 随机数  
+  - 日期时间  
+  - ...
+- [x] 日志收集与导出  
+  - 本地文件  
+  - 导出器  
+- [x] 计划任务  
+  - 可取消的  
+  - 一次性的  
+  - 周期性的  
+  - Linux Crontab风格的  
+  - 竞态检测  
+- [x] 调用链日志追踪  
+  - 贯穿请求上下文  
+- [x] 多语言错误码  
+  - 动态注入  
+- [x] 基于Redis的分布式锁  
+  - Standalone模式    
+  - Cluster模式  
+- [x] 接口文档  
+  - Redocly  
+  - Swagger
 
 #### 其他插件  
 [README.md](plugins/README.md)  

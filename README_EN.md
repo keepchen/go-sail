@@ -16,7 +16,7 @@ As its name suggests, you can regard it as the beginning of your own journey in 
 
 > go get -u github.com/keepchen/go-sail/v3
 
-```go
+```go  
 import (
     "github.com/gin-gonic/gin"
     "github.com/keepchen/go-sail/v3/sail"
@@ -24,15 +24,7 @@ import (
 )
 
 var (
-    conf = &config.Config{
-        LoggerConf: logger.Conf{
-            Filename: "logs/running.log",
-        },
-        HttpServer: config.HttpServerConf{
-            Debug: true,
-            Addr:  ":8000",
-        },
-    }
+    conf = &config.Config{}
     registerRoutes = func(ginEngine *gin.Engine) {
         ginEngine.GET("/hello", func(c *gin.Context){
             c.String(http.StatusOK, "%s", "hello, world!")
@@ -40,9 +32,9 @@ var (
     }
 )
 
-sail.WakeupHttp("go-sail", conf).
-    Hook(registerRoutes, nil, nil).
-    Launch()
+func main() {
+    sail.WakeupHttp("go-sail", conf).Hook(registerRoutes, nil, nil).Launch()
+}
 ```  
 Console screenshot after launched like this:  
 
@@ -51,85 +43,51 @@ Console screenshot after launched like this:
 ## Documentation
 [Docs](https://go-sail.keepchen.com)
 
-## Features
-- Get components
-> When go-sail is started, the corresponding application components will be started according to the configuration file, 
-> which can be obtained uniformly using the `sail` keyword.
-```go
-import (
-    "github.com/keepchen/go-sail/v3/sail"
-)
-
-//获取日志组件
-sail.GetLogger()
-
-//获取数据库连接（读、写实例）
-sail.GetDB()
-
-//获取redis连接(单例模式)
-sail.GetRedis()
-
-//获取redis连接(cluster模式)
-sail.GetRedisCluster()
-
-//获取nats连接
-sail.GetNats()
-
-//获取kafka完整连接实例
-sail.GetKafkaInstance()
-
-//获取etcd连接实例
-sail.GetEtcdInstance()
-```  
-PR is welcome👏🏻👏🏻
-
-- Response
-```go
-import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "github.com/keepchen/go-sail/v3/constants"
-    "github.com/keepchen/go-sail/v3/sail"
-)
-
-//handler
-func SayHello(c *gin.Context) {
-    sail.Response(c).Builder(constants.ErrNone, nil, "OK").Send()
-}
-```  
-
-- Response (entity)
-```go
-import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "github.com/keepchen/go-sail/v3/constants"
-    "github.com/keepchen/go-sail/v3/http/pojo/dto"
-    "github.com/keepchen/go-sail/v3/sail"
-)
-
-type UserInfo struct {
-    dto.Base
-    Data struct {
-        Nickname string `json:"nickname" validate:"required" format:"string"` //nickname
-        Age int `json:"int" validate:"required" format:"number"` //age
-    } `json:"data" validate:"required"` //body data
-}
-
-// implement dto.IResponse interface
-func (v UserInfo) GetData() interface{} {
-    return v.Data
-}
-
-//handler
-func GetUserInfo(c *gin.Context) {
-    var resp UserInfo
-    resp.Data.Nickname = "go-sail"
-    resp.Data.Age = 18
-	
-    sail.Response(c).Builder(constants.ErrNone, resp).Send()
-}
-```
+## Features  
+- [x] HTTP Responder
+    - Uniform Response Fields
+    - Managing HTTP status codes  
+    - Management business code  
+- [x] Highly used component library 
+    - database
+    - email
+    - jwt
+    - kafka
+    - logger
+    - nacos
+    - etcd
+    - nats
+    - redis
+- [x] Service Registration and Discovery  
+    - Nacos
+    - Etcd
+- [x] Frequently used tools  
+    - Encryption and Decryption  
+    - File
+    - IP
+    - String
+    - Random number  
+    - Date and Time  
+    - ...
+- [x] Log collection and export
+    - Local files
+    - Exporter  
+- [x] Scheduled Tasks  
+    - Cancellable  
+    - Disposable  
+    - Periodic  
+    - Linux Crontab style  
+    - Race Detection  
+- [x] Call chain log tracking  
+    - Passing through the request context  
+- [x] Multi-language error codes
+    - Dynamic injection  
+- [x] Distributed lock based on Redis  
+    - Standalone mode  
+    - Cluster mode
+- [x] API Documentation
+    - Redocly
+    - Swagger  
 
 #### Other Plugins
 [README.md](plugins/README.md)  
