@@ -15,7 +15,7 @@ func (j *taskJob) RunAfter(delay time.Duration) (cancel CancelFunc) {
 	timer := time.After(delay)
 	cancel = j.cancelFunc
 
-	wrappedTaskFunc := func() {
+	j.wrappedTaskFunc = func() {
 		j.running = true
 
 		defer func() {
@@ -41,7 +41,7 @@ func (j *taskJob) RunAfter(delay time.Duration) (cancel CancelFunc) {
 		for {
 			select {
 			case <-timer:
-				go wrappedTaskFunc()
+				go j.wrappedTaskFunc()
 				break LOOP
 			case <-j.cancelTaskChan:
 				break LOOP

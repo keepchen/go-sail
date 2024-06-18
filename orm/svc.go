@@ -14,6 +14,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/keepchen/go-sail/v3/lib/db"
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -94,6 +95,17 @@ var NewSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) Svc {
 		dbr:    dbr,
 		dbw:    dbw,
 		logger: logger,
+	}
+}
+
+// NewSvcImplSilent 初始化
+//
+// 使用默认的读写实例和日志对象
+var NewSvcImplSilent = func() Svc {
+	return &SvcImpl{
+		dbr:    db.GetInstance().R,
+		dbw:    db.GetInstance().W,
+		logger: logger.GetLogger(),
 	}
 }
 

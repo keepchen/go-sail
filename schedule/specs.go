@@ -35,7 +35,7 @@ func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 	})
 
 	//因为AddFunc内部是协程启动，因此这里的方法使用同步方式调用
-	wrappedTaskFunc := func() {
+	j.wrappedTaskFunc = func() {
 		j.running = true
 
 		defer func() {
@@ -56,7 +56,7 @@ func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 		}
 	}
 
-	jobID, jobErr := cronJob.AddFunc(crontabExpr, wrappedTaskFunc)
+	jobID, jobErr := cronJob.AddFunc(crontabExpr, j.wrappedTaskFunc)
 	if jobErr != nil {
 		fmt.Printf("[GO-SAIL] <Schedule> add job {%s} failed: %v\n", j.name, jobErr.Error())
 	}

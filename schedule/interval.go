@@ -23,7 +23,7 @@ func (j *taskJob) run() {
 	go func() {
 		ticker := time.NewTicker(j.interval)
 		defer ticker.Stop()
-		wrappedTaskFunc := func() {
+		j.wrappedTaskFunc = func() {
 			j.running = true
 
 			defer func() {
@@ -47,7 +47,7 @@ func (j *taskJob) run() {
 		for {
 			select {
 			case <-ticker.C:
-				go wrappedTaskFunc()
+				go j.wrappedTaskFunc()
 			//收到退出信号，终止任务
 			case <-j.cancelTaskChan:
 				if j.withoutOverlapping && j.lockedByMe {

@@ -119,6 +119,7 @@ type Scheduler interface {
 type taskJob struct {
 	name               string
 	task               func()
+	wrappedTaskFunc    func()
 	interval           time.Duration
 	lockerKey          string
 	lockedByMe         bool
@@ -237,4 +238,65 @@ func JobIsRunning(jobName string) bool {
 	taskSchedules.mux.RUnlock()
 
 	return running
+}
+
+// Call 手动启动任务
+//
+// jobName 任务名称
+//
+// mandatory 如果为true，将不检测堆叠状态而直接执行
+//
+// # Note
+//
+// 内部函数将被同步式的调用
+func Call(jobName string, mandatory bool) {
+	var (
+		job       *taskJob
+		lockerKey = generateJobNameKey(jobName)
+	)
+	taskSchedules.mux.RLock()
+	if jb, ok := taskSchedules.pool[lockerKey]; ok {
+		job = jb
+	}
+	taskSchedules.mux.RUnlock()
+	if job == nil {
+		fmt.Printf("[GO-SAIL] <Schedule> call job {%s} failed,cause job not registered.\n", job.name)
+		return
+	}
+	if mandatory {
+		job.task()
+	} else {
+		job.wrappedTaskFunc()
+	}
+}
+
+// MustCall 手动启动任务
+//
+// jobName 任务名称
+//
+// mandatory 如果为true，将不检测堆叠状态而直接执行
+//
+// # Note
+//
+// 1.若jobName在任务列表中不存在（如未注册或被取消），将panic
+//
+// 2.内部函数将被同步式的调用
+func MustCall(jobName string, mandatory bool) {
+	var (
+		job       *taskJob
+		lockerKey = generateJobNameKey(jobName)
+	)
+	taskSchedules.mux.RLock()
+	if jb, ok := taskSchedules.pool[lockerKey]; ok {
+		job = jb
+	}
+	taskSchedules.mux.RUnlock()
+	if job == nil {
+		panic(fmt.Errorf("job name: %s not registered", jobName))
+	}
+	if mandatory {
+		job.task()
+	} else {
+		job.wrappedTaskFunc()
+	}
 }
