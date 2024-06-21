@@ -2,6 +2,8 @@ package utils
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -155,7 +157,7 @@ func RedisStandaloneLock(key string) bool {
 //
 // using SetNX
 func RedisStandaloneLockWithContext(ctx context.Context, key string) bool {
-	ok, err := redis.GetInstance().SetNX(ctx, key, time.Now().Unix(), lockTTL).Result()
+	ok, err := redis.GetInstance().SetNX(ctx, key, lockerValue(), lockTTL).Result()
 	if err != nil {
 		return false
 	}
@@ -244,7 +246,7 @@ func RedisClusterLock(key string) bool {
 //
 // using SetNX
 func RedisClusterLockWithContext(ctx context.Context, key string) bool {
-	ok, err := redis.GetClusterInstance().SetNX(ctx, key, time.Now().Unix(), lockTTL).Result()
+	ok, err := redis.GetClusterInstance().SetNX(ctx, key, lockerValue(), lockTTL).Result()
 	if err != nil {
 		return false
 	}
@@ -312,4 +314,12 @@ func RedisClusterUnlockWithContext(ctx context.Context, key string) {
 			close(ch)
 		}
 	}()
+}
+
+// 锁的持有者信息
+func lockerValue() string {
+	hostname, _ := os.Hostname()
+	ip, _ := GetLocalIP()
+
+	return fmt.Sprintf("lockedAt:%s@%s(%s)", time.Now().Format("2006-01-02T15:04:05Z"), hostname, ip)
 }
