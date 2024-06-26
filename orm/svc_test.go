@@ -46,7 +46,9 @@ var (
 		Enable:      true,
 		DriverName:  "mysql",
 		AutoMigrate: true,
-		LogLevel:    "debug",
+		Logger: db.Logger{
+			Level: "debug",
+		},
 		ConnectionPool: db.ConnectionPoolConf{
 			MaxOpenConnCount:       100,
 			MaxIdleConnCount:       10,

@@ -9,7 +9,12 @@ package db
 //	enable: false
 //	driver_name: mysql
 //	auto_migrate: true
-//	log_level: warn
+//	logger:
+//	  level: "warn"
+//	  slow_threshold: 100
+//	  skip_caller_lookup: true
+//	  ignore_record_not_found_error: true
+//	  colorful: false
 //	connection_pool:
 //	  # 最大开启连接数
 //	  max_open_conn_count: 100
@@ -53,9 +58,19 @@ package db
 //
 // auto_migrate = false
 //
-// # 日志级别 silent | info | warn | error
+// # 日志配置
 //
-// log_level = "info"
+// [db_conf.logger]
+//
+// level = "warn"
+//
+// slow_threshold = 100
+//
+// skip_caller_lookup = true
+//
+// ignore_record_not_found_error = true
+//
+// colorful = false
 //
 // # ::数据库连接池配置::
 //
@@ -224,13 +239,22 @@ type Conf struct {
 	Enable         bool               `yaml:"enable" toml:"enable" json:"enable" default:"false"`                   //是否启用
 	DriverName     string             `yaml:"driver_name" toml:"driver_name" json:"driver_name" default:"mysql"`    //数据库类型
 	AutoMigrate    bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"auto_migrate" default:"false"` //是否自动同步表结构
-	LogLevel       string             `yaml:"log_level" toml:"log_level" json:"log_level" default:"info"`           //日志级别
+	Logger         Logger             `yaml:"logger" toml:"logger" json:"logger"`                                   //日志配置
 	ConnectionPool ConnectionPoolConf `yaml:"connection_pool" toml:"connection_pool" json:"connection_pool"`        //连接池配置
 	Mysql          MysqlConf          `yaml:"mysql" toml:"mysql" json:"mysql"`                                      //mysql配置
 	Postgres       PostgresConf       `yaml:"postgres" toml:"postgres" json:"postgres"`                             //postgres配置
 	Sqlserver      SqlserverConf      `yaml:"sqlserver" toml:"sqlserver" json:"sqlserver"`                          //sqlserver配置
 	Sqlite         SqliteConf         `yaml:"sqlite" toml:"sqlite" json:"sqlite"`                                   //sqlite配置
 	Clickhouse     ClickhouseConf     `yaml:"clickhouse" toml:"clickhouse" json:"clickhouse"`                       //clickhouse配置
+}
+
+// Logger 日志配置
+type Logger struct {
+	Level                     string `yaml:"level" toml:"level" json:"level" default:"info"`                                                                          //日志级别(info,warn,error,silent)
+	SlowThreshold             int    `yaml:"slow_threshold" toml:"slow_threshold" json:"slow_threshold" default:"100"`                                                //慢日志阈值(毫秒)
+	SkipCallerLookup          bool   `yaml:"skip_caller_lookup" toml:"skip_caller_lookup" json:"skip_caller_lookup" default:"false"`                                  //是否跳过调用者检查
+	IgnoreRecordNotFoundError bool   `yaml:"ignore_record_not_found_error" toml:"ignore_record_not_found_error" json:"ignore_record_not_found_error" default:"false"` //忽略未找到记录错误
+	Colorful                  bool   `yaml:"colorful" toml:"colorful" json:"colorful" default:"false"`                                                                //是否带颜色打印
 }
 
 // ConnectionPoolConf 连接池配置

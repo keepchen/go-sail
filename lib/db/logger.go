@@ -2,11 +2,12 @@ package db
 
 import (
 	"errors"
+	"time"
+
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
-	"time"
 )
 
 type ZapLoggerForGorm struct {
@@ -15,11 +16,12 @@ type ZapLoggerForGorm struct {
 	SlowThreshold             time.Duration
 	SkipCallerLookup          bool
 	IgnoreRecordNotFoundError bool
+	Colorful                  bool
 }
 
 func NewZapLoggerForGorm(zapLogger *zap.Logger, conf Conf) ZapLoggerForGorm {
 	var logLevel gormLogger.LogLevel
-	switch conf.LogLevel {
+	switch conf.Logger.Level {
 	case "info":
 		logLevel = gormLogger.Info
 	case "warn":
@@ -31,13 +33,20 @@ func NewZapLoggerForGorm(zapLogger *zap.Logger, conf Conf) ZapLoggerForGorm {
 	default:
 		logLevel = gormLogger.Info
 	}
-	return ZapLoggerForGorm{
+	zfg := ZapLoggerForGorm{
 		ZapLogger:                 zapLogger,
 		LogLevel:                  logLevel,
 		SlowThreshold:             100 * time.Millisecond,
-		SkipCallerLookup:          false,
-		IgnoreRecordNotFoundError: true,
+		SkipCallerLookup:          conf.Logger.SkipCallerLookup,
+		IgnoreRecordNotFoundError: conf.Logger.IgnoreRecordNotFoundError,
+		Colorful:                  conf.Logger.SkipCallerLookup,
 	}
+
+	if conf.Logger.SlowThreshold != 0 {
+		zfg.SlowThreshold = time.Duration(conf.Logger.SlowThreshold) * time.Millisecond
+	}
+
+	return zfg
 }
 
 func (zg ZapLoggerForGorm) SetAsDefault() {
@@ -79,10 +88,10 @@ func (zg ZapLoggerForGorm) Trace(_ context.Context, begin time.Time, fc func() (
 	switch {
 	case err != nil && zg.LogLevel >= gormLogger.Error && (!zg.IgnoreRecordNotFoundError || !errors.Is(err, gorm.ErrRecordNotFound)):
 		sql, rows := fc()
-		zg.ZapLogger.Error("trace", zap.Error(err), zap.Duration("elapsed", elapsed), zap.Int64("rows", rows), zap.String("sql", sql))
+		zg.ZapLogger.Error("record not found", zap.Error(err), zap.Duration("elapsed", elapsed), zap.Int64("rows", rows), zap.String("sql", sql))
 	case zg.SlowThreshold != 0 && elapsed > zg.SlowThreshold && zg.LogLevel >= gormLogger.Warn:
 		sql, rows := fc()
-		zg.ZapLogger.Warn("trace", zap.Duration("elapsed", elapsed), zap.Int64("rows", rows), zap.String("sql", sql))
+		zg.ZapLogger.Warn("slow sql", zap.Duration("elapsed", elapsed), zap.Duration("threshold", zg.SlowThreshold), zap.Int64("rows", rows), zap.String("sql", sql))
 	case zg.LogLevel >= gormLogger.Info:
 		sql, rows := fc()
 		zg.ZapLogger.Debug("trace", zap.Duration("elapsed", elapsed), zap.Int64("rows", rows), zap.String("sql", sql))
