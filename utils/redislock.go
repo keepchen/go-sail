@@ -35,12 +35,7 @@ type CancelFunc func()
 // 该方法会立即返回锁定成功与否的结果
 func RedisTryLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
-	go func() {
-		for range time.After(redisExecuteTimeout) {
-			cancel()
-			break
-		}
-	}()
+	defer cancel()
 
 	return RedisTryLockWithContext(ctx, key)
 }
@@ -143,12 +138,7 @@ func RedisUnlockWithContext(ctx context.Context, key string) {
 // using SetNX
 func RedisStandaloneLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
-	go func() {
-		for range time.After(redisExecuteTimeout) {
-			cancel()
-			break
-		}
-	}()
+	defer cancel()
 
 	return RedisStandaloneLockWithContext(ctx, key)
 }
@@ -197,12 +187,7 @@ func RedisStandaloneLockWithContext(ctx context.Context, key string) bool {
 // using SetNX
 func RedisStandaloneUnlock(key string) {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
-	go func() {
-		for range time.After(redisExecuteTimeout) {
-			cancel()
-			break
-		}
-	}()
+	defer cancel()
 
 	RedisStandaloneUnlockWithContext(ctx, key)
 }
@@ -232,12 +217,7 @@ func RedisStandaloneUnlockWithContext(ctx context.Context, key string) {
 // using SetNX
 func RedisClusterLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
-	go func() {
-		for range time.After(redisExecuteTimeout) {
-			cancel()
-			break
-		}
-	}()
+	defer cancel()
 
 	return RedisClusterLockWithContext(ctx, key)
 }
@@ -286,12 +266,7 @@ func RedisClusterLockWithContext(ctx context.Context, key string) bool {
 // using SetNX
 func RedisClusterUnlock(key string) {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
-	go func() {
-		for range time.After(redisExecuteTimeout) {
-			cancel()
-			break
-		}
-	}()
+	defer cancel()
 
 	RedisClusterUnlockWithContext(ctx, key)
 }

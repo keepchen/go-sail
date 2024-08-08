@@ -81,33 +81,11 @@ func RandomFloat64(start, end float64, precision int) float64 {
 	if start == end {
 		return start
 	}
-	var scale = 1
 
-	//对start进行放大
-	for {
-		startScaled := start * float64(scale)
-		if startScaled == float64(int64(startScaled)) {
-			break
-		}
-		scale *= 10
-	}
+	delta := end - start
+	result := start + rand.Float64()*delta
 
-	//对end进行放大
-	for {
-		endScaled := end * float64(scale)
-		if endScaled == float64(int64(endScaled)) {
-			break
-		}
-		scale *= 10
-	}
-
-	start *= float64(scale)
-	end *= float64(scale)
-
-	randInt64 := RandomInt64(int64(start), int64(end))
-
-	return decimal.NewFromInt(randInt64).
-		Div(decimal.NewFromInt(int64(scale))).
+	return decimal.NewFromFloat(result).
 		Truncate(int32(precision)).InexactFloat64()
 }
 

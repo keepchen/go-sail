@@ -46,6 +46,7 @@ func TestRandomFloat64(t *testing.T) {
 		{-10.11, 0.11, 4},
 		{-10.101, 100.10111111, 5},
 		{-100.1011, 100.1011111111, 6},
+		{-200, -100, 6},
 	}
 	for _, rn := range ranges {
 		t.Log("range: from", rn.start, "to", rn.end, "precision", rn.precision)
