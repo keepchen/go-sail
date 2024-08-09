@@ -33,7 +33,10 @@ func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 
 		//处理浏览器跨域options探测请求
 		if c.Request.Method == http.MethodOptions {
-			c.Writer.WriteHeader(http.StatusNoContent)
+			//手机端浏览器中返回 204 No Content 状态的跨域请求不被允许，主要是出于安全性和规范性的考虑。
+			//浏览器的同源策略和 CORS 规范旨在确保跨域请求的透明性和安全性，
+			//而 204 响应的无内容特性可能导致安全隐患或兼容性问题，因此在跨域环境中可能会被浏览器禁止。
+			//c.Writer.WriteHeader(http.StatusNoContent)
 			c.Abort()
 			return
 		}
@@ -68,9 +71,12 @@ func WithCors(headers map[string]string) gin.HandlerFunc {
 			c.Writer.Header().Set(key, value)
 		}
 
-		if c.Request.Method == http.MethodOptions {
-			statusCode = http.StatusNoContent
-		}
+		//手机端浏览器中返回 204 No Content 状态的跨域请求不被允许，主要是出于安全性和规范性的考虑。
+		//浏览器的同源策略和 CORS 规范旨在确保跨域请求的透明性和安全性，
+		//而 204 响应的无内容特性可能导致安全隐患或兼容性问题，因此在跨域环境中可能会被浏览器禁止。
+		//if c.Request.Method == http.MethodOptions {
+		//	statusCode = http.StatusNoContent
+		//}
 
 		c.Writer.WriteHeader(statusCode)
 
