@@ -36,9 +36,9 @@ type HttpServerConf struct {
 
 type SwaggerConf struct {
 	Enable      bool   `yaml:"enable" toml:"enable" json:"enable" default:"false"`      //是否启用
-	RedocUIPath string `yaml:"redoc_ui_path" toml:"redoc_ui_path" json:"redoc_ui_path"` //ui页面文件路径，如/path/to/docs.html，注意文件名必须是docs.html
-	JsonPath    string `yaml:"json_path" toml:"json_path" json:"json_path"`             //json文件路径
-	FaviconPath string `yaml:"favicon_path" toml:"favicon_path" json:"favicon_path"`    //浏览器页签图标文件路径
+	RedocUIPath string `yaml:"redoc_ui_path" toml:"redoc_ui_path" json:"redoc_ui_path"` //ui页面文件路径，如 path/to/docs.html，注意文件名必须是docs.html
+	JsonPath    string `yaml:"json_path" toml:"json_path" json:"json_path"`             //json文件路径，如 path/to/swagger.json
+	FaviconPath string `yaml:"favicon_path" toml:"favicon_path" json:"favicon_path"`    //浏览器页签图标文件路径，默认为go-sail图标
 }
 
 type PrometheusConf struct {

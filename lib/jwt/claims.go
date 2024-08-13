@@ -3,6 +3,9 @@ package jwt
 import (
 	"fmt"
 	"strconv"
+	"time"
+
+	"github.com/google/uuid"
 
 	jwtLib "github.com/golang-jwt/jwt"
 )
@@ -68,4 +71,27 @@ func (c *MapClaims) Valid() error {
 	}
 
 	return standardClaim.Valid()
+}
+
+// MergeStandardClaims
+//
+// 合并标准字段
+//
+// 如果传入的自定义字段在标准字段中存在，则用自定义字段覆盖标准字段
+func MergeStandardClaims(fields map[string]interface{}) MapClaims {
+	now := time.Now()
+	defaultClaims := MapClaims{
+		"jti": uuid.New().String(),
+		"iat": now.Unix(),
+		"exp": now.Add(time.Hour * 24).Unix(),
+		"nbf": now.Unix(),
+		"iss": "Go-Sail",
+	}
+
+	//override
+	for k, v := range fields {
+		defaultClaims[k] = v
+	}
+
+	return defaultClaims
 }
