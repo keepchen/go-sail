@@ -104,6 +104,14 @@ Thank you to everyone who provided valuable suggestions and comments during the 
 - Thank you for your star if you like this project :)  
 
 ## Use cases
+<img src="static/usecases/stardots-logo.png" alt="stardots.ink" width="300" title="https://stardots.ink"/>
+<br/><br/>
+<img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/>
+<br/><br/>
+<img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="300" title="https://fantagoal.io"/>
+<br/><br/>
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
+<br/><br/>
 <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="300" />
+<br/><br/>
 <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="180" />
