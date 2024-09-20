@@ -45,7 +45,11 @@ func mustInitDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 	loggerSvc := NewZapLoggerForGorm(logger.GetLogger(), conf)
 	loggerSvc.SetAsDefault()
 	dbPtr, err := gorm.Open(dialect, &gorm.Config{
-		Logger: loggerSvc,
+		Logger:                                   loggerSvc,
+		AllowGlobalUpdate:                        conf.AllowGlobalUpdate,
+		SkipDefaultTransaction:                   conf.SkipDefaultTransaction,
+		DisableNestedTransaction:                 conf.DisableNestedTransaction,
+		DisableForeignKeyConstraintWhenMigrating: conf.DisableForeignKeyConstraintWhenMigrating,
 	})
 	if err != nil {
 		panic(err)
@@ -68,7 +72,11 @@ func initDB(conf Conf, dialect gorm.Dialector) (*gorm.DB, error) {
 	loggerSvc := NewZapLoggerForGorm(logger.GetLogger(), conf)
 	loggerSvc.SetAsDefault()
 	dbPtr, err := gorm.Open(dialect, &gorm.Config{
-		Logger: loggerSvc,
+		Logger:                                   loggerSvc,
+		AllowGlobalUpdate:                        conf.AllowGlobalUpdate,
+		SkipDefaultTransaction:                   conf.SkipDefaultTransaction,
+		DisableNestedTransaction:                 conf.DisableNestedTransaction,
+		DisableForeignKeyConstraintWhenMigrating: conf.DisableForeignKeyConstraintWhenMigrating,
 	})
 	if err != nil {
 		return nil, err

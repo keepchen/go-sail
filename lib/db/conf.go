@@ -236,16 +236,20 @@ package db
 //
 // file = "sqlite.db"
 type Conf struct {
-	Enable         bool               `yaml:"enable" toml:"enable" json:"enable" default:"false"`                   //是否启用
-	DriverName     string             `yaml:"driver_name" toml:"driver_name" json:"driver_name" default:"mysql"`    //数据库类型
-	AutoMigrate    bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"auto_migrate" default:"false"` //是否自动同步表结构
-	Logger         Logger             `yaml:"logger" toml:"logger" json:"logger"`                                   //日志配置
-	ConnectionPool ConnectionPoolConf `yaml:"connection_pool" toml:"connection_pool" json:"connection_pool"`        //连接池配置
-	Mysql          MysqlConf          `yaml:"mysql" toml:"mysql" json:"mysql"`                                      //mysql配置
-	Postgres       PostgresConf       `yaml:"postgres" toml:"postgres" json:"postgres"`                             //postgres配置
-	Sqlserver      SqlserverConf      `yaml:"sqlserver" toml:"sqlserver" json:"sqlserver"`                          //sqlserver配置
-	Sqlite         SqliteConf         `yaml:"sqlite" toml:"sqlite" json:"sqlite"`                                   //sqlite配置
-	Clickhouse     ClickhouseConf     `yaml:"clickhouse" toml:"clickhouse" json:"clickhouse"`                       //clickhouse配置
+	Enable                                   bool               `yaml:"enable" toml:"enable" json:"enable" default:"false"`                                                                                                                      //是否启用
+	DriverName                               string             `yaml:"driver_name" toml:"driver_name" json:"driver_name" default:"mysql"`                                                                                                       //数据库类型
+	AutoMigrate                              bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"auto_migrate" default:"false"`                                                                                                    //是否自动同步表结构
+	DisableForeignKeyConstraintWhenMigrating bool               `yaml:"disable_foreign_key_constraint_when_migrating" toml:"disable_foreign_key_constraint_when_migrating" json:"disable_foreign_key_constraint_when_migrating" default:"false"` //同步表结构时禁止外键约束
+	DisableNestedTransaction                 bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"disable_nested_transaction" default:"false"`                                                                                      //禁止嵌套事务
+	AllowGlobalUpdate                        bool               `yaml:"allow_global_update" toml:"allow_global_update" json:"allow_global_update" default:"false"`                                                                               //允许全局更新(不带where条件)
+	SkipDefaultTransaction                   bool               `yaml:"skip_default_transaction" toml:"skip_default_transaction" json:"skip_default_transaction" default:"false"`                                                                //跳过默认事务
+	Logger                                   Logger             `yaml:"logger" toml:"logger" json:"logger"`                                                                                                                                      //日志配置
+	ConnectionPool                           ConnectionPoolConf `yaml:"connection_pool" toml:"connection_pool" json:"connection_pool"`                                                                                                           //连接池配置
+	Mysql                                    MysqlConf          `yaml:"mysql" toml:"mysql" json:"mysql"`                                                                                                                                         //mysql配置
+	Postgres                                 PostgresConf       `yaml:"postgres" toml:"postgres" json:"postgres"`                                                                                                                                //postgres配置
+	Sqlserver                                SqlserverConf      `yaml:"sqlserver" toml:"sqlserver" json:"sqlserver"`                                                                                                                             //sqlserver配置
+	Sqlite                                   SqliteConf         `yaml:"sqlite" toml:"sqlite" json:"sqlite"`                                                                                                                                      //sqlite配置
+	Clickhouse                               ClickhouseConf     `yaml:"clickhouse" toml:"clickhouse" json:"clickhouse"`                                                                                                                          //clickhouse配置
 }
 
 // Logger 日志配置
