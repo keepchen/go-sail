@@ -5,8 +5,10 @@ import (
 )
 
 func (u *BaseModel) BeforeSave(_ *gorm.DB) (err error) {
-	u.CreatedAt = nowTime
-	u.UpdatedAt = u.CreatedAt
+	if u.CreatedAt.IsZero() {
+		u.CreatedAt = nowTime
+	}
+	u.UpdatedAt = nowTime
 
 	return nil
 }
