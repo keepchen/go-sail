@@ -95,7 +95,7 @@ func TestSvcUsage(t *testing.T) {
 	dbw.Exec(fmt.Sprintf("truncate table %s", (&User{}).TableName()))
 	dbw.Exec(fmt.Sprintf("truncate table %s", (&Wallet{}).TableName()))
 
-	SetHookTime(utils.NewTimeWithTimeZone(constants.TimeZoneUTCPlus7).Now())
+	SetHookTimeFunc(utils.NewTimeWithTimeZone(constants.TimeZoneUTCPlus7).Now)
 
 	// ---- ignore gorm.ErrRecordNotFound
 	var user0 User

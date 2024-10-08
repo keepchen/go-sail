@@ -17,9 +17,11 @@ type BaseModel struct {
 // NoneID 空ID
 const NoneID = uint64(0)
 
-var nowTime = time.Now()
+var nowTimeFunc = func() time.Time {
+	return time.Now()
+}
 
-// SetHookTime 设置勾子函数的时间对象
-func SetHookTime(now time.Time) {
-	nowTime = now
+// SetHookTimeFunc 设置时间勾子函数
+func SetHookTimeFunc(ntf func() time.Time) {
+	nowTimeFunc = ntf
 }

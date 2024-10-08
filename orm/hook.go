@@ -6,28 +6,30 @@ import (
 
 func (u *BaseModel) BeforeSave(_ *gorm.DB) (err error) {
 	if u.CreatedAt.IsZero() {
-		u.CreatedAt = nowTime
+		u.CreatedAt = nowTimeFunc()
+		u.UpdatedAt = u.CreatedAt
+	} else {
+		u.UpdatedAt = nowTimeFunc()
 	}
-	u.UpdatedAt = nowTime
 
 	return nil
 }
 
 func (u *BaseModel) BeforeCreate(_ *gorm.DB) (err error) {
-	u.CreatedAt = nowTime
+	u.CreatedAt = nowTimeFunc()
 	u.UpdatedAt = u.CreatedAt
 
 	return nil
 }
 
 func (u *BaseModel) BeforeUpdate(_ *gorm.DB) (err error) {
-	u.UpdatedAt = nowTime
+	u.UpdatedAt = nowTimeFunc()
 
 	return nil
 }
 
 func (u *BaseModel) BeforeDelete(_ *gorm.DB) (err error) {
-	now := nowTime
+	now := nowTimeFunc()
 	u.DeletedAt = &now
 
 	return nil
