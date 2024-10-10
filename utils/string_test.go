@@ -242,3 +242,11 @@ func TestCharCodeRange(t *testing.T) {
 		assert.Equal(t, int32(i), code)
 	}
 }
+
+func TestBytesStrExchange(t *testing.T) {
+	t.Run("TestBytesStrExchange", func(t *testing.T) {
+		for _, str := range expectedStrArr {
+			assert.Equal(t, str, BytesToStr(StrToBytes(str)))
+		}
+	})
+}

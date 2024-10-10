@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"unsafe"
 )
 
 // Wordwrap 以给定的字符和长度来打断字符串
@@ -248,4 +249,14 @@ func FromCharCode(code int32) string {
 // CharCodeAt 返回字符对应的ASCII码
 func CharCodeAt(character string) rune {
 	return ([]rune(character))[0]
+}
+
+// StrToBytes 字符串转换为字节数组
+func StrToBytes(s string) []byte {
+	return *(*[]byte)(unsafe.Pointer(&s))
+}
+
+// BytesToStr 字节数组转换为字符串
+func BytesToStr(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
 }
