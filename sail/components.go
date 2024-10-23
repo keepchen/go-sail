@@ -62,12 +62,49 @@ func GetDBW() *gorm.DB {
 	return db.GetInstance().W
 }
 
-// GetRedis 获取redis连接(standalone)
+// GetRedis 获取通用的redis连接
+//
+// GetRedisUniversal 方法的语法糖
+func GetRedis() redisLib.UniversalClient {
+	return GetRedisUniversal()
+}
+
+// GetRedisUniversal 获取通用的redis连接
+//
+// 自动检测当前已实例化的redis连接
+//
+// 如果同时存在standalone实例和cluster实例，优先返回standalone实例
+//
+// 如果期望获取指定的连接类型，请单独使用 GetRedisStandalone 或 GetRedisCluster
+//
+// ----
+//
+// 提示：当你能确定你的连接类型时，可以通过断言的方式调用进阶方法，例如：
+//
+// # - Conn (on standalone client)
+//
+// GetRedisUniversal().(*redis.Client).Conn()
+//
+// # - ForEachShard (on cluster client)
+//
+// GetRedisUniversal().(*redis.ClusterClient).ForEachShard()
+func GetRedisUniversal() redisLib.UniversalClient {
+	switch true {
+	default:
+		return nil
+	case redis.GetInstance() != nil:
+		return redis.GetInstance()
+	case redis.GetClusterInstance() != nil:
+		return redis.GetClusterInstance()
+	}
+}
+
+// GetRedisStandalone 获取redis连接(standalone)
 //
 // 单实例模式
 //
 // 注意，使用前请确保redis(standalone)组件已初始化成功。
-func GetRedis() *redisLib.Client {
+func GetRedisStandalone() *redisLib.Client {
 	return redis.GetInstance()
 }
 
