@@ -1,9 +1,9 @@
 package api
 
 import (
-	"bytes"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +14,8 @@ import (
 // Responder 响应器
 type Responder interface {
 	// Builder 组装返回数据
+	//
+	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
 	// Assemble 组装返回数据
 	//
@@ -25,7 +27,7 @@ type Responder interface {
 	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
 	// Status 指定http状态码
 	//
-	// 该方法会覆盖 Assemble 解析的http状态码值
+	// 该方法会覆盖 Assemble, Builder, SimpleAssemble, Wrap 解析的http状态码值
 	Status(httpCode int) Responder
 	// SendWithCode 以指定http状态码响应请求
 	SendWithCode(httpCode int)
@@ -307,11 +309,11 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 
 	//如果message有值，则覆盖默认错误码所代表的错误信息
 	if len(message) > 0 {
-		var msg bytes.Buffer
+		var msg = strings.Builder{}
 		for index, v := range message {
-			_, _ = msg.Write([]byte(v))
+			_, _ = msg.WriteString(v)
 			if index < len(message)-1 {
-				_, _ = msg.Write([]byte(";"))
+				_, _ = msg.WriteString(";")
 			}
 		}
 		body.Message = msg.String()
@@ -347,7 +349,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 
 // Status 指定http状态码
 //
-// 该方法会覆盖 Assemble 解析的http状态码值
+// 该方法会覆盖 Assemble, Builder, SimpleAssemble, Wrap 解析的http状态码值
 func (a *responseEngine) Status(httpCode int) Responder {
 	a.httpCode = httpCode
 

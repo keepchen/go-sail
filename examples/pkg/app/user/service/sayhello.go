@@ -17,12 +17,12 @@ func SayHelloSvc(c *gin.Context) {
 		resp response.SayHello
 	)
 	if err := c.ShouldBind(&form); err != nil {
-		sail.Response(c).Assemble(constants.ErrRequestParamsInvalid, nil).Send()
+		sail.Response(c).Builder(constants.ErrRequestParamsInvalid, nil).Send()
 		return
 	}
 
 	if errorCode, err := form.Validator(); err != nil {
-		sail.Response(c).Assemble(errorCode, nil, err.Error()).Send()
+		sail.Response(c).Builder(errorCode, nil, err.Error()).Send()
 		return
 	}
 

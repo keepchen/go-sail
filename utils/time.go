@@ -8,12 +8,13 @@ import (
 )
 
 type TIM struct {
-	loc              *time.Location
-	datetimeTZLayout string
-	datetimeLayout   string
-	dateLayout       string
-	timeLayout       string
-	dirtyTimezone    bool
+	loc                       *time.Location
+	datetimeTZLayoutWithMilli string
+	datetimeTZLayout          string
+	datetimeLayout            string
+	dateLayout                string
+	timeLayout                string
+	dirtyTimezone             bool
 }
 
 // NewTimeWithTimeZone 根据时区初始化时间
@@ -37,12 +38,13 @@ func NewTimeWithTimeZone(timeZone ...string) *TIM {
 	}
 
 	return &TIM{
-		loc:              loc,
-		datetimeTZLayout: constants.DatetimeTZLayout,
-		datetimeLayout:   constants.DatetimeLayout,
-		dateLayout:       constants.DateLayout,
-		timeLayout:       constants.TimeLayout,
-		dirtyTimezone:    dirtyTimezone,
+		loc:                       loc,
+		datetimeTZLayoutWithMilli: constants.DateTimeTZLayoutWithMilli,
+		datetimeTZLayout:          constants.DatetimeTZLayout,
+		datetimeLayout:            constants.DatetimeLayout,
+		dateLayout:                constants.DateLayout,
+		timeLayout:                constants.TimeLayout,
+		dirtyTimezone:             dirtyTimezone,
 	}
 }
 

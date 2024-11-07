@@ -17,7 +17,7 @@ func Wordwrap(rawStr string, length int, split string) string {
 	var (
 		start    int
 		end      = length
-		finalStr string
+		finalStr = strings.Builder{}
 	)
 
 	for {
@@ -25,16 +25,17 @@ func Wordwrap(rawStr string, length int, split string) string {
 			break
 		}
 		if end >= len(strSplit) {
-			finalStr += strings.Join(strSplit[start:], "")
+			finalStr.WriteString(strings.Join(strSplit[start:], ""))
 		} else {
-			finalStr += strings.Join(strSplit[start:end], "") + split
+			finalStr.WriteString(strings.Join(strSplit[start:end], ""))
+			finalStr.WriteString(split)
 		}
 
 		start = end
 		end += length
 	}
 
-	return finalStr
+	return finalStr.String()
 }
 
 // WrapRedisKey 包装redis键名
