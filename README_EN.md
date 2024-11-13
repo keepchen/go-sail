@@ -49,15 +49,15 @@ Console screenshot after launched like this:
     - Managing HTTP status codes  
     - Management business code  
 - [x] Highly used component library 
-    - database
-    - email
-    - jwt
-    - kafka
-    - logger
-    - nacos
-    - etcd
-    - nats
-    - redis
+    - Database
+    - Email
+    - Jwt
+    - Kafka
+    - Logger
+    - Nacos
+    - Etcd
+    - Nats
+    - Redis
 - [x] Service Registration and Discovery  
     - Nacos
     - Etcd
@@ -72,6 +72,9 @@ Console screenshot after launched like this:
 - [x] Log collection and export
     - Local files
     - Exporter  
+      - Redis  
+      - Kafka  
+      - Nats  
 - [x] Scheduled Tasks  
     - Cancellable  
     - Disposable  
@@ -79,12 +82,18 @@ Console screenshot after launched like this:
     - Linux Crontab style  
     - Race Detection  
 - [x] Call chain log tracking  
-    - Passing through the request context  
+    - Request context  
+      - requestId  
+      - spanId  
+    - Cross service  
+- Performance monitor  
+  - Prometheus  
+  - Pprof  
 - [x] Multi-language error codes
     - Dynamic injection  
 - [x] Distributed lock based on Redis  
-    - Standalone mode  
-    - Cluster mode
+  - Blocking  
+  - None-Blocking  
 - [x] API Documentation
     - Redocly
     - Swagger  
@@ -104,11 +113,11 @@ Thank you to everyone who provided valuable suggestions and comments during the 
 - Thank you for your star if you like this project :)  
 
 ## Use cases
-<img src="static/usecases/stardots-logo.png" alt="stardots.ink" width="300" title="https://stardots.ink"/>
+<a href="https://stardots.ink" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.ink" width="300" title="https://stardots.ink"/></a>
 <br/><br/>
-<img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/>
+<a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/></a>
 <br/><br/>
-<img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="300" title="https://fantagoal.io"/>
+<a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="300" title="https://fantagoal.io"/></a>
 <br/><br/>
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
 <br/><br/>

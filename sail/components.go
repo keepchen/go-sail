@@ -64,7 +64,25 @@ func GetDBW() *gorm.DB {
 
 // GetRedis 获取通用的redis连接
 //
-// GetRedisUniversal 方法的语法糖
+// # GetRedisUniversal 方法的语法糖
+//
+// 自动检测当前已实例化的redis连接
+//
+// 如果同时存在standalone实例和cluster实例，优先返回standalone实例
+//
+// 如果期望获取指定的连接类型，请单独使用 GetRedisStandalone 或 GetRedisCluster
+//
+// ----
+//
+// 提示：当你能确定你的连接类型时，可以通过断言的方式调用进阶方法，例如：
+//
+// # - Conn (on standalone client)
+//
+// GetRedis().(*redis.Client).Conn()
+//
+// # - ForEachShard (on cluster client)
+//
+// GetRedis().(*redis.ClusterClient).ForEachShard()
 func GetRedis() redisLib.UniversalClient {
 	return GetRedisUniversal()
 }
@@ -117,11 +135,26 @@ func GetRedisCluster() *redisLib.ClusterClient {
 	return redis.GetClusterInstance()
 }
 
+// NewRedis 创建新的redis (standalone)连接实例
+func NewRedis(conf redis.Conf) (*redisLib.Client, error) {
+	return redis.New(conf)
+}
+
+// NewRedisCluster  创建新的redis (cluster)连接实例
+func NewRedisCluster(conf redis.ClusterConf) (*redisLib.ClusterClient, error) {
+	return redis.NewCluster(conf)
+}
+
 // GetNats 获取nats连接实例
 //
 // 注意，使用前请确保nats组件已初始化成功。
 func GetNats() *natsLib.Conn {
 	return nats.GetInstance()
+}
+
+// NewNats 创建新的nats 连接实例
+func NewNats(conf nats.Conf) (*natsLib.Conn, error) {
+	return nats.New(conf)
 }
 
 // GetLogger 获取日志实例
@@ -171,11 +204,21 @@ func GetKafkaReader() *kafkaLib.Reader {
 	return kafka.GetReader()
 }
 
+// NewKafkaConnections 创建新的kafka连接实例
+func NewKafkaConnections(conf kafka.Conf) []*kafkaLib.Conn {
+	return kafka.NewConnections(conf)
+}
+
 // GetEtcdInstance 获取etcd连接实例
 //
 // 注意，使用前请确保etcd组件已初始化成功。
 func GetEtcdInstance() *clientv3.Client {
 	return etcd.GetInstance()
+}
+
+// NewEtcd 创建新的etcd连接实例
+func NewEtcd(conf etcd.Conf) (*clientv3.Client, error) {
+	return etcd.New(conf)
 }
 
 // 根据配置依次初始化组件

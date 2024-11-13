@@ -281,7 +281,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		body.Timestamp = time.Now().UnixMilli()
 	}
 	switch code {
-	case constants.ErrNone, anotherErrNoneCode:
+	case anotherErrNoneCode:
 		body.Success = constants.Success
 		httpCode = http.StatusOK
 	case constants.ErrRequestParamsInvalid:
@@ -357,6 +357,12 @@ func (a *responseEngine) Status(httpCode int) Responder {
 }
 
 // SendWithCode 以指定http状态码响应请求
+//
+// 调用此方法后：
+//
+// 1.会覆盖自动推导的状态码
+//
+// 2.会忽略 Option.ForceHttpCode200 设置
 func (a *responseEngine) SendWithCode(httpCode int) {
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }

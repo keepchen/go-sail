@@ -49,15 +49,15 @@ func main() {
   - 管理HTTP状态码  
   - 管理业务码  
 - [x] 常用的组件库  
-  - database  
-  - email  
-  - jwt  
-  - kafka  
-  - logger  
-  - nacos  
-  - etcd  
-  - nats  
-  - redis  
+  - Database  
+  - Email  
+  - Jwt  
+  - Kafka  
+  - Logger  
+  - Nacos  
+  - Etcd  
+  - Nats  
+  - Redis  
 - [x] 服务注册与发现  
   - Nacos  
   - Etcd  
@@ -72,6 +72,9 @@ func main() {
 - [x] 日志收集与导出  
   - 本地文件  
   - 导出器  
+    - Redis  
+    - Kafka  
+    - Nats  
 - [x] 计划任务  
   - 可取消的  
   - 一次性的  
@@ -79,12 +82,18 @@ func main() {
   - Linux Crontab风格的  
   - 竞态检测  
 - [x] 调用链日志追踪  
-  - 贯穿请求上下文  
+  - 请求上下文  
+    - requestId  
+    - spanId  
+  - 跨服务  
+- 性能监测  
+  - Prometheus  
+  - Pprof 
 - [x] 多语言错误码  
   - 动态注入  
 - [x] 基于Redis的分布式锁  
-  - Standalone模式    
-  - Cluster模式  
+  - 阻塞式  
+  - 非阻塞式  
 - [x] 接口文档  
   - Redocly  
   - Swagger
@@ -104,11 +113,11 @@ func main() {
 - 感谢你的star如果你喜欢这个项目的话 :)  
 
 ## 使用案例  
-<img src="static/usecases/stardots-logo.png" alt="stardots.ink" width="300" title="https://stardots.ink"/>
+<a href="https://stardots.ink" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.ink" width="300" title="https://stardots.ink"/></a>
 <br/><br/>
-<img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/>
+<a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/></a>
 <br/><br/>
-<img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="300" title="https://fantagoal.io"/>
+<a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="300" title="https://fantagoal.io"/></a>
 <br/><br/>
 <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
 <br/><br/>
