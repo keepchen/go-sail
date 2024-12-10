@@ -2,7 +2,10 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 	"time"
+
+	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 
 	"github.com/keepchen/go-sail/v3/constants"
 )
@@ -17,7 +20,8 @@ var (
 )
 
 var (
-	loc *time.Location
+	loc             *time.Location                                                                                                 //时区
+	funcBeforeWrite func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) //写入响应前的处理函数
 )
 
 // Option 配置项
@@ -40,6 +44,22 @@ type Option struct {
 	//
 	//当没有启用 DetectAcceptLanguage 时，使用该语言代码
 	LanguageCode constants.LanguageCode
+	//写入响应前的处理函数
+	//
+	//request http请求结构体指针
+	//
+	//entryAtUnixNano 请求到达一刻的纳秒时间戳
+	//
+	//requestId 请求id
+	//
+	//spanId 内部调用链的唯一id
+	//
+	//httpCode http状态码
+	//
+	//writeData 即将写入的数据
+	//
+	//# 注意，该函数是同步调用，对于性能敏感的场景，不建议在函数体内做阻塞或耗时的操作。
+	FuncBeforeWrite func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base)
 }
 
 const (
@@ -87,6 +107,10 @@ func SetupOption(opt Option) {
 		panic(fmt.Errorf("[GO-SAIL] can not load location: %s", timezone))
 	}
 	loc = lc
+
+	if opt.FuncBeforeWrite != nil {
+		funcBeforeWrite = opt.FuncBeforeWrite
+	}
 }
 
 // DefaultSetupOption 默认设置

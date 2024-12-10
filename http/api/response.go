@@ -100,9 +100,11 @@ type Responder interface {
 }
 
 type responseEngine struct {
-	engine   *gin.Context
-	httpCode int
-	data     interface{}
+	engine    *gin.Context
+	httpCode  int
+	data      interface{}
+	requestId string
+	stdData   dto.Base
 }
 
 var _ Responder = &responseEngine{}
@@ -342,6 +344,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		}
 	}
 
+	a.requestId = requestId
 	a.data = body
 
 	return a
@@ -364,6 +367,19 @@ func (a *responseEngine) Status(httpCode int) Responder {
 //
 // 2.会忽略 Option.ForceHttpCode200 设置
 func (a *responseEngine) SendWithCode(httpCode int) {
+	if funcBeforeWrite != nil {
+		var (
+			spanId  string
+			entryAt int64
+		)
+		if val, ok := a.engine.Get("spanId"); ok {
+			spanId = val.(string)
+		}
+		if val, ok := a.engine.Get("entryAt"); ok {
+			entryAt = val.(int64)
+		}
+		funcBeforeWrite(a.engine.Request, entryAt, a.requestId, spanId, httpCode, a.stdData)
+	}
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }
 
