@@ -48,7 +48,7 @@ func main() {
   - 统一响应字段  
   - 管理HTTP状态码  
   - 管理业务码  
-- [x] 常用的组件库  
+- [x] 组件库  
   - Database  
   - Email  
   - Jwt  
@@ -61,7 +61,7 @@ func main() {
 - [x] 服务注册与发现  
   - Nacos  
   - Etcd  
-- [x] 常用的工具类  
+- [x] 工具类  
   - 加解密  
   - 文件  
   - ip  
@@ -81,14 +81,11 @@ func main() {
   - 周期性的  
   - Linux Crontab风格的  
   - 竞态检测  
-- [x] 调用链日志追踪  
-  - 请求上下文  
-    - requestId  
-    - spanId  
-  - 跨服务  
-- 性能监测  
+- [x] 遥测与可观测性  
+  - 调用链追踪
   - Prometheus  
   - Pprof 
+  - 日志导出器    
 - [x] 多语言错误码  
   - 动态注入  
 - [x] 基于Redis的分布式锁  

@@ -74,6 +74,7 @@ func StartServer(wg *sync.WaitGroup) {
 					Enable:     true,
 					Addr:       ":19100",
 					AccessPath: "/metrics",
+					DiskPath:   "/var",
 				},
 				WebSocketRoutePath: "go-sail-ws",
 			},

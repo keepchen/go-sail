@@ -48,7 +48,7 @@ Console screenshot after launched like this:
     - Uniform Response Fields
     - Managing HTTP status codes  
     - Management business code  
-- [x] Highly used component library 
+- [x] Components  
     - Database
     - Email
     - Jwt
@@ -61,7 +61,7 @@ Console screenshot after launched like this:
 - [x] Service Registration and Discovery  
     - Nacos
     - Etcd
-- [x] Frequently used tools  
+- [x] Toolkit  
     - Encryption and Decryption  
     - File
     - IP
@@ -81,11 +81,11 @@ Console screenshot after launched like this:
     - Periodic  
     - Linux Crontab style  
     - Race Detection  
-- [x] Call chain log tracking  
-    - Request context  
-      - requestId  
-      - spanId  
-    - Cross service  
+- [x] Telemetry and Observability
+  - Call chain tracing
+  - Prometheus
+  - Pprof
+  - Log Exporter  
 - Performance monitor  
   - Prometheus  
   - Pprof  

@@ -42,9 +42,11 @@ type SwaggerConf struct {
 }
 
 type PrometheusConf struct {
-	Enable     bool   `yaml:"enable" toml:"enable" json:"enable" default:"false"`                   //是否启用
-	Addr       string `yaml:"addr" toml:"addr" json:"addr" default:":19100"`                        //监听地址
-	AccessPath string `yaml:"access_path" toml:"access_path" json:"access_path" default:"/metrics"` //路由地址
+	Enable              bool   `yaml:"enable" toml:"enable" json:"enable" default:"false"`                                              //是否启用
+	Addr                string `yaml:"addr" toml:"addr" json:"addr" default:":19100"`                                                   //监听地址
+	AccessPath          string `yaml:"access_path" toml:"access_path" json:"access_path" default:"/metrics"`                            //路由地址
+	DisableSystemSample bool   `yaml:"disable_system_sample" toml:"disable_system_sample" json:"disable_system_sample" default:"false"` //禁止系统采样(默认会采样)
+	DiskPath            string `yaml:"disk_path" toml:"disk_path" json:"disk_path" default:"/"`                                         //检测硬盘使用率指定的监控路径
 }
 
 type KafkaExtraConf struct {

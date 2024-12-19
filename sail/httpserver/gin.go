@@ -39,6 +39,10 @@ func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 	r.Use(middleware.LogTrace())
 	if conf.Prometheus.Enable {
 		r.Use(middleware.PrometheusExporter())
+		if !conf.Prometheus.DisableSystemSample {
+			middleware.SetDiskPath(conf.Prometheus.DiskPath)
+			go middleware.SystemMetricsSample()
+		}
 	}
 
 	return r
