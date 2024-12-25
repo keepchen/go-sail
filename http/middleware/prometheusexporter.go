@@ -64,13 +64,26 @@ var (
 	metricsSummaryGaugeVecNetworkTransfer *prometheus.GaugeVec
 )
 
-var diskPath = "/"
+var (
+	diskPath       = "/"
+	sampleInterval = time.Minute
+)
 
 // SetDiskPath 设置磁盘监控路径
 func SetDiskPath(path string) {
 	if len(path) != 0 {
 		diskPath = path
 	}
+}
+
+// SetSampleInterval 设置采样间隔(频率)
+func SetSampleInterval(interval string) {
+	td, err := time.ParseDuration(interval)
+	//若小于1ms，则使用默认值1分钟
+	if err != nil || td.Milliseconds() == 0 {
+		return
+	}
+	sampleInterval = td
 }
 
 func init() {
@@ -97,25 +110,25 @@ func init() {
 		cpuMetrics := prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "system_cpu_usage",
 			Help: "[cpu] cpu usage (percent)",
-		}, []string{"durations", "core"})
+		}, []string{"core"})
 		metricsSummaryGaugeVecCPUUsage = cpuMetrics
 
 		memMetrics := prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "system_memory_usage",
 			Help: "[memory] memory usage bytes",
-		}, []string{"durations", "type"})
+		}, []string{"type"})
 		metricsSummaryGaugeVecMemoryUsage = memMetrics
 
 		diskMetrics := prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "system_disk_usage",
 			Help: "[disk] disk usage bytes",
-		}, []string{"durations", "device", "type"})
+		}, []string{"device", "type"})
 		metricsSummaryGaugeVecDiskUsage = diskMetrics
 
 		networkMetrics := prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "system_network_transfer",
 			Help: "[network] network transfer bytes",
-		}, []string{"durations", "name", "type"})
+		}, []string{"name", "type"})
 		metricsSummaryGaugeVecNetworkTransfer = networkMetrics
 
 		prometheus.MustRegister(cpuMetrics, memMetrics, diskMetrics, networkMetrics)
@@ -124,7 +137,7 @@ func init() {
 
 // SystemMetricsSample 系统指标采样
 //
-// 采样周期为每分钟一次
+// 采样周期为每分钟一次，覆盖上一次记录值
 //
 // 采集对象：
 //
@@ -138,49 +151,48 @@ func init() {
 //
 // - 网卡，多网卡 -> 出入站数值
 func SystemMetricsSample() {
-	ticker := time.NewTicker(time.Minute)
+	ticker := time.NewTicker(sampleInterval)
 	for range ticker.C {
-		point := time.Now().Format("2006-01-02 15:04")
 		//cpu使用率
-		cpuUsage, err := cpu.Percent(time.Minute, true)
+		cpuUsage, err := cpu.Percent(sampleInterval, true)
 		if err == nil && len(cpuUsage) > 0 {
 			for index, cu := range cpuUsage {
-				metricsSummaryGaugeVecCPUUsage.WithLabelValues(point, fmt.Sprintf("%d", index)).Set(cu)
+				metricsSummaryGaugeVecCPUUsage.WithLabelValues(fmt.Sprintf("%d", index)).Set(cu)
 			}
 		}
 		//内存使用率
 		memStat, err := mem.VirtualMemory()
 		if err == nil && memStat != nil {
-			metricsSummaryGaugeVecMemoryUsage.WithLabelValues(point, "used").Set(float64(memStat.Used))
-			metricsSummaryGaugeVecMemoryUsage.WithLabelValues(point, "percent").Set(memStat.UsedPercent)
+			metricsSummaryGaugeVecMemoryUsage.WithLabelValues("used").Set(float64(memStat.Used))
+			metricsSummaryGaugeVecMemoryUsage.WithLabelValues("percent").Set(memStat.UsedPercent)
 		}
 		//硬盘使用率
 		diskStat, err := disk.Usage(diskPath)
 		if err == nil && diskStat != nil {
-			metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, diskPath, "used").Set(float64(diskStat.Used))
-			metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, diskPath, "percent").Set(diskStat.UsedPercent)
+			metricsSummaryGaugeVecDiskUsage.WithLabelValues(diskPath, "used").Set(float64(diskStat.Used))
+			metricsSummaryGaugeVecDiskUsage.WithLabelValues(diskPath, "percent").Set(diskStat.UsedPercent)
 		}
 		//硬盘io
 		diskIoStat, err := disk.IOCounters()
 		if err == nil && diskIoStat != nil {
 			for device, stat := range diskIoStat {
 				//读
-				metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, device, "readBytes").Set(float64(stat.ReadBytes))
-				metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, device, "readTime").Set(float64(stat.ReadTime))
-				metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, device, "readCount").Set(float64(stat.ReadCount))
+				metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "readBytes").Set(float64(stat.ReadBytes))
+				metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "readTime").Set(float64(stat.ReadTime))
+				metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "readCount").Set(float64(stat.ReadCount))
 
 				//写
-				metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, device, "writeBytes").Set(float64(stat.WriteBytes))
-				metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, device, "writeTime").Set(float64(stat.WriteTime))
-				metricsSummaryGaugeVecDiskUsage.WithLabelValues(point, device, "writeCount").Set(float64(stat.WriteCount))
+				metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "writeBytes").Set(float64(stat.WriteBytes))
+				metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "writeTime").Set(float64(stat.WriteTime))
+				metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "writeCount").Set(float64(stat.WriteCount))
 			}
 		}
 		//网卡使用率
 		netStats, err := net.IOCounters(false)
 		if err == nil && len(netStats) > 0 {
 			for _, netStat := range netStats {
-				metricsSummaryGaugeVecNetworkTransfer.WithLabelValues(point, netStat.Name, "bytesReceived").Set(float64(netStat.BytesRecv))
-				metricsSummaryGaugeVecNetworkTransfer.WithLabelValues(point, netStat.Name, "bytesSent").Set(float64(netStat.BytesSent))
+				metricsSummaryGaugeVecNetworkTransfer.WithLabelValues(netStat.Name, "bytesReceived").Set(float64(netStat.BytesRecv))
+				metricsSummaryGaugeVecNetworkTransfer.WithLabelValues(netStat.Name, "bytesSent").Set(float64(netStat.BytesSent))
 			}
 		}
 	}

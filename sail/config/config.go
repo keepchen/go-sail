@@ -47,6 +47,7 @@ type PrometheusConf struct {
 	AccessPath          string `yaml:"access_path" toml:"access_path" json:"access_path" default:"/metrics"`                            //路由地址
 	DisableSystemSample bool   `yaml:"disable_system_sample" toml:"disable_system_sample" json:"disable_system_sample" default:"false"` //禁止系统采样(默认会采样)
 	DiskPath            string `yaml:"disk_path" toml:"disk_path" json:"disk_path" default:"/"`                                         //检测硬盘使用率指定的监控路径
+	SampleInterval      string `yaml:"sample_interval" toml:"sample_interval" json:"sample_interval" default:"1m"`                      //采样间隔(默认1分钟，最小1ms)，格式：一分钟=1m，30秒=30s，500毫秒=500ms
 }
 
 type KafkaExtraConf struct {
