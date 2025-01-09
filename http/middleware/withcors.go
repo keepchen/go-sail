@@ -17,12 +17,14 @@ func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 			"Access-Control-Allow-Methods": "POST, GET, PUT, PATCH, DELETE, OPTIONS, HEAD",
 			"Access-Control-Expose-Headers": "Content-Length, Access-Control-Allow-Origin, " +
 				"Access-Control-Allow-Headers, Content-Type, Authorization",
-			"Access-Control-Allow-Credentials": "true",
+			"Access-Control-Allow-Credentials": "false",
 		}
 		if headers == nil {
 			origin := c.Request.Header.Get("Origin")
 			if len(origin) == 0 {
 				origin = "*"
+			} else {
+				defaultCorsHeaders["Access-Control-Allow-Credentials"] = "true"
 			}
 			defaultCorsHeaders["Access-Control-Allow-Origin"] = origin
 			headers = defaultCorsHeaders
@@ -56,13 +58,15 @@ func WithCors(headers map[string]string) gin.HandlerFunc {
 				"Access-Control-Allow-Methods": "POST, GET, PUT, PATCH, DELETE, OPTIONS, HEAD",
 				"Access-Control-Expose-Headers": "Content-Length, Access-Control-Allow-Origin, " +
 					"Access-Control-Allow-Headers, Content-Type, Authorization",
-				"Access-Control-Allow-Credentials": "true",
+				"Access-Control-Allow-Credentials": "false",
 			}
 		)
 		if headers == nil {
 			origin := c.Request.Header.Get("Origin")
 			if len(origin) == 0 {
 				origin = "*"
+			} else {
+				defaultCorsHeaders["Access-Control-Allow-Credentials"] = "true"
 			}
 			defaultCorsHeaders["Access-Control-Allow-Origin"] = origin
 			headers = defaultCorsHeaders

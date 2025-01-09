@@ -110,7 +110,7 @@ func main() {
 - 感谢你的star如果你喜欢这个项目的话 :)  
 
 ## 使用案例  
-<a href="https://stardots.ink" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.ink" width="300" title="https://stardots.ink"/></a>
+<a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="300" title="https://stardots.io"/></a>
 <br/><br/>
 <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/></a>
 <br/><br/>
