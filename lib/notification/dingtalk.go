@@ -25,11 +25,11 @@ type DingTalkResponseEntity struct {
 func DingTalkEmit(conf DingTalkConf, content string) (DingTalkResponseEntity, error) {
 	headers := map[string]string{"Content-Type": "application/json"}
 	timestamp := time.Now().UnixMilli()
-	sign, _ := genLarkSign(conf.Secret, timestamp)
+	sign, _ := genDingTalkSign(conf.Secret, timestamp)
 
 	var response DingTalkResponseEntity
 	url := fmt.Sprintf("%s?timestamp=%d&sign=%s", conf.WebhookUrl, timestamp, sign)
-	resp, _, err := utils.SendRequest(http.MethodPost, url, []byte(content), headers)
+	resp, _, err := utils.SendRequest(http.MethodPost, url, []byte(content), headers, time.Second*10)
 	if err != nil {
 		return response, err
 	}

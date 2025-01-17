@@ -42,7 +42,7 @@ func LarkEmit(conf LarkConf, content string) (LarkResponseEntity, error) {
 	payload := fmt.Sprintf(Payload, timestamp, sign, content)
 
 	var response LarkResponseEntity
-	resp, _, err := utils.SendRequest(http.MethodPost, conf.WebhookUrl, []byte(payload), headers)
+	resp, _, err := utils.SendRequest(http.MethodPost, conf.WebhookUrl, []byte(payload), headers, time.Second*10)
 	if err != nil {
 		return response, err
 	}
