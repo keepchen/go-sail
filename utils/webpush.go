@@ -8,8 +8,25 @@ import (
 	"github.com/SherClockHolmes/webpush-go"
 )
 
+type webPushImpl struct {
+}
+
+type IWebPush interface {
+	// GenerateVAPIDKeys 生成web push的公私钥
+	GenerateVAPIDKeys() (privateKey string, publicKey string, err error)
+	// SendNotification 发送通知
+	SendNotification(privateKey, publicKey string, sub webpush.Subscription, subscriberEmail string, body Payload) error
+}
+
+var _ IWebPush = &webPushImpl{}
+
+// WebPush 实例化web push工具类
+func WebPush() IWebPush {
+	return &webPushImpl{}
+}
+
 // GenerateVAPIDKeys 生成web push的公私钥
-func GenerateVAPIDKeys() (privateKey string, publicKey string, err error) {
+func (webPushImpl) GenerateVAPIDKeys() (privateKey string, publicKey string, err error) {
 	privateKey, publicKey, err = webpush.GenerateVAPIDKeys()
 	return
 }
@@ -29,7 +46,7 @@ type PayloadDataField struct {
 }
 
 // SendNotification 发送通知
-func SendNotification(privateKey, publicKey string, sub webpush.Subscription, subscriberEmail string, body Payload) error {
+func (webPushImpl) SendNotification(privateKey, publicKey string, sub webpush.Subscription, subscriberEmail string, body Payload) error {
 	js, _ := json.Marshal(body)
 	respData, respErr := webpush.SendNotification(js, &sub, &webpush.Options{
 		Subscriber:      subscriberEmail,

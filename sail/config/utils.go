@@ -39,7 +39,7 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 	}
 
 	if len(writeToFile) > 0 {
-		err := utils.FilePutContents(cfgStr, writeToFile[0])
+		err := utils.File().PutContents(cfgStr, writeToFile[0])
 		if err != nil {
 			fmt.Printf("[GO-SAIL] <Config> dump config to file {%s} error: %s\n", writeToFile[0], err.Error())
 		}

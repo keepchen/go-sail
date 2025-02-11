@@ -47,34 +47,34 @@ QwIDAQAB
 -----END PUBLIC KEY-----`)
 )
 
-func TestRSAEncode(t *testing.T) {
-	encodedString, err := RSAEncrypt(rawString, publicKey)
+func TestRSAImplEncrypt(t *testing.T) {
+	encodedString, err := RSA().Encrypt(rawString, publicKey)
 	t.Log(encodedString)
 	assert.NoError(t, err)
 }
 
-func TestRSADecode(t *testing.T) {
-	encodedString, err := RSAEncrypt(rawString, publicKey)
+func TestRSAImplDecrypt(t *testing.T) {
+	encodedString, err := RSA().Encrypt(rawString, publicKey)
 	t.Log(encodedString)
 	assert.NoError(t, err)
-	decodedString, err := RSADecrypt(encodedString, privateKey)
+	decodedString, err := RSA().Decrypt(encodedString, privateKey)
 	t.Log(decodedString)
 	assert.NoError(t, err)
 	assert.Equal(t, decodedString, rawString)
 }
 
-func TestRSASign(t *testing.T) {
-	sign, err := RSASign([]byte(rawString), privateKey)
-	t.Log(Base64Encode([]byte(sign)))
+func TestRSAImplSign(t *testing.T) {
+	sign, err := RSA().Sign([]byte(rawString), privateKey)
+	t.Log(Base64().Encode([]byte(sign)))
 	assert.NoError(t, err)
 }
 
-func TestRSAVerifySign(t *testing.T) {
-	sign, err := RSASign([]byte(rawString), privateKey)
+func TestRSAImplVerifySign(t *testing.T) {
+	sign, err := RSA().Sign([]byte(rawString), privateKey)
 	t.Log(sign)
 	assert.NoError(t, err)
 
-	ok, err := RSAVerifySign([]byte(rawString), []byte(sign), publicKey)
+	ok, err := RSA().VerifySign([]byte(rawString), []byte(sign), publicKey)
 	assert.NoError(t, err)
 	assert.Equal(t, true, ok)
 }

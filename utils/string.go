@@ -6,8 +6,91 @@ import (
 	"strings"
 )
 
+type stringImpl struct {
+}
+
+type IString interface {
+	// Wordwrap 以给定的字符和长度来打断字符串
+	Wordwrap(rawStr string, length int, split string) string
+	// WrapRedisKey 包装redis键名
+	//
+	// 给redis的键加入应用名前缀，如：
+	//
+	// appName=game key=user
+	//
+	// 最终的redis键名为：game:user
+	//
+	// 此方法的主要作用是按应用来划分redis键名
+	WrapRedisKey(appName, key string) string
+	// RandomLetters 随机字符串(字母)
+	RandomLetters(length int) string
+	// RandomDigitalChars 随机字符串(数字)
+	RandomDigitalChars(length int) string
+	// RandomString 随机字符串(字母+数字)
+	RandomString(length int) string
+	// RandomComplexString 随机字符串(可带特殊符号)
+	RandomComplexString(length int) string
+	// Reverse 翻转字符串
+	Reverse(s string) string
+	// Shuffle 打乱字符串
+	Shuffle(s string) string
+	// PaddingLeft 向左填充字符串
+	//
+	// rawString 原字符
+	//
+	// padChar 填充字符
+	//
+	// length 最终字符长度
+	PaddingLeft(rawString, padChar string, length int) string
+	// PaddingRight 向右填充字符串
+	//
+	// rawString 原字符
+	//
+	// padChar 填充字符
+	//
+	// length 最终字符长度
+	PaddingRight(rawString, padChar string, length int) string
+	// PaddingBoth 向两端填充字符串
+	//
+	// rawString 原字符
+	//
+	// padChar 填充字符
+	//
+	// length 最终字符长度
+	//
+	// # Note
+	//
+	// 如果填充长度不能均分，那么右侧多填充一个字符，如：
+	//
+	// rawString = "a",padChar = "#",length = 4
+	//
+	// 则：
+	//
+	// result = "#a##"
+	PaddingBoth(rawString, padChar string, length int) string
+	// FromCharCode 返回ASCII码对应的字符
+	//
+	// # Note
+	//
+	// 常规ASCII码表范围为0~127
+	//
+	// 扩展ASCII码表范围为128~255
+	//
+	// more: https://www.rfc-editor.org/rfc/rfc698.txt
+	FromCharCode(code int32) string
+	// CharCodeAt 返回字符对应的ASCII码
+	CharCodeAt(character string) rune
+}
+
+var _ IString = &stringImpl{}
+
+// String 实例化string工具类
+func String() IString {
+	return &stringImpl{}
+}
+
 // Wordwrap 以给定的字符和长度来打断字符串
-func Wordwrap(rawStr string, length int, split string) string {
+func (stringImpl) Wordwrap(rawStr string, length int, split string) string {
 	if len(rawStr) <= length || length < 1 {
 		return rawStr
 	}
@@ -47,7 +130,7 @@ func Wordwrap(rawStr string, length int, split string) string {
 // 最终的redis键名为：game:user
 //
 // 此方法的主要作用是按应用来划分redis键名
-func WrapRedisKey(appName, key string) string {
+func (stringImpl) WrapRedisKey(appName, key string) string {
 	return fmt.Sprintf("%s:%s", appName, key)
 }
 
@@ -58,7 +141,7 @@ const (
 )
 
 // RandomLetters 随机字符串(字母)
-func RandomLetters(length int) string {
+func (stringImpl) RandomLetters(length int) string {
 	if length < 1 {
 		return ""
 	}
@@ -73,7 +156,7 @@ func RandomLetters(length int) string {
 }
 
 // RandomDigitalChars 随机字符串(数字)
-func RandomDigitalChars(length int) string {
+func (stringImpl) RandomDigitalChars(length int) string {
 	if length < 1 {
 		return ""
 	}
@@ -88,7 +171,7 @@ func RandomDigitalChars(length int) string {
 }
 
 // RandomString 随机字符串(字母+数字)
-func RandomString(length int) string {
+func (stringImpl) RandomString(length int) string {
 	var s = fmt.Sprintf("%s%s", letters, digitalChars)
 
 	b := make([]byte, length)
@@ -101,7 +184,7 @@ func RandomString(length int) string {
 }
 
 // RandomComplexString 随机字符串(可带特殊符号)
-func RandomComplexString(length int) string {
+func (stringImpl) RandomComplexString(length int) string {
 	var s = fmt.Sprintf("%s%s%s", letters, digitalChars, specificSymbols)
 
 	b := make([]byte, length)
@@ -113,8 +196,8 @@ func RandomComplexString(length int) string {
 	return string(b)
 }
 
-// StringReverse 翻转字符串
-func StringReverse(s string) string {
+// Reverse 翻转字符串
+func (stringImpl) Reverse(s string) string {
 	length := len(s)
 
 	if length < 1 {
@@ -130,8 +213,8 @@ func StringReverse(s string) string {
 	return string(b)
 }
 
-// StringShuffle 打乱字符串
-func StringShuffle(s string) string {
+// Shuffle 打乱字符串
+func (stringImpl) Shuffle(s string) string {
 	length := len(s)
 
 	if length < 1 {
@@ -148,29 +231,29 @@ func StringShuffle(s string) string {
 	return strings.Join(arr, "")
 }
 
-// StringPaddingLeft 向左填充字符串
+// PaddingLeft 向左填充字符串
 //
 // rawString 原字符
 //
 // padChar 填充字符
 //
 // length 最终字符长度
-func StringPaddingLeft(rawString, padChar string, length int) string {
-	return paddingString(rawString, padChar, length, 0)
+func (stringImpl) PaddingLeft(rawString, padChar string, length int) string {
+	return padding(rawString, padChar, length, 0)
 }
 
-// StringPaddingRight 向右填充字符串
+// PaddingRight 向右填充字符串
 //
 // rawString 原字符
 //
 // padChar 填充字符
 //
 // length 最终字符长度
-func StringPaddingRight(rawString, padChar string, length int) string {
-	return paddingString(rawString, padChar, length, 1)
+func (stringImpl) PaddingRight(rawString, padChar string, length int) string {
+	return padding(rawString, padChar, length, 1)
 }
 
-// StringPaddingBoth 向两端填充字符串
+// PaddingBoth 向两端填充字符串
 //
 // rawString 原字符
 //
@@ -187,11 +270,11 @@ func StringPaddingRight(rawString, padChar string, length int) string {
 // 则：
 //
 // result = "#a##"
-func StringPaddingBoth(rawString, padChar string, length int) string {
-	return paddingString(rawString, padChar, length, 2)
+func (stringImpl) PaddingBoth(rawString, padChar string, length int) string {
+	return padding(rawString, padChar, length, 2)
 }
 
-// paddingString 填充字符串
+// padding 填充字符串
 //
 // rawString 原字符
 //
@@ -200,7 +283,7 @@ func StringPaddingBoth(rawString, padChar string, length int) string {
 // length 最终字符长度
 //
 // padType 0:向左填充,1:向右填充,2:向两端填充
-func paddingString(rawString, padChar string, length, padType int) string {
+func padding(rawString, padChar string, length, padType int) string {
 	if length < 1 || len(padChar) == 0 {
 		return rawString
 	}
@@ -242,11 +325,11 @@ func paddingString(rawString, padChar string, length, padType int) string {
 // 扩展ASCII码表范围为128~255
 //
 // more: https://www.rfc-editor.org/rfc/rfc698.txt
-func FromCharCode(code int32) string {
+func (stringImpl) FromCharCode(code int32) string {
 	return fmt.Sprintf("%c", code)
 }
 
 // CharCodeAt 返回字符对应的ASCII码
-func CharCodeAt(character string) rune {
+func (stringImpl) CharCodeAt(character string) rune {
 	return ([]rune(character))[0]
 }

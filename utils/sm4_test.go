@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSM4ECBEncrypt(t *testing.T) {
+func TestSM4ImplECBEncrypt(t *testing.T) {
 	testCases := []struct {
 		Key           string
 		Raw           string
@@ -31,7 +31,7 @@ func TestSM4ECBEncrypt(t *testing.T) {
 	}
 
 	for _, v := range testCases {
-		result, err := SM4ECBEncrypt(v.Key, v.Raw)
+		result, err := SM4().ECBEncrypt(v.Key, v.Raw)
 		if v.MustReturnErr {
 			assert.Error(t, err)
 		} else {
@@ -41,7 +41,7 @@ func TestSM4ECBEncrypt(t *testing.T) {
 	}
 }
 
-func TestSM4ECBDecrypt(t *testing.T) {
+func TestSM4ImplECBDecrypt(t *testing.T) {
 	testCases := []struct {
 		Key           string
 		Raw           string
@@ -66,7 +66,7 @@ func TestSM4ECBDecrypt(t *testing.T) {
 	}
 
 	for _, v := range testCases {
-		result, err := SM4ECBDecrypt(v.Key, v.Raw)
+		result, err := SM4().ECBDecrypt(v.Key, v.Raw)
 		if v.MustReturnErr {
 			assert.Error(t, err)
 		} else {

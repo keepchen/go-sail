@@ -9,15 +9,38 @@ import (
 	"io"
 )
 
-// KEY 密钥
-const KEY = "fakeKeyChangeMe!"
+type aesImpl struct {
+}
 
-// AesEncode aes加密
+// IAes aes接口
+type IAes interface {
+	// Encode aes加密
+	//
+	// 使用CFB
+	//
+	// key应该是一个16或24或32位长度的字符
+	Encode(rawString, key string) (string, error)
+	// Decode aes解密
+	//
+	// 使用CFB
+	//
+	// key应该是一个16或24或32位长度的字符
+	Decode(encryptedString, key string) (string, error)
+}
+
+// Aes 实例化aes工具类
+func Aes() IAes {
+	return &aesImpl{}
+}
+
+var _ IAes = aesImpl{}
+
+// Encode aes加密
 //
 // 使用CFB
 //
 // key应该是一个16或24或32位长度的字符
-func AesEncode(rawString, key string) (string, error) {
+func (aesImpl) Encode(rawString, key string) (string, error) {
 	plainText := []byte(rawString)
 
 	block, err := aes.NewCipher([]byte(key))
@@ -38,12 +61,12 @@ func AesEncode(rawString, key string) (string, error) {
 
 }
 
-// AesDecode aes解密
+// Decode aes解密
 //
 // 使用CFB
 //
 // key应该是一个16或24或32位长度的字符
-func AesDecode(encryptedString, key string) (string, error) {
+func (aesImpl) Decode(encryptedString, key string) (string, error) {
 	cipherText, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
 		return "", err

@@ -11,7 +11,7 @@ type domainValidStd struct {
 	valid  bool
 }
 
-func TestValidateDomain(t *testing.T) {
+func TestDomainImplValidate(t *testing.T) {
 	var domains = []domainValidStd{
 		{"example.com", true},
 		{"*.example.com", false},
@@ -25,11 +25,11 @@ func TestValidateDomain(t *testing.T) {
 	}
 
 	for _, v := range domains {
-		assert.Equal(t, ValidateDomain(v.domain), v.valid)
+		assert.Equal(t, Domain().Validate(v.domain), v.valid)
 	}
 }
 
-func TestValidateDomainWithWildcard(t *testing.T) {
+func TestDomainImplValidateWithWildcard(t *testing.T) {
 	var domains = []domainValidStd{
 		{"example.com", true},
 		{"*.example.com", true},
@@ -43,7 +43,7 @@ func TestValidateDomainWithWildcard(t *testing.T) {
 	}
 
 	for _, v := range domains {
-		assert.Equal(t, ValidateDomainWithWildcard(v.domain), v.valid)
+		assert.Equal(t, Domain().ValidateWithWildcard(v.domain), v.valid)
 	}
 }
 
@@ -53,7 +53,7 @@ type refererDomainValidStd struct {
 	valid   bool
 }
 
-func TestRefererMatchDomain(t *testing.T) {
+func TestDomainImplRefererMatch(t *testing.T) {
 	var domains = []refererDomainValidStd{
 		{"https://example.com", "example.com", true},
 		{"https://example.com:8443", "example.com", true},
@@ -66,10 +66,10 @@ func TestRefererMatchDomain(t *testing.T) {
 	}
 	for _, v := range domains {
 		t.Log(v.referer, v.domain)
-		assert.Equal(t, RefererMatchDomain(v.referer, v.domain), v.valid)
+		assert.Equal(t, Domain().RefererMatch(v.referer, v.domain), v.valid)
 	}
 }
 
-func TestLookupCNAME(t *testing.T) {
-	t.Log(LookupCNAME("cos.stardots.ink", "stardots-1251905630.cos.ap-singapore.myqcloud.com."))
+func TestDomainImplLookupCNAME(t *testing.T) {
+	t.Log(Domain().LookupCNAME("cos.stardots.ink", "stardots-1251905630.cos.ap-singapore.myqcloud.com."))
 }

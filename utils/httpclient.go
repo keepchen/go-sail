@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"
 )
 
@@ -15,10 +14,27 @@ var (
 	requestTimeout = time.Second * 5
 )
 
+type httpClientImpl struct {
+}
+
+type IHttpClient interface {
+	// SendRequest 发送请求
+	//
+	// 默认Content-Type为application/json; charset=utf-8
+	SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error)
+}
+
+var _ IHttpClient = &httpClientImpl{}
+
+// HttpClient 实例化http client工具类
+func HttpClient() IHttpClient {
+	return &httpClientImpl{}
+}
+
 // SendRequest 发送请求
 //
 // 默认Content-Type为application/json; charset=utf-8
-func SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error) {
+func (httpClientImpl) SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error) {
 	requestData := bytes.NewReader(jsonPayload)
 
 	req, err := http.NewRequest(method, url, requestData)
@@ -53,6 +69,6 @@ func SendRequest(method, url string, jsonPayload []byte, headers map[string]stri
 		err = fmt.Errorf("http code: %d", resp.StatusCode)
 	}
 
-	logger.GetLogger().Debug("utils.httpclient.SendRequest", zap.String("body", string(response)))
+	fmt.Println("utils.httpclient.SendRequest", zap.String("body", string(response)))
 	return
 }

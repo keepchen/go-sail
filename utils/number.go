@@ -7,6 +7,69 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+type numberImpl struct {
+}
+
+type INumber interface {
+	// RandomInt64 在指定范围内取随机整数
+	//
+	// start和end同时支持正负数
+	//
+	// 结果值区间 ∈ [start, end)
+	//
+	// # Note
+	//
+	// 若start大于end将panic
+	//
+	// # Example:
+	//
+	// result := RandomInt64(10, 20)
+	// //-> 13
+	//
+	// result := RandomInt64(-10, 20)
+	// //-> 3
+	//
+	// result := RandomInt64(-20, -10)
+	// //-> -7
+	RandomInt64(start, end int64) int64
+	// RandomFloat64 在指定范围内取随机浮点数
+	//
+	// start和end同时支持正负数
+	//
+	// precision为精度，此参数将限定返回值的最大小数位数
+	//
+	// 结果值区间 ∈ [start, end)
+	//
+	// # Note
+	//
+	// 若start大于end将panic
+	//
+	// # Example:
+	//
+	// result := RandomFloat64(10.10, 20.20, 2)
+	// //-> 16.22
+	//
+	// result := RandomFloat64(-10.10, 20.20, 3)
+	// //-> -7.222
+	//
+	// result := RandomFloat64(-20.20, -10.10101010101, 4)
+	// //-> -8.1234
+	RandomFloat64(start, end float64, precision int) float64
+	// Pow 计算x的y次幂
+	//
+	// # Note
+	//
+	// 若y小于0,将panic
+	Pow(x, y int64) int64
+}
+
+var _ INumber = &numberImpl{}
+
+// Number 实例化number工具类
+func Number() INumber {
+	return &numberImpl{}
+}
+
 // RandomInt64 在指定范围内取随机整数
 //
 // start和end同时支持正负数
@@ -27,7 +90,7 @@ import (
 //
 // result := RandomInt64(-20, -10)
 // //-> -7
-func RandomInt64(start, end int64) int64 {
+func (numberImpl) RandomInt64(start, end int64) int64 {
 	if start > end {
 		panic(fmt.Errorf("range invalid: start great than end"))
 	}
@@ -74,7 +137,7 @@ func RandomInt64(start, end int64) int64 {
 //
 // result := RandomFloat64(-20.20, -10.10101010101, 4)
 // //-> -8.1234
-func RandomFloat64(start, end float64, precision int) float64 {
+func (numberImpl) RandomFloat64(start, end float64, precision int) float64 {
 	if start > end {
 		panic(fmt.Errorf("range invalid: start great than end"))
 	}
@@ -94,7 +157,7 @@ func RandomFloat64(start, end float64, precision int) float64 {
 // # Note
 //
 // 若y小于0,将panic
-func Pow(x, y int64) int64 {
+func (numberImpl) Pow(x, y int64) int64 {
 	if y < 0 {
 		panic(fmt.Errorf("y less than zero"))
 	}

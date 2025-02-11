@@ -17,62 +17,62 @@ go-sail`)
 	dst = "./file_test_will_be_deleted_after_testcase.txt"
 )
 
-func TestFileGetContents(t *testing.T) {
-	err := FilePutContents(contents, dst)
+func TestFileImplGetContents(t *testing.T) {
+	err := File().PutContents(contents, dst)
 	assert.Equal(t, nil, err)
-	_, err2 := FileGetContents(dst)
+	_, err2 := File().GetContents(dst)
 	assert.Equal(t, nil, err2)
-	clear(err)
+	cleanClear(err)
 }
 
-func TestFilePutContents(t *testing.T) {
-	err := FilePutContents(contents, dst)
+func TestFileImplPutContents(t *testing.T) {
+	err := File().PutContents(contents, dst)
 	assert.Equal(t, nil, err)
-	clear(err)
+	cleanClear(err)
 }
 
-func TestFileAppendContents(t *testing.T) {
-	err := FilePutContents(contents, dst)
+func TestFileImplAppendContents(t *testing.T) {
+	err := File().PutContents(contents, dst)
 	assert.Equal(t, nil, err)
-	err2 := FileAppendContents([]byte(`new line`), dst)
+	err2 := File().AppendContents([]byte(`new line`), dst)
 	assert.Equal(t, nil, err2)
-	clear(err)
+	cleanClear(err)
 }
 
-func TestFileExists(t *testing.T) {
-	err := FilePutContents(contents, dst)
+func TestFileImplExists(t *testing.T) {
+	err := File().PutContents(contents, dst)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, true, FileExists(dst))
-	clear(err)
+	assert.Equal(t, true, File().Exists(dst))
+	cleanClear(err)
 }
 
-func TestFileExt(t *testing.T) {
-	err := FilePutContents(contents, dst)
+func TestFileImplExt(t *testing.T) {
+	err := File().PutContents(contents, dst)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "txt", FileExt(dst))
-	clear(err)
+	assert.Equal(t, "txt", File().Ext(dst))
+	cleanClear(err)
 }
 
-func TestFileGetContentsReadLine(t *testing.T) {
-	err := FilePutContents(contents, dst)
+func TestFileImplGetContentsReadLine(t *testing.T) {
+	err := File().PutContents(contents, dst)
 	assert.Equal(t, nil, err)
 
-	ch, err2 := FileGetContentsReadLine(dst)
+	ch, err2 := File().GetContentsReadLine(dst)
 	assert.Equal(t, nil, err2)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		for content := range ch {
-			log.Printf("[TestFileGetContentsReadLine] content: %s\n", content)
+			log.Printf("[TestFileImplGetContentsReadLine] content: %s\n", content)
 			assert.NotEqual(t, "", content)
 		}
 	}()
 	wg.Wait()
-	clear(err)
+	cleanClear(err)
 }
 
-func clear(err error) {
+func cleanClear(err error) {
 	if err == nil {
 		_ = os.RemoveAll(dst)
 	}

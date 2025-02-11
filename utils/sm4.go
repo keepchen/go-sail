@@ -6,10 +6,37 @@ import (
 	"github.com/tjfoc/gmsm/sm4"
 )
 
-// SM4ECBEncrypt ECB加密
+type sm4impl struct {
+}
+
+type ISM4 interface {
+	// ECBEncrypt ECB加密
+	//
+	// hexKey 16进制key 长度32位
+	//
+	// raw 待加密内容
+	ECBEncrypt(hexKey, raw string) (string, error)
+	// ECBDecrypt ECB解密
+	//
+	// hexKey 16进制key 长度32位
+	//
+	// base64Raw 加密内容 base64格式
+	ECBDecrypt(hexKey, base64Raw string) (string, error)
+}
+
+var _ ISM4 = &sm4impl{}
+
+// SM4 实例化sm4工具类
+func SM4() ISM4 {
+	return &sm4impl{}
+}
+
+// ECBEncrypt ECB加密
+//
 // hexKey 16进制key 长度32位
+//
 // raw 待加密内容
-func SM4ECBEncrypt(hexKey, raw string) (string, error) {
+func (sm4impl) ECBEncrypt(hexKey, raw string) (string, error) {
 	key, err := hex.DecodeString(hexKey)
 	if err != nil {
 		return "", err
@@ -19,19 +46,21 @@ func SM4ECBEncrypt(hexKey, raw string) (string, error) {
 		return "", err
 	}
 
-	return Base64Encode(out), nil
+	return Base64().Encode(out), nil
 }
 
-// SM4ECBDecrypt ECB解密
+// ECBDecrypt ECB解密
+//
 // hexKey 16进制key 长度32位
+//
 // base64Raw 加密内容 base64格式
-func SM4ECBDecrypt(hexKey, base64Raw string) (string, error) {
+func (sm4impl) ECBDecrypt(hexKey, base64Raw string) (string, error) {
 	key, err := hex.DecodeString(hexKey)
 	if err != nil {
 		return "", err
 	}
 
-	raw, err := Base64Decode(base64Raw)
+	raw, err := Base64().Decode(base64Raw)
 	if err != nil {
 		return "", err
 	}

@@ -10,8 +10,23 @@ import (
 	"go.uber.org/zap"
 )
 
-// ListeningExitSignal 监听系统退出信号
-func ListeningExitSignal(wg *sync.WaitGroup) {
+type signalImpl struct {
+}
+
+type ISignal interface {
+	// ListeningExit 监听系统退出信号
+	ListeningExit(wg *sync.WaitGroup)
+}
+
+var _ ISignal = &signalImpl{}
+
+// Signal 实例化信号工具类
+func Signal() ISignal {
+	return &signalImpl{}
+}
+
+// ListeningExit 监听系统退出信号
+func (signalImpl) ListeningExit(wg *sync.WaitGroup) {
 	signals := make(chan os.Signal, 1) // 监听退出
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-signals

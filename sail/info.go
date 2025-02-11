@@ -19,7 +19,7 @@ func printSummaryInfo(conf config.HttpServerConf, ginEngine *gin.Engine) {
 	var (
 		protocol     = "http:"
 		messages     bytes.Buffer
-		localIp, _   = utils.GetLocalIP()
+		localIp, _   = utils.IP().GetLocal()
 		delimiter    = []byte(strings.Repeat("=", 88))
 		subDelimiter = []byte(strings.Repeat("-", 88))
 		repoLink     = "Repository: https://github.com/keepchen/go-sail"

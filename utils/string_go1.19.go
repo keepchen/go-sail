@@ -1,5 +1,5 @@
-//go:build go1.19
-// +build go1.19
+//go:build go1.19 && !go1.22
+// +build go1.19,!go1.22
 
 package utils
 

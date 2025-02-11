@@ -24,15 +24,15 @@ var ecs = []emailChallenge{
 	{"example.x.x@gmail.com.us", true},
 }
 
-func TestValidateEmail(t *testing.T) {
+func TestValidatorImplEmail(t *testing.T) {
 	for _, ec := range ecs {
-		valid := ValidateEmail(ec.email)
+		valid := Validator().Email(ec.email)
 		t.Log(ec.email)
 		assert.Equal(t, valid, ec.valid)
 	}
 }
 
-func TestValidateIdentityCard(t *testing.T) {
+func TestValidatorImplIdentityCard(t *testing.T) {
 	testCases := []struct {
 		Cid    string
 		Result bool
@@ -56,7 +56,7 @@ func TestValidateIdentityCard(t *testing.T) {
 	}
 
 	for _, v := range testCases {
-		result := ValidateIdentityCard(v.Cid)
+		result := Validator().IdentityCard(v.Cid)
 		assert.Equal(t, v.Result, result)
 	}
 }

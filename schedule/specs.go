@@ -46,9 +46,9 @@ func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 			j.task()
 			return
 		}
-		if utils.RedisTryLock(j.lockerKey) {
+		if utils.RedisLocker().TryLock(j.lockerKey) {
 			defer func() {
-				utils.RedisUnlock(j.lockerKey)
+				utils.RedisLocker().Unlock(j.lockerKey)
 				j.lockedByMe = false
 			}()
 			j.lockedByMe = true

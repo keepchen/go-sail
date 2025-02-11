@@ -34,9 +34,9 @@ func (j *taskJob) run() {
 				j.task()
 				return
 			}
-			if utils.RedisTryLock(j.lockerKey) {
+			if utils.RedisLocker().TryLock(j.lockerKey) {
 				defer func() {
-					utils.RedisUnlock(j.lockerKey)
+					utils.RedisLocker().Unlock(j.lockerKey)
 					j.lockedByMe = false
 				}()
 				j.lockedByMe = true
@@ -51,7 +51,7 @@ func (j *taskJob) run() {
 			//收到退出信号，终止任务
 			case <-j.cancelTaskChan:
 				if j.withoutOverlapping && j.lockedByMe {
-					utils.RedisUnlock(j.lockerKey)
+					utils.RedisLocker().Unlock(j.lockerKey)
 				}
 
 				taskSchedules.mux.Lock()

@@ -7,19 +7,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTimeParse(t *testing.T) {
-	datetime, err := ParseDate("2023-12-27", "yyyy-MM-dd", nil)
+func TestDatetimeImplParseDate(t *testing.T) {
+	datetime, err := Datetime().ParseDate("2023-12-27", "yyyy-MM-dd", nil)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, "2023-12-27", datetime.Format("2006-01-02"))
 
 	loc, locErr := time.LoadLocation("Asia/Shanghai")
 	assert.Equal(t, nil, locErr)
-	datetime, err = ParseDate("2023-12-27 12:12:12", "yyyy-MM-dd HH:mm:ss", loc)
+	datetime, err = Datetime().ParseDate("2023-12-27 12:12:12", "yyyy-MM-dd HH:mm:ss", loc)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "2023-12-27", datetime.Format("2006-01-02"))
 }
 
-func TestFormatDate(t *testing.T) {
+func TestDatetimeImplFormatDate(t *testing.T) {
 	var styles = []DateStyle{
 		MM_DD,
 		YYYYMM,
@@ -57,6 +57,6 @@ func TestFormatDate(t *testing.T) {
 
 	now := NewTimeWithTimeZone("Asia/Shanghai").Now()
 	for _, style := range styles {
-		t.Log(FormatDate(now, style))
+		t.Log(Datetime().FormatDate(now, style))
 	}
 }

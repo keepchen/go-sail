@@ -8,17 +8,20 @@ import (
 
 var rawString = "hello world!"
 
-func TestAesEncode(t *testing.T) {
-	encodedString, err := AesEncode(rawString, KEY)
+// KeyForTest 测试密钥
+const KeyForTest = "fakeKeyChangeMe!"
+
+func TestAesImplEncode(t *testing.T) {
+	encodedString, err := Aes().Encode(rawString, KeyForTest)
 	t.Log(encodedString)
 	assert.NoError(t, err)
 }
 
-func TestAesDecode(t *testing.T) {
-	encodedString, err := AesEncode(rawString, KEY)
+func TestAesImplDecode(t *testing.T) {
+	encodedString, err := Aes().Encode(rawString, KeyForTest)
 	t.Log(encodedString)
 	assert.NoError(t, err)
-	decodedString, err := AesDecode(encodedString, KEY)
+	decodedString, err := Aes().Decode(encodedString, KeyForTest)
 	t.Log(decodedString)
 	assert.NoError(t, err)
 	assert.Equal(t, decodedString, rawString)

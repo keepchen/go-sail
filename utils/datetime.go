@@ -46,8 +46,27 @@ const (
 	HH_MM_SS_MS = "HH:mm:ss.SSS"
 )
 
+type datetimeImpl struct {
+}
+
+type IDatetime interface {
+	// FormatDate 时间对象转字符串
+	FormatDate(date time.Time, dateStyle DateStyle) string
+	// ParseDate 解析时间
+	//
+	// string解析到time对象
+	ParseDate(date, layout string, loc *time.Location) (time.Time, error)
+}
+
+var _ IDatetime = &datetimeImpl{}
+
+// Datetime 实例化日期时间工具类
+func Datetime() IDatetime {
+	return &datetimeImpl{}
+}
+
 // FormatDate 时间对象转字符串
-func FormatDate(date time.Time, dateStyle DateStyle) string {
+func (datetimeImpl) FormatDate(date time.Time, dateStyle DateStyle) string {
 	layout := string(dateStyle)
 	layout = strings.Replace(layout, "yyyy", "2006", 1)
 	layout = strings.Replace(layout, "yy", "06", 1)
@@ -64,7 +83,7 @@ func FormatDate(date time.Time, dateStyle DateStyle) string {
 // ParseDate 解析时间
 //
 // string解析到time对象
-func ParseDate(date, layout string, loc *time.Location) (time.Time, error) {
+func (datetimeImpl) ParseDate(date, layout string, loc *time.Location) (time.Time, error) {
 	layout = strings.Replace(layout, "yyyy", "2006", 1)
 	layout = strings.Replace(layout, "yy", "06", 1)
 	layout = strings.Replace(layout, "MM", "01", 1)

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRandomInt64(t *testing.T) {
+func TestNumberImplRandomInt64(t *testing.T) {
 	var ranges = [][]int64{
 		{0, 0},
 		{1, 1},
@@ -18,11 +18,11 @@ func TestRandomInt64(t *testing.T) {
 	for _, rn := range ranges {
 		t.Log("range: from", rn[0], "to", rn[1])
 		for i := 0; i < 10; i++ {
-			t.Log(RandomInt64(rn[0], rn[1]))
+			t.Log(Number().RandomInt64(rn[0], rn[1]))
 		}
 
 		for j := 0; j < 1000; j++ {
-			r := RandomInt64(rn[0], rn[1])
+			r := Number().RandomInt64(rn[0], rn[1])
 			assert.GreaterOrEqual(t, r, rn[0])
 			if rn[0] != rn[1] {
 				assert.Less(t, r, rn[1])
@@ -33,7 +33,7 @@ func TestRandomInt64(t *testing.T) {
 	}
 }
 
-func TestRandomFloat64(t *testing.T) {
+func TestNumberImplRandomFloat64(t *testing.T) {
 	type target struct {
 		start     float64
 		end       float64
@@ -51,11 +51,11 @@ func TestRandomFloat64(t *testing.T) {
 	for _, rn := range ranges {
 		t.Log("range: from", rn.start, "to", rn.end, "precision", rn.precision)
 		for i := 0; i < 10; i++ {
-			t.Log(RandomFloat64(rn.start, rn.end, rn.precision))
+			t.Log(Number().RandomFloat64(rn.start, rn.end, rn.precision))
 		}
 
 		for j := 0; j < 1000; j++ {
-			r := RandomFloat64(rn.start, rn.end, rn.precision)
+			r := Number().RandomFloat64(rn.start, rn.end, rn.precision)
 			assert.GreaterOrEqual(t, r, rn.start)
 			if rn.start != rn.end {
 				assert.Less(t, r, rn.end)
@@ -66,7 +66,7 @@ func TestRandomFloat64(t *testing.T) {
 	}
 }
 
-func TestPow(t *testing.T) {
+func TestNumberImplPow(t *testing.T) {
 	var cases = [][]int64{
 		{1, 0, 1},
 		{-1, 0, 1},
@@ -74,6 +74,6 @@ func TestPow(t *testing.T) {
 		{3, 2, 9},
 	}
 	for _, ca := range cases {
-		assert.Equal(t, Pow(ca[0], ca[1]), ca[2])
+		assert.Equal(t, Number().Pow(ca[0], ca[1]), ca[2])
 	}
 }

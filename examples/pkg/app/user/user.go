@@ -95,14 +95,14 @@ func StartServer(wg *sync.WaitGroup) {
 			fmt.Println("call user function [after] to do something...")
 			job0 := "print now datetime"
 			cancel0 := schedule.NewJob(job0, func() {
-				fmt.Println("now: ", utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN))
+				fmt.Println("now: ", utils.Datetime().FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN))
 			}).RunAt(schedule.EveryMinute)
 			time.AfterFunc(time.Minute*3, cancel0)
 
 			job1 := "print hello"
 			cancel1 := schedule.NewJob(job1, func() {
 				time.Sleep(time.Second * 10)
-				fmt.Println(utils.FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN), "hello")
+				fmt.Println(utils.Datetime().FormatDate(time.Now(), utils.YYYY_MM_DD_HH_MM_SS_EN), "hello")
 				sail.GetLogger().Info("print log info to console",
 					zap.String("value", "go-sail"),
 					zap.Errors("errors", []error{nil}))
@@ -141,7 +141,7 @@ func RegisterServicesToNacos(wg *sync.WaitGroup) {
 
 	nc := nacos.GetNamingClient()
 	var param vo.RegisterInstanceParam
-	localIp, err := utils.GetLocalIP()
+	localIp, err := utils.IP().GetLocal()
 	if err == nil {
 		param.Ip = localIp
 	}
@@ -168,7 +168,7 @@ func RegisterServicesToNacos(wg *sync.WaitGroup) {
 func UnregisterServiceFromNacos() {
 	nc := nacos.GetNamingClient()
 	var param vo.DeregisterInstanceParam
-	localIp, err := utils.GetLocalIP()
+	localIp, err := utils.IP().GetLocal()
 	if err == nil {
 		param.Ip = localIp
 	}

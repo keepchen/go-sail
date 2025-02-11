@@ -7,6 +7,21 @@ import (
 	"text/template"
 )
 
+type versionImpl struct {
+}
+
+type IVersion interface {
+	// Print 打印版本信息
+	Print(fields VersionInfoFields)
+}
+
+var _ IVersion = versionImpl{}
+
+// Version 实例化version工具类
+func Version() IVersion {
+	return &versionImpl{}
+}
+
 // VersionInfoFields 版本信息字段
 type VersionInfoFields struct {
 	AppName   string //应用名称
@@ -24,7 +39,8 @@ const versionInfoTmpl = `
   go version:   {{.goVersion}}
 `
 
-func PrintVersion(fields VersionInfoFields) {
+// Print 打印版本信息
+func (versionImpl) Print(fields VersionInfoFields) {
 	m := map[string]string{
 		"program":   fields.AppName,
 		"version":   fields.Version,

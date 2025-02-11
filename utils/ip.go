@@ -2,8 +2,23 @@ package utils
 
 import "net"
 
-// GetLocalIP 获取本地ip地址（单播地址）
-func GetLocalIP() (string, error) {
+type ipImpl struct {
+}
+
+type IIP interface {
+	// GetLocal 获取本地ip地址（单播地址）
+	GetLocal() (string, error)
+}
+
+var _ IIP = &ipImpl{}
+
+// IP 实例化ip工具类
+func IP() IIP {
+	return &ipImpl{}
+}
+
+// GetLocal 获取本地ip地址（单播地址）
+func (ipImpl) GetLocal() (string, error) {
 	addrList, err := net.InterfaceAddrs()
 	if err != nil {
 		return "", err

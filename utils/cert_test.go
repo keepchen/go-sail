@@ -195,16 +195,16 @@ jIKHPCMoHwDou1FG4wG0TqdsZyxygt9v8hXqfjSmMXBVYPrq17Q=
 
 var domains = []string{"blog.keepchen.com", "stardots.ink"}
 
-func TestReportCertValidity(t *testing.T) {
+func TestReportCertImplValidity(t *testing.T) {
 	for idx, str := range certStrs {
-		t.Log(ReportCertValidity(domains[idx], []byte(str)))
+		t.Log(Cert().ReportValidity(domains[idx], []byte(str)))
 	}
 }
 
-func TestReportCertAndKeyWhetherMatch(t *testing.T) {
+func TestReportCertImplKeyWhetherMatch(t *testing.T) {
 	for i := 0; i < len(keyStrs); i++ {
 		t.Log("index:", i)
-		match, err := ReportCertAndKeyWhetherMatch([]byte(certStrs[i]), []byte(keyStrs[i]))
+		match, err := Cert().ReportKeyWhetherMatch([]byte(certStrs[i]), []byte(keyStrs[i]))
 		assert.Equal(t, err, nil)
 		assert.Equal(t, match, true)
 	}

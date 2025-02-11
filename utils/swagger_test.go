@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestPrintSwaggerSummaryInfo(t *testing.T) {
+func TestPrintSwaggerImplSummaryInfo(t *testing.T) {
 	p0 := SwaggerSummaryInfoParam{}
-	fmt.Println(PrintSwaggerSummaryInfo(p0))
+	fmt.Println(Swagger().PrintSummaryInfo(p0))
 	t.Log("OK")
 	p1 := SwaggerSummaryInfoParam{
 		Title:            "go-sail",
@@ -22,11 +22,11 @@ func TestPrintSwaggerSummaryInfo(t *testing.T) {
 		BasePath:         "/api/v1",
 		NeedAuthorize:    true,
 	}
-	fmt.Println(PrintSwaggerSummaryInfo(p1))
+	fmt.Println(Swagger().PrintSummaryInfo(p1))
 	t.Log("OK")
 }
 
-func TestPrintSwaggerControllerInfo(t *testing.T) {
+func TestPrintSwaggerImplControllerInfo(t *testing.T) {
 	p0 := SwaggerControllerInfoParam{
 		FunctionName:       "GetUserInfo",
 		FunctionDesc:       "获取用户信息",
@@ -39,7 +39,7 @@ func TestPrintSwaggerControllerInfo(t *testing.T) {
 		ApiPath:            "/api/v1/user/info/get",
 		NeedAuthorize:      true,
 	}
-	fmt.Println(PrintSwaggerControllerInfo(p0))
+	fmt.Println(Swagger().PrintControllerInfo(p0))
 	t.Log("OK")
 	p1 := SwaggerControllerInfoParam{
 		FunctionName:       "UpdateUserInfo",
@@ -53,6 +53,6 @@ func TestPrintSwaggerControllerInfo(t *testing.T) {
 		ApiPath:            "/api/v1/user/info/update",
 		NeedAuthorize:      true,
 	}
-	fmt.Println(PrintSwaggerControllerInfo(p1))
+	fmt.Println(Swagger().PrintControllerInfo(p1))
 	t.Log("OK")
 }

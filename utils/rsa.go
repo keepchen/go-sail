@@ -10,8 +10,27 @@ import (
 	"errors"
 )
 
-//RSAEncrypt rsa加密
-func RSAEncrypt(rawString string, publicKey []byte) (string, error) {
+type rsaImpl struct {
+}
+
+type IRsa interface {
+	// Encrypt rsa加密
+	Encrypt(rawString string, publicKey []byte) (string, error)
+	// Decrypt rsa解密
+	Decrypt(encodedString string, privateKey []byte) (string, error)
+	// Sign rsa加签
+	Sign(rawStringBytes, privateKey []byte) (string, error)
+	// VerifySign rsa验签
+	VerifySign(rawStringBytes, sign, publicKey []byte) (bool, error)
+}
+
+// RSA 实例化rsa工具类
+func RSA() IRsa {
+	return &rsaImpl{}
+}
+
+// Encrypt rsa加密
+func (rsaImpl) Encrypt(rawString string, publicKey []byte) (string, error) {
 	pubObj := parsePublicKey(publicKey)
 
 	encodedByte, err := rsa.EncryptPKCS1v15(rand.Reader, pubObj, []byte(rawString))
@@ -19,12 +38,12 @@ func RSAEncrypt(rawString string, publicKey []byte) (string, error) {
 		return "", err
 	}
 
-	return Base64Encode(encodedByte), nil
+	return Base64().Encode(encodedByte), nil
 }
 
-//RSADecrypt rsa解密
-func RSADecrypt(encodedString string, privateKey []byte) (string, error) {
-	encodedByte, err := Base64Decode(encodedString)
+// Decrypt rsa解密
+func (rsaImpl) Decrypt(encodedString string, privateKey []byte) (string, error) {
+	encodedByte, err := Base64().Decode(encodedString)
 	if err != nil {
 		return "", errors.New("invalid base64 encode string")
 	}
@@ -38,8 +57,8 @@ func RSADecrypt(encodedString string, privateKey []byte) (string, error) {
 	return string(decodedByte), nil
 }
 
-//RSASign rsa加签
-func RSASign(rawStringBytes, privateKey []byte) (string, error) {
+// Sign rsa加签
+func (rsaImpl) Sign(rawStringBytes, privateKey []byte) (string, error) {
 	h := sha256.New()
 	_, err := h.Write(rawStringBytes)
 	if err != nil {
@@ -51,11 +70,11 @@ func RSASign(rawStringBytes, privateKey []byte) (string, error) {
 
 	sign, err := rsa.SignPKCS1v15(rand.Reader, priObj, crypto.SHA256, d)
 
-	return Base64Encode(sign), err
+	return Base64().Encode(sign), err
 }
 
-//RSAVerifySign rsa验签
-func RSAVerifySign(rawStringBytes, sign, publicKey []byte) (bool, error) {
+// VerifySign rsa验签
+func (rsaImpl) VerifySign(rawStringBytes, sign, publicKey []byte) (bool, error) {
 	h := sha256.New()
 	_, err := h.Write(rawStringBytes)
 	if err != nil {
@@ -65,7 +84,7 @@ func RSAVerifySign(rawStringBytes, sign, publicKey []byte) (bool, error) {
 
 	pubObj := parsePublicKey(publicKey)
 
-	decodedSign, err := Base64Decode(string(sign))
+	decodedSign, err := Base64().Decode(string(sign))
 	if err != nil {
 		return false, err
 	}
@@ -75,7 +94,7 @@ func RSAVerifySign(rawStringBytes, sign, publicKey []byte) (bool, error) {
 	return err == nil, err
 }
 
-//解析公钥
+// 解析公钥
 func parsePublicKey(key []byte) *rsa.PublicKey {
 	block, _ := pem.Decode(key)
 
@@ -92,7 +111,7 @@ func parsePublicKey(key []byte) *rsa.PublicKey {
 	return pub
 }
 
-//解析私钥
+// 解析私钥
 func parsePrivateKey(key []byte) *rsa.PrivateKey {
 	block, _ := pem.Decode(key)
 	if block == nil {

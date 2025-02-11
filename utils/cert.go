@@ -11,7 +11,40 @@ import (
 	"time"
 )
 
-// ReportCertValidity 报告证书有效性
+type certImpl struct {
+}
+
+type ICert interface {
+	// ReportValidity 报告证书有效性
+	//
+	// 参数：
+	//
+	// - domain: 域名
+	//
+	// - pemData: 包含 -----BEGIN CERTIFICATE----- xx -----END CERTIFICATE----- 的证书链，格式为pem或crt
+	//
+	// 返回值：
+	//
+	// - 是否有效
+	//
+	// - 证书有效期开始时间
+	//
+	// - 证书有效期结束时间
+	//
+	// - 错误
+	ReportValidity(domain string, pemData []byte) (bool, time.Time, time.Time, error)
+	// ReportKeyWhetherMatch 报告证书和私钥是否匹配
+	ReportKeyWhetherMatch(certData, keyData []byte) (bool, error)
+}
+
+var _ ICert = certImpl{}
+
+// Cert 实例化证书工具类
+func Cert() ICert {
+	return &certImpl{}
+}
+
+// ReportValidity 报告证书有效性
 //
 // 参数：
 //
@@ -28,7 +61,7 @@ import (
 // - 证书有效期结束时间
 //
 // - 错误
-func ReportCertValidity(domain string, pemData []byte) (bool, time.Time, time.Time, error) {
+func (certImpl) ReportValidity(domain string, pemData []byte) (bool, time.Time, time.Time, error) {
 	block, _ := pem.Decode(pemData)
 	if block == nil || block.Type != "CERTIFICATE" {
 		return false, time.Now(), time.Now(), fmt.Errorf("the certificate is invalid")
@@ -55,8 +88,8 @@ func ReportCertValidity(domain string, pemData []byte) (bool, time.Time, time.Ti
 	return err == nil, certObj.NotBefore, certObj.NotAfter, err
 }
 
-// ReportCertAndKeyWhetherMatch 报告证书和私钥是否匹配
-func ReportCertAndKeyWhetherMatch(certData, keyData []byte) (bool, error) {
+// ReportKeyWhetherMatch 报告证书和私钥是否匹配
+func (certImpl) ReportKeyWhetherMatch(certData, keyData []byte) (bool, error) {
 	certBlock, _ := pem.Decode(certData)
 	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
 		return false, fmt.Errorf("the certificate is invalid")

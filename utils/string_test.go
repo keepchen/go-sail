@@ -52,15 +52,15 @@ QwIDAQAB`,
 	"",
 }
 
-func TestWordwrap(t *testing.T) {
+func TestStringImplWordwrap(t *testing.T) {
 	for i := 0; i < len(rawStrArr); i++ {
-		finalStr := Wordwrap(rawStrArr[i], 64, "\n")
+		finalStr := String().Wordwrap(rawStrArr[i], 64, "\n")
 		t.Log(finalStr, "<---->", expectedStrArr[i])
 		assert.Equal(t, expectedStrArr[i], finalStr)
 	}
 }
 
-func TestWrapRedisKey(t *testing.T) {
+func TestStringImplWrapRedisKey(t *testing.T) {
 	holders := [][]string{
 		{"game", "user", "game:user"},
 		{"video", "drama", "video:drama"},
@@ -68,31 +68,31 @@ func TestWrapRedisKey(t *testing.T) {
 	}
 
 	for _, arr := range holders {
-		key := WrapRedisKey(arr[0], arr[1])
+		key := String().WrapRedisKey(arr[0], arr[1])
 		t.Log(key)
 		assert.Equal(t, arr[2], key)
 	}
 }
 
-func TestRandomLetters(t *testing.T) {
+func TestStringImplRandomLetters(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33}
 	for _, v := range holders {
-		s := RandomLetters(v)
+		s := String().RandomLetters(v)
 		t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
 
-func TestRandomDigitalChars(t *testing.T) {
+func TestStringImplRandomDigitalChars(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33}
 	for _, v := range holders {
-		s := RandomDigitalChars(v)
+		s := String().RandomDigitalChars(v)
 		t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
 
-func TestRandomString(t *testing.T) {
+func TestStringImplRandomString(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33, 100}
 	for _, v := range holders {
 		s := RandomString(v)
@@ -101,34 +101,34 @@ func TestRandomString(t *testing.T) {
 	}
 }
 
-func TestRandomComplexString(t *testing.T) {
+func TestStringImplRandomComplexString(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33, 100}
 	for _, v := range holders {
-		s := RandomComplexString(v)
+		s := String().RandomComplexString(v)
 		t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
 
-func TestStringReverse(t *testing.T) {
+func TestStringImplStringReverse(t *testing.T) {
 	holders := []string{"", "a", "ab", "abc", "1234567890"}
 	result := []string{"", "a", "ba", "cba", "0987654321"}
 	for index, v := range holders {
-		s := StringReverse(v)
+		s := String().Reverse(v)
 		t.Log(s)
 		assert.Equal(t, result[index], s)
 	}
 }
 
-func TestStringShuffle(t *testing.T) {
+func TestStringImplStringShuffle(t *testing.T) {
 	holders := []string{"", "a", "ab", "abc", "1234567890"}
 	for _, v := range holders {
-		s := StringShuffle(v)
+		s := String().Shuffle(v)
 		t.Log(s)
 	}
 }
 
-func TestStringPaddingLeft(t *testing.T) {
+func TestStringImplPaddingLeft(t *testing.T) {
 	holders := []struct {
 		raw     string
 		padChar string
@@ -143,13 +143,13 @@ func TestStringPaddingLeft(t *testing.T) {
 		{"a", "=", 3, "==a"},
 	}
 	for _, v := range holders {
-		s := StringPaddingLeft(v.raw, v.padChar, v.length)
+		s := String().PaddingLeft(v.raw, v.padChar, v.length)
 		t.Log(s)
 		assert.Equal(t, v.result, s)
 	}
 }
 
-func TestStringPaddingRight(t *testing.T) {
+func TestStringImplPaddingRight(t *testing.T) {
 	holders := []struct {
 		raw     string
 		padChar string
@@ -164,13 +164,13 @@ func TestStringPaddingRight(t *testing.T) {
 		{"a", "=", 3, "a=="},
 	}
 	for _, v := range holders {
-		s := StringPaddingRight(v.raw, v.padChar, v.length)
+		s := String().PaddingRight(v.raw, v.padChar, v.length)
 		t.Log(s)
 		assert.Equal(t, v.result, s)
 	}
 }
 
-func TestStringPaddingBoth(t *testing.T) {
+func TestStringImplPaddingBoth(t *testing.T) {
 	holders := []struct {
 		raw     string
 		padChar string
@@ -186,7 +186,7 @@ func TestStringPaddingBoth(t *testing.T) {
 		{"a", "=+", 4, "=a=="},
 	}
 	for _, v := range holders {
-		s := StringPaddingBoth(v.raw, v.padChar, v.length)
+		s := String().PaddingBoth(v.raw, v.padChar, v.length)
 		t.Log(s)
 		assert.Equal(t, v.result, s)
 	}
@@ -194,56 +194,56 @@ func TestStringPaddingBoth(t *testing.T) {
 
 var a2zLowercase = "abcdefghijklmnopqrstuvwxyz"
 
-func TestCharCodeAt(t *testing.T) {
+func TestStringImplCharCodeAt(t *testing.T) {
 	arr := strings.Split(a2zLowercase, "")
 	asciiLowercase := int32(97)
 	asciiUppercase := int32(65)
 	for _, letter := range arr {
 		//lowercase
-		code := CharCodeAt(letter)
+		code := String().CharCodeAt(letter)
 		t.Log(letter, ":", code)
 		assert.Equal(t, code, asciiLowercase)
 		asciiLowercase++
 
 		//uppercase
 		upLetter := strings.ToUpper(letter)
-		codeUp := CharCodeAt(upLetter)
+		codeUp := String().CharCodeAt(upLetter)
 		t.Log(upLetter, ":", codeUp)
 		assert.Equal(t, codeUp, asciiUppercase)
 		asciiUppercase++
 	}
 }
 
-func TestFromCharCode(t *testing.T) {
+func TestStringImplFromCharCode(t *testing.T) {
 	arr := strings.Split(a2zLowercase, "")
 	asciiLowercase := int32(97)
 	asciiUppercase := int32(65)
 	for _, letter := range arr {
 		//lowercase
-		character := FromCharCode(asciiLowercase)
+		character := String().FromCharCode(asciiLowercase)
 		t.Log(asciiLowercase, ":", character)
 		assert.Equal(t, letter, character)
 		asciiLowercase++
 
 		//uppercase
 		upLetter := strings.ToUpper(letter)
-		characterUp := FromCharCode(asciiUppercase)
+		characterUp := String().FromCharCode(asciiUppercase)
 		t.Log(asciiUppercase, ":", characterUp)
 		assert.Equal(t, upLetter, characterUp)
 		asciiUppercase++
 	}
 }
 
-func TestCharCodeRange(t *testing.T) {
+func TestStringImplCharCodeRange(t *testing.T) {
 	for i := 0; i < 256; i++ {
-		character := FromCharCode(int32(i))
-		code := CharCodeAt(character)
+		character := String().FromCharCode(int32(i))
+		code := String().CharCodeAt(character)
 		t.Log("character:", character, "code:", code, []byte(character), int32(i))
 		assert.Equal(t, int32(i), code)
 	}
 }
 
-func TestBytesStrExchange(t *testing.T) {
+func TestStringImplBytesStrExchange(t *testing.T) {
 	t.Run("TestBytesStrExchange", func(t *testing.T) {
 		for _, str := range expectedStrArr {
 			assert.Equal(t, str, BytesToStr(StrToBytes(str)))

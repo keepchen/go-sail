@@ -5,6 +5,25 @@ import (
 	"strings"
 )
 
+type swaggerImpl struct {
+}
+
+type ISwagger interface {
+	// PrintSummaryInfo 打印swagger概览信息参数
+	//
+	// 用于生成swagger注释
+	PrintSummaryInfo(param SwaggerSummaryInfoParam) string
+	// PrintControllerInfo 打印swagger控制器信息
+	//
+	// 用于生成swagger注释
+	PrintControllerInfo(param SwaggerControllerInfoParam) string
+}
+
+// Swagger 实例化swagger工具类
+func Swagger() ISwagger {
+	return &swaggerImpl{}
+}
+
 var (
 	summaryInfoTpl = `
 // ----------- api doc definition -----------------
@@ -64,10 +83,10 @@ type SwaggerSummaryInfoParam struct {
 	NeedAuthorize    bool   //是否需要token授权
 }
 
-// PrintSwaggerSummaryInfo 打印swagger概览信息参数
+// PrintSummaryInfo 打印swagger概览信息参数
 //
 // 用于生成swagger注释
-func PrintSwaggerSummaryInfo(param SwaggerSummaryInfoParam) string {
+func (swaggerImpl) PrintSummaryInfo(param SwaggerSummaryInfoParam) string {
 	var needAuthorizeString string
 	if param.NeedAuthorize {
 		needAuthorizeString = needAuthorizeTpl
@@ -92,10 +111,10 @@ type SwaggerControllerInfoParam struct {
 	NeedAuthorize      bool   //是否需要授权
 }
 
-// PrintSwaggerControllerInfo 打印swagger控制器信息
+// PrintControllerInfo 打印swagger控制器信息
 //
 // 用于生成swagger注释
-func PrintSwaggerControllerInfo(param SwaggerControllerInfoParam) string {
+func (swaggerImpl) PrintControllerInfo(param SwaggerControllerInfoParam) string {
 	var (
 		requestString       string
 		securityString      string
