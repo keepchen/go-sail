@@ -15,5 +15,8 @@ func TestString(t *testing.T) {
 }
 
 func TestInt(t *testing.T) {
+	for lang, msgMap := range initErrorCodeMsgMap {
+		RegisterCodeTable(lang, msgMap)
+	}
 	assert.Equal(t, 0, ErrNone.Int())
 }
