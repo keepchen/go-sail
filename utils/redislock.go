@@ -100,13 +100,13 @@ func (rl redisLockerImpl) TryLock(key string) bool {
 // # Note
 //
 // 该方法会立即返回锁定成功与否的结果
-func (redisLockerImpl) TryLockWithContext(ctx context.Context, key string) bool {
+func (rl redisLockerImpl) TryLockWithContext(ctx context.Context, key string) bool {
 	if redis.GetInstance() != nil {
-		return RedisStandaloneLockWithContext(ctx, key)
+		return rl.StandaloneLockWithContext(ctx, key)
 	}
 
 	if redis.GetClusterInstance() != nil {
-		return RedisClusterLockWithContext(ctx, key)
+		return rl.ClusterLockWithContext(ctx, key)
 	}
 
 	panic("using redis lock on nil redis instance")

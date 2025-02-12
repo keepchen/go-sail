@@ -35,5 +35,5 @@ const (
 	TimeLayout                string = "15:04:05"                 //时间格式
 	DatetimeLayout            string = "2006-01-02 15:04:05"      //日期时间格式
 	DatetimeTZLayout          string = "2006-01-02T15:04:05Z"     //日期时间格式-tz
-	DateTimeTZLayoutWithMilli        = "2006-01-02T15:04:05.000Z" //日期时间格式-tz，带毫秒
+	DateTimeTZLayoutWithMilli string = "2006-01-02T15:04:05.000Z" //日期时间格式-tz，带毫秒
 )

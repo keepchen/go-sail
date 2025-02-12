@@ -8,8 +8,8 @@ import (
 	"github.com/keepchen/go-sail/v3/constants"
 )
 
-func TestVersionImplPrint(t *testing.T) {
-	var fields = VersionInfoFields{
+func TestPrintVersion(t *testing.T) {
+	var fields = VersionInfoFieldsDeprecated{
 		AppName:   "go-sail",
 		Version:   constants.GoSailVersion,
 		Branch:    "main",
@@ -18,5 +18,5 @@ func TestVersionImplPrint(t *testing.T) {
 		GoVersion: runtime.Version(),
 	}
 
-	Version().Print(fields)
+	PrintVersion(fields)
 }
