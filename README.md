@@ -120,5 +120,7 @@ func main() {
 <br/><br/>
 <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="300" />
 <br/><br/>
-<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="180" />
+<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="180" />  
+ 
+![](https://starchart.cc/keepchen/go-sail.svg)
 

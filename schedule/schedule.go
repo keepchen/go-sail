@@ -91,7 +91,7 @@ type Scheduler interface {
 	//
 	// |    |    |    |    |
 	//
-	// |    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7) OR sun...sat
+	// |    |    |    |    +-- day of week (0 - 7) (Sunday=0 or 7) OR sun...sat
 	//
 	// |    |    |    +---------- month (1 - 12) OR jan,feb,mar,apr ...
 	//
