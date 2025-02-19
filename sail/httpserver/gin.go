@@ -57,9 +57,9 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 	errChan := make(chan error)
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		errChan <- fmt.Errorf("%v", <-c)
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		errChan <- fmt.Errorf("%v", <-sigChan)
 		cancel()
 	}()
 
@@ -80,17 +80,15 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-			logger.GetLogger().Info("Http listen error", zap.Errors("error", []error{err}))
+			logger.GetLogger().Info("Http listen error", zap.String("err", err.Error()))
 		}
 	}()
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	<-errChan
 	logger.GetLogger().Info("Http Shutting down server...")
 
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.GetLogger().Error("Http Server forced to shutdown", zap.Errors("errors", []error{err}))
+		logger.GetLogger().Error("Http Server forced to shutdown", zap.String("err", err.Error()))
 	}
 
 	logger.GetLogger().Info("Http Server exiting")

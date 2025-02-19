@@ -38,17 +38,17 @@ func RunPrometheusServerWhenEnable(conf config.PrometheusConf) {
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-			logger.GetLogger().Info("Prometheus listen error", zap.Errors("error", []error{err}))
+			logger.GetLogger().Info("Prometheus listen error", zap.String("err", err.Error()))
 		}
 	}()
 
 	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		<-c
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		<-sigChan
 		cancel()
 		if err := srv.Shutdown(ctx); err != nil {
-			logger.GetLogger().Error("Prometheus Server forced to shutdown", zap.Errors("errors", []error{err}))
+			logger.GetLogger().Error("Prometheus Server forced to shutdown", zap.String("err", err.Error()))
 		}
 	}()
 }

@@ -64,7 +64,7 @@ var (
 
 	controllerInfoSecurityTpl      = `// @Security    ApiKeyAuth`
 	controllerInfoAuthorizationTpl = `// @Param Authorization header string true "Authorization token"`
-	controllerInfoQueryTpl         = `query query`
+	controllerInfoQueryTpl         = `parameter query`
 	controllerInfoPayloadTpl       = `payload body`
 )
 

@@ -58,7 +58,6 @@ func (aesImpl) Encode(rawString, key string) (string, error) {
 	stream.XORKeyStream(cipherText[aes.BlockSize:], plainText)
 
 	return base64.StdEncoding.EncodeToString(cipherText), nil
-
 }
 
 // Decode aes解密
