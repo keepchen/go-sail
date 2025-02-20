@@ -23,7 +23,9 @@ var (
 // 注意addrStr支持多个地址，以英文逗号分隔，如：
 //
 // 192.168.224.2:8848,192.168.224.3:8848
-func InitClient(appName, addrStr, namespace string) {
+//
+// clientCfg参数将覆盖默认clientConfig配置
+func InitClient(appName, addrStr, namespace string, clientCfg ...nacosV2Constant.ClientConfig) {
 	if len(addrStr) == 0 || len(namespace) == 0 {
 		panic(errors.New("[addrStr] or [namespace] is empty"))
 	}
@@ -56,6 +58,11 @@ func InitClient(appName, addrStr, namespace string) {
 		LogDir:              fmt.Sprintf("logs/nacos/log_%s", appName),
 		CacheDir:            fmt.Sprintf("logs/nacos/cache_%s", appName),
 		LogLevel:            "warn",
+	}
+
+	//如果传递了客户端配置，则覆盖默认配置
+	if len(clientCfg) > 0 {
+		clientConfig = clientCfg[0]
 	}
 
 	cc, err := nacosV2Clients.NewConfigClient(vo.NacosClientParam{

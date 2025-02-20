@@ -86,8 +86,9 @@ func main() {
   - Prometheus  
   - Pprof 
   - 日志导出器    
-- [x] 多语言错误码  
+- [x] 接口错误码  
   - 动态注入  
+  - 国际化  
 - [x] 基于Redis的分布式锁  
   - 阻塞式  
   - 非阻塞式  
@@ -100,8 +101,8 @@ func main() {
 
 ## 大感谢  
 感谢在体验、使用过程中提出宝贵建议和意见以及提供过其他各种帮助的各位小伙伴！  
-- 配置模块化优化 [@fujilin](https://github.com/fujilin)  
-- 响应器语法糖增强优化 [@lichuanzhang](https://github.com/lichuanzhang)  
+- 配置模块化优化建议 [@fujilin](https://github.com/fujilin)  
+- 响应器语法糖增强优化建议 [@lichuanzhang](https://github.com/lichuanzhang)  
 - Logo美化 [@ShuaiRen34](https://twitter.com/ShuaiRen34)  
 
 ## 其他  

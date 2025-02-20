@@ -89,8 +89,9 @@ Console screenshot after launched like this:
 - Performance monitor  
   - Prometheus  
   - Pprof  
-- [x] Multi-language error codes
+- [x] API error codes
     - Dynamic injection  
+    - Internationalization  
 - [x] Distributed lock based on Redis  
   - Blocking  
   - None-Blocking  
@@ -103,8 +104,8 @@ Console screenshot after launched like this:
 
 ## Big Thanks
 Thank you to everyone who provided valuable suggestions and comments during the experience and use, as well as provided other kinds of help!
-- Configuration modular optimization [@fujilin](https://github.com/fujilin)
-- Responder syntax sugar enhancement optimization [@lichuanzhang](https://github.com/lichuanzhang)
+- Configuration modular optimization proposal [@fujilin](https://github.com/fujilin)
+- Responder syntax sugar enhancement optimization proposal [@lichuanzhang](https://github.com/lichuanzhang)
 - Logo beautification [@ShuaiRen34](https://twitter.com/ShuaiRen34)
 
 ## Other
