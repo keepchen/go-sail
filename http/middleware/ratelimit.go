@@ -3,7 +3,7 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"math/rand/v2"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"sync"
@@ -122,7 +122,7 @@ func (l *Limiter) allowWithRedis(ip string) AllowResult {
 	ctx := context.Background()
 	key := fmt.Sprintf("%s:{%s}", l.redisKeyPrefix, ip)
 	now := time.Now().Unix()
-	member := time.Now().UnixNano() + rand.Int64N(int64(l.reqs))
+	member := time.Now().UnixNano() + int64(rand.Intn(l.reqs))
 
 	result, err := redisScript.Run(ctx, l.redisClient, []string{key}, l.reqs, int(l.window.Seconds()), now, member).Result()
 	if err != nil {
