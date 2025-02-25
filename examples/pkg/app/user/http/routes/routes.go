@@ -21,6 +21,13 @@ func RegisterRoutes(r *gin.Engine) {
 	allowHeaders := map[string]string{
 		"Access-Control-Allow-Headers": "Authorization, Content-Type, Content-Length, Some-Other-Headers",
 	}
+	//limiter := mdlw.NewLimiter(mdlw.LimiterOptions{
+	//	Reqs: 1000,
+	//	Window: time.Minute,
+	//	RedisClient: sail.GetRedis(),
+	//	RedisKeyPrefix: "rate-limiter",
+	//})
+	//mdlw.RateLimiter(limiter)
 	//全局打印请求载荷、放行跨域请求、gzip压缩
 	r.Use(mdlw.LogTrace(), mdlw.PrintRequestPayload(), mdlw.WithCors(allowHeaders), gzip.Gzip(gzip.DefaultCompression))
 	apiGroup := r.Group("/api/v1")

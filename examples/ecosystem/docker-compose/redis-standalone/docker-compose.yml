@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  redis-standalone:
+    image: "bitnami/redis:6.2.6"
+    container_name: redis-standalone
+    environment:
+      - REDIS_PORT_NUMBER=6379
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./data/node1:/bitnami/redis/data
+    ports:
+      - "6379:6379"
+    restart: always

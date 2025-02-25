@@ -104,6 +104,10 @@ func RandomDigitalChars(length int) string {
 }
 
 // RandomString 随机字符串(字母+数字)
+//
+// Deprecated: RandomString is deprecated,it will be removed in the future.
+//
+// Please use String().RandomString() instead.
 func RandomString(length int) string {
 	var s = fmt.Sprintf("%s%s", lettersDeprecated, digitalCharsDeprecated)
 

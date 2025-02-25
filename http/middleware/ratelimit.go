@@ -1,89 +1,159 @@
 package middleware
 
 import (
+	"context"
+	"fmt"
+	"math/rand/v2"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/http/api"
 )
 
-// request 结构体用于存储每个请求的时间戳
-type request struct {
-	timestamp time.Time
-}
-
-// Limiter 是一个基于滑动时间窗口和IP限制的限流器
+// Limiter 限流器支持本地和Redis两种模式
 type Limiter struct {
-	reqs   int                  // 每个时间窗口允许的最大请求数
-	window time.Duration        // 滑动时间窗口的长度
-	mu     sync.Mutex           // 互斥锁保护IP记录
-	ips    map[string][]request // 每个IP地址的请求队列
+	reqs   int           //每个时间窗口允许的最大请求数
+	window time.Duration //滑动时间窗口长度
+
+	//本地限流使用
+	ips sync.Map
+
+	//Redis客户端限流使用
+	redisClient    redisLib.UniversalClient
+	redisKeyPrefix string
 }
 
-// NewLimiter 返回一个新的基于滑动时间窗口和IP限制的Limiter实例
-func NewLimiter(reqs int, window time.Duration) *Limiter {
-	return &Limiter{
-		reqs:   reqs,
-		window: window,
-		ips:    make(map[string][]request),
+// LimiterOptions 限流器设置项
+type LimiterOptions struct {
+	Reqs           int                      //请求数
+	Window         time.Duration            //时间窗口
+	RedisClient    redisLib.UniversalClient //Redis客户端实例，支持Client和ClusterClient
+	RedisKeyPrefix string                   //Redis键名前缀
+}
+
+// NewLimiter 创建限流器，支持本地堆栈和Redis
+func NewLimiter(opts LimiterOptions) *Limiter {
+	limiter := &Limiter{
+		reqs:           opts.Reqs,
+		window:         opts.Window,
+		redisClient:    opts.RedisClient,
+		redisKeyPrefix: opts.RedisKeyPrefix,
 	}
+
+	return limiter
 }
 
-// Allow 方法返回指定IP的请求是否被允许，同时返回剩余的请求数和窗口重置时间
-func (l *Limiter) Allow(ip string) (bool, int, time.Time) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+// AllowResult 检查结果
+type AllowResult struct {
+	Allowed   bool
+	Remaining int
+	ResetTime time.Time
+}
 
+// Allow 检查请求是否允许
+func (l *Limiter) Allow(ip string) AllowResult {
+	if l.redisClient != nil {
+		return l.allowWithRedis(ip)
+	}
+	return l.allowWithLocal(ip)
+}
+
+// 本地限流逻辑
+func (l *Limiter) allowWithLocal(ip string) AllowResult {
 	now := time.Now()
-
-	//如果IP不存在，则初始化
-	if _, exists := l.ips[ip]; !exists {
-		l.ips[ip] = []request{}
+	cutoff := now.Add(-l.window)
+	var queue []time.Time
+	if val, ok := l.ips.Load(ip); ok {
+		queue = val.([]time.Time)
 	}
 
-	//移除过期的请求
-	cutoff := now.Add(-l.window)
-	queue := l.ips[ip]
-	for len(queue) > 0 && queue[0].timestamp.Before(cutoff) {
+	//移除过期请求
+	for len(queue) > 0 && queue[0].Before(cutoff) {
 		queue = queue[1:]
 	}
-	l.ips[ip] = queue
 
-	//计算窗口重置时间
-	var resetTime time.Time
-	if len(l.ips[ip]) > 0 {
-		resetTime = l.ips[ip][0].timestamp.Add(l.window)
-	} else {
-		resetTime = now.Add(l.window)
+	remaining := l.reqs - len(queue)
+	resetTime := now.Add(l.window)
+
+	if remaining > 0 {
+		queue = append(queue, now)
+		l.ips.Store(ip, queue)
+		return AllowResult{true, remaining - 1, resetTime}
 	}
-
-	remaining := l.reqs - len(l.ips[ip])
-	if len(l.ips[ip]) < l.reqs {
-		//允许请求并记录请求时间
-		l.ips[ip] = append(l.ips[ip], request{timestamp: now})
-		return true, remaining - 1, resetTime
-	}
-
-	//否则拒绝请求
-	return false, remaining, resetTime
+	return AllowResult{false, remaining, resetTime}
 }
 
-// RateLimiter 是一个限流器中间件，用于对HTTP请求进行IP限流，并添加X-Rate-Limit相关的响应头
+// Redis 限流逻辑脚本
+var redisScript = redisLib.NewScript(`
+local key = KEYS[1]
+local limit = tonumber(ARGV[1])
+local window = tonumber(ARGV[2])
+local now = tonumber(ARGV[3])
+local member = tonumber(ARGV[4])
+
+-- 清除窗口外的请求
+redis.call("ZREMRANGEBYSCORE", key, 0, now - window)
+
+-- 计算当前请求数
+local count = redis.call("ZCARD", key)
+
+if count < limit then
+    -- 添加当前请求时间
+    redis.call("ZADD", key, now, member)
+    -- 仅在新键创建时设置 TTL
+    if redis.call("TTL", key) == -1 then
+        redis.call("EXPIRE", key, window)  -- 使用秒
+    end
+    return {1, limit - (count + 1), now + window}
+else
+    -- 获取窗口重置时间
+    local oldest = redis.call("ZRANGE", key, 0, 0, "WITHSCORES")
+    local resetTime = oldest and oldest[2] and tonumber(oldest[2]) + window or now + window
+    return {0, limit - count, resetTime}
+end
+`)
+
+func (l *Limiter) allowWithRedis(ip string) AllowResult {
+	ctx := context.Background()
+	key := fmt.Sprintf("%s:{%s}", l.redisKeyPrefix, ip)
+	now := time.Now().Unix()
+	member := time.Now().UnixNano() + rand.Int64N(int64(l.reqs))
+
+	result, err := redisScript.Run(ctx, l.redisClient, []string{key}, l.reqs, int(l.window.Seconds()), now, member).Result()
+	if err != nil {
+		//如果Redis操作失败，默认允许请求
+		return AllowResult{Allowed: true, Remaining: l.reqs - 1, ResetTime: time.Now().Add(l.window)}
+	}
+
+	values, ok := result.([]interface{})
+	if !ok || len(values) < 3 {
+		//如果返回值格式不正确，默认拒绝请求
+		return AllowResult{Allowed: false, Remaining: 0, ResetTime: time.Now().Add(l.window)}
+	}
+
+	allowed := values[0].(int64) == 1
+	remaining := int(values[1].(int64))
+	resetTime := time.Unix(values[2].(int64), 0)
+
+	return AllowResult{allowed, remaining, resetTime}
+}
+
+// RateLimiter 中间件函数
 func RateLimiter(limiter *Limiter) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ip := c.ClientIP()
-		allowed, remaining, resetTime := limiter.Allow(ip)
+		res := limiter.Allow(ip)
 
-		//设置X-Rate-Limit响应头
 		c.Writer.Header().Set("X-Rate-Limit-Limit", strconv.Itoa(limiter.reqs))
-		c.Writer.Header().Set("X-Rate-Limit-Remaining", strconv.Itoa(remaining))
-		c.Writer.Header().Set("X-Rate-Limit-Reset", strconv.FormatInt(resetTime.Unix(), 10))
+		c.Writer.Header().Set("X-Rate-Limit-Remaining", strconv.Itoa(res.Remaining))
+		c.Writer.Header().Set("X-Rate-Limit-Reset", strconv.FormatInt(res.ResetTime.Unix(), 10))
 
-		if !allowed {
+		if !res.Allowed {
 			api.Response(c).Wrap(constants.ErrRequestParamsInvalid, nil, "Too Many Request").
 				SendWithCode(http.StatusTooManyRequests)
 			return
