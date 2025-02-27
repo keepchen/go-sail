@@ -30,7 +30,7 @@ require (
 	github.com/tjfoc/gmsm v1.4.1
 	go.etcd.io/etcd/client/v3 v3.5.11
 	go.uber.org/zap v1.24.0
-	golang.org/x/net v0.25.0
+	golang.org/x/net v0.33.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/clickhouse v0.5.0
