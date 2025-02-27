@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"   
+    directory: "/"               
+    schedule:
+      interval: "weekly"          
+    open-pull-requests-limit: 5    
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "chore(deps):"
