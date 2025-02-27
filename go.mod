@@ -12,7 +12,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
-	github.com/jinzhu/configor v1.2.1
+	github.com/jinzhu/configor v1.2.2
 	github.com/keepchen/message-queue v0.0.5
 	github.com/nacos-group/nacos-sdk-go/v2 v2.1.2
 	github.com/nats-io/nats.go v1.26.0
@@ -42,7 +42,7 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/BurntSushi/toml v1.2.0 // indirect
 	github.com/ClickHouse/ch-go v0.48.0 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.3.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
