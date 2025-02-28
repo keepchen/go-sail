@@ -285,13 +285,13 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 	case anotherErrNoneCode:
 		body.Success = constants.Success
 		httpCode = http.StatusOK
-	case constants.ErrRequestParamsInvalid:
+	case anotherErrRequestParamsInvalidCode:
 		body.Success = constants.Failure
 		httpCode = http.StatusBadRequest
-	case constants.ErrAuthorizationTokenInvalid:
+	case anotherErrAuthorizationTokenInvalidCode:
 		body.Success = constants.Failure
 		httpCode = http.StatusUnauthorized
-	case constants.ErrInternalServerError:
+	case anotherErrInternalServerErrorCode:
 		body.Success = constants.Failure
 		httpCode = http.StatusInternalServerError
 	default:
