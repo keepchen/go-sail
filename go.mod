@@ -37,7 +37,7 @@ require (
 	gorm.io/driver/mysql v1.4.4
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/driver/sqlite v1.4.3
-	gorm.io/driver/sqlserver v1.4.1
+	gorm.io/driver/sqlserver v1.5.4
 	gorm.io/gorm v1.25.12
 )
 
@@ -98,7 +98,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/microsoft/go-mssqldb v0.17.0 // indirect
+	github.com/microsoft/go-mssqldb v1.7.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.9.23 // indirect
