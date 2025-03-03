@@ -18,7 +18,7 @@ English | [简体中文](./README.md)
 As its name suggests, you can regard it as the beginning of your own journey in the golang ecosystem. go-sail will help you start lightly and set sail.
 
 ## How to use
-> go version >= 1.19  
+> go version >= 1.20  
 
 > go get -u github.com/keepchen/go-sail/v3
 
@@ -47,7 +47,7 @@ Console screenshot after launched like this:
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
 ## Documentation
-[Docs](https://go-sail.keepchen.com)
+[Docs](https://go-sail.dev)
 
 ## Features  
 - [x] HTTP Responder
