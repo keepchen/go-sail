@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"time"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -40,6 +41,13 @@ func LogTrace() gin.HandlerFunc {
 		if len(requestIdInHeader) == 0 {
 			requestIdInHeader = c.Request.Header.Get("X-Request-Id")
 		}
+
+		//溢出检测
+		//TODO 目前暂定为最长保留200个字符
+		if utf8.RuneCountInString(requestIdInHeader) > 200 {
+			requestIdInHeader = string([]rune(requestIdInHeader)[:200])
+		}
+
 		if len(requestIdInHeader) > 0 {
 			requestId = requestIdInHeader
 			spanId = uuid.New().String()

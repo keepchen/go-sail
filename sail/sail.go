@@ -200,6 +200,9 @@ func (l *Launcher) Launch() {
 
 	printSummaryInfo(l.sa.conf.HttpServer, ginEngine)
 
+	//set config
+	config.Set(l.sa.conf)
+
 	//- after,自定义后置函数调用
 	if l.afterFunc != nil {
 		go l.afterFunc()

@@ -11,14 +11,17 @@ import (
 // 仅对options探测请求注入放行headers
 func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var defaultCorsHeaders = map[string]string{
-			"Access-Control-Allow-Origin":  "*",
-			"Access-Control-Allow-Headers": "Authorization, Content-Type, Content-Length",
-			"Access-Control-Allow-Methods": "POST, GET, PUT, PATCH, DELETE, OPTIONS, HEAD",
-			"Access-Control-Expose-Headers": "Content-Length, Access-Control-Allow-Origin, " +
-				"Access-Control-Allow-Headers, Content-Type, Authorization",
-			"Access-Control-Allow-Credentials": "false",
-		}
+		var (
+			statusCode         = http.StatusOK
+			defaultCorsHeaders = map[string]string{
+				"Access-Control-Allow-Origin":  "*",
+				"Access-Control-Allow-Headers": "Authorization, Content-Type, Content-Length",
+				"Access-Control-Allow-Methods": "POST, GET, PUT, PATCH, DELETE, OPTIONS, HEAD",
+				"Access-Control-Expose-Headers": "Content-Length, Access-Control-Allow-Origin, " +
+					"Access-Control-Allow-Headers, Content-Type, Authorization",
+				"Access-Control-Allow-Credentials": "false",
+			}
+		)
 		if headers == nil {
 			origin := c.Request.Header.Get("Origin")
 			if len(origin) == 0 {
@@ -32,6 +35,8 @@ func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 		for key, value := range headers {
 			c.Writer.Header().Set(key, value)
 		}
+
+		c.Writer.WriteHeader(statusCode)
 
 		//处理浏览器跨域options探测请求
 		if c.Request.Method == http.MethodOptions {

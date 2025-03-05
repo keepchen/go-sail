@@ -250,3 +250,13 @@ func TestStringImplBytesStrExchange(t *testing.T) {
 		}
 	})
 }
+
+func TestStringImplTruncate(t *testing.T) {
+	holders := []string{"", "a", "ab", "abc", "1234567890", "abc123你好こんにちは안녕하세요"}
+	for _, v := range holders {
+		for i := -1; i < 20; i++ {
+			s := String().Truncate(v, i)
+			t.Log(s)
+		}
+	}
+}

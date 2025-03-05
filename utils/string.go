@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"unicode/utf8"
 )
 
 type stringImpl struct {
@@ -80,6 +81,10 @@ type IString interface {
 	FromCharCode(code int32) string
 	// CharCodeAt 返回字符对应的ASCII码
 	CharCodeAt(character string) rune
+	//Truncate 按指定长度截取字符串
+	//
+	// length若超出字符串长度则返回字符串本身
+	Truncate(rawString string, length int) string
 }
 
 var _ IString = &stringImpl{}
@@ -332,4 +337,20 @@ func (stringImpl) FromCharCode(code int32) string {
 // CharCodeAt 返回字符对应的ASCII码
 func (stringImpl) CharCodeAt(character string) rune {
 	return ([]rune(character))[0]
+}
+
+// Truncate 按指定长度截取字符串
+//
+// length若超出字符串长度则返回字符串本身
+func (stringImpl) Truncate(rawString string, length int) string {
+	if length <= 0 {
+		return ""
+	}
+	if len(rawString) == 0 {
+		return rawString
+	}
+	if utf8.RuneCountInString(rawString) <= length {
+		return rawString
+	}
+	return string([]rune(rawString)[:length])
 }
