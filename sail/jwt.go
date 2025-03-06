@@ -32,8 +32,6 @@ func JWT() IJwt {
 //
 // uid 用户id
 //
-// issuer 颁发者
-//
 // exp 令牌有效期，秒级时间戳
 //
 // otherFields 其他可扩展字段
