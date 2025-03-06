@@ -11,12 +11,10 @@ type IJwt interface {
 	//
 	// uid 用户id
 	//
-	// issuer 颁发者
-	//
 	// exp 令牌有效期，秒级时间戳
 	//
 	// otherFields 其他可扩展字段
-	MakeToken(uid, issuer string, exp int64, otherFields ...map[string]interface{}) (string, error)
+	MakeToken(uid string, exp int64, otherFields ...map[string]interface{}) (string, error)
 	// ValidToken 验证JWT令牌
 	ValidToken(token string) (bool, error)
 }
@@ -39,11 +37,11 @@ func JWT() IJwt {
 // exp 令牌有效期，秒级时间戳
 //
 // otherFields 其他可扩展字段
-func (jwtImpl) MakeToken(uid, issuer string, exp int64, otherFields ...map[string]interface{}) (string, error) {
+func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interface{}) (string, error) {
 	conf := config.Get()
 	baseMap := map[string]interface{}{
-		"jti": uid,
-		"iss": issuer,
+		"uid": uid,
+		"iss": conf.JwtConf.TokenIssuer,
 		"exp": exp,
 	}
 	for _, otherField := range otherFields {
@@ -52,6 +50,7 @@ func (jwtImpl) MakeToken(uid, issuer string, exp int64, otherFields ...map[strin
 		}
 	}
 	mp := jwt.MergeStandardClaims(baseMap)
+
 	return jwt.SignWithMap(mp, *conf.JwtConf)
 }
 
@@ -63,5 +62,6 @@ func (jwtImpl) ValidToken(token string) (bool, error) {
 		return false, err
 	}
 	err = mp.Valid()
+
 	return err == nil, err
 }

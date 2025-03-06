@@ -24,6 +24,7 @@
 
 ```go  
 import (
+    "net/http"
     "github.com/gin-gonic/gin"
     "github.com/keepchen/go-sail/v3/sail"
     "github.com/keepchen/go-sail/v3/sail/config"

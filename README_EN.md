@@ -24,6 +24,7 @@ As its name suggests, you can regard it as the beginning of your own journey in 
 
 ```go  
 import (
+    "net/http"
     "github.com/gin-gonic/gin"
     "github.com/keepchen/go-sail/v3/sail"
     "github.com/keepchen/go-sail/v3/sail/config"
