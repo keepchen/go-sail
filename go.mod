@@ -31,7 +31,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.11
 	go.uber.org/zap v1.24.0
 	golang.org/x/net v0.37.0
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/clickhouse v0.5.0
 	gorm.io/driver/mysql v1.4.4
