@@ -25,8 +25,8 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/files v1.0.1
-	github.com/swaggo/gin-swagger v1.5.3
-	github.com/swaggo/swag v1.8.8
+	github.com/swaggo/gin-swagger v1.6.0
+	github.com/swaggo/swag v1.8.12
 	github.com/tjfoc/gmsm v1.4.1
 	go.etcd.io/etcd/client/v3 v3.5.11
 	go.uber.org/zap v1.24.0
