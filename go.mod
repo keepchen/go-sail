@@ -1,6 +1,7 @@
 module github.com/keepchen/go-sail/v3
 
 go 1.20
+toolchain go1.24.1
 
 require (
 	github.com/SherClockHolmes/webpush-go v1.4.0
@@ -26,7 +27,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
-	github.com/swaggo/swag v1.8.12
+	github.com/swaggo/swag v1.16.4
 	github.com/tjfoc/gmsm v1.4.1
 	go.etcd.io/etcd/client/v3 v3.5.11
 	go.uber.org/zap v1.24.0
