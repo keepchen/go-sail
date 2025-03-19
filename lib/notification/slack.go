@@ -40,7 +40,7 @@ func SlackEmit(conf SlackConf, content string) (SlackResponseEntity, error) {
 	}
 	payload, _ := json.Marshal(message)
 	var response SlackResponseEntity
-	resp, _, err := utils.SendRequest(http.MethodPost, conf.WebhookUrl, payload, headers, time.Second*10)
+	resp, _, err := utils.HttpClient().SendRequest(http.MethodPost, conf.WebhookUrl, payload, headers, time.Second*10)
 	if err != nil {
 		return response, err
 	}

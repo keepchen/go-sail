@@ -42,7 +42,7 @@ func LarkEmit(conf LarkConf, content string) (LarkResponseEntity, error) {
 	payload := fmt.Sprintf(Payload, timestamp, sign, content)
 
 	var response LarkResponseEntity
-	resp, _, err := utils.SendRequest(http.MethodPost, conf.WebhookUrl, []byte(payload), headers, time.Second*10)
+	resp, _, err := utils.HttpClient().SendRequest(http.MethodPost, conf.WebhookUrl, []byte(payload), headers, time.Second*10)
 	if err != nil {
 		return response, err
 	}
@@ -54,5 +54,5 @@ func LarkEmit(conf LarkConf, content string) (LarkResponseEntity, error) {
 func genLarkSign(secret string, timestamp int64) (string, error) {
 	//timestamp + key 做sha256, 再进行base64 encode
 	stringToSign := fmt.Sprintf("%v\n%s", timestamp, secret)
-	return utils.Base64Encode([]byte(stringToSign)), nil
+	return utils.Base64().Encode([]byte(stringToSign)), nil
 }

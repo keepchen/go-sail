@@ -42,6 +42,7 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interf
 		"iss": conf.JwtConf.TokenIssuer,
 		"exp": exp,
 	}
+	//可能会存在覆盖的情况
 	for _, otherField := range otherFields {
 		for k, v := range otherField {
 			baseMap[k] = v
@@ -53,12 +54,18 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interf
 }
 
 // ValidToken 验证JWT令牌
+//
+// # ⚠️注意⚠️
+//
+// 此方法继承 jwt.StandardClaims 的 Valid 方法，因此只验证了存在且格式正确的字段，
+// 如果调用方有其他的验证规则，需要自行处理验证逻辑。
 func (jwtImpl) ValidToken(token string) (bool, error) {
 	conf := config.Get()
 	mp, err := jwt.VerifyFromMap(token, *conf.JwtConf)
 	if err != nil {
 		return false, err
 	}
+
 	err = mp.Valid()
 
 	return err == nil, err

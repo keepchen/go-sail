@@ -29,7 +29,7 @@ func DingTalkEmit(conf DingTalkConf, content string) (DingTalkResponseEntity, er
 
 	var response DingTalkResponseEntity
 	url := fmt.Sprintf("%s?timestamp=%d&sign=%s", conf.WebhookUrl, timestamp, sign)
-	resp, _, err := utils.SendRequest(http.MethodPost, url, []byte(content), headers, time.Second*10)
+	resp, _, err := utils.HttpClient().SendRequest(http.MethodPost, url, []byte(content), headers, time.Second*10)
 	if err != nil {
 		return response, err
 	}
@@ -41,5 +41,5 @@ func DingTalkEmit(conf DingTalkConf, content string) (DingTalkResponseEntity, er
 func genDingTalkSign(secret string, timestamp int64) (string, error) {
 	//timestamp + key 做sha256, 再进行base64 encode
 	stringToSign := fmt.Sprintf("%v\n%s", timestamp, secret)
-	return utils.Base64Encode([]byte(stringToSign)), nil
+	return utils.Base64().Encode([]byte(stringToSign)), nil
 }
