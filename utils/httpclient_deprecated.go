@@ -6,8 +6,6 @@ import (
 	"io"
 	"net/http"
 	"time"
-
-	"go.uber.org/zap"
 )
 
 var (
@@ -56,6 +54,5 @@ func SendRequest(method, url string, jsonPayload []byte, headers map[string]stri
 		err = fmt.Errorf("http code: %d", resp.StatusCode)
 	}
 
-	fmt.Println("utils.httpclient_deprecated.SendRequest", zap.String("body", string(response)))
 	return
 }

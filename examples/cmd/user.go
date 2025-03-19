@@ -32,7 +32,7 @@ func userCMD() *cobra.Command {
 			go user.StartServer(wg)
 
 			//更多服务...
-			utils.ListeningExitSignal(wg)
+			utils.Signal().ListeningExit(wg)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			//启动前要执行的方法写在这里，例如加载配置文件、初始化数据库连接等

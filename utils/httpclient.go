@@ -6,8 +6,6 @@ import (
 	"io"
 	"net/http"
 	"time"
-
-	"go.uber.org/zap"
 )
 
 var (
@@ -69,6 +67,5 @@ func (httpClientImpl) SendRequest(method, url string, jsonPayload []byte, header
 		err = fmt.Errorf("http code: %d", resp.StatusCode)
 	}
 
-	fmt.Println("utils.httpclient.SendRequest", zap.String("body", string(response)))
 	return
 }
