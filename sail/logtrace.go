@@ -8,6 +8,18 @@ import (
 
 // LogTracer 链路日志追踪器
 type LogTracer interface {
+	// RequestID 获取请求id
+	//
+	// 尝试从上下文中获取请求id
+	RequestID() string
+	// SpanID 获取内部链路id
+	//
+	// 尝试从上下文中获取内部链路id
+	SpanID() string
+	// EntryAt 获取请求到达纳秒时间戳
+	//
+	// 尝试从上下文中获取请求到达纳秒时间戳
+	EntryAt() int64
 	// GetLogger 获取 zap.Logger 实例
 	//
 	// 此实例携带了上下文的requestId和spanId，用于链路追踪
@@ -101,6 +113,33 @@ func LogTrace(c *gin.Context) LogTracer {
 	}
 
 	return &logTrace{ginContext: c, loggerSvc: zapLogger}
+}
+
+func (l *logTrace) RequestID() string {
+	var requestID string
+	if val, ok := l.ginContext.Get("requestId"); ok {
+		requestID, _ = val.(string)
+	}
+
+	return requestID
+}
+
+func (l *logTrace) SpanID() string {
+	var spanID string
+	if val, ok := l.ginContext.Get("spanId"); ok {
+		spanID, _ = val.(string)
+	}
+
+	return spanID
+}
+
+func (l *logTrace) EntryAt() int64 {
+	var entryAt int64
+	if val, ok := l.ginContext.Get("entryAt"); ok {
+		entryAt, _ = val.(int64)
+	}
+
+	return entryAt
 }
 
 func (l *logTrace) GetLogger() *zap.Logger {
