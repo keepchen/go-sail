@@ -260,7 +260,7 @@ func Call(jobName string, mandatory bool) {
 	}
 	taskSchedules.mux.RUnlock()
 	if job == nil {
-		fmt.Printf("[GO-SAIL] <Schedule> call job {%s} failed,cause job not registered.\n", job.name)
+		fmt.Printf("[GO-SAIL] <Schedule> call job {%s} failed,cause job not registered.\n", jobName)
 		return
 	}
 	if mandatory {

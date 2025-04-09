@@ -1,6 +1,8 @@
 module github.com/keepchen/go-sail/v3
 
-go 1.20
+go 1.23.0
+
+toolchain go1.23.8
 
 require (
 	github.com/SherClockHolmes/webpush-go v1.4.0
