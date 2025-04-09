@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	jwtLib "github.com/golang-jwt/jwt"
+	jwtLib "github.com/golang-jwt/jwt/v5"
 )
 
 const (

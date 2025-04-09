@@ -1,13 +1,14 @@
 package jwt
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 
-	jwtLib "github.com/golang-jwt/jwt"
+	jwtLib "github.com/golang-jwt/jwt/v5"
 )
 
 // AppClaims App票据声明
@@ -17,60 +18,66 @@ type AppClaims struct {
 	Name     string
 	Email    string
 	//more...
-	jwtLib.StandardClaims
+	jwtLib.RegisteredClaims
 }
 
 type MapClaims map[string]interface{}
 
-// Valid 验证token有效性
-//
-// 此验证方法继承 jwtLib.StandardClaims 的 Valid 验证方法
-func (c *MapClaims) Valid() error {
-	if c == nil {
-		return fmt.Errorf("MapClaims is nil")
-	}
-
-	var standardClaim = &jwtLib.StandardClaims{}
-	if value, ok := (*c)["aud"]; ok {
-		if aud, ok := value.(string); ok {
-			standardClaim.Audience = aud
-		}
-	}
+func (c *MapClaims) GetExpirationTime() (*jwtLib.NumericDate, error) {
 	if value, ok := (*c)["exp"]; ok {
 		valueStr := fmt.Sprintf("%v", value)
 		if exp, err := strconv.ParseFloat(valueStr, 64); err == nil {
-			standardClaim.ExpiresAt = int64(exp)
-		}
-	}
-	if value, ok := (*c)["jti"]; ok {
-		if jti, ok := value.(string); ok {
-			standardClaim.Id = jti
-		}
-	}
-	if value, ok := (*c)["iat"]; ok {
-		valueStr := fmt.Sprintf("%v", value)
-		if iat, err := strconv.ParseFloat(valueStr, 64); err == nil {
-			standardClaim.IssuedAt = int64(iat)
-		}
-	}
-	if value, ok := (*c)["iss"]; ok {
-		if iss, ok := value.(string); ok {
-			standardClaim.Issuer = iss
-		}
-	}
-	if value, ok := (*c)["nbf"]; ok {
-		valueStr := fmt.Sprintf("%v", value)
-		if nbf, err := strconv.ParseFloat(valueStr, 64); err == nil {
-			standardClaim.NotBefore = int64(nbf)
-		}
-	}
-	if value, ok := (*c)["sub"]; ok {
-		if sub, ok := value.(string); ok {
-			standardClaim.Subject = sub
+			return jwtLib.NewNumericDate(time.Unix(int64(exp), 0)), nil
 		}
 	}
 
-	return standardClaim.Valid()
+	return nil, errors.New("exp not registered")
+}
+
+func (c *MapClaims) GetIssuedAt() (*jwtLib.NumericDate, error) {
+	if value, ok := (*c)["iat"]; ok {
+		valueStr := fmt.Sprintf("%v", value)
+		if iat, err := strconv.ParseFloat(valueStr, 64); err == nil {
+			return jwtLib.NewNumericDate(time.Unix(int64(iat), 0)), nil
+		}
+	}
+
+	return nil, errors.New("iat not registered")
+}
+
+func (c *MapClaims) GetNotBefore() (*jwtLib.NumericDate, error) {
+	if value, ok := (*c)["nbf"]; ok {
+		valueStr := fmt.Sprintf("%v", value)
+		if nbf, err := strconv.ParseFloat(valueStr, 64); err == nil {
+			return jwtLib.NewNumericDate(time.Unix(int64(nbf), 0)), nil
+		}
+	}
+
+	return nil, errors.New("nbf not registered")
+}
+
+func (c *MapClaims) GetIssuer() (string, error) {
+	if value, ok := (*c)["iss"]; ok {
+		return fmt.Sprintf("%v", value), nil
+	}
+
+	return "", errors.New("iss not registered")
+}
+
+func (c *MapClaims) GetSubject() (string, error) {
+	if value, ok := (*c)["sub"]; ok {
+		return fmt.Sprintf("%v", value), nil
+	}
+
+	return "", errors.New("sub not registered")
+}
+
+func (c *MapClaims) GetAudience() (jwtLib.ClaimStrings, error) {
+	if value, ok := (*c)["aud"]; ok {
+		return jwtLib.ClaimStrings{fmt.Sprintf("%v", value)}, nil
+	}
+
+	return jwtLib.ClaimStrings{""}, errors.New("aud not registered")
 }
 
 // MergeStandardClaims

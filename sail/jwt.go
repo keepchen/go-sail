@@ -57,16 +57,14 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interf
 //
 // # ⚠️注意⚠️
 //
-// 此方法继承 jwt.StandardClaims 的 Valid 方法，因此只验证了存在且格式正确的字段，
+// 此方法继承 jwt.Validator 的 Validate 方法，因此只验证了存在且格式正确的字段，
 // 如果调用方有其他的验证规则，需要自行处理验证逻辑。
 func (jwtImpl) ValidToken(token string) (bool, error) {
 	conf := config.Get()
-	mp, err := jwt.VerifyFromMap(token, *conf.JwtConf)
+	_, err := jwt.VerifyFromMap(token, *conf.JwtConf)
 	if err != nil {
 		return false, err
 	}
-
-	err = mp.Valid()
 
 	return err == nil, err
 }

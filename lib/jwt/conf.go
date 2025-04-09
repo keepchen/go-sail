@@ -6,7 +6,7 @@ import (
 
 	"github.com/keepchen/go-sail/v3/constants"
 
-	jwtLib "github.com/golang-jwt/jwt"
+	jwtLib "github.com/golang-jwt/jwt/v5"
 )
 
 // Conf 配置信息

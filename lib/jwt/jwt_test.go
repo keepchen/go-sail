@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	jwtLib "github.com/golang-jwt/jwt"
+	jwtLib "github.com/golang-jwt/jwt/v5"
 )
 
 var (
@@ -71,8 +71,8 @@ var (
 
 	appClaim = AppClaims{
 		Name: "test",
-		StandardClaims: jwtLib.StandardClaims{
-			ExpiresAt: time.Now().Unix() + 1500,
+		RegisteredClaims: jwtLib.RegisteredClaims{
+			ExpiresAt: jwtLib.NewNumericDate(time.Unix(time.Now().Unix()+1500, 0)),
 			Issuer:    defaultTokenIssuer,
 		},
 	}
