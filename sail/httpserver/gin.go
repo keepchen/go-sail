@@ -20,6 +20,17 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	sigChan = make(chan os.Signal, 1)
+	errChan = make(chan error)
+)
+
+// NotifyExit 通知退出
+func NotifyExit(sig os.Signal) {
+	sigChan <- sig
+	errChan <- fmt.Errorf("%v", <-sigChan)
+}
+
 // InitGinEngine 初始化gin引擎
 //
 // # Note:
@@ -54,10 +65,8 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 	defer wg.Done()
 
 	//监听退出信号
-	errChan := make(chan error)
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 		errChan <- fmt.Errorf("%v", <-sigChan)
 		cancel()

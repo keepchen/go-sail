@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	defaultTokenIssuer = "authority"
+	defaultTokenIssuer = "Go-Sail"
 )
 
 // SigningMethod 签名方法
@@ -31,6 +31,10 @@ func Sign(claim jwtLib.Claims, conf Conf) (string, error) {
 		return "", errors.New("not supported claims")
 	}
 
+	if len(appClaims.Issuer) == 0 {
+		appClaims.Issuer = defaultTokenIssuer
+	}
+
 	switch conf.Algorithm {
 	case string(SigningMethodRS256):
 		return appClaims.GetToken(SigningMethodRS256, conf.privateKey)
@@ -45,6 +49,14 @@ func Sign(claim jwtLib.Claims, conf Conf) (string, error) {
 
 // SignWithMap 签名
 func SignWithMap(claims MapClaims, conf Conf) (string, error) {
+	if val, ok := claims["iss"]; !ok || len(fmt.Sprintf("%v", val)) == 0 {
+		if len(conf.TokenIssuer) > 0 {
+			claims["iss"] = conf.TokenIssuer
+		} else {
+			claims["iss"] = defaultTokenIssuer
+		}
+	}
+
 	switch conf.Algorithm {
 	case string(SigningMethodRS256):
 		return claims.GetToken(SigningMethodRS256, conf.privateKey)

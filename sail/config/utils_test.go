@@ -54,3 +54,36 @@ func TestParseConfigFromString(t *testing.T) {
 	assert.Equal(t, ":8000", c3.HttpServer.Addr)
 	assert.Equal(t, 10, c3.EtcdConf.Timeout)
 }
+
+func TestParseConfigFromBytesToDst(t *testing.T) {
+	formats := [...]string{"json", "toml", "yaml"}
+	conf := &Config{
+		HttpServer: HttpServerConf{
+			Debug: true,
+			Addr:  ":8000",
+		},
+		EtcdConf: etcd.Conf{
+			Timeout: 10,
+		},
+	}
+
+	var (
+		byt    []byte
+		bytErr error
+	)
+	for _, format := range formats {
+		switch format {
+		case "json":
+			byt, bytErr = json.Marshal(conf)
+		case "toml":
+			byt, bytErr = toml.Marshal(conf)
+		case "yaml":
+			byt, bytErr = yaml.Marshal(conf)
+		}
+		assert.NoError(t, bytErr)
+		var cfg = &Config{}
+		_, err := ParseConfigFromBytesToDst(format, byt, cfg)
+		assert.NoError(t, err)
+		assert.Equal(t, conf.HttpServer.Addr, cfg.HttpServer.Addr)
+	}
+}
