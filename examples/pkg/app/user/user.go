@@ -103,8 +103,8 @@ func StartServer(wg *sync.WaitGroup) {
 
 			token, err := sail.JWT().MakeToken("10000", time.Now().Add(time.Hour).Unix())
 			fmt.Println("issue token:", token, err)
-			valid, err := sail.JWT().ValidToken(token)
-			fmt.Println("valid token:", valid, err)
+			valid, claims, err := sail.JWT().ValidToken(token)
+			fmt.Println("valid token:", valid, claims, err)
 
 			fmt.Println("call user function [after] to do something...")
 			job0 := "print now datetime"
