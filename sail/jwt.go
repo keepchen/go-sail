@@ -16,7 +16,7 @@ type IJwt interface {
 	// otherFields 其他可扩展字段
 	MakeToken(uid string, exp int64, otherFields ...map[string]interface{}) (string, error)
 	// ValidToken 验证JWT令牌
-	ValidToken(token string) (bool, error)
+	ValidToken(token string) (bool, jwt.MapClaims, error)
 }
 
 type jwtImpl struct{}
@@ -59,12 +59,12 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interf
 //
 // 此方法继承 jwt.Validator 的 Validate 方法，因此只验证了存在且格式正确的字段，
 // 如果调用方有其他的验证规则，需要自行处理验证逻辑。
-func (jwtImpl) ValidToken(token string) (bool, error) {
+func (jwtImpl) ValidToken(token string) (bool, jwt.MapClaims, error) {
 	conf := config.Get()
-	_, err := jwt.VerifyFromMap(token, *conf.JwtConf)
+	mp, err := jwt.VerifyFromMap(token, *conf.JwtConf)
 	if err != nil {
-		return false, err
+		return false, mp, err
 	}
 
-	return err == nil, err
+	return err == nil, mp, err
 }
