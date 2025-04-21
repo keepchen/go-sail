@@ -1,0 +1,9 @@
+coverage:
+  status:
+    project:
+      default:
+        # 忽略指定目录/文件，不参与覆盖率计算和状态检查
+        ignore:
+          - "examples/**" # 忽略示例目录
+          - "plugins/**"  # 忽略插件目录
+          - "static/**"   # 忽略静态资源目录
