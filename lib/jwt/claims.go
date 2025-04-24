@@ -92,7 +92,7 @@ func MergeStandardClaims(fields map[string]interface{}) MapClaims {
 		"iat": now.Unix(),
 		"exp": now.Add(time.Hour * 24).Unix(),
 		"nbf": now.Unix(),
-		"iss": "Go-Sail",
+		"iss": defaultTokenIssuer,
 	}
 
 	//override

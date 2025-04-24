@@ -43,7 +43,7 @@ func Sign(claim jwtLib.Claims, conf Conf) (string, error) {
 	case string(SigningMethodHS512):
 		return appClaims.GetToken(SigningMethodHS512, []byte(conf.HmacSecret))
 	default:
-		return "", errors.New("jwt secret not config")
+		return "", errors.New("algorithm is not set, it must be one of RS256, RS512, HS512")
 	}
 }
 
@@ -65,7 +65,7 @@ func SignWithMap(claims MapClaims, conf Conf) (string, error) {
 	case string(SigningMethodHS512):
 		return claims.GetToken(SigningMethodHS512, []byte(conf.HmacSecret))
 	default:
-		return "", errors.New("jwt secret not config")
+		return "", errors.New("algorithm is not set, it must be one of RS256, RS512, HS512")
 	}
 }
 
@@ -130,7 +130,7 @@ func VerifyFromMap(tokenString string, conf Conf) (MapClaims, error) {
 // GetToken 获取token
 func (c *AppClaims) GetToken(method SigningMethod, secret interface{}) (string, error) {
 	if secret == nil {
-		return "", errors.New("unsupported secret")
+		return "", errors.New("secret is nil")
 	}
 	sm := method.getSigningMethod()
 	token := jwtLib.NewWithClaims(sm, *c)
@@ -142,7 +142,7 @@ func (c *AppClaims) GetToken(method SigningMethod, secret interface{}) (string, 
 // GetToken 获取token
 func (c *MapClaims) GetToken(method SigningMethod, secret interface{}) (string, error) {
 	if secret == nil {
-		return "", errors.New("unsupported secret")
+		return "", errors.New("secret is nil")
 	}
 	sm := method.getSigningMethod()
 	token := jwtLib.NewWithClaims(sm, c)
