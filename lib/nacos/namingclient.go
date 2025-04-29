@@ -5,6 +5,7 @@ import (
 
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/utils"
+	"github.com/nacos-group/nacos-sdk-go/v2/model"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	"go.uber.org/zap"
 )
@@ -15,7 +16,7 @@ import (
 //
 // serviceName 服务名称
 //
-// ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
+// ip 访问ip地址，如果为空，则使用 utils.IP().GetLocal() 自动获取
 //
 // port 监听的端口
 //
@@ -24,7 +25,7 @@ func RegisterService(groupName, serviceName string, ip string, port uint64, meta
 	var param vo.RegisterInstanceParam
 	param.Ip = ip
 	if len(param.Ip) == 0 {
-		localIp, err := utils.GetLocalIP()
+		localIp, err := utils.IP().GetLocal()
 		if err == nil {
 			param.Ip = localIp
 		}
@@ -45,14 +46,14 @@ func RegisterService(groupName, serviceName string, ip string, port uint64, meta
 //
 // serviceName 服务名称
 //
-// ip 访问ip地址，如果为空，则使用 utils.GetLocalIP 自动获取
+// ip 访问ip地址，如果为空，则使用 utils.IP().GetLocal() 自动获取
 //
 // port 监听的端口
 func UnregisterService(groupName, serviceName string, ip string, port uint64) (bool, error) {
 	var param vo.DeregisterInstanceParam
 	param.Ip = ip
 	if len(param.Ip) == 0 {
-		localIp, err := utils.GetLocalIP()
+		localIp, err := utils.IP().GetLocal()
 		if err == nil {
 			param.Ip = localIp
 		}
@@ -85,4 +86,48 @@ func GetHealthyInstanceUrl(groupName, serviceName string, loggerSvc *zap.Logger)
 	}
 
 	return fmt.Sprintf("%s:%d", instance.Ip, instance.Port)
+}
+
+// SubscribeInstances 订阅(监听)服务实例变化
+//
+// groupName 分组名称
+//
+// serviceName 服务名称
+//
+// fn 回调处理函数
+//
+// loggerSvc 日志组件
+func SubscribeInstances(groupName, serviceName string, fn func(instances []model.Instance, err error), loggerSvc *zap.Logger) {
+	var param = &vo.SubscribeParam{
+		GroupName:         groupName,
+		ServiceName:       serviceName,
+		SubscribeCallback: fn,
+	}
+
+	err := GetNamingClient().Subscribe(param)
+	if err != nil {
+		loggerSvc.Warn("Subscribe Instances failed", zap.String("err", err.Error()))
+	}
+}
+
+// UnsubscribeInstances 取消订阅(监听)服务实例变化
+//
+// groupName 分组名称
+//
+// serviceName 服务名称
+//
+// fn 回调处理函数
+//
+// loggerSvc 日志组件
+func UnsubscribeInstances(groupName, serviceName string, fn func(instances []model.Instance, err error), loggerSvc *zap.Logger) {
+	var param = &vo.SubscribeParam{
+		GroupName:         groupName,
+		ServiceName:       serviceName,
+		SubscribeCallback: fn,
+	}
+
+	err := GetNamingClient().Unsubscribe(param)
+	if err != nil {
+		loggerSvc.Warn("Subscribe Instances failed", zap.String("err", err.Error()))
+	}
 }
