@@ -9,6 +9,7 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
+	"github.com/keepchen/go-sail/v3/lib/valkey"
 )
 
 // Config 配置
@@ -23,6 +24,7 @@ type Config struct {
 	EmailConf        email.Conf        `yaml:"email_conf" toml:"email_conf" json:"email_conf"`                         //邮件配置
 	KafkaConf        KafkaExtraConf    `yaml:"kafka_conf" toml:"kafka_conf" json:"kafka_conf"`                         //kafka配置
 	EtcdConf         etcd.Conf         `yaml:"etcd_conf" toml:"etcd_conf" json:"etcd_conf"`                            //etcd配置
+	ValKeyConf       valkey.Conf       `yaml:"valkey_conf" toml:"valkey_conf" json:"valkey_conf"`                      //valkey配置
 }
 
 // HttpServerConf http服务配置

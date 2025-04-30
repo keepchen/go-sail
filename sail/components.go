@@ -3,6 +3,8 @@ package sail
 import (
 	"fmt"
 
+	"github.com/keepchen/go-sail/v3/lib/valkey"
+
 	"github.com/gin-gonic/gin"
 	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/http/api"
@@ -15,6 +17,7 @@ import (
 	"github.com/keepchen/go-sail/v3/sail/config"
 	natsLib "github.com/nats-io/nats.go"
 	kafkaLib "github.com/segmentio/kafka-go"
+	valkeyLib "github.com/valkey-io/valkey-go"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -221,6 +224,18 @@ func NewEtcd(conf etcd.Conf) (*clientv3.Client, error) {
 	return etcd.New(conf)
 }
 
+// GetValKey 获取valkey连接实例
+//
+// 注意，使用前请确保valkey组件已初始化成功。
+func GetValKey() valkeyLib.Client {
+	return valkey.GetValKey()
+}
+
+// NewValKey 创建新的valkey连接实例
+func NewValKey(conf valkey.Conf) (valkeyLib.Client, error) {
+	return valkey.New(conf)
+}
+
 // 根据配置依次初始化组件
 func componentsStartup(appName string, conf *config.Config) {
 	//- logger
@@ -267,6 +282,12 @@ func componentsStartup(appName string, conf *config.Config) {
 	if conf.EtcdConf.Enable {
 		etcd.Init(conf.EtcdConf)
 		fmt.Println("[GO-SAIL] <Components> initialize [etcd] successfully")
+	}
+
+	//- valkey
+	if conf.ValKeyConf.Enable {
+		valkey.Init(conf.ValKeyConf)
+		fmt.Println("[GO-SAIL] <Components> initialize [valkey] successfully")
 	}
 }
 
@@ -320,5 +341,11 @@ func componentsShutdown(conf *config.Config) {
 	if conf.EtcdConf.Enable && etcd.GetInstance() != nil {
 		_ = etcd.GetInstance().Close()
 		fmt.Println("[GO-SAIL] <Components> shutdown [etcd] successfully")
+	}
+
+	//- valkey
+	if conf.ValKeyConf.Enable && valkey.GetValKey() != nil {
+		valkey.GetValKey().Close()
+		fmt.Println("[GO-SAIL] <Components> shutdown [valkey] successfully")
 	}
 }

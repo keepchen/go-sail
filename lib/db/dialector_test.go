@@ -34,6 +34,15 @@ func TestClickhouseDsn(t *testing.T) {
 
 func TestGenDialector(t *testing.T) {
 	t.Run("GenDialector", func(t *testing.T) {
+		dbConf.DriverName = DriverNameMysql
+		t.Log(dbConf.GenDialector())
+		dbConf.DriverName = DriverNamePostgres
+		t.Log(dbConf.GenDialector())
+		dbConf.DriverName = DriverNameSqlite
+		t.Log(dbConf.GenDialector())
+		dbConf.DriverName = DriverNameSqlserver
+		t.Log(dbConf.GenDialector())
+		dbConf.DriverName = DriverNameClickhouse
 		t.Log(dbConf.GenDialector())
 	})
 }

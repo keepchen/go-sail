@@ -3,6 +3,10 @@ package sail
 import (
 	"testing"
 
+	"github.com/keepchen/go-sail/v3/lib/valkey"
+
+	"github.com/keepchen/go-sail/v3/lib/etcd"
+
 	"github.com/keepchen/go-sail/v3/lib/db"
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
@@ -155,6 +159,26 @@ func TestNewKafkaConnections(t *testing.T) {
 func TestGetEtcdInstance(t *testing.T) {
 	t.Run("GetEtcdInstance", func(t *testing.T) {
 		t.Log(GetEtcdInstance())
+	})
+}
+
+func TestNewEtcd(t *testing.T) {
+	t.Run("NewEtcd", func(t *testing.T) {
+		cfg := etcd.Conf{}
+		t.Log(NewEtcd(cfg))
+	})
+}
+
+func TestGetValKey(t *testing.T) {
+	t.Run("GetValKey", func(t *testing.T) {
+		t.Log(GetValKey())
+	})
+}
+
+func TestNewValKey(t *testing.T) {
+	t.Run("NewValKey", func(t *testing.T) {
+		cfg := valkey.Conf{}
+		t.Log(NewValKey(cfg))
 	})
 }
 

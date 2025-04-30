@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+	"net"
 	"net/url"
 	"testing"
 
@@ -30,8 +32,8 @@ var (
 				Host:      "127.0.0.1",
 				Port:      33060,
 				Username:  "root",
-				Password:  "changeMe",
-				Database:  "go-sail",
+				Password:  "root",
+				Database:  "go_sail",
 				Charset:   "utf8mb4",
 				ParseTime: true,
 				Loc:       url.QueryEscape(constants.TimeZoneUTCPlus7),
@@ -40,8 +42,8 @@ var (
 				Host:      "127.0.0.1",
 				Port:      33060,
 				Username:  "root",
-				Password:  "changeMe",
-				Database:  "go-sail",
+				Password:  "root",
+				Database:  "go_sail",
 				Charset:   "utf8mb4",
 				ParseTime: true,
 				Loc:       url.QueryEscape(constants.TimeZoneUTCPlus7),
@@ -50,15 +52,98 @@ var (
 	}
 )
 
+func TestNewFreshDB(t *testing.T) {
+	t.Run("NewFreshDB", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, err1, dbw, err2 := NewFreshDB(dbConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		assert.NoError(t, err1)
+		assert.NoError(t, err2)
+		assert.NotNil(t, dbr)
+		assert.NotNil(t, dbw)
+		r, _ := dbr.DB()
+		_ = r.Close()
+		w, _ := dbw.DB()
+		_ = w.Close()
+	})
+}
+
 func TestInitDB(t *testing.T) {
-	logger.Init(loggerConf, "go-sail")
-	dbr, _, dbw, _ := New(dbConf)
-	if dbr == nil || dbw == nil {
-		t.Log("database instance is nil, testing not emit.")
-		return
-	}
 	t.Run("InitDB", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
 		InitDB(dbConf)
+		assert.NotNil(t, GetInstance())
+		r, _ := GetInstance().W.DB()
+		_ = r.Close()
+		w, _ := GetInstance().W.DB()
+		_ = w.Close()
+	})
+}
+
+func TestInit(t *testing.T) {
+	t.Run("Init", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		Init(dbConf)
+		assert.NotNil(t, GetInstance())
+		r, _ := GetInstance().W.DB()
+		_ = r.Close()
+		w, _ := GetInstance().W.DB()
+		_ = w.Close()
+	})
+}
+
+func TestMustInitDB(t *testing.T) {
+	t.Run("mustInitDB", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		d1, d2 := dbConf.GenDialector()
+		r := mustInitDB(dbConf, d1)
+		w := mustInitDB(dbConf, d2)
+		assert.NotNil(t, r)
+		assert.NotNil(t, w)
+		rd, _ := r.DB()
+		_ = rd.Close()
+		wd, _ := w.DB()
+		_ = wd.Close()
+	})
+}
+
+func TestOnlyInitDB(t *testing.T) {
+	t.Run("initDB", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		d1, d2 := dbConf.GenDialector()
+		r, e1 := initDB(dbConf, d1)
+		w, e2 := initDB(dbConf, d2)
+		assert.NoError(t, e1)
+		assert.NoError(t, e2)
+		assert.NotNil(t, r)
+		assert.NotNil(t, w)
+		rd, _ := r.DB()
+		_ = rd.Close()
+		wd, _ := w.DB()
+		_ = wd.Close()
 	})
 }
 
