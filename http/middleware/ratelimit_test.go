@@ -53,7 +53,7 @@ func TestNewLimiter(t *testing.T) {
 
 			result2 := limiter.Allow("192.168.100.1")
 			t.Log(i, result2.Allowed, result2.Remaining, result2.ResetTime)
-			assert.Equal(t, i < 10, result2.Allowed)
+			assert.Equal(t, i < limit, result2.Allowed)
 		}
 	})
 
