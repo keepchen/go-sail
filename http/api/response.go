@@ -377,7 +377,15 @@ func (a *responseEngine) SendWithCode(httpCode int) {
 		if val, ok := a.engine.Get("entryAt"); ok {
 			entryAt = val.(int64)
 		}
-		funcBeforeWrite(a.engine.Request, entryAt, a.requestId, spanId, httpCode, a.data.(dto.Base))
+
+		var data dto.Base
+		if val, ok := a.data.(dto.Base); ok {
+			data = val
+		} else {
+			data.Data = a.data
+		}
+
+		funcBeforeWrite(a.engine.Request, entryAt, a.requestId, spanId, httpCode, data)
 	}
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }

@@ -393,6 +393,7 @@ func TestMergeBody(t *testing.T) {
 			emptyDataField = dt
 
 			re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3").Send()
+			re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
 		}
 	})
 }
