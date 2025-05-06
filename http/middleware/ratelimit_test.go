@@ -12,15 +12,19 @@ import (
 )
 
 func TestNewLimiter(t *testing.T) {
+	var (
+		limit      = 100
+		challenges = 500
+	)
 	t.Run("NewLimiter (with local)", func(t *testing.T) {
 		limiter := NewLimiter(LimiterOptions{
-			Reqs:   10,
+			Reqs:   limit,
 			Window: time.Minute,
 		})
-		for i := 0; i < 15; i++ {
+		for i := 0; i < challenges; i++ {
 			result := limiter.Allow("127.0.0.1")
 			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
-			assert.Equal(t, i < 10, result.Allowed)
+			assert.Equal(t, i < limit, result.Allowed)
 		}
 	})
 
@@ -37,15 +41,15 @@ func TestNewLimiter(t *testing.T) {
 			return
 		}
 		limiter := NewLimiter(LimiterOptions{
-			Reqs:           10,
+			Reqs:           limit,
 			Window:         time.Minute,
 			RedisClient:    redisClient,
 			RedisKeyPrefix: fmt.Sprintf("%s-%d", "go-sail-rate-limiter", time.Now().UnixNano()),
 		})
-		for i := 0; i < 15; i++ {
+		for i := 0; i < challenges; i++ {
 			result := limiter.Allow("127.0.0.1")
 			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
-			assert.Equal(t, i < 10, result.Allowed)
+			assert.Equal(t, i < limit, result.Allowed)
 
 			result2 := limiter.Allow("192.168.100.1")
 			t.Log(i, result2.Allowed, result2.Remaining, result2.ResetTime)
@@ -73,19 +77,19 @@ func TestNewLimiter(t *testing.T) {
 			return
 		}
 		limiter := NewLimiter(LimiterOptions{
-			Reqs:           10,
+			Reqs:           limit,
 			Window:         time.Minute,
 			RedisClient:    redisClient,
 			RedisKeyPrefix: fmt.Sprintf("%s-%d", "go-sail-rate-limiter", time.Now().UnixNano()),
 		})
-		for i := 0; i < 15; i++ {
+		for i := 0; i < challenges; i++ {
 			result := limiter.Allow("127.0.0.1")
 			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
-			assert.Equal(t, i < 10, result.Allowed)
+			assert.Equal(t, i < limit, result.Allowed)
 
 			result2 := limiter.Allow("192.168.100.1")
 			t.Log(i, result2.Allowed, result2.Remaining, result2.ResetTime)
-			assert.Equal(t, i < 10, result2.Allowed)
+			assert.Equal(t, i < limit, result2.Allowed)
 		}
 
 		RateLimiter(limiter)(c)

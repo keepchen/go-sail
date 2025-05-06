@@ -35,7 +35,8 @@ func TestPrometheusExporter(t *testing.T) {
 
 		r.Use(PrometheusExporter())
 
-		c.String(http.StatusOK, "%s", "OK")
+		c.Writer.Header().Set("Content-Type", "text/plain")
+		_, _ = c.Writer.Write([]byte(`OK`))
 	})
 }
 

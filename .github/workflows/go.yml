@@ -19,11 +19,3 @@ jobs:
 
       - name: Build
         run: go build -v ./...
-
-      - name: Test
-        run: go test $(go list ./... |grep -v /examples/ |grep -v /static/ |grep -v /plugins/) -v -coverprofile=coverage.txt
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}

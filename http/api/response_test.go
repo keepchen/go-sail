@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 	"unsafe"
 
 	"github.com/stretchr/testify/assert"
@@ -445,6 +446,7 @@ func TestMergeBody(t *testing.T) {
 			t.Log(re.mergeBody(code, (*testerResponseData)(nil), "error1", "error2", "error3"))
 			t.Log(re.mergeBody(code, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
 			t.Log(re.mergeBody(code, []string{"1", "2", "3"}, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(code, []string{}, "error1", "error2", "error3"))
 		}
 	})
 
@@ -472,6 +474,10 @@ func TestMergeBody(t *testing.T) {
 
 	t.Run("MergeBody-FuncBeforeWrite", func(t *testing.T) {
 		c, _ := createTestContextAndEngine()
+
+		c.Set("requestId", uuid.New().String())
+		c.Set("spanId", uuid.New().String())
+		c.Set("entryAt", time.Now().UnixNano())
 
 		re := responseEngine{
 			engine:    c,
