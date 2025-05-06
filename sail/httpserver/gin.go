@@ -47,6 +47,10 @@ func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 		r = gin.New()
 	}
 
+	if len(conf.TrustedProxies) > 0 {
+		_ = r.SetTrustedProxies(conf.TrustedProxies)
+	}
+
 	r.Use(middleware.LogTrace())
 	if conf.Prometheus.Enable {
 		r.Use(middleware.PrometheusExporter())

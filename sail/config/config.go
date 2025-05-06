@@ -34,6 +34,7 @@ type HttpServerConf struct {
 	Swagger            SwaggerConf    `yaml:"swagger_conf" toml:"swagger_conf" json:"swagger_conf"`                         //swagger文档配置
 	Prometheus         PrometheusConf `yaml:"prometheus_conf" toml:"prometheus_conf" json:"prometheus_conf"`                //prometheus配置
 	WebSocketRoutePath string         `yaml:"websocket_route_path" toml:"websocket_route_path" json:"websocket_route_path"` //websocket路由
+	TrustedProxies     []string       `yaml:"trusted_proxies" toml:"trusted_proxies" json:"trusted_proxies"`                //受信任的代理地址,如: 10.0.0.0/16
 }
 
 type SwaggerConf struct {
