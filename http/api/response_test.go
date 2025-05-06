@@ -1,9 +1,13 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"unsafe"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
 
@@ -46,10 +50,11 @@ func TestNew(t *testing.T) {
 
 type testerResponseData struct {
 	dto.Base
+	Data string `json:"data"`
 }
 
 func (v testerResponseData) GetData() interface{} {
-	return v
+	return v.Data
 }
 
 func TestBuilder(t *testing.T) {
@@ -253,6 +258,96 @@ func TestMergeBody(t *testing.T) {
 		}
 	})
 
+	t.Run("MergeBody-RequestIdFromContext", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+
+		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
+		c.Set("requestId", uuid.New().String())
+
+		re := responseEngine{
+			engine:    c,
+			httpCode:  http.StatusOK,
+			data:      nil,
+			requestId: uuid.New().String(),
+		}
+
+		codes := []constants.CodeType{
+			constants.ErrNone,
+			constants.ErrRequestParamsInvalid,
+			constants.ErrAuthorizationTokenInvalid,
+			constants.ErrInternalServerError,
+		}
+
+		for _, code := range codes {
+			t.Log(re.mergeBody(code, nil))
+		}
+	})
+
+	t.Run("MergeBody-LocalIsNil", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+
+		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
+		c.Set("requestId", uuid.New().String())
+
+		loc = nil
+
+		re := responseEngine{
+			engine:    c,
+			httpCode:  http.StatusOK,
+			data:      nil,
+			requestId: uuid.New().String(),
+		}
+
+		codes := []constants.CodeType{
+			constants.ErrNone,
+			constants.ErrRequestParamsInvalid,
+			constants.ErrAuthorizationTokenInvalid,
+			constants.ErrInternalServerError,
+		}
+
+		for _, code := range codes {
+			t.Log(re.mergeBody(code, nil))
+		}
+	})
+
+	t.Run("MergeBody-LocalNotNil", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+
+		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
+		c.Set("requestId", uuid.New().String())
+
+		SetupOption(Option{
+			Timezone: constants.DefaultTimeZone,
+		})
+
+		re := responseEngine{
+			engine:    c,
+			httpCode:  http.StatusOK,
+			data:      nil,
+			requestId: uuid.New().String(),
+		}
+
+		codes := []constants.CodeType{
+			constants.ErrNone,
+			constants.ErrRequestParamsInvalid,
+			constants.ErrAuthorizationTokenInvalid,
+			constants.ErrInternalServerError,
+		}
+
+		for _, code := range codes {
+			t.Log(re.mergeBody(code, nil))
+		}
+	})
+
 	t.Run("MergeBody-AnotherErrorCode", func(t *testing.T) {
 		c, _ := createTestContextAndEngine()
 
@@ -345,8 +440,11 @@ func TestMergeBody(t *testing.T) {
 		forceHttpCode200 = true
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, testerResponseData{}, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(code, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
 			t.Log(re.mergeBody(code, nil, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(code, (*testerResponseData)(nil), "error1", "error2", "error3"))
+			t.Log(re.mergeBody(code, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(code, []string{"1", "2", "3"}, "error1", "error2", "error3"))
 		}
 	})
 
@@ -395,5 +493,63 @@ func TestMergeBody(t *testing.T) {
 			re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3").Send()
 			re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
 		}
+	})
+
+	t.Run("MergeBody-FuncBeforeWrite", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+
+		re := responseEngine{
+			engine:    c,
+			httpCode:  http.StatusOK,
+			data:      nil,
+			requestId: uuid.New().String(),
+		}
+
+		c.Set("language", "en-US")
+
+		detectAcceptLanguage = true
+
+		re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
+	})
+}
+
+func TestIsTypedNil(t *testing.T) {
+	t.Run("IsTypedNil", func(t *testing.T) {
+		var mp map[string]string
+		assert.Equal(t, true, isTypedNil(mp))
+		mp = map[string]string{"name": "go-sail"}
+		assert.Equal(t, false, isTypedNil(mp))
+
+		var ch chan struct{}
+		assert.Equal(t, true, isTypedNil(ch))
+		ch = make(chan struct{}, 1)
+		assert.Equal(t, false, isTypedNil(ch))
+
+		var fn func()
+		assert.Equal(t, true, isTypedNil(fn))
+		fn = func() {
+			fmt.Println("hello")
+		}
+		assert.Equal(t, false, isTypedNil(fn))
+
+		var face interface{}
+		assert.Equal(t, true, isTypedNil(face))
+		face = 123
+		assert.Equal(t, false, isTypedNil(face))
+
+		var base *dto.Base
+		assert.Equal(t, true, isTypedNil(base))
+		base = &dto.Base{}
+		assert.Equal(t, false, isTypedNil(base))
+
+		var slice []string
+		assert.Equal(t, true, isTypedNil(slice))
+		slice = []string{"a"}
+		assert.Equal(t, false, isTypedNil(slice))
+
+		var ptr unsafe.Pointer
+		assert.Equal(t, true, isTypedNil(ptr))
+		ptr = unsafe.Pointer(&dto.Base{})
+		assert.Equal(t, false, isTypedNil(ptr))
 	})
 }

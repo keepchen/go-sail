@@ -21,14 +21,16 @@ import (
 )
 
 var (
-	sigChan = make(chan os.Signal, 1)
-	errChan = make(chan error)
+	sigChan  = make(chan os.Signal, 1)
+	errChan  = make(chan error)
+	exitChan = make(chan struct{})
 )
 
 // NotifyExit 通知退出
 func NotifyExit(sig os.Signal) {
 	sigChan <- sig
 	errChan <- fmt.Errorf("%v", <-sigChan)
+	exitChan <- struct{}{}
 }
 
 // InitGinEngine 初始化gin引擎
@@ -57,7 +59,7 @@ func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 		if !conf.Prometheus.DisableSystemSample {
 			middleware.SetDiskPath(conf.Prometheus.DiskPath)
 			middleware.SetSampleInterval(conf.Prometheus.SampleInterval)
-			go middleware.SystemMetricsSample()
+			go middleware.SystemMetricsSample(exitChan)
 		}
 	}
 

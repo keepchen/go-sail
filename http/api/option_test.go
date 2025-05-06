@@ -11,6 +11,15 @@ import (
 )
 
 func TestSetupOption(t *testing.T) {
+	t.Run("SetupOption-Panic", func(t *testing.T) {
+		opt := Option{
+			Timezone: "Earth/Unknown",
+		}
+		assert.Panics(t, func() {
+			SetupOption(opt)
+		})
+	})
+
 	t.Run("SetupOption", func(t *testing.T) {
 		emptyDataTypes := []int{DefaultEmptyDataStructNull, DefaultEmptyDataStructObject, DefaultEmptyDataStructArray, DefaultEmptyDataStructString, 999}
 		values := []interface{}{nil, struct{}{}, []bool{}, "", nil}
@@ -23,6 +32,11 @@ func TestSetupOption(t *testing.T) {
 				FuncBeforeWrite: func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) {
 					//do something...
 				},
+
+				ErrNoneCode:                      constants.CodeType(90000000),
+				ErrRequestParamsInvalidCode:      constants.CodeType(90000001),
+				ErrAuthorizationTokenInvalidCode: constants.CodeType(90000002),
+				ErrInternalServerErrorCode:       constants.CodeType(90000003),
 			}
 			SetupOption(opt)
 

@@ -13,6 +13,8 @@ func TestWithCors(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Origin", "127.0.0.1")
 
+		c.Request = req
+
 		WithCors(nil)(c)
 	})
 
@@ -22,6 +24,8 @@ func TestWithCors(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 
+		c.Request = req
+
 		WithCors(nil)(c)
 	})
 
@@ -30,6 +34,8 @@ func TestWithCors(t *testing.T) {
 
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
 
 		headers := map[string]string{
 			"Access-Control-Allow-Credentials": "true",
@@ -47,6 +53,8 @@ func TestWithCorsOnlyOptions(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Origin", "127.0.0.1")
 
+		c.Request = req
+
 		WithCorsOnlyOptions(nil)(c)
 	})
 
@@ -56,6 +64,8 @@ func TestWithCorsOnlyOptions(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 
+		c.Request = req
+
 		WithCorsOnlyOptions(nil)(c)
 	})
 
@@ -64,6 +74,8 @@ func TestWithCorsOnlyOptions(t *testing.T) {
 
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
 
 		headers := map[string]string{
 			"Access-Control-Allow-Credentials": "true",
@@ -77,6 +89,8 @@ func TestWithCorsOnlyOptions(t *testing.T) {
 
 		req, _ := http.NewRequest("OPTIONS", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
 
 		headers := map[string]string{
 			"Access-Control-Allow-Credentials": "true",

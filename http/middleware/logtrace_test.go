@@ -23,6 +23,8 @@ func TestLogTrace(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("requestId", uuid.New().String())
 
+		c.Request = req
+
 		LogTrace()(c)
 	})
 
@@ -32,6 +34,8 @@ func TestLogTrace(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-Request-ID", uuid.New().String())
+
+		c.Request = req
 
 		LogTrace()(c)
 	})
@@ -43,6 +47,19 @@ func TestLogTrace(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		id := uuid.New().String()
 		req.Header.Set("X-Request-ID", strings.Repeat(id, 100))
+
+		c.Request = req
+
+		LogTrace()(c)
+	})
+
+	t.Run("LogTrace-EmptyRequestID", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+
+		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
 
 		LogTrace()(c)
 	})

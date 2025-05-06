@@ -34,6 +34,8 @@ func TestDetectRealClientIP(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-Forwarded-For", "127.0.0.1")
 
+		c.Request = req
+
 		DetectRealClientIP()(c)
 	})
 
@@ -44,6 +46,8 @@ func TestDetectRealClientIP(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-Forwarded-For", "")
 
+		c.Request = req
+
 		DetectRealClientIP()(c)
 	})
 
@@ -53,6 +57,8 @@ func TestDetectRealClientIP(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-Forwarded-For", "127.0.0.1.")
+
+		c.Request = req
 
 		DetectRealClientIP()(c)
 	})

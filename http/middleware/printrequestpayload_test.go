@@ -19,6 +19,8 @@ func TestPrintRequestPayload(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 
+		c.Request = req
+
 		PrintRequestPayload()(c)
 	})
 }

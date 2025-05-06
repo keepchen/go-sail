@@ -59,6 +59,8 @@ func TestNewLimiter(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 
+		c.Request = req
+
 		conf := redis.Conf{
 			Endpoint: redis.Endpoint{
 				Host: "127.0.0.1",

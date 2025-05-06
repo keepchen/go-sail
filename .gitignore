@@ -3,3 +3,4 @@ config.toml
 config.*.toml
 !config.sample.toml
 examples/logs/**
+coverage.txt

@@ -13,6 +13,8 @@ func TestDetectUserAgentLanguage(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("accept-language", "zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7")
 
+		c.Request = req
+
 		DetectUserAgentLanguage()(c)
 	})
 }

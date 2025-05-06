@@ -321,10 +321,15 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 	}
 
 	//设置用户响应体
-	if iResp, ok := resp.(dto.IResponse); resp != nil && ok {
-		body.Data = iResp.GetData()
+	body.Data = resp
+	if !isTypedNil(resp) {
+		if iResp, ok := resp.(dto.IResponse); ok && !isTypedNil(iResp) {
+			body.Data = iResp.GetData()
+		} else {
+			body.Data = resp
+		}
 	} else {
-		body.Data = resp
+		body.Data = nil
 	}
 
 	//当空data配置项不为nil时，需要判断用户响应体数据类型并覆盖空data配置项
@@ -335,7 +340,13 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		case body.Data == nil:
 			body.Data = emptyDataField
 		//为指针类型且为空
-		case vf.Kind() == reflect.Pointer && vf.IsNil():
+		case (vf.Kind() == reflect.Pointer ||
+			vf.Kind() == reflect.Slice ||
+			vf.Kind() == reflect.Map ||
+			vf.Kind() == reflect.Interface ||
+			vf.Kind() == reflect.Func ||
+			vf.Kind() == reflect.Chan ||
+			vf.Kind() == reflect.UnsafePointer) && vf.IsNil():
 			body.Data = emptyDataField
 		//数组或切片类型且长度为0
 		case (vf.Kind() == reflect.Slice || vf.Kind() == reflect.Array) && vf.Len() == 0:
@@ -393,4 +404,19 @@ func (a *responseEngine) SendWithCode(httpCode int) {
 // Send 响应请求
 func (a *responseEngine) Send() {
 	a.SendWithCode(a.httpCode)
+}
+
+// 判断一个interface是否为typed nil（即类型不为nil，但内部值为nil）
+func isTypedNil(v interface{}) bool {
+	if v == nil {
+		return true
+	}
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Chan, reflect.Interface, reflect.UnsafePointer,
+		reflect.Map, reflect.Func, reflect.Pointer, reflect.Slice:
+		return rv.IsNil()
+	default:
+		return false
+	}
 }
