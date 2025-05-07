@@ -26,6 +26,15 @@ func TestNewLimiter(t *testing.T) {
 			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
 			assert.Equal(t, i < limit, result.Allowed)
 		}
+
+		c, _ := createTestContextAndEngine()
+
+		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
+
+		RateLimiter(limiter)(c)
 	})
 
 	t.Run("NewLimiter (with redis)", func(t *testing.T) {
@@ -55,6 +64,15 @@ func TestNewLimiter(t *testing.T) {
 			t.Log(i, result2.Allowed, result2.Remaining, result2.ResetTime)
 			assert.Equal(t, i < limit, result2.Allowed)
 		}
+
+		c, _ := createTestContextAndEngine()
+
+		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		c.Request = req
+
+		RateLimiter(limiter)(c)
 	})
 
 	t.Run("RateLimiter", func(t *testing.T) {

@@ -326,9 +326,7 @@ func TestMergeBody(t *testing.T) {
 		c.Request = req
 		c.Set("requestId", uuid.New().String())
 
-		SetupOption(Option{
-			Timezone: constants.DefaultTimeZone,
-		})
+		timezone = constants.DefaultTimeZone
 
 		re := responseEngine{
 			engine:    c,
@@ -350,39 +348,42 @@ func TestMergeBody(t *testing.T) {
 	})
 
 	t.Run("MergeBody-AnotherErrorCode", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-
-		re := responseEngine{
-			engine:    c,
-			httpCode:  http.StatusOK,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
 		codes := []constants.CodeType{
 			constants.ErrNone,
 			constants.ErrRequestParamsInvalid,
 			constants.ErrAuthorizationTokenInvalid,
 			constants.ErrInternalServerError,
 		}
+		statusCodes := []int{
+			http.StatusOK,
+			http.StatusBadRequest,
+			http.StatusUnauthorized,
+			http.StatusInternalServerError,
+		}
 
-		anotherErrNoneCode = constants.CodeType(1000000)
+		forceHttpCode200 = false
+		anotherErrNoneCode = constants.ErrNone
+		anotherErrRequestParamsInvalidCode = constants.ErrRequestParamsInvalid
+		anotherErrAuthorizationTokenInvalidCode = constants.ErrAuthorizationTokenInvalid
+		anotherErrInternalServerErrorCode = constants.ErrInternalServerError
 
-		for _, code := range codes {
+		for idx, code := range codes {
+			c, _ := createTestContextAndEngine()
+
+			re := responseEngine{
+				engine:    c,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
+
 			t.Log(re.mergeBody(code, nil))
+			t.Log(forceHttpCode200, anotherErrNoneCode, anotherErrInternalServerErrorCode, code, re.httpCode)
+			assert.Equal(t, true, (code == 0 && re.httpCode == http.StatusOK) || (code != 0 && re.httpCode != http.StatusOK))
+			assert.Equal(t, statusCodes[idx], re.httpCode)
 		}
 	})
 
 	t.Run("MergeBody-ForceHttp200", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-
-		re := responseEngine{
-			engine:    c,
-			httpCode:  http.StatusOK,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
 		codes := []constants.CodeType{
 			constants.ErrNone,
 			constants.ErrRequestParamsInvalid,
@@ -393,20 +394,20 @@ func TestMergeBody(t *testing.T) {
 		forceHttpCode200 = true
 
 		for _, code := range codes {
+			c, _ := createTestContextAndEngine()
+
+			re := responseEngine{
+				engine:    c,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
+
 			t.Log(re.mergeBody(code, nil))
+			assert.Equal(t, true, re.httpCode == http.StatusOK)
 		}
 	})
 
 	t.Run("MergeBody-Messages", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-
-		re := responseEngine{
-			engine:    c,
-			httpCode:  http.StatusOK,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
 		codes := []constants.CodeType{
 			constants.ErrNone,
 			constants.ErrRequestParamsInvalid,
@@ -414,23 +415,21 @@ func TestMergeBody(t *testing.T) {
 			constants.ErrInternalServerError,
 		}
 
-		forceHttpCode200 = true
-
 		for _, code := range codes {
+			c, _ := createTestContextAndEngine()
+
+			re := responseEngine{
+				engine:    c,
+				httpCode:  http.StatusOK,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
+
 			t.Log(re.mergeBody(code, nil, "error1", "error2", "error3"))
 		}
 	})
 
 	t.Run("MergeBody-DataInterface", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-
-		re := responseEngine{
-			engine:    c,
-			httpCode:  http.StatusOK,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
 		codes := []constants.CodeType{
 			constants.ErrNone,
 			constants.ErrRequestParamsInvalid,
@@ -441,6 +440,14 @@ func TestMergeBody(t *testing.T) {
 		forceHttpCode200 = true
 
 		for _, code := range codes {
+			c, _ := createTestContextAndEngine()
+
+			re := responseEngine{
+				engine:    c,
+				httpCode:  http.StatusOK,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
 			t.Log(re.mergeBody(code, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
 			t.Log(re.mergeBody(code, nil, "error1", "error2", "error3"))
 			t.Log(re.mergeBody(code, (*testerResponseData)(nil), "error1", "error2", "error3"))
@@ -469,6 +476,11 @@ func TestMergeBody(t *testing.T) {
 
 			t.Log(re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3"))
 			t.Log(re.mergeBody(constants.ErrNone, nil, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(constants.ErrNone, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(constants.ErrNone, (*testerResponseData)(nil), "error1", "error2", "error3"))
+			t.Log(re.mergeBody(constants.ErrNone, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(constants.ErrNone, []string{"1", "2", "3"}, "error1", "error2", "error3"))
+			t.Log(re.mergeBody(constants.ErrNone, []string{}, "error1", "error2", "error3"))
 		}
 	})
 
@@ -481,41 +493,26 @@ func TestMergeBody(t *testing.T) {
 
 		re := responseEngine{
 			engine:    c,
-			httpCode:  http.StatusOK,
 			data:      nil,
 			requestId: uuid.New().String(),
 		}
 
-		forceHttpCode200 = true
 		emptyDataTypes := []int{DefaultEmptyDataStructNull, DefaultEmptyDataStructObject, DefaultEmptyDataStructArray, DefaultEmptyDataStructString, 999}
-		funcBeforeWrite = func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) {
+		fn := func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) {
 			//do something...
 		}
 
 		for _, dt := range emptyDataTypes {
 
-			emptyDataField = dt
+			SetupOption(Option{
+				ForceHttpCode200: true,
+				EmptyDataStruct:  dt,
+				FuncBeforeWrite:  fn,
+			})
 
 			re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3").Send()
 			re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
 		}
-	})
-
-	t.Run("MergeBody-FuncBeforeWrite", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-
-		re := responseEngine{
-			engine:    c,
-			httpCode:  http.StatusOK,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
-		c.Set("language", "en-US")
-
-		detectAcceptLanguage = true
-
-		re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
 	})
 }
 

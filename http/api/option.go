@@ -95,6 +95,10 @@ const (
 // 1.内置错误码及错误码信息
 //
 // 2.空数据序列化结构
+//
+// # 提示
+//
+// 该方法不支持重入，因此，调用者应当在全局使用且最多调用一次
 func SetupOption(opt Option) {
 	//覆盖内置错误码
 	if opt.ErrNoneCode != nil {
@@ -125,14 +129,18 @@ func SetupOption(opt Option) {
 	default:
 		emptyDataField = nil
 	}
+
 	if opt.ForceHttpCode200 {
 		forceHttpCode200 = opt.ForceHttpCode200
 	}
+
 	if len(opt.Timezone) > 0 {
 		timezone = opt.Timezone
 	}
 
-	detectAcceptLanguage = opt.DetectAcceptLanguage
+	if opt.DetectAcceptLanguage {
+		detectAcceptLanguage = opt.DetectAcceptLanguage
+	}
 
 	lc, err := time.LoadLocation(timezone)
 	if err != nil {

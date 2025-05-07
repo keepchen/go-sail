@@ -26,15 +26,14 @@ func TestPrometheusExporter(t *testing.T) {
 	})
 
 	t.Run("PrometheusExporter-Write", func(t *testing.T) {
-		c, r := createTestContextAndEngine()
+		c, _ := createTestContextAndEngine()
 
 		req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 		req.Header.Set("Content-Type", "application/json")
 
 		c.Request = req
 
-		r.Use(PrometheusExporter())
-
+		PrometheusExporter()(c)
 		c.Writer.Header().Set("Content-Type", "text/plain")
 		_, _ = c.Writer.Write([]byte(`OK`))
 	})
