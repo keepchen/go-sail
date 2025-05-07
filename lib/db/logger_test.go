@@ -56,6 +56,16 @@ func TestLogMode(t *testing.T) {
 }
 
 func TestInfo(t *testing.T) {
+	t.Run("Info-Ignore", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbConf.Logger.Level = "silent"
+		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)
+		assert.NotNil(t, zg)
+		zg.LogMode(gormLogger.Info)
+
+		zg.Info(context.Background(), "tpl:%s", "var")
+	})
+
 	t.Run("Info", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)
@@ -67,6 +77,16 @@ func TestInfo(t *testing.T) {
 }
 
 func TestWarn(t *testing.T) {
+	t.Run("Warn-Ignore", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbConf.Logger.Level = "info"
+		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)
+		assert.NotNil(t, zg)
+		zg.LogMode(gormLogger.Warn)
+
+		zg.Warn(context.Background(), "tpl:%s", "var")
+	})
+
 	t.Run("Warn", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)
@@ -78,6 +98,16 @@ func TestWarn(t *testing.T) {
 }
 
 func TestError(t *testing.T) {
+	t.Run("Error-Ignore", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbConf.Logger.Level = "warn"
+		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)
+		assert.NotNil(t, zg)
+		zg.LogMode(gormLogger.Error)
+
+		zg.Error(context.Background(), "tpl:%s", "var")
+	})
+
 	t.Run("Error", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)

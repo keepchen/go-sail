@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"time"
 
 	redisLib "github.com/go-redis/redis/v8"
 )
@@ -40,7 +41,10 @@ func mustInitRedis(conf Conf) *redisLib.Client {
 	}
 	rdb := redisLib.NewClient(opts)
 
-	err := rdb.Ping(context.Background()).Err()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	err := rdb.Ping(ctx).Err()
 	if err != nil {
 		panic(err)
 	}

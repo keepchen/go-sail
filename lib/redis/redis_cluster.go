@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"time"
 
 	redisLib "github.com/go-redis/redis/v8"
 )
@@ -55,7 +56,10 @@ func mustInitRedisCluster(conf ClusterConf) *redisLib.ClusterClient {
 	}
 	rdb := redisLib.NewClusterClient(opts)
 
-	err := rdb.ForEachShard(context.Background(), func(ctx context.Context, shard *redisLib.Client) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	err := rdb.ForEachShard(ctx, func(ctx context.Context, shard *redisLib.Client) error {
 		return shard.Ping(ctx).Err()
 	})
 	if err != nil {

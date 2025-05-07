@@ -120,7 +120,7 @@ func (fileImpl) AppendContents(content []byte, dst string) error {
 //
 // dst string 目标地址
 func (fileImpl) Exists(dst string) bool {
-	ok, _ := FileExistsWithError(dst)
+	ok, _ := File().ExistsWithError(dst)
 
 	return ok
 }

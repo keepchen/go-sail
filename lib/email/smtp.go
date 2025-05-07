@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"net/smtp"
 )
@@ -64,7 +63,7 @@ func initSmtpClient(conf Conf) *smtp.Client {
 	addr := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
 	conn, err := tls.Dial("tcp", addr, nil)
 	if err != nil {
-		log.Println("[GO-SAIL] <Email> initialize smtp client failed:", err.Error())
+		fmt.Println("[GO-SAIL] <Email> initialize smtp client failed:", err.Error())
 		return nil
 	}
 

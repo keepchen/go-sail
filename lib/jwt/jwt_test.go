@@ -102,50 +102,123 @@ var (
 )
 
 func TestSign(t *testing.T) {
-	for _, conf := range confArr {
-		t.Log("----------------", conf.Algorithm, "----------------")
-		conf.Load()
-		token, err := Sign(appClaim, conf)
-		t.Log(err)
-		t.Log("struct claim:", token)
-		assert.NoError(t, err)
-		for _, claim := range mapClaims {
-			token2, err := SignWithMap(claim, conf)
+	t.Run("Sign", func(t *testing.T) {
+		for _, conf := range confArr {
+			t.Log("----------------", conf.Algorithm, "----------------")
+			conf.Load()
+			token, err := Sign(appClaim, conf)
 			t.Log(err)
-			t.Log("map claim:", token2)
+			t.Log("struct claim:", token)
 			assert.NoError(t, err)
+			for _, claim := range mapClaims {
+				token2, err := SignWithMap(claim, conf)
+				t.Log(err)
+				t.Log("map claim:", token2)
+				assert.NoError(t, err)
+			}
 		}
-	}
+	})
+
+	t.Run("Sign-NonValue", func(t *testing.T) {
+		for _, conf := range confArr {
+			t.Log("----------------", conf.Algorithm, "----------------")
+			conf.Load()
+			appClaim.Issuer = ""
+			token, err := Sign(appClaim, conf)
+			t.Log(err)
+			t.Log("struct claim:", token)
+			assert.NoError(t, err)
+			for _, claim := range mapClaims {
+				token2, err := SignWithMap(claim, conf)
+				t.Log(err)
+				t.Log("map claim:", token2)
+				assert.NoError(t, err)
+			}
+		}
+	})
 }
 
 func TestVerify(t *testing.T) {
-	for _, conf := range confArr {
-		t.Log("----------------", conf.Algorithm, "----------------")
-		conf.Load()
-		token, err := Sign(appClaim, conf)
-		t.Log(err)
-		t.Log("struct claim:", token)
-		assert.NoError(t, err)
-
-		claim, err := Verify(token, conf)
-		t.Log(err)
-		t.Log("struct claim:", claim)
-		assert.NoError(t, err)
-
-		for _, claim := range mapClaims {
-			token2, err := SignWithMap(claim, conf)
+	t.Run("Verify", func(t *testing.T) {
+		for _, conf := range confArr {
+			t.Log("----------------", conf.Algorithm, "----------------")
+			conf.Load()
+			token, err := Sign(appClaim, conf)
 			t.Log(err)
-			t.Log("map claim:", token2)
+			t.Log("struct claim:", token)
 			assert.NoError(t, err)
 
-			claim2, err := VerifyFromMap(token2, conf)
+			claim, err := Verify(token, conf)
 			t.Log(err)
-			t.Log("map claim:", claim2)
-			if claim["valid"].(bool) {
+			t.Log("struct claim:", claim)
+			assert.NoError(t, err)
+
+			for _, claim := range mapClaims {
+				delete(claim, "iss")
+				token2, err := SignWithMap(claim, conf)
+				t.Log(err)
+				t.Log("map claim:", token2)
 				assert.NoError(t, err)
-			} else {
-				assert.Error(t, err)
+
+				claim2, err := VerifyFromMap(token2, conf)
+				t.Log(err)
+				t.Log("map claim:", claim2)
+				if claim["valid"].(bool) {
+					assert.NoError(t, err)
+				} else {
+					assert.Error(t, err)
+				}
 			}
 		}
-	}
+	})
+
+	t.Run("Verify-NonValue", func(t *testing.T) {
+		for _, conf := range confArr {
+			t.Log("----------------", conf.Algorithm, "----------------")
+			conf.Load()
+			appClaim.Issuer = ""
+			token, err := Sign(appClaim, conf)
+			t.Log(err)
+			t.Log("struct claim:", token)
+			assert.NoError(t, err)
+
+			claim, err := Verify(token, conf)
+			t.Log(err)
+			t.Log("struct claim:", claim)
+			assert.NoError(t, err)
+
+			for _, claim := range mapClaims {
+				delete(claim, "iss")
+				token2, err := SignWithMap(claim, conf)
+				t.Log(err)
+				t.Log("map claim:", token2)
+				assert.NoError(t, err)
+
+				claim2, err := VerifyFromMap(token2, conf)
+				t.Log(err)
+				t.Log("map claim:", claim2)
+				if claim["valid"].(bool) {
+					assert.NoError(t, err)
+				} else {
+					assert.Error(t, err)
+				}
+			}
+		}
+	})
+}
+
+func TestGetToken(t *testing.T) {
+	t.Run("GetToken-AppClaims", func(t *testing.T) {
+		var ac = AppClaims{}
+		token, err := ac.GetToken(SigningMethodRS256, "")
+		assert.Equal(t, true, len(token) == 0)
+		assert.Error(t, err)
+	})
+
+	t.Run("GetToken-MapClaims", func(t *testing.T) {
+		var mp MapClaims = map[string]interface{}{}
+		token, err := mp.GetToken(SigningMethodRS256, "")
+		assert.Equal(t, true, len(token) == 0)
+		assert.Error(t, err)
+	})
 }

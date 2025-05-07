@@ -73,28 +73,32 @@ func (c *Conf) MustLoad() {
 		//如果文件存在，从文件读取
 		if fileExists(c.PublicKey) {
 			contents, err := fileGetContents(c.PublicKey)
-			if err != nil {
+			if err == nil {
 				c.PublicKey = string(contents)
 			}
-		} else {
-			//如果文件不存在，则转换字符串
-			c.PublicKey = constants.PublicKeyBeginStr + "\n" + wordwrap(c.PublicKey, 64, "\n") + "\n" + constants.PublicKeyEndStr
 		}
 	}
+
+	//清理前后缀
+	c.PublicKey = strings.Replace(c.PublicKey, constants.PublicKeyBeginStr, "", 1)
+	c.PublicKey = strings.Replace(c.PublicKey, constants.PublicKeyEndStr, "", 1)
+	c.PublicKey = constants.PublicKeyBeginStr + "\n" + wordwrap(c.PublicKey, 64, "\n") + "\n" + constants.PublicKeyEndStr
 
 	//当字符串中存在标准前缀头，说明是标准私钥字符，不做任何处理
 	if !strings.HasPrefix(c.PrivateKey, constants.PrivateKeyBeginStr) {
 		//如果文件存在，从文件读取
 		if fileExists(c.PrivateKey) {
 			contents, err := fileGetContents(c.PrivateKey)
-			if err != nil {
+			if err == nil {
 				c.PrivateKey = string(contents)
 			}
-		} else {
-			//如果文件不存在，则转换字符串
-			c.PrivateKey = constants.PrivateKeyBeginStr + "\n" + wordwrap(c.PrivateKey, 64, "\n") + "\n" + constants.PrivateKeyEndStr
 		}
 	}
+
+	//清理前后缀
+	c.PrivateKey = strings.Replace(c.PrivateKey, constants.PrivateKeyBeginStr, "", 1)
+	c.PrivateKey = strings.Replace(c.PrivateKey, constants.PrivateKeyEndStr, "", 1)
+	c.PrivateKey = constants.PrivateKeyBeginStr + "\n" + wordwrap(c.PrivateKey, 64, "\n") + "\n" + constants.PrivateKeyEndStr
 
 	if len(c.PrivateKey) == 0 || len(c.PublicKey) == 0 {
 		return
@@ -122,14 +126,17 @@ func (c *Conf) Load() {
 			//如果文件存在，从文件读取
 			if fileExists(c.PublicKey) {
 				contents, err := fileGetContents(c.PublicKey)
-				if err != nil {
+				if err == nil {
 					c.PublicKey = string(contents)
 				}
-			} else {
-				//如果文件不存在，则转换字符串
-				c.PublicKey = constants.PublicKeyBeginStr + "\n" + wordwrap(c.PublicKey, 64, "\n") + "\n" + constants.PublicKeyEndStr
 			}
 		}
+
+		//清理前后缀
+		c.PublicKey = strings.Replace(c.PublicKey, constants.PublicKeyBeginStr, "", 1)
+		c.PublicKey = strings.Replace(c.PublicKey, constants.PublicKeyEndStr, "", 1)
+		c.PublicKey = constants.PublicKeyBeginStr + "\n" + wordwrap(c.PublicKey, 64, "\n") + "\n" + constants.PublicKeyEndStr
+
 		pub, err := jwtLib.ParseRSAPublicKeyFromPEM([]byte(c.PublicKey))
 		if err != nil {
 			panic(err)
@@ -143,14 +150,16 @@ func (c *Conf) Load() {
 			//如果文件存在，从文件读取
 			if fileExists(c.PrivateKey) {
 				contents, err := fileGetContents(c.PrivateKey)
-				if err != nil {
+				if err == nil {
 					c.PrivateKey = string(contents)
 				}
-			} else {
-				//如果文件不存在，则转换字符串
-				c.PrivateKey = constants.PrivateKeyBeginStr + "\n" + wordwrap(c.PrivateKey, 64, "\n") + "\n" + constants.PrivateKeyEndStr
 			}
 		}
+
+		//清理前后缀
+		c.PrivateKey = strings.Replace(c.PrivateKey, constants.PrivateKeyBeginStr, "", 1)
+		c.PrivateKey = strings.Replace(c.PrivateKey, constants.PrivateKeyEndStr, "", 1)
+		c.PrivateKey = constants.PrivateKeyBeginStr + "\n" + wordwrap(c.PrivateKey, 64, "\n") + "\n" + constants.PrivateKeyEndStr
 
 		pri, err := jwtLib.ParseRSAPrivateKeyFromPEM([]byte(c.PrivateKey))
 		if err != nil {

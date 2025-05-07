@@ -1,9 +1,20 @@
 package db
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestMysqlDsn(t *testing.T) {
 	t.Run("mysqlDsn", func(t *testing.T) {
+		t.Log(mysqlDsn(dbConf.Mysql.Read))
+	})
+
+	t.Run("mysqlDsn-NoneValue", func(t *testing.T) {
+		dbConf.Mysql.Read.Charset = ""
+		dbConf.Mysql.Read.Loc = ""
+		dbConf.Mysql.Read.ParseTime = false
 		t.Log(mysqlDsn(dbConf.Mysql.Read))
 	})
 }
@@ -44,5 +55,12 @@ func TestGenDialector(t *testing.T) {
 		t.Log(dbConf.GenDialector())
 		dbConf.DriverName = DriverNameClickhouse
 		t.Log(dbConf.GenDialector())
+	})
+
+	t.Run("GenDialector-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			dbConf.DriverName = "UnknownDriver"
+			dbConf.GenDialector()
+		})
 	})
 }

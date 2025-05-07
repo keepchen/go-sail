@@ -9,5 +9,5 @@ type Conf struct {
 	Username     string      `yaml:"username" toml:"username" json:"username"`             //账号
 	Password     string      `yaml:"password" toml:"password" json:"password"`             //密码
 	Timeout      int         `yaml:"timeout" toml:"timeout" json:"timeout"`                //连接超时时间（毫秒）默认10000ms
-	Tls          *tls.Config `yaml:"-" toml:"-" json:"-"`                                  //tls配置//tls配置
+	Tls          *tls.Config `yaml:"-" toml:"-" json:"-"`                                  //tls配置
 }

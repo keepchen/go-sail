@@ -1,8 +1,8 @@
 package email
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 )
@@ -72,25 +72,28 @@ func (p *sendPool) Emit() {
 		for {
 			select {
 			case ep := <-wk:
-				err := p.send(ep)
-				if err != nil {
-					log.Println("[GO-SAIL] <Email> send failure via worker, error:", err)
-				}
-				//处理上层回调函数
-				if ep.Callback != nil {
-					ep.Callback(ep, err)
-				}
-				p.wg.Done()
-				if p.throttle > 0 {
-					time.Sleep(p.throttle)
+				if ep != nil && ep != (*Envelope)(nil) {
+					err := p.send(ep)
+					if err != nil {
+						fmt.Println("[GO-SAIL] <Email> send failure via worker, error:", err)
+					}
+					//处理上层回调函数
+					if ep.Callback != nil {
+						ep.Callback(ep, err)
+					}
+					p.wg.Done()
+
+					if p.throttle > 0 {
+						time.Sleep(p.throttle)
+					}
 				}
 			case <-p.exit:
 				break LOOP
 			}
 		}
 	}
-	for index, worker := range p.workers {
-		go handler(index, worker)
+	for index := range p.workers {
+		go handler(index, p.workers[index])
 	}
 }
 
@@ -110,7 +113,7 @@ func (p *sendPool) makeWorkers() {
 		p.workersCount = 1
 	}
 
-	log.Printf("[GO-SAIL] <Email> Init {%d} worker(s), throttle {%d} second(s)", p.workersCount, p.conf.WorkerThrottleSeconds)
+	fmt.Printf("[GO-SAIL] <Email> Init {%d} worker(s), throttle {%d} second(s)", p.workersCount, p.conf.WorkerThrottleSeconds)
 
 	var workers = make([]chan *Envelope, p.workersCount)
 	for index := range workers {
@@ -122,6 +125,9 @@ func (p *sendPool) makeWorkers() {
 
 // 执行发送操作
 func (p *sendPool) send(ep *Envelope) error {
+	if ep == nil || ep == (*Envelope)(nil) {
+		return errors.New("ep is nil")
+	}
 	headers := map[string]string{
 		"From":         ep.From,
 		"Subject":      ep.Subject,

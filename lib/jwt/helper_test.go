@@ -54,6 +54,12 @@ func TestFileExistsWithError(t *testing.T) {
 		assert.Equal(t, true, ok)
 		assert.NoError(t, err)
 	})
+
+	t.Run("fileExistsWithError-ErrNoExist", func(t *testing.T) {
+		ok, err := fileExistsWithError(dst + "-unknown")
+		assert.Equal(t, false, ok)
+		assert.NoError(t, err)
+	})
 }
 
 func TestWordwrap(t *testing.T) {
