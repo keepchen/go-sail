@@ -35,6 +35,8 @@ func TestLaunch(t *testing.T) {
 	apiOption := api.DefaultSetupOption()
 	apiOption.ErrNoneCode = constants.CodeType(200)
 
+	beforeFunc := func() {}
+
 	afterFunc := func() {
 		fmt.Println("service is ready")
 	}
@@ -75,7 +77,7 @@ func TestLaunch(t *testing.T) {
 
 	WakeupHttp("go-sail-tester", conf).
 		SetupApiOption(apiOption).
-		Hook(registerRoutes, nil, afterFunc).
+		Hook(registerRoutes, beforeFunc, afterFunc).
 		Launch()
 }
 
@@ -86,4 +88,28 @@ func registerRoutes(r *gin.Engine) {
 		GET("/hello", func(c *gin.Context) {
 			Response(c).Wrap(constants.CodeType(200), "world").Send()
 		})
+}
+
+func TestEnableWebsocket(t *testing.T) {
+	t.Run("EnableWebsocket", func(t *testing.T) {
+		conf := &config.Config{
+			LoggerConf: logger.Conf{
+				Level:    "debug",
+				Filename: "../examples/logs/testcase_wakeupHttp.log",
+			},
+			HttpServer: config.HttpServerConf{
+				Addr: ":8000",
+			},
+		}
+		apiOption := api.DefaultSetupOption()
+		apiOption.ErrNoneCode = constants.CodeType(200)
+
+		afterFunc := func() {
+			fmt.Println("service is ready")
+		}
+		t.Log(WakeupHttp("go-sail-tester", conf).
+			SetupApiOption(apiOption).
+			EnableWebsocket(nil, nil).
+			Hook(registerRoutes, nil, afterFunc))
+	})
 }
