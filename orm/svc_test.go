@@ -1,9 +1,12 @@
 package orm
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"testing"
+
+	"gorm.io/gorm"
 
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/utils"
@@ -175,4 +178,242 @@ func TestSvcUsage(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, int64(len(users2)), total)
 	t.Log("Paginate:", users2, total)
+}
+
+func TestOr(t *testing.T) {
+	t.Run("Or", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Or("1=1")
+	})
+}
+
+func TestWhere(t *testing.T) {
+	t.Run("Where", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Where("1=1")
+	})
+}
+
+func TestNot(t *testing.T) {
+	t.Run("Not", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Not("1=1")
+	})
+}
+
+func TestJoins(t *testing.T) {
+	t.Run("Joins", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Joins("1=1")
+	})
+}
+
+func TestOrder(t *testing.T) {
+	t.Run("Order", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Order("1=1")
+	})
+}
+
+func TestGroup(t *testing.T) {
+	t.Run("Group", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Group("1=1")
+	})
+}
+
+func TestHaving(t *testing.T) {
+	t.Run("Having", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Having("1=1")
+	})
+}
+
+func TestOffset(t *testing.T) {
+	t.Run("Offset", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Offset(0)
+	})
+}
+
+func TestLimit(t *testing.T) {
+	t.Run("Limit", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Limit(100)
+	})
+}
+
+func TestScopes(t *testing.T) {
+	t.Run("Scopes", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Scopes(Paginate(1, 100))
+	})
+}
+
+func TestSession(t *testing.T) {
+	t.Run("Session", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Session(&gorm.Session{})
+	})
+}
+
+func TestWithContext(t *testing.T) {
+	t.Run("WithContext", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().WithContext(context.Background())
+	})
+}
+
+func TestUnwrap(t *testing.T) {
+	t.Run("Unwrap", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		NewSvcImplSilent().Unwrap()
+	})
+}
+
+func TestCount(t *testing.T) {
+	t.Run("Count", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		var totalCount int64
+		NewSvcImplSilent().Count(&totalCount)
+	})
+}
+
+func TestCreate(t *testing.T) {
+	t.Run("Create", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		t.Log(NewSvcImplSilent().Create(&User{}))
+	})
+}
+
+func TestSave(t *testing.T) {
+	t.Run("Save", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		t.Log(NewSvcImplSilent().Save(&User{}))
+	})
+}
+
+func TestDelete(t *testing.T) {
+	t.Run("Delete", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		t.Log(NewSvcImplSilent().Delete(&User{}))
+	})
+}
+
+func TestTransaction(t *testing.T) {
+	t.Run("Transaction()", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, _, dbw, _ := db.New(dbConf)
+		//logger.Init(loggerConf)
+		if dbr == nil || dbw == nil {
+			t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		t.Log(NewSvcImplSilent().Transaction(func(tx *gorm.DB) error {
+			tx.First(&User{})
+			return nil
+		}))
+	})
 }

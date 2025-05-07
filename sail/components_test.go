@@ -1,7 +1,10 @@
 package sail
 
 import (
+	"github.com/keepchen/go-sail/v3/lib/jwt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/keepchen/go-sail/v3/lib/valkey"
 
@@ -127,6 +130,12 @@ func TestGetKafkaConnections(t *testing.T) {
 		}
 		t.Log(GetKafkaConnections())
 	})
+
+	t.Run("GetKafkaConnections-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			t.Log(GetKafkaConnections())
+		})
+	})
 }
 
 func TestGetKafkaWriter(t *testing.T) {
@@ -137,6 +146,12 @@ func TestGetKafkaWriter(t *testing.T) {
 		}
 		t.Log(GetKafkaWriter())
 	})
+
+	t.Run("GetKafkaWriter-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			t.Log(GetKafkaWriter())
+		})
+	})
 }
 
 func TestGetKafkaReader(t *testing.T) {
@@ -146,6 +161,12 @@ func TestGetKafkaReader(t *testing.T) {
 			return
 		}
 		t.Log(GetKafkaReader())
+	})
+
+	t.Run("GetKafkaReader-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			t.Log(GetKafkaReader())
+		})
 	})
 }
 
@@ -187,11 +208,77 @@ func TestComponentsStartup(t *testing.T) {
 		cfg := &config.Config{}
 		componentsStartup("tester", cfg)
 	})
+
+	t.Run("ComponentsStartup-Panic", func(t *testing.T) {
+		cfg := &config.Config{
+			RedisConf: redis.Conf{
+				Enable: true,
+			},
+			RedisClusterConf: redis.ClusterConf{
+				Enable: true,
+			},
+			DBConf: db.Conf{
+				Enable: true,
+			},
+			JwtConf: &jwt.Conf{
+				Enable: true,
+			},
+			NatsConf: nats.Conf{
+				Enable: true,
+			},
+			KafkaConf: config.KafkaExtraConf{
+				Conf: kafka.Conf{
+					Enable: true,
+				},
+			},
+			EtcdConf: etcd.Conf{
+				Enable: true,
+			},
+			ValKeyConf: valkey.Conf{
+				Enable: true,
+			},
+		}
+		assert.Panics(t, func() {
+			componentsStartup("tester", cfg)
+		})
+	})
 }
 
 func TestComponentsShutdown(t *testing.T) {
 	t.Run("ComponentsShutdown", func(t *testing.T) {
 		cfg := &config.Config{}
+		componentsShutdown(cfg)
+	})
+
+	t.Run("ComponentsShutdown-Panic", func(t *testing.T) {
+		cfg := &config.Config{
+			RedisConf: redis.Conf{
+				Enable: true,
+			},
+			RedisClusterConf: redis.ClusterConf{
+				Enable: true,
+			},
+			DBConf: db.Conf{
+				Enable: true,
+			},
+			JwtConf: &jwt.Conf{
+				Enable: true,
+			},
+			NatsConf: nats.Conf{
+				Enable: true,
+			},
+			KafkaConf: config.KafkaExtraConf{
+				Conf: kafka.Conf{
+					Enable: true,
+				},
+			},
+			EtcdConf: etcd.Conf{
+				Enable: true,
+			},
+			ValKeyConf: valkey.Conf{
+				Enable: true,
+			},
+		}
 		componentsShutdown(cfg)
 	})
 }

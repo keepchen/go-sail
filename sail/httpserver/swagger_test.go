@@ -17,6 +17,7 @@ func TestRunSwaggerServerWhenEnable(t *testing.T) {
 	t.Run("RunSwaggerServerWhenEnable-Path", func(t *testing.T) {
 		conf := config.HttpServerConf{}
 		sConf := config.SwaggerConf{
+			Enable:      true,
 			JsonPath:    "/swagger.json",
 			RedocUIPath: "/api.html",
 			FaviconPath: "/favicon.ico",
