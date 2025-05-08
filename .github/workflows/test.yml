@@ -51,8 +51,14 @@ jobs:
 
       - name: Install Redis (Cluster)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y redis-server redis-tools
+          # sudo apt-get update
+          # sudo apt-get install -y redis-server redis-tools
+          #
+          curl -fsSL https://download.redis.io/releases/redis-6.2.6.tar.gz -o redis.tar.gz
+          tar xzf redis.tar.gz
+          cd redis-6.2.6 && make -j$(nproc)
+          sudo make install
+
       - name: Configure Redis Cluster Nodes
         run: |
           # 创建6个节点的配置（3主3从）
