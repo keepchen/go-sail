@@ -214,6 +214,12 @@ func TestReportCertImplValidity(t *testing.T) {
 			t.Log(Cert().ReportValidity(domains[idx], []byte(strings.Replace(str, "a", "b", 1))))
 		}
 	})
+
+	t.Run("ReportCertImplValidity-Error3", func(t *testing.T) {
+		for idx := range certStrs {
+			t.Log(Cert().ReportValidity(domains[idx], []byte(``)))
+		}
+	})
 }
 
 func TestReportCertImplKeyWhetherMatch(t *testing.T) {
@@ -232,6 +238,28 @@ func TestReportCertImplKeyWhetherMatch(t *testing.T) {
 			match, err := Cert().ReportKeyWhetherMatch(
 				[]byte(strings.Replace(certStrs[i], "a", "b", 1)),
 				[]byte(strings.Replace(keyStrs[i], "a", "b", 1)))
+			assert.Error(t, err)
+			assert.Equal(t, false, match)
+		}
+	})
+
+	t.Run("ReportCertImplKeyWhetherMatch-Error2", func(t *testing.T) {
+		for i := 0; i < len(keyStrs); i++ {
+			t.Log("index:", i)
+			match, err := Cert().ReportKeyWhetherMatch(
+				[]byte(``),
+				[]byte(strings.Replace(keyStrs[i], "a", "b", 1)))
+			assert.Error(t, err)
+			assert.Equal(t, false, match)
+		}
+	})
+
+	t.Run("ReportCertImplKeyWhetherMatch-Error3", func(t *testing.T) {
+		for i := 0; i < len(keyStrs); i++ {
+			t.Log("index:", i)
+			match, err := Cert().ReportKeyWhetherMatch(
+				[]byte(strings.Replace(certStrs[i], "a", "b", 1)),
+				[]byte(``))
 			assert.Error(t, err)
 			assert.Equal(t, false, match)
 		}

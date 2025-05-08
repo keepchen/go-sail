@@ -16,8 +16,9 @@ func TestWatch(t *testing.T) {
 		}
 		_ = conn.Close()
 		fn := func(k, v []byte) {
-			fmt.Println(k, v)
+			fmt.Println(string(k), string(v))
 		}
+		conf.Tls = nil
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
@@ -39,8 +40,9 @@ func TestWatchWithPrefix(t *testing.T) {
 		}
 		_ = conn.Close()
 		fn := func(k, v []byte) {
-			fmt.Println(k, v)
+			fmt.Println(string(k), string(v))
 		}
+		conf.Tls = nil
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
@@ -62,8 +64,9 @@ func TestWatchWith(t *testing.T) {
 		}
 		_ = conn.Close()
 		fn := func(k, v []byte) {
-			fmt.Println(k, v)
+			fmt.Println(string(k), string(v))
 		}
+		conf.Tls = nil
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -196,16 +197,72 @@ jIKHPCMoHwDou1FG4wG0TqdsZyxygt9v8hXqfjSmMXBVYPrq17Q=
 var domainsDeprecated = []string{"blog.keepchen.com", "stardots.ink"}
 
 func TestReportCertValidity(t *testing.T) {
-	for idx, str := range certStrsDeprecated {
-		t.Log(ReportCertValidity(domainsDeprecated[idx], []byte(str)))
-	}
+	t.Run("ReportCertValidity", func(t *testing.T) {
+		for idx, str := range certStrsDeprecated {
+			t.Log(ReportCertValidity(domainsDeprecated[idx], []byte(str)))
+		}
+	})
+
+	t.Run("ReportCertValidity-Error", func(t *testing.T) {
+		for idx, str := range certStrsDeprecated {
+			t.Log(ReportCertValidity(domainsDeprecated[idx], []byte(strings.Replace(str, "a", "b", 1))))
+		}
+	})
+
+	t.Run("ReportCertValidity-Error2", func(t *testing.T) {
+		for idx := range certStrsDeprecated {
+			t.Log(ReportCertValidity(domainsDeprecated[idx], []byte(``)))
+		}
+	})
 }
 
 func TestReportCertAndKeyWhetherMatch(t *testing.T) {
-	for i := 0; i < len(keyStrsDeprecated); i++ {
-		t.Log("index:", i)
-		match, err := ReportCertAndKeyWhetherMatch([]byte(certStrsDeprecated[i]), []byte(keyStrsDeprecated[i]))
-		assert.Equal(t, err, nil)
-		assert.Equal(t, match, true)
-	}
+	t.Run("ReportCertAndKeyWhetherMatch", func(t *testing.T) {
+		for i := 0; i < len(keyStrsDeprecated); i++ {
+			t.Log("index:", i)
+			match, err := ReportCertAndKeyWhetherMatch([]byte(certStrsDeprecated[i]), []byte(keyStrsDeprecated[i]))
+			assert.Equal(t, err, nil)
+			assert.Equal(t, match, true)
+		}
+	})
+
+	t.Run("ReportCertAndKeyWhetherMatch-Error", func(t *testing.T) {
+		for i := 0; i < len(keyStrsDeprecated); i++ {
+			t.Log("index:", i)
+			match, err := ReportCertAndKeyWhetherMatch([]byte(``), []byte(keyStrsDeprecated[i]))
+			assert.Error(t, err)
+			assert.NotEqual(t, match, true)
+		}
+	})
+
+	t.Run("ReportCertAndKeyWhetherMatch-Error2", func(t *testing.T) {
+		for i := 0; i < len(keyStrsDeprecated); i++ {
+			t.Log("index:", i)
+			match, err := ReportCertAndKeyWhetherMatch([]byte(certStrsDeprecated[i]), []byte(``))
+			assert.Error(t, err)
+			assert.NotEqual(t, match, true)
+		}
+	})
+
+	t.Run("ReportCertAndKeyWhetherMatch-Error3", func(t *testing.T) {
+		for i := 0; i < len(keyStrsDeprecated); i++ {
+			t.Log("index:", i)
+			match, err := ReportCertAndKeyWhetherMatch(
+				[]byte(strings.Replace(certStrsDeprecated[i], "M", "a", 1)),
+				[]byte(keyStrsDeprecated[i]))
+			assert.Error(t, err)
+			assert.NotEqual(t, true, match)
+		}
+	})
+
+	t.Run("ReportCertAndKeyWhetherMatch-Error4", func(t *testing.T) {
+		for i := 0; i < len(keyStrsDeprecated); i++ {
+			t.Log("index:", i)
+			match, err := ReportCertAndKeyWhetherMatch(
+				[]byte(certStrsDeprecated[i]),
+				[]byte(strings.Replace(keyStrsDeprecated[i], "M", "a", 1)))
+			assert.Error(t, err)
+			assert.NotEqual(t, true, match)
+		}
+	})
 }

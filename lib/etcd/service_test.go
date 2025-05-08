@@ -15,10 +15,11 @@ func TestRegisterService(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
+		conf.Tls = nil
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		t.Log(RegisterService(ctx, "go-sail", "endpoint", 60))
+		t.Log(RegisterService(ctx, "go-sail", "endpoint-local-tester", 60))
 	})
 }
 
@@ -29,6 +30,7 @@ func TestDiscoverService(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
+		conf.Tls = nil
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
@@ -43,12 +45,20 @@ func TestWatchService(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
+		conf.Tls = nil
 		Init(conf)
 		fn := func(k, v []byte) {
-			fmt.Println(k, v)
+			fmt.Println(string(k), string(v))
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		WatchService(ctx, "go-sail", fn)
+
+		go WatchService(ctx, "go-sail", fn)
+
+		time.Sleep(time.Second)
+		t.Log(RegisterService(ctx, "go-sail",
+			fmt.Sprintf("endpoint-local-tester-%s", time.Now().String()), 60))
+
+		time.Sleep(5 * time.Second)
 	})
 }
