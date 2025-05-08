@@ -184,7 +184,7 @@ func NewWriter(conf Conf, topic string) (*kafkaLib.Writer, error) {
 		Balancer: &kafkaLib.Murmur2Balancer{},
 	}
 
-	var transport *kafkaLib.Transport
+	var transport = &kafkaLib.Transport{}
 	if conf.Tls != nil {
 		transport = &kafkaLib.Transport{TLS: conf.Tls}
 	}

@@ -74,6 +74,45 @@ func TestInit(t *testing.T) {
 			Init(conf, "go-sail", redisWriter)
 		}
 	})
+
+	t.Run("Init-Duplicate-Modules", func(t *testing.T) {
+		conf := Conf{
+			Filename: "../../examples/logs/logger_tester.log",
+		}
+		redisWriter := &redisWriterStd{
+			cli:     nil,
+			listKey: "",
+		}
+
+		modules := []string{"api", "schedule", "system", "system"}
+		levels := []string{"debug", "info", "warn", "error", "dpanic", "panic", "fatal"}
+
+		for _, level := range levels {
+			conf.Level = level
+			conf.Modules = modules
+			Init(conf, "go-sail", redisWriter)
+		}
+	})
+
+	t.Run("Init-Get-Default-Module", func(t *testing.T) {
+		conf := Conf{
+			Filename: "../../examples/logs/logger_tester.log",
+		}
+		redisWriter := &redisWriterStd{
+			cli:     nil,
+			listKey: "",
+		}
+
+		modules := []string{"api", "schedule", "system"}
+		levels := []string{"debug", "info", "warn", "error", "dpanic", "panic", "fatal"}
+
+		for _, level := range levels {
+			conf.Level = level
+			conf.Modules = modules
+			Init(conf, "go-sail", redisWriter)
+			t.Log(GetLogger("unknown"))
+		}
+	})
 }
 
 func TestExporterProvider(t *testing.T) {

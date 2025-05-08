@@ -20,8 +20,138 @@ jobs:
         image: redis:6-alpine
         ports: ["6379:6379"]
     steps:
-      - uses: actions/checkout@v4
+      - name: Start etcd container
+        run: |
+          # 启动单节点 etcd，暴露客户端端口 2379
+          docker run -d \
+            --name etcd-single \
+            -p 2379:2379 \
+            -p 2380:2380 \
+            quay.io/coreos/etcd:latest \
+            /usr/local/bin/etcd \
+            --name etcd-single \
+            --listen-client-urls http://0.0.0.0:2379 \
+            --advertise-client-urls http://0.0.0.0:2379 \
+            --listen-peer-urls http://0.0.0.0:2380 \
+            --initial-advertise-peer-urls http://0.0.0.0:2380 \
+            --initial-cluster etcd-single=http://0.0.0.0:2380 \
+            --initial-cluster-token etcd-cluster \
+            --initial-cluster-state new
 
+          sleep 5  # 等待容器启动
+
+      - name: Verify etcd
+        run: |
+          # 安装 etcdctl 客户端
+          sudo apt-get update && sudo apt-get install -y etcd-client
+
+          # 检查健康状态
+          etcdctl endpoint health --endpoints=http://localhost:2379
+          etcdctl --endpoints=http://localhost:2379 member list
+
+      - name: Test etcd
+        run: |
+          # 读写测试
+          etcdctl --endpoints=http://localhost:2379 put foo bar
+          etcdctl --endpoints=http://localhost:2379 get foo
+
+      - name: Install Redis (Cluster)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y redis-server redis-tools
+      - name: Configure Redis Cluster Nodes
+        run: |
+          # 创建6个节点的配置（3主3从）
+          for port in 7000 7001 7002 7003 7004 7005; do
+            mkdir -p redis-cluster/$port
+            cat << EOF > redis-cluster/$port/redis.conf
+            port $port
+            cluster-enabled yes
+            cluster-config-file nodes.conf
+            cluster-node-timeout 5000
+            appendonly yes
+            bind 0.0.0.0
+            protected-mode no
+            daemonize yes
+            EOF
+          done
+
+      - name: Start Redis (Cluster)
+        run: |
+          for port in 7000 7001 7002 7003 7004 7005; do
+            redis-server redis-cluster/$port/redis.conf
+          done
+          sleep 5  # 等待实例启动
+
+      - name: Create Redis (Cluster)
+        run: |
+          # 自动确认集群配置
+          echo "yes" | redis-cli --cluster create \
+            127.0.0.1:7000 \
+            127.0.0.1:7001 \
+            127.0.0.1:7002 \
+            127.0.0.1:7003 \
+            127.0.0.1:7004 \
+            127.0.0.1:7005 \
+            --cluster-replicas 1
+
+      - name: Verify Cluster Status
+        run: |
+          redis-cli --cluster check 127.0.0.1:7000
+
+      - name: Install Valkey (Cluster)
+        run: |
+          # 安装依赖项
+          sudo apt-get update
+          sudo apt-get install -y build-essential tcl
+
+          # 下载并编译 Valkey
+          git clone https://github.com/valkey-io/valkey.git
+          cd valkey
+          make -j$(nproc)          # 多线程编译加速
+          sudo make install        # 安装到系统路径
+
+      - name: Configure Valkey Cluster Nodes
+        run: |
+          # 创建 6 个节点（3主3从）
+          for port in 8000 8001 8002 8003 8004 8005; do
+            mkdir -p valkey-cluster/$port
+            cat << EOF > valkey-cluster/$port/valkey.conf
+            port $port
+            cluster-enabled yes
+            cluster-config-file nodes.conf
+            cluster-node-timeout 5000
+            appendonly yes
+            bind 0.0.0.0
+            protected-mode no
+            daemonize yes
+            EOF
+          done
+
+      - name: Start Valkey (Cluster)
+        run: |
+          for port in 8000 8001 8002 8003 8004 8005; do
+            valkey-server valkey-cluster/$port/valkey.conf
+          done
+          sleep 5  # 等待实例启动
+
+      - name: Create Valkey Cluster
+        run: |
+          # 自动确认集群配置
+          echo "yes" | valkey-cli --cluster create \
+            127.0.0.1:8000 \
+            127.0.0.1:8001 \
+            127.0.0.1:8002 \
+            127.0.0.1:8003 \
+            127.0.0.1:8004 \
+            127.0.0.1:8005 \
+            --cluster-replicas 1
+
+      - name: Verify Cluster Status
+        run: |
+          valkey-cli --cluster check 127.0.0.1:8000
+
+      - uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v5
         with:

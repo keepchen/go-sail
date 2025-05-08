@@ -11,14 +11,13 @@ import (
 
 var testCaseConf = Conf{
 	Endpoints: []Endpoint{
-		{Host: "192.168.100.19", Port: 6379},
-		{Host: "192.168.100.19", Port: 6380},
-		{Host: "192.168.100.19", Port: 6381},
-		{Host: "192.168.100.19", Port: 6382},
-		{Host: "192.168.100.19", Port: 6383},
-		{Host: "192.168.100.19", Port: 6384},
+		{Host: "127.0.0.1", Port: 8000},
+		{Host: "127.0.0.1", Port: 8001},
+		{Host: "127.0.0.1", Port: 8002},
+		{Host: "127.0.0.1", Port: 8003},
+		{Host: "127.0.0.1", Port: 8004},
+		{Host: "127.0.0.1", Port: 8005},
 	},
-	Password: "yourpassword",
 }
 
 func TestInit(t *testing.T) {
