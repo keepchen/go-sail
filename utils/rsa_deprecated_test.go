@@ -76,13 +76,15 @@ func TestRSADecode(t *testing.T) {
 	})
 
 	t.Run("Decode-Error2", func(t *testing.T) {
-		encodedString, err := RSAEncrypt(rawString, publicKeyDeprecated)
-		t.Log(encodedString)
-		assert.NoError(t, err)
-		decodedString, err := RSADecrypt(encodedString, []byte(strings.Replace(string(privateKeyDeprecated), "a", "b", 1)))
-		t.Log(decodedString)
-		assert.Error(t, err)
-		assert.NotEqual(t, decodedString, rawString)
+		assert.Panics(t, func() {
+			encodedString, err := RSAEncrypt(rawString, publicKeyDeprecated)
+			t.Log(encodedString)
+			assert.NoError(t, err)
+			decodedString, err := RSADecrypt(encodedString, []byte(strings.Replace(string(privateKeyDeprecated), "a", "b", 1)))
+			t.Log(decodedString)
+			assert.Error(t, err)
+			assert.NotEqual(t, decodedString, rawString)
+		})
 	})
 }
 
