@@ -29,7 +29,7 @@ func TestLaunch(t *testing.T) {
 			Filename: "../examples/logs/testcase_wakeupHttp.log",
 		},
 		HttpServer: config.HttpServerConf{
-			Addr: ":18000",
+			Addr: testServerAddr,
 		},
 	}
 	apiOption := api.DefaultSetupOption()
@@ -98,7 +98,7 @@ func TestEnableWebsocket(t *testing.T) {
 				Filename: "../examples/logs/testcase_wakeupHttp.log",
 			},
 			HttpServer: config.HttpServerConf{
-				Addr: ":18000",
+				Addr: testServerAddr,
 			},
 		}
 		apiOption := api.DefaultSetupOption()

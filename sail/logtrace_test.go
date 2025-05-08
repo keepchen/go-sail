@@ -24,6 +24,8 @@ import (
 	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
+const testServerAddr = ":12345"
+
 func TestLogTrace(t *testing.T) {
 	conf := &config.Config{
 		LoggerConf: logger.Conf{
@@ -31,7 +33,7 @@ func TestLogTrace(t *testing.T) {
 			Filename: "../examples/logs/testcase_logtrace.log",
 		},
 		HttpServer: config.HttpServerConf{
-			Addr: ":18001",
+			Addr: testServerAddr,
 		},
 	}
 	apiOption := api.DefaultSetupOption()
