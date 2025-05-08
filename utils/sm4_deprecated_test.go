@@ -30,15 +30,25 @@ func TestSM4ECBEncrypt(t *testing.T) {
 		},
 	}
 
-	for _, v := range testCases {
-		result, err := SM4ECBEncrypt(v.Key, v.Raw)
-		if v.MustReturnErr {
-			assert.Error(t, err)
-		} else {
-			assert.NoError(t, err)
+	t.Run("ECBEncrypt", func(t *testing.T) {
+		for _, v := range testCases {
+			result, err := SM4ECBEncrypt(v.Key, v.Raw)
+			if v.MustReturnErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, v.Result, result)
 		}
-		assert.Equal(t, v.Result, result)
-	}
+	})
+
+	t.Run("ECBEncrypt-Error", func(t *testing.T) {
+		for _, v := range testCases {
+			_, err := SM4ECBEncrypt(v.Key+"?", v.Raw)
+			assert.Error(t, err)
+			//assert.Equal(t, v.Result, result)
+		}
+	})
 }
 
 func TestSM4ECBDecrypt(t *testing.T) {
@@ -65,13 +75,23 @@ func TestSM4ECBDecrypt(t *testing.T) {
 		},
 	}
 
-	for _, v := range testCases {
-		result, err := SM4ECBDecrypt(v.Key, v.Raw)
-		if v.MustReturnErr {
-			assert.Error(t, err)
-		} else {
-			assert.NoError(t, err)
+	t.Run("ECBDecrypt", func(t *testing.T) {
+		for _, v := range testCases {
+			result, err := SM4ECBDecrypt(v.Key, v.Raw)
+			if v.MustReturnErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, v.Result, result)
 		}
-		assert.Equal(t, v.Result, result)
-	}
+	})
+
+	t.Run("ECBDecrypt-Error", func(t *testing.T) {
+		for _, v := range testCases {
+			_, err := SM4ECBDecrypt(v.Key+"?", v.Raw)
+			assert.Error(t, err)
+			//assert.NotEqual(t, v.Result, result)
+		}
+	})
 }

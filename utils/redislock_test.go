@@ -40,6 +40,13 @@ func TestRedisLock(t *testing.T) {
 		assert.Equal(t, false, RedisLocker().TryLock(key))
 	})
 
+	t.Run("TryLock-WithContext", func(t *testing.T) {
+		key := "go-sail-redisLocker-Lock"
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		RedisLocker().TryLockWithContext(ctx, key)
+	})
+
 	t.Run("Lock", func(t *testing.T) {
 		key := "go-sail-redisLocker-Lock"
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -53,6 +60,15 @@ func TestRedisLock(t *testing.T) {
 		RedisLocker().Unlock(key)
 		assert.Equal(t, true, RedisLocker().TryLock(key))
 	})
+
+	t.Run("Unlock-WithContext", func(t *testing.T) {
+		key := "go-sail-redisLocker-Unlock"
+		t.Log(RedisLocker().TryLock(key))
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		RedisLocker().UnlockWithContext(ctx, key)
+		assert.Equal(t, true, RedisLocker().TryLock(key))
+	})
 }
 
 func TestRedisClusterLock(t *testing.T) {
@@ -62,9 +78,9 @@ func TestRedisClusterLock(t *testing.T) {
 			{Host: "127.0.0.1", Port: 7000},
 			{Host: "127.0.0.1", Port: 7001},
 			{Host: "127.0.0.1", Port: 7002},
-			{Host: "127.0.0.1", Port: 7003},
-			{Host: "127.0.0.1", Port: 7004},
-			{Host: "127.0.0.1", Port: 7005},
+			//{Host: "127.0.0.1", Port: 7003},
+			//{Host: "127.0.0.1", Port: 7004},
+			//{Host: "127.0.0.1", Port: 7005},
 		},
 	}
 	//try connect
@@ -84,6 +100,13 @@ func TestRedisClusterLock(t *testing.T) {
 		assert.Equal(t, false, RedisLocker().TryLock(key))
 	})
 
+	t.Run("TryLock-WithContext", func(t *testing.T) {
+		key := "go-sail-redisLocker-Lock"
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		RedisLocker().TryLockWithContext(ctx, key)
+	})
+
 	t.Run("Lock", func(t *testing.T) {
 		key := "go-sail-redisLocker-Lock"
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -95,6 +118,15 @@ func TestRedisClusterLock(t *testing.T) {
 		key := "go-sail-redisLocker-Unlock"
 		t.Log(RedisLocker().TryLock(key))
 		RedisLocker().Unlock(key)
+		assert.Equal(t, true, RedisLocker().TryLock(key))
+	})
+
+	t.Run("Unlock-WithContext", func(t *testing.T) {
+		key := "go-sail-redisLocker-Unlock"
+		t.Log(RedisLocker().TryLock(key))
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		RedisLocker().UnlockWithContext(ctx, key)
 		assert.Equal(t, true, RedisLocker().TryLock(key))
 	})
 }

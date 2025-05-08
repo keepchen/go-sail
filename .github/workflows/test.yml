@@ -29,7 +29,7 @@ jobs:
               --publish 2379:2379 \
               --publish 2380:2380 \
               --env ALLOW_NONE_AUTHENTICATION=yes \
-              --env ETCD_ADVERTISE_CLIENT_URLS=http://etcd-server:2379 \
+              --env ETCD_ADVERTISE_CLIENT_URLS=http://127.0.0.1:2379 \
               bitnami/etcd:3.5.21
 
           sleep 5  # 等待容器启动
@@ -40,14 +40,14 @@ jobs:
           sudo apt-get update && sudo apt-get install -y etcd-client
 
           # 检查健康状态
-          etcdctl endpoint health --endpoints=http://localhost:2379
-          etcdctl --endpoints=http://localhost:2379 member list
+          etcdctl endpoint health --endpoints=http://127.0.0.1:2379
+          etcdctl --endpoints=http://127.0.0.1:2379 member list
 
       - name: Test etcd
         run: |
           # 读写测试
-          etcdctl --endpoints=http://localhost:2379 put foo bar
-          etcdctl --endpoints=http://localhost:2379 get foo
+          etcdctl --endpoints=http://127.0.0.1:2379 put foo bar
+          etcdctl --endpoints=http://127.0.0.1:2379 get foo
 
       - name: Install Redis (Cluster)
         run: |

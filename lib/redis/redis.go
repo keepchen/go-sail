@@ -68,7 +68,10 @@ func initRedis(conf Conf) (*redisLib.Client, error) {
 	}
 	rdb := redisLib.NewClient(opts)
 
-	err := rdb.Ping(context.Background()).Err()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	err := rdb.Ping(ctx).Err()
 
 	return rdb, err
 }

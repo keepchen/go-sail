@@ -22,6 +22,7 @@ func TestDomainImplValidate(t *testing.T) {
 		{"example-x.com", true},
 		{"example-*.com", false},
 		{"*-example.com", false},
+		{"-", false},
 	}
 
 	for _, v := range domains {
@@ -40,6 +41,7 @@ func TestDomainImplValidateWithWildcard(t *testing.T) {
 		{"example-x.com", true},
 		{"example-*.com", false},
 		{"*-example.com", false},
+		{"-", false},
 	}
 
 	for _, v := range domains {
@@ -71,5 +73,11 @@ func TestDomainImplRefererMatch(t *testing.T) {
 }
 
 func TestDomainImplLookupCNAME(t *testing.T) {
-	t.Log(Domain().LookupCNAME("cos.stardots.ink", "stardots-1251905630.cos.ap-singapore.myqcloud.com."))
+	t.Run("DomainImplLookupCNAME", func(t *testing.T) {
+		t.Log(Domain().LookupCNAME("cos.stardots.ink", "stardots-1251905630.cos.ap-singapore.myqcloud.com."))
+	})
+
+	t.Run("DomainImplLookupCNAME-Error", func(t *testing.T) {
+		t.Log(Domain().LookupCNAME("-", "-"))
+	})
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -196,16 +197,43 @@ jIKHPCMoHwDou1FG4wG0TqdsZyxygt9v8hXqfjSmMXBVYPrq17Q=
 var domains = []string{"blog.keepchen.com", "stardots.ink"}
 
 func TestReportCertImplValidity(t *testing.T) {
-	for idx, str := range certStrs {
-		t.Log(Cert().ReportValidity(domains[idx], []byte(str)))
-	}
+	t.Run("ReportCertImplValidity", func(t *testing.T) {
+		for idx, str := range certStrs {
+			t.Log(Cert().ReportValidity(domains[idx], []byte(str)))
+		}
+	})
+
+	t.Run("ReportCertImplValidity-Error", func(t *testing.T) {
+		for idx, str := range certStrs {
+			t.Log(Cert().ReportValidity(domains[idx]+".com", []byte(str)))
+		}
+	})
+
+	t.Run("ReportCertImplValidity-Error2", func(t *testing.T) {
+		for idx, str := range certStrs {
+			t.Log(Cert().ReportValidity(domains[idx], []byte(strings.Replace(str, "a", "b", 1))))
+		}
+	})
 }
 
 func TestReportCertImplKeyWhetherMatch(t *testing.T) {
-	for i := 0; i < len(keyStrs); i++ {
-		t.Log("index:", i)
-		match, err := Cert().ReportKeyWhetherMatch([]byte(certStrs[i]), []byte(keyStrs[i]))
-		assert.Equal(t, err, nil)
-		assert.Equal(t, match, true)
-	}
+	t.Run("ReportCertImplKeyWhetherMatch", func(t *testing.T) {
+		for i := 0; i < len(keyStrs); i++ {
+			t.Log("index:", i)
+			match, err := Cert().ReportKeyWhetherMatch([]byte(certStrs[i]), []byte(keyStrs[i]))
+			assert.NoError(t, err)
+			assert.Equal(t, true, match)
+		}
+	})
+
+	t.Run("ReportCertImplKeyWhetherMatch-Error", func(t *testing.T) {
+		for i := 0; i < len(keyStrs); i++ {
+			t.Log("index:", i)
+			match, err := Cert().ReportKeyWhetherMatch(
+				[]byte(strings.Replace(certStrs[i], "a", "b", 1)),
+				[]byte(strings.Replace(keyStrs[i], "a", "b", 1)))
+			assert.Error(t, err)
+			assert.Equal(t, false, match)
+		}
+	})
 }

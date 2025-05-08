@@ -54,22 +54,40 @@ func TestFileExt(t *testing.T) {
 }
 
 func TestFileGetContentsReadLine(t *testing.T) {
-	err := FilePutContents(contentsDeprecated, dstDeprecated)
-	assert.Equal(t, nil, err)
+	t.Run("FileGetContentsReadLine", func(t *testing.T) {
+		err := File().PutContents(contents, dstDeprecated)
+		assert.Equal(t, nil, err)
 
-	ch, err2 := FileGetContentsReadLine(dstDeprecated)
-	assert.Equal(t, nil, err2)
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for content := range ch {
-			log.Printf("[TestFileGetContentsReadLine] content: %s\n", content)
-			assert.NotEqual(t, "", content)
-		}
-	}()
-	wg.Wait()
-	clearDeprecated(err)
+		ch, err2 := FileGetContentsReadLine(dstDeprecated)
+		assert.Equal(t, nil, err2)
+		wg := &sync.WaitGroup{}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for content := range ch {
+				log.Printf("[TestFileImplFileGetContentsReadLine] content: %s\n", content)
+				assert.NotEqual(t, "", content)
+			}
+		}()
+		wg.Wait()
+		clearDeprecated(err)
+	})
+
+	t.Run("FileGetContentsReadLine-Panic", func(t *testing.T) {
+		ch, err := FileGetContentsReadLine(dstDeprecated)
+		assert.Error(t, err)
+		wg := &sync.WaitGroup{}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for content := range ch {
+				log.Printf("[TestFileImplFileGetContentsReadLine] content: %s\n", content)
+				assert.NotEqual(t, "", content)
+			}
+		}()
+		wg.Wait()
+		clearDeprecated(err)
+	})
 }
 
 func clearDeprecated(err error) {

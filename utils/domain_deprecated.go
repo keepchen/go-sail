@@ -17,11 +17,8 @@ import (
 // 不支持通配符
 func ValidateDomain(domain string) bool {
 	ok, err := regexp.MatchString("^([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$", domain)
-	if err != nil {
-		return false
-	}
 
-	return ok
+	return ok && err == nil
 }
 
 // ValidateDomainWithWildcard 验证域名是否合法
@@ -45,11 +42,8 @@ func ValidateDomain(domain string) bool {
 // example*.com   -> ✖
 func ValidateDomainWithWildcard(domain string) bool {
 	ok, err := regexp.MatchString("^(\\*\\.)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$", domain)
-	if err != nil {
-		return false
-	}
 
-	return ok
+	return ok && err == nil
 }
 
 // RefererMatchDomain refer是否匹配域名

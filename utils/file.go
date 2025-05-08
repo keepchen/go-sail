@@ -154,7 +154,8 @@ func (fileImpl) GetContentsReadLine(dst string) (<-chan string, error) {
 	ch := make(chan string)
 	f, err := os.Open(dst)
 	if err != nil {
-		return nil, err
+		close(ch)
+		return ch, err
 	}
 	fileScanner := bufio.NewScanner(f)
 	fileScanner.Split(bufio.ScanLines)

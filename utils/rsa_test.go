@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,61 +52,167 @@ QwIDAQAB
 )
 
 func TestRSAImplEncrypt(t *testing.T) {
-	encodedString, err := RSA().Encrypt(rawString, publicKey)
-	t.Log(encodedString)
-	assert.NoError(t, err)
+	t.Run("Encrypt", func(t *testing.T) {
+		encodedString, err := RSA().Encrypt(rawString, publicKey)
+		t.Log(encodedString)
+		assert.NoError(t, err)
 
-	//inline
-	encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
-	t.Log(encodedString)
-	assert.NoError(t, err)
+		//inline
+		encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Encrypt-Error", func(t *testing.T) {
+		encodedString, err := RSA().Encrypt(rawString, []byte(strings.Replace(string(publicKey), "a", "b", 1)))
+		t.Log(encodedString)
+		assert.NoError(t, err)
+
+		//inline
+		encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+	})
 }
 
 func TestRSAImplDecrypt(t *testing.T) {
-	encodedString, err := RSA().Encrypt(rawString, publicKey)
-	t.Log(encodedString)
-	assert.NoError(t, err)
-	decodedString, err := RSA().Decrypt(encodedString, privateKey)
-	t.Log(decodedString)
-	assert.NoError(t, err)
-	assert.Equal(t, decodedString, rawString)
+	t.Run("Decrypt", func(t *testing.T) {
+		encodedString, err := RSA().Encrypt(rawString, publicKey)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err := RSA().Decrypt(encodedString, privateKey)
+		t.Log(decodedString)
+		assert.NoError(t, err)
+		assert.Equal(t, decodedString, rawString)
 
-	//inline
-	encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
-	t.Log(encodedString)
-	assert.NoError(t, err)
-	decodedString, err = RSA().Decrypt(encodedString, privateKeyInline)
-	t.Log(decodedString)
-	assert.NoError(t, err)
-	assert.Equal(t, decodedString, rawString)
+		//inline
+		encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err = RSA().Decrypt(encodedString, privateKeyInline)
+		t.Log(decodedString)
+		assert.NoError(t, err)
+		assert.Equal(t, decodedString, rawString)
+	})
+
+	t.Run("Decrypt-Error", func(t *testing.T) {
+		encodedString, err := RSA().Encrypt(rawString, publicKey)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err := RSA().Decrypt("foo", privateKey)
+		t.Log(decodedString)
+		assert.Error(t, err)
+		assert.NotEqual(t, decodedString, rawString)
+
+		//inline
+		encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err = RSA().Decrypt(encodedString, privateKeyInline)
+		t.Log(decodedString)
+		assert.NoError(t, err)
+		assert.Equal(t, decodedString, rawString)
+	})
+
+	t.Run("Decrypt-Error2", func(t *testing.T) {
+		encodedString, err := RSA().Encrypt(rawString, publicKey)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err := RSA().Decrypt(encodedString, []byte(strings.Replace(string(privateKey), "a", "b", 1)))
+		t.Log(decodedString)
+		assert.Error(t, err)
+		assert.NotEqual(t, decodedString, rawString)
+
+		//inline
+		encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err = RSA().Decrypt(encodedString, privateKeyInline)
+		t.Log(decodedString)
+		assert.NoError(t, err)
+		assert.Equal(t, decodedString, rawString)
+	})
 }
 
 func TestRSAImplSign(t *testing.T) {
-	sign, err := RSA().Sign([]byte(rawString), privateKey)
-	t.Log(Base64().Encode([]byte(sign)))
-	assert.NoError(t, err)
+	t.Run("Sign", func(t *testing.T) {
+		sign, err := RSA().Sign([]byte(rawString), privateKey)
+		t.Log(Base64().Encode([]byte(sign)))
+		assert.NoError(t, err)
 
-	//inline
-	sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
-	t.Log(Base64().Encode([]byte(sign)))
-	assert.NoError(t, err)
+		//inline
+		sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
+		t.Log(Base64().Encode([]byte(sign)))
+		assert.NoError(t, err)
+	})
+
+	t.Run("Sign-Error", func(t *testing.T) {
+		sign, err := RSA().Sign([]byte(rawString), []byte(strings.Replace(string(privateKey), "a", "b", 1)))
+		t.Log(Base64().Encode([]byte(sign)))
+		assert.Error(t, err)
+
+		//inline
+		sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
+		t.Log(Base64().Encode([]byte(sign)))
+		assert.NoError(t, err)
+	})
 }
 
 func TestRSAImplVerifySign(t *testing.T) {
-	sign, err := RSA().Sign([]byte(rawString), privateKey)
-	t.Log(sign)
-	assert.NoError(t, err)
+	t.Run("VerifySign", func(t *testing.T) {
+		sign, err := RSA().Sign([]byte(rawString), privateKey)
+		t.Log(sign)
+		assert.NoError(t, err)
 
-	ok, err := RSA().VerifySign([]byte(rawString), []byte(sign), publicKey)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+		ok, err := RSA().VerifySign([]byte(rawString), []byte(sign), publicKey)
+		assert.NoError(t, err)
+		assert.Equal(t, true, ok)
 
-	//inline
-	sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
-	t.Log(sign)
-	assert.NoError(t, err)
+		//inline
+		sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
+		t.Log(sign)
+		assert.NoError(t, err)
 
-	ok, err = RSA().VerifySign([]byte(rawString), []byte(sign), publicKeyInline)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+		ok, err = RSA().VerifySign([]byte(rawString), []byte(sign), publicKeyInline)
+		assert.NoError(t, err)
+		assert.Equal(t, true, ok)
+	})
+
+	t.Run("VerifySign-Error", func(t *testing.T) {
+		sign, err := RSA().Sign([]byte(rawString), privateKey)
+		t.Log(sign)
+		assert.NoError(t, err)
+
+		ok, err := RSA().VerifySign([]byte(rawString), []byte(sign+"a"), publicKey)
+		assert.Error(t, err)
+		assert.NotEqual(t, true, ok)
+
+		//inline
+		sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
+		t.Log(sign)
+		assert.NoError(t, err)
+
+		ok, err = RSA().VerifySign([]byte(rawString), []byte(sign), publicKeyInline)
+		assert.NoError(t, err)
+		assert.Equal(t, true, ok)
+	})
+
+	t.Run("VerifySign-Error", func(t *testing.T) {
+		sign, err := RSA().Sign([]byte(rawString), privateKey)
+		t.Log(sign)
+		assert.NoError(t, err)
+
+		ok, err := RSA().VerifySign([]byte(rawString), []byte(sign), []byte(strings.Replace(string(publicKey), "a", "b", 1)))
+		assert.Error(t, err)
+		assert.NotEqual(t, true, ok)
+
+		//inline
+		sign, err = RSA().Sign([]byte(rawString), privateKeyInline)
+		t.Log(sign)
+		assert.NoError(t, err)
+
+		ok, err = RSA().VerifySign([]byte(rawString), []byte(sign), publicKeyInline)
+		assert.NoError(t, err)
+		assert.Equal(t, true, ok)
+	})
 }

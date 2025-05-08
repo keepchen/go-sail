@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -54,27 +55,81 @@ func TestRSAEncode(t *testing.T) {
 }
 
 func TestRSADecode(t *testing.T) {
-	encodedString, err := RSAEncrypt(rawString, publicKeyDeprecated)
-	t.Log(encodedString)
-	assert.NoError(t, err)
-	decodedString, err := RSADecrypt(encodedString, privateKeyDeprecated)
-	t.Log(decodedString)
-	assert.NoError(t, err)
-	assert.Equal(t, decodedString, rawString)
+	t.Run("Decode", func(t *testing.T) {
+		encodedString, err := RSAEncrypt(rawString, publicKeyDeprecated)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err := RSADecrypt(encodedString, privateKeyDeprecated)
+		t.Log(decodedString)
+		assert.NoError(t, err)
+		assert.Equal(t, decodedString, rawString)
+	})
+
+	t.Run("Decode-Error", func(t *testing.T) {
+		encodedString, err := RSAEncrypt(rawString, publicKeyDeprecated)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err := RSADecrypt("", privateKeyDeprecated)
+		t.Log(decodedString)
+		assert.Error(t, err)
+		assert.NotEqual(t, decodedString, rawString)
+	})
+
+	t.Run("Decode-Error2", func(t *testing.T) {
+		encodedString, err := RSAEncrypt(rawString, publicKeyDeprecated)
+		t.Log(encodedString)
+		assert.NoError(t, err)
+		decodedString, err := RSADecrypt(encodedString, []byte(strings.Replace(string(privateKeyDeprecated), "a", "b", 1)))
+		t.Log(decodedString)
+		assert.Error(t, err)
+		assert.NotEqual(t, decodedString, rawString)
+	})
 }
 
 func TestRSASign(t *testing.T) {
-	sign, err := RSASign([]byte(rawString), privateKeyDeprecated)
-	t.Log(Base64Encode([]byte(sign)))
-	assert.NoError(t, err)
+	t.Run("Sign", func(t *testing.T) {
+		sign, err := RSASign([]byte(rawString), privateKeyDeprecated)
+		t.Log(Base64Encode([]byte(sign)))
+		assert.NoError(t, err)
+	})
+
+	t.Run("Sign-Error", func(t *testing.T) {
+		assert.Panics(t, func() {
+			sign, err := RSASign([]byte(rawString), []byte(strings.Replace(string(privateKeyDeprecated), "a", "b", 1)))
+			t.Log(Base64Encode([]byte(sign)))
+			assert.Error(t, err)
+		})
+	})
 }
 
 func TestRSAVerifySign(t *testing.T) {
-	sign, err := RSASign([]byte(rawString), privateKeyDeprecated)
-	t.Log(sign)
-	assert.NoError(t, err)
+	t.Run("VerifySign", func(t *testing.T) {
+		sign, err := RSASign([]byte(rawString), privateKeyDeprecated)
+		t.Log(sign)
+		assert.NoError(t, err)
 
-	ok, err := RSAVerifySign([]byte(rawString), []byte(sign), publicKeyDeprecated)
-	assert.NoError(t, err)
-	assert.Equal(t, true, ok)
+		ok, err := RSAVerifySign([]byte(rawString), []byte(sign), publicKeyDeprecated)
+		assert.NoError(t, err)
+		assert.Equal(t, true, ok)
+	})
+
+	t.Run("VerifySign-Error", func(t *testing.T) {
+		sign, err := RSASign([]byte(rawString), privateKeyDeprecated)
+		t.Log(sign)
+		assert.NoError(t, err)
+
+		ok, err := RSAVerifySign([]byte(rawString), []byte(sign+"a"), publicKeyDeprecated)
+		assert.Error(t, err)
+		assert.NotEqual(t, true, ok)
+	})
+
+	t.Run("VerifySign-Error2", func(t *testing.T) {
+		sign, err := RSASign([]byte(rawString), privateKeyDeprecated)
+		t.Log(sign)
+		assert.NoError(t, err)
+
+		ok, err := RSAVerifySign([]byte(rawString), []byte(sign), []byte(strings.Replace(string(publicKeyDeprecated), "a", "b", 1)))
+		assert.Error(t, err)
+		assert.NotEqual(t, true, ok)
+	})
 }

@@ -102,7 +102,10 @@ func initRedisCluster(conf ClusterConf) (*redisLib.ClusterClient, error) {
 	}
 	rdb := redisLib.NewClusterClient(opts)
 
-	err := rdb.ForEachShard(context.Background(), func(ctx context.Context, shard *redisLib.Client) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	err := rdb.ForEachShard(ctx, func(ctx context.Context, shard *redisLib.Client) error {
 		return shard.Ping(ctx).Err()
 	})
 

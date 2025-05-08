@@ -37,6 +37,17 @@ func TestInitRedisCluster(t *testing.T) {
 			InitRedisCluster(cConf)
 		})
 	})
+
+	t.Run("InitRedisCluster-Auth", func(t *testing.T) {
+		assert.Panics(t, func() {
+			cConf.SSLEnable = true
+			for idx := range cConf.Endpoints {
+				cConf.Endpoints[idx].Username = "username"
+				cConf.Endpoints[idx].Password = "password"
+			}
+			InitRedisCluster(cConf)
+		})
+	})
 }
 
 func TestNewRedisCluster(t *testing.T) {
@@ -57,6 +68,20 @@ func TestNewRedisCluster(t *testing.T) {
 		}
 		_ = conn.Close()
 		cConf.SSLEnable = true
+		t.Log(NewCluster(cConf))
+	})
+
+	t.Run("NewRedisCluster-Auth", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", cConf.Endpoints[0].Host, cConf.Endpoints[0].Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		cConf.SSLEnable = true
+		for idx := range cConf.Endpoints {
+			cConf.Endpoints[idx].Username = "username"
+			cConf.Endpoints[idx].Password = "password"
+		}
 		t.Log(NewCluster(cConf))
 	})
 }

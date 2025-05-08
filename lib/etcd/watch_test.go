@@ -21,7 +21,13 @@ func TestWatch(t *testing.T) {
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		Watch(ctx, "go-sail", fn)
+		go Watch(ctx, "go-sail", fn)
+
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+
+		time.Sleep(5 * time.Second)
 	})
 }
 
@@ -38,7 +44,13 @@ func TestWatchWithPrefix(t *testing.T) {
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		WatchWithPrefix(ctx, "go-sail", fn)
+		go WatchWithPrefix(ctx, "go-sail", fn)
+
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+
+		time.Sleep(5 * time.Second)
 	})
 }
 
@@ -55,6 +67,12 @@ func TestWatchWith(t *testing.T) {
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		WatchWith(ctx, "go-sail", fn)
+		go WatchWith(ctx, "go-sail", fn)
+
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+
+		time.Sleep(5 * time.Second)
 	})
 }

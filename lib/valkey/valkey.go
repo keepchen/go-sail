@@ -3,6 +3,7 @@ package valkey
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/valkey-io/valkey-go"
 )
@@ -33,8 +34,11 @@ func mustInitVK(conf Conf) valkey.Client {
 		panic(err)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
 	//ping
-	err = client.Do(context.Background(), client.B().Ping().Build()).Error()
+	err = client.Do(ctx, client.B().Ping().Build()).Error()
 	if err != nil {
 		panic(err)
 	}
