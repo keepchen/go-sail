@@ -15,5 +15,8 @@ protected-mode no
 daemonize yes
 pidfile valkey-cluster/$port/valkey.pid
 dir valkey-cluster/$port/data
+cluster-announce-ip 127.0.0.1
+cluster-announce-port $port
+cluster-announce-bus-port $((port + 10000))
 EOF
 done
