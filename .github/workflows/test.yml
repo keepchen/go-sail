@@ -102,6 +102,7 @@ jobs:
 
       - name: Verify Cluster Status
         run: |
+          sleep 5
           redis-cli --cluster check 127.0.0.1:7000
 
       - name: Install Valkey (Cluster)
