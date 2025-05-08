@@ -31,7 +31,7 @@ func TestLogTrace(t *testing.T) {
 			Filename: "../examples/logs/testcase_logtrace.log",
 		},
 		HttpServer: config.HttpServerConf{
-			Addr: ":8001",
+			Addr: ":18001",
 		},
 	}
 	apiOption := api.DefaultSetupOption()

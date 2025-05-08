@@ -2,6 +2,8 @@ package schedule
 
 import (
 	"fmt"
+	"github.com/keepchen/go-sail/v3/lib/redis"
+	"net"
 	"testing"
 	"time"
 )
@@ -211,6 +213,33 @@ func TestYearly(t *testing.T) {
 		cancel := NewJob("Yearly", func() {
 			fmt.Println("Yearly...")
 		}).Yearly()
+
+		cancel()
+	})
+}
+
+func TestWithoutOverlapping(t *testing.T) {
+	t.Run("WithoutOverlapping", func(t *testing.T) {
+		var sConf = redis.Conf{
+			Enable: true,
+			Endpoint: redis.Endpoint{
+				Host:     "127.0.0.1",
+				Port:     6379,
+				Username: "",
+				Password: "",
+			},
+			Database: 0,
+		}
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		redis.InitRedis(sConf)
+
+		cancel := NewJob("Yearly", func() {
+			fmt.Println("Yearly...")
+		}).WithoutOverlapping().EverySecond()
 
 		cancel()
 	})
