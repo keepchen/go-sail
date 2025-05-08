@@ -119,7 +119,8 @@ end
 `)
 
 func (l *Limiter) allowWithRedis(ip string) AllowResult {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
 	key := fmt.Sprintf("%s:{%s}", l.redisKeyPrefix, ip)
 	now := time.Now().Unix()
 	member := time.Now().UnixNano() + int64(rand.Intn(l.reqs))

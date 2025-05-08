@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -11,7 +12,10 @@ import (
 func TestRegisterService(t *testing.T) {
 	t.Run("RegisterService", func(t *testing.T) {
 		assert.Panics(t, func() {
-			t.Log(RegisterService(context.Background(), "go-sail", "endpoint", 60))
+			Init(conf)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			defer cancel()
+			t.Log(RegisterService(ctx, "go-sail", "endpoint", 60))
 		})
 	})
 }
@@ -19,7 +23,10 @@ func TestRegisterService(t *testing.T) {
 func TestDiscoverService(t *testing.T) {
 	t.Run("DiscoverService", func(t *testing.T) {
 		assert.Panics(t, func() {
-			t.Log(DiscoverService(context.Background(), "go-sail"))
+			Init(conf)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			defer cancel()
+			t.Log(DiscoverService(ctx, "go-sail"))
 		})
 	})
 }
@@ -27,10 +34,13 @@ func TestDiscoverService(t *testing.T) {
 func TestWatchService(t *testing.T) {
 	t.Run("WatchService", func(t *testing.T) {
 		assert.Panics(t, func() {
+			Init(conf)
 			fn := func(k, v []byte) {
 				fmt.Println(k, v)
 			}
-			WatchService(context.Background(), "go-sail", fn)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			defer cancel()
+			WatchService(ctx, "go-sail", fn)
 		})
 	})
 }

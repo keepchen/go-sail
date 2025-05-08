@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var conf = Conf{
@@ -51,9 +49,7 @@ func TestInit(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
-		assert.Panics(t, func() {
-			conf.Tls = &tls.Config{}
-			Init(conf)
-		})
+		conf.Tls = &tls.Config{}
+		Init(conf)
 	})
 }

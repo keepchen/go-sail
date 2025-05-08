@@ -20,23 +20,17 @@ jobs:
         image: redis:6-alpine
         ports: ["6379:6379"]
     steps:
+      - uses: actions/checkout@v4
+
       - name: Start etcd container
         run: |
           # 启动单节点 etcd，暴露客户端端口 2379
-          docker run -d \
-            --name etcd-single \
-            -p 2379:2379 \
-            -p 2380:2380 \
-            quay.io/coreos/etcd:latest \
-            /usr/local/bin/etcd \
-            --name etcd-single \
-            --listen-client-urls http://0.0.0.0:2379 \
-            --advertise-client-urls http://0.0.0.0:2379 \
-            --listen-peer-urls http://0.0.0.0:2380 \
-            --initial-advertise-peer-urls http://0.0.0.0:2380 \
-            --initial-cluster etcd-single=http://0.0.0.0:2380 \
-            --initial-cluster-token etcd-cluster \
-            --initial-cluster-state new
+          docker run -d --name etcd-server \
+              --publish 2379:2379 \
+              --publish 2380:2380 \
+              --env ALLOW_NONE_AUTHENTICATION=yes \
+              --env ETCD_ADVERTISE_CLIENT_URLS=http://etcd-server:2379 \
+              bitnami/etcd:3.5.21
 
           sleep 5  # 等待容器启动
 
@@ -62,26 +56,19 @@ jobs:
       - name: Configure Redis Cluster Nodes
         run: |
           # 创建6个节点的配置（3主3从）
-          for port in 7000 7001 7002 7003 7004 7005; do
-            mkdir -p redis-cluster/$port
-            cat << EOF > redis-cluster/$port/redis.conf
-            port $port
-            cluster-enabled yes
-            cluster-config-file nodes.conf
-            cluster-node-timeout 5000
-            appendonly yes
-            bind 0.0.0.0
-            protected-mode no
-            daemonize yes
-            EOF
-          done
+          chmod +x scripts/setup-redis-cluster.sh
+          ./scripts/setup-redis-cluster.sh
 
       - name: Start Redis (Cluster)
         run: |
           for port in 7000 7001 7002 7003 7004 7005; do
+            # debug
+            cat redis-cluster/$port/redis.conf
             redis-server redis-cluster/$port/redis.conf
           done
-          sleep 5  # 等待实例启动
+          sleep 20  # 等待实例启动
+          ps aux | grep redis-server
+          ss -tln | grep -E '7000|7001|7002|7003|7004|7005'
 
       - name: Create Redis (Cluster)
         run: |
@@ -114,26 +101,19 @@ jobs:
       - name: Configure Valkey Cluster Nodes
         run: |
           # 创建 6 个节点（3主3从）
-          for port in 8000 8001 8002 8003 8004 8005; do
-            mkdir -p valkey-cluster/$port
-            cat << EOF > valkey-cluster/$port/valkey.conf
-            port $port
-            cluster-enabled yes
-            cluster-config-file nodes.conf
-            cluster-node-timeout 5000
-            appendonly yes
-            bind 0.0.0.0
-            protected-mode no
-            daemonize yes
-            EOF
-          done
+          chmod +x scripts/setup-valkey-cluster.sh
+          ./scripts/setup-valkey-cluster.sh
 
       - name: Start Valkey (Cluster)
         run: |
           for port in 8000 8001 8002 8003 8004 8005; do
+            # debug
+            cat valkey-cluster/$port/valkey.conf
             valkey-server valkey-cluster/$port/valkey.conf
           done
-          sleep 5  # 等待实例启动
+          sleep 20  # 等待实例启动
+          ps aux | grep valkey-server
+          ss -tln | grep -E '8000|8001|8002|8003|8004|8005'
 
       - name: Create Valkey Cluster
         run: |
@@ -151,7 +131,6 @@ jobs:
         run: |
           valkey-cli --cluster check 127.0.0.1:8000
 
-      - uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
