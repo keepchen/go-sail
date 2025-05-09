@@ -16,6 +16,70 @@ func TestRedisLockerImplLockerValue(t *testing.T) {
 	}
 }
 
+func TestRedisLockPanic(t *testing.T) {
+	t.Run("RedisLockPanic-Lock", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-Lock"
+				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+				defer cancel()
+				RedisLocker().Lock(ctx, key)
+			})
+		}
+	})
+
+	t.Run("RedisLockPanic-TryLock", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-Lock"
+				RedisLocker().TryLock(key)
+			})
+		}
+	})
+
+	t.Run("RedisLockPanic-TryLockWithContext", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-Lock"
+				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+				defer cancel()
+				RedisLocker().TryLockWithContext(ctx, key)
+			})
+		}
+	})
+
+	t.Run("RedisLockPanic-UnlockWithContext", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-Lock"
+				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+				defer cancel()
+				RedisLocker().UnlockWithContext(ctx, key)
+			})
+		}
+	})
+
+	t.Run("ClusterUnlock", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-Unlock"
+				(&redisLockerImpl{}).ClusterUnlock(key)
+			})
+		}
+	})
+
+	t.Run("ClusterUnlock-WithContext", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-Unlock"
+				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+				defer cancel()
+				(&redisLockerImpl{}).ClusterUnlockWithContext(ctx, key)
+			})
+		}
+	})
+}
+
 func TestRedisLock(t *testing.T) {
 	conf := redis.Conf{
 		Endpoint: redis.Endpoint{

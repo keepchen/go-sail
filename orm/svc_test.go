@@ -2,6 +2,7 @@ package orm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -404,7 +405,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestTransaction(t *testing.T) {
-	t.Run("Transaction()", func(t *testing.T) {
+	t.Run("Transaction", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
 		if err != nil {
@@ -415,6 +416,21 @@ func TestTransaction(t *testing.T) {
 		t.Log(NewSvcImplSilent().Transaction(func(tx *gorm.DB) error {
 			tx.First(&User{})
 			return nil
+		}))
+	})
+
+	t.Run("Transaction-Error", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		db.Init(dbConf)
+		t.Log(NewSvcImplSilent().Transaction(func(tx *gorm.DB) error {
+			tx.First(&User{})
+			err := errors.New("test emit error")
+			return err
 		}))
 	})
 }

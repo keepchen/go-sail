@@ -85,14 +85,23 @@ func TestLogTrace(t *testing.T) {
 
 func registerRoutes4LogTrace(r *gin.Engine) {
 	r.GET("/ping", func(c *gin.Context) {
+		defer func() {
+			recover()
+
+			c.String(http.StatusOK, "%s", "pong")
+		}()
+
 		fmt.Println(LogTrace(c).RequestID())
 		fmt.Println(LogTrace(c).SpanID())
+		fmt.Println(LogTrace(c).EntryAt())
 		LogTrace(c).GetLogger().Debug("registerRoutes4LogTrace/ping/GetLogger", zap.String("value", "ok"))
 		LogTrace(c).Debug("registerRoutes4LogTrace/ping/Debug", zap.String("value", "ok"))
 		LogTrace(c).Info("registerRoutes4LogTrace/ping/Info", zap.String("value", "ok"))
 		LogTrace(c).Warn("registerRoutes4LogTrace/ping/Warn", zap.String("value", "ok"))
 		LogTrace(c).Error("registerRoutes4LogTrace/ping/Error", zap.String("value", "ok"))
-		c.String(http.StatusOK, "%s", "pong")
+		LogTrace(c).DPanic("registerRoutes4LogTrace/ping/DPanic", zap.String("value", "ok"))
+		LogTrace(c).Panic("registerRoutes4LogTrace/ping/Panic", zap.String("value", "ok"))
+		LogTrace(c).Fatal("registerRoutes4LogTrace/ping/Fatal", zap.String("value", "ok"))
 	}).
 		GET("/hello", func(c *gin.Context) {
 			Response(c).Wrap(constants.CodeType(200), "world").Send()
