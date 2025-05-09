@@ -51,21 +51,23 @@ func TestNew(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
-		conf.Tls = &tls.Config{}
-		instance, err := New(conf)
-		t.Log(instance, err)
-		t.Log(instance, err)
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		t.Log("----Put----")
-		resultP, errP := instance.Put(ctx, "go-sail-key", "go-sail")
-		t.Log(resultP, errP)
-		assert.Error(t, errP)
-		t.Log("----Get----")
-		resultG, errG := instance.Get(ctx, "go-sail-key")
-		t.Log()
-		t.Log(resultG, errG)
-		assert.Error(t, errG)
+		assert.Panics(t, func() {
+			conf.Tls = &tls.Config{}
+			instance, err := New(conf)
+			t.Log(instance, err)
+			t.Log(instance, err)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			t.Log("----Put----")
+			resultP, errP := instance.Put(ctx, "go-sail-key", "go-sail")
+			t.Log(resultP, errP)
+			assert.Error(t, errP)
+			t.Log("----Get----")
+			resultG, errG := instance.Get(ctx, "go-sail-key")
+			t.Log()
+			t.Log(resultG, errG)
+			assert.Error(t, errG)
+		})
 	})
 }
 
@@ -76,6 +78,7 @@ func TestInit(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
+		conf.Tls = nil
 		Init(conf)
 	})
 
@@ -85,6 +88,7 @@ func TestInit(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
+		conf.Tls = nil
 		conf.Username = "username"
 		conf.Password = "password"
 		Init(conf)
@@ -96,7 +100,9 @@ func TestInit(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
-		conf.Tls = &tls.Config{}
-		Init(conf)
+		assert.Panics(t, func() {
+			conf.Tls = &tls.Config{}
+			Init(conf)
+		})
 	})
 }

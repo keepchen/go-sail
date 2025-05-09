@@ -22,6 +22,10 @@ func TestRegisterService(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
 		t.Log(RegisterService(ctx, "go-sail", "endpoint-local-tester", 60))
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
 	})
 
 	t.Run("RegisterService-Panic", func(t *testing.T) {
@@ -45,6 +49,10 @@ func TestDiscoverService(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
 		t.Log(DiscoverService(ctx, "go-sail"))
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
 	})
 
 	t.Run("DiscoverService-Panic", func(t *testing.T) {
@@ -78,6 +86,10 @@ func TestWatchService(t *testing.T) {
 			fmt.Sprintf("endpoint-local-tester-%s", time.Now().String()), 60))
 
 		time.Sleep(5 * time.Second)
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
 	})
 
 	t.Run("WatchService-Panic", func(t *testing.T) {

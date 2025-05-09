@@ -30,7 +30,7 @@ var (
 		Mysql: MysqlConf{
 			Read: MysqlConfItem{
 				Host:      "127.0.0.1",
-				Port:      33060,
+				Port:      3306,
 				Username:  "root",
 				Password:  "root",
 				Database:  "go_sail",
@@ -40,7 +40,7 @@ var (
 			},
 			Write: MysqlConfItem{
 				Host:      "127.0.0.1",
-				Port:      33060,
+				Port:      3306,
 				Username:  "root",
 				Password:  "root",
 				Database:  "go_sail",

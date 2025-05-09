@@ -43,7 +43,7 @@ var (
 		Mysql: db.MysqlConf{
 			Read: db.MysqlConfItem{
 				Host:      "127.0.0.1",
-				Port:      33060,
+				Port:      3306,
 				Username:  "root",
 				Password:  "root",
 				Database:  "go_sail",
@@ -53,7 +53,7 @@ var (
 			},
 			Write: db.MysqlConfItem{
 				Host:      "127.0.0.1",
-				Port:      33060,
+				Port:      3306,
 				Username:  "root",
 				Password:  "root",
 				Database:  "go_sail",
@@ -342,14 +342,17 @@ func TestComponentsStartup(t *testing.T) {
 			RedisClusterConf: cConf,
 			DBConf:           dbConf,
 			JwtConf: &jwt.Conf{
-				Enable: true,
+				Enable:     true,
+				Algorithm:  string(jwt.SigningMethodRS256),
+				PublicKey:  string(publicKey),
+				PrivateKey: string(privateKey),
 			},
 			NatsConf: nats.Conf{
-				Enable: true,
+				Enable: false,
 			},
 			KafkaConf: config.KafkaExtraConf{
 				Conf: kafka.Conf{
-					Enable: true,
+					Enable: false,
 				},
 			},
 			EtcdConf:   eConf,
@@ -371,14 +374,17 @@ func TestComponentsShutdown(t *testing.T) {
 			RedisClusterConf: cConf,
 			DBConf:           dbConf,
 			JwtConf: &jwt.Conf{
-				Enable: true,
+				Enable:     true,
+				Algorithm:  string(jwt.SigningMethodRS256),
+				PublicKey:  string(publicKey),
+				PrivateKey: string(privateKey),
 			},
 			NatsConf: nats.Conf{
-				Enable: true,
+				Enable: false,
 			},
 			KafkaConf: config.KafkaExtraConf{
 				Conf: kafka.Conf{
-					Enable: true,
+					Enable: false,
 				},
 			},
 			EtcdConf:   eConf,

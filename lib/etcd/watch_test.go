@@ -29,6 +29,10 @@ func TestWatch(t *testing.T) {
 		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
 
 		time.Sleep(5 * time.Second)
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
 	})
 }
 
@@ -53,6 +57,10 @@ func TestWatchWithPrefix(t *testing.T) {
 		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
 
 		time.Sleep(5 * time.Second)
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
 	})
 }
 
@@ -77,5 +85,9 @@ func TestWatchWith(t *testing.T) {
 		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
 
 		time.Sleep(5 * time.Second)
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
 	})
 }
