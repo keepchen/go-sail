@@ -34,6 +34,18 @@ func TestPaginate(t *testing.T) {
 		_, _, dbw, _ := db.New(dbConf)
 		dbw.Scopes(Paginate(1, 100))
 	})
+
+	t.Run("Paginate-Condition", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+
+		logger.Init(loggerConf, "go-sail")
+		_, _, dbw, _ := db.New(dbConf)
+		dbw.Scopes(Paginate(0, 0))
+	})
 }
 
 func TestIgnoreErrRecordNotFound(t *testing.T) {

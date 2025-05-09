@@ -3,6 +3,8 @@ package schedule
 import (
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateJobNameKey(t *testing.T) {
@@ -25,17 +27,54 @@ func TestJob(t *testing.T) {
 		})
 		t.Log(scheduler)
 	})
+
+	t.Run("Job-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			scheduler := Job("Job-Panic", func() {
+				fmt.Println("Job-Panic...")
+			})
+			t.Log(scheduler)
+			Job("Job-Panic", func() {
+				fmt.Println("Job-Panic...")
+			})
+
+		})
+	})
 }
 
 func TestJobIsRunning(t *testing.T) {
 	t.Run("JobIsRunning", func(t *testing.T) {
-		t.Log(JobIsRunning("tester"))
+		Job("JobIsRunning", func() {
+			fmt.Println("JobIsRunning...")
+		})
+		t.Log(JobIsRunning("JobIsRunning"))
 	})
 }
 
 func TestCall(t *testing.T) {
 	t.Run("Call", func(t *testing.T) {
-		Call("tester", false)
+		Job("Call", func() {
+			fmt.Println("Call...")
+		})
+		Call("Call", false)
+	})
+
+	t.Run("Call-NoExist", func(t *testing.T) {
+		Call("Call-NoExist", false)
+	})
+
+	t.Run("Call-mandatory-true", func(t *testing.T) {
+		Job("Call-mandatory-true", func() {
+			fmt.Println("Call-mandatory-true...")
+		})
+		Call("Call-mandatory-true", true)
+	})
+
+	t.Run("Call-mandatory-false", func(t *testing.T) {
+		Job("Call-mandatory-false", func() {
+			fmt.Println("Call-mandatory-false...")
+		})
+		Call("Call-mandatory-false", false)
 	})
 }
 

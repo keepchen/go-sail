@@ -2,10 +2,11 @@ package schedule
 
 import (
 	"fmt"
-	"github.com/keepchen/go-sail/v3/lib/redis"
 	"net"
 	"testing"
 	"time"
+
+	"github.com/keepchen/go-sail/v3/lib/redis"
 )
 
 func TestEvery(t *testing.T) {
@@ -220,16 +221,6 @@ func TestYearly(t *testing.T) {
 
 func TestWithoutOverlapping(t *testing.T) {
 	t.Run("WithoutOverlapping", func(t *testing.T) {
-		var sConf = redis.Conf{
-			Enable: true,
-			Endpoint: redis.Endpoint{
-				Host:     "127.0.0.1",
-				Port:     6379,
-				Username: "",
-				Password: "",
-			},
-			Database: 0,
-		}
 		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
 		if err != nil {
 			return
@@ -242,5 +233,64 @@ func TestWithoutOverlapping(t *testing.T) {
 		}).WithoutOverlapping().EverySecond()
 
 		cancel()
+	})
+}
+
+func TestSetInterval(t *testing.T) {
+	t.Run("SetInterval", func(t *testing.T) {
+		cancel := NewJob("SetInterval", func() {
+			fmt.Println("SetInterval...")
+		}).Every(time.Duration(0))
+
+		cancel()
+	})
+}
+
+func TestRun(t *testing.T) {
+	t.Run("Run", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		redis.InitRedis(sConf)
+
+		NewJob("Run", func() {
+			fmt.Println("Run...")
+		}).EverySecond()
+
+		time.Sleep(5 * time.Second)
+	})
+
+	t.Run("Run-withoutOverlapping", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		redis.InitRedis(sConf)
+
+		NewJob("Run-withoutOverlapping", func() {
+			fmt.Println("Run-withoutOverlapping...")
+		}).WithoutOverlapping().EverySecond()
+
+		time.Sleep(5 * time.Second)
+	})
+
+	t.Run("Run-Cancel", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		redis.InitRedis(sConf)
+
+		cancel := NewJob("Run-Cancel", func() {
+			fmt.Println("Run-Cancel...")
+		}).WithoutOverlapping().EverySecond()
+
+		cancel()
+
+		time.Sleep(5 * time.Second)
 	})
 }

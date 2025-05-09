@@ -266,7 +266,9 @@ func Call(jobName string, mandatory bool) {
 	if mandatory {
 		job.task()
 	} else {
-		job.wrappedTaskFunc()
+		if job.wrappedTaskFunc != nil {
+			job.wrappedTaskFunc()
+		}
 	}
 }
 
