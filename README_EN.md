@@ -120,17 +120,31 @@ Thank you to everyone who provided valuable suggestions and comments during the 
 - Issue is welcome: [issue](https://github.com/keepchen/go-sail/issues/new/choose)
 - Thank you for your star if you like this project :)  
 
-## Use cases
-<a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="300" title="https://stardots.io"/></a>
-<br/><br/>
-<a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="300" title="https://t.me/PiggyPiggyofficialbot"/></a>
-<br/><br/>
-<a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="300" title="https://fantagoal.io"/></a>
-<br/><br/>
-<img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="300" />
-<br/><br/>
-<img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="300" />
-<br/><br/>
-<img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="180" />  
+## Use cases  
+<table style="text-align: center">
+  <tr>
+    <td style="border: 1px solid black; padding: 8px;">
+      <a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200" title="https://stardots.io"/></a>
+    </td>
+    <td style="border: 1px solid black; padding: 8px;">
+      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
+    </td>
+    <td style="border: 1px solid black; padding: 8px;">
+      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
+    </td>
+  </tr>
+  <tr>
+    <td style="border: 1px solid black; padding: 8px;">
+      <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
+    </td>
+    <td style="border: 1px solid black; padding: 8px;">
+      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
+    </td>
+    <td style="border: 1px solid black; padding: 8px;">
+      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
+    </td>
+  </tr>
+</table>  
 
+## Star History  
 ![](https://starchart.cc/keepchen/go-sail.svg)

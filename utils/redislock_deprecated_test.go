@@ -15,47 +15,8 @@ func TestLockerValue(t *testing.T) {
 	}
 }
 
-func TestRedisLockDeprecated(t *testing.T) {
-	conf := redis.Conf{
-		Endpoint: redis.Endpoint{
-			Host: "127.0.0.1",
-			Port: 6379,
-		},
-	}
-	//try connect
-	redisClient, err := redis.New(conf)
-	if err != nil || redisClient == nil {
-		t.Log("redis instance not ready, this test case ignore")
-		return
-	}
-	_ = redisClient.Close()
-
-	//initialize
-	redis.InitRedis(conf)
-
-	t.Run("TryLock", func(t *testing.T) {
-		key := "go-sail-redisLocker-TryLock"
-		t.Log(RedisTryLock(key))
-		assert.Equal(t, false, RedisTryLock(key))
-	})
-
-	t.Run("Lock", func(t *testing.T) {
-		key := "go-sail-redisLocker-Lock"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-		defer cancel()
-		RedisLock(ctx, key)
-	})
-
-	t.Run("Unlock", func(t *testing.T) {
-		key := "go-sail-redisLocker-Unlock"
-		t.Log(RedisTryLock(key))
-		RedisUnlock(key)
-		assert.Equal(t, true, RedisTryLock(key))
-	})
-}
-
-func TestRedisClusterLockDeprecated(t *testing.T) {
-	conf := redis.ClusterConf{
+var (
+	cConf = redis.ClusterConf{
 		Enable: true,
 		Endpoints: []redis.Endpoint{
 			{Host: "127.0.0.1", Port: 7000},
@@ -66,34 +27,146 @@ func TestRedisClusterLockDeprecated(t *testing.T) {
 			//{Host: "127.0.0.1", Port: 7005},
 		},
 	}
-	//try connect
-	redisClient, err := redis.NewCluster(conf)
-	if err != nil || redisClient == nil {
-		t.Log("redis instance not ready, this test case ignore")
-		return
+	sConf = redis.Conf{
+		Enable: true,
+		Endpoint: redis.Endpoint{
+			Host:     "127.0.0.1",
+			Port:     6379,
+			Username: "",
+			Password: "",
+		},
+		Database: 0,
 	}
-	_ = redisClient.Close()
+)
 
-	//initialize
-	redis.InitRedisCluster(conf)
-
-	t.Run("TryLock", func(t *testing.T) {
+func TestRedisLockDeprecated(t *testing.T) {
+	t.Run("TryLock-Standalone", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.New(sConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedis(sConf)
 		key := "go-sail-redisLocker-TryLock"
 		t.Log(RedisTryLock(key))
 		assert.Equal(t, false, RedisTryLock(key))
 	})
 
-	t.Run("Lock", func(t *testing.T) {
+	t.Run("TryLock-Cluster", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.NewCluster(cConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedisCluster(cConf)
+		key := "go-sail-redisLocker-TryLock"
+		t.Log(RedisTryLock(key))
+		assert.Equal(t, false, RedisTryLock(key))
+	})
+
+	t.Run("Lock-Standalone", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.New(sConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedis(sConf)
 		key := "go-sail-redisLocker-Lock"
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 		RedisLock(ctx, key)
 	})
 
-	t.Run("Unlock", func(t *testing.T) {
+	t.Run("Lock-Cluster", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.NewCluster(cConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedisCluster(cConf)
+		key := "go-sail-redisLocker-Lock"
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		RedisLock(ctx, key)
+	})
+
+	t.Run("Unlock-Standalone", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.New(sConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedis(sConf)
 		key := "go-sail-redisLocker-Unlock"
 		t.Log(RedisTryLock(key))
 		RedisUnlock(key)
 		assert.Equal(t, true, RedisTryLock(key))
+	})
+
+	t.Run("UnlockWithContext-Standalone", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.New(sConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedis(sConf)
+		key := "go-sail-redisLocker-Unlock"
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		t.Log(RedisStandaloneLockWithContext(ctx, key))
+		RedisStandaloneLockWithContext(ctx, key)
+	})
+
+	t.Run("Unlock-Cluster", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.NewCluster(cConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedisCluster(cConf)
+		key := "go-sail-redisLocker-Unlock"
+		t.Log(RedisTryLock(key))
+		RedisUnlock(key)
+		assert.Equal(t, true, RedisTryLock(key))
+	})
+
+	t.Run("UnlockWithContext-Cluster", func(t *testing.T) {
+		//try connect
+		redisClient, err := redis.NewCluster(cConf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		_ = redisClient.Close()
+		//initialize
+		redis.InitRedisCluster(cConf)
+		key := "go-sail-redisLocker-Unlock"
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		t.Log(RedisClusterLockWithContext(ctx, key))
+		RedisClusterLockWithContext(ctx, key)
 	})
 }

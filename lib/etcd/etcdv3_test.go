@@ -33,6 +33,18 @@ func TestNew(t *testing.T) {
 		t.Log(instance.Get(ctx, "go-sail-key"))
 	})
 
+	t.Run("New-Auth", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		conf.Username = "username"
+		conf.Password = "password"
+		instance, err := New(conf)
+		t.Log(instance, err)
+	})
+
 	t.Run("New-TlsEnable", func(t *testing.T) {
 		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
 		if err != nil {
@@ -64,6 +76,17 @@ func TestInit(t *testing.T) {
 			return
 		}
 		_ = conn.Close()
+		Init(conf)
+	})
+
+	t.Run("Init-Auth", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		conf.Username = "username"
+		conf.Password = "password"
 		Init(conf)
 	})
 

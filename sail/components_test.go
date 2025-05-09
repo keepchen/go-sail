@@ -1,8 +1,12 @@
 package sail
 
 import (
-	"github.com/keepchen/go-sail/v3/lib/jwt"
+	"net/url"
 	"testing"
+
+	"github.com/keepchen/go-sail/v3/constants"
+
+	"github.com/keepchen/go-sail/v3/lib/jwt"
 
 	"github.com/stretchr/testify/assert"
 
@@ -18,31 +22,136 @@ import (
 	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
+var (
+	loggerConf = logger.Conf{
+		Level:    "debug",
+		Filename: "../examples/logs/testcase_components.log",
+	}
+	dbConf = db.Conf{
+		Enable:      true,
+		DriverName:  "mysql",
+		AutoMigrate: true,
+		Logger: db.Logger{
+			Level: "debug",
+		},
+		ConnectionPool: db.ConnectionPoolConf{
+			MaxOpenConnCount:       10,
+			MaxIdleConnCount:       3,
+			ConnMaxLifeTimeMinutes: 30,
+			ConnMaxIdleTimeMinutes: 10,
+		},
+		Mysql: db.MysqlConf{
+			Read: db.MysqlConfItem{
+				Host:      "127.0.0.1",
+				Port:      33060,
+				Username:  "root",
+				Password:  "root",
+				Database:  "go_sail",
+				Charset:   "utf8mb4",
+				ParseTime: true,
+				Loc:       url.QueryEscape(constants.TimeZoneUTCPlus7),
+			},
+			Write: db.MysqlConfItem{
+				Host:      "127.0.0.1",
+				Port:      33060,
+				Username:  "root",
+				Password:  "root",
+				Database:  "go_sail",
+				Charset:   "utf8mb4",
+				ParseTime: true,
+				Loc:       url.QueryEscape(constants.TimeZoneUTCPlus7),
+			},
+		},
+	}
+	sConf = redis.Conf{
+		Enable: true,
+		Endpoint: redis.Endpoint{
+			Host:     "127.0.0.1",
+			Port:     6379,
+			Username: "",
+			Password: "",
+		},
+		Database: 0,
+	}
+	cConf = redis.ClusterConf{
+		Enable: true,
+		Endpoints: []redis.Endpoint{
+			{Host: "127.0.0.1", Port: 7000},
+			{Host: "127.0.0.1", Port: 7001},
+			{Host: "127.0.0.1", Port: 7002},
+			//{Host: "127.0.0.1", Port: 7003},
+			//{Host: "127.0.0.1", Port: 7004},
+			//{Host: "127.0.0.1", Port: 7005},
+		},
+	}
+	vConf = valkey.Conf{
+		Enable: true,
+		Endpoints: []valkey.Endpoint{
+			{Host: "127.0.0.1", Port: 8000},
+			{Host: "127.0.0.1", Port: 8001},
+			{Host: "127.0.0.1", Port: 8002},
+			{Host: "127.0.0.1", Port: 8003},
+			{Host: "127.0.0.1", Port: 8004},
+			{Host: "127.0.0.1", Port: 8005},
+		},
+	}
+	eConf = etcd.Conf{
+		Enable:    true,
+		Endpoints: []string{"127.0.0.1:2379"},
+	}
+)
+
 func TestGetDB(t *testing.T) {
+	t.Run("GetDB-Nil", func(t *testing.T) {
+		t.Log(GetDB())
+	})
+
 	t.Run("GetDB", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail-tester")
+		_, e1, _, e2 := db.NewFreshDB(dbConf)
+		if e1 != nil || e2 != nil {
+			return
+		}
+		db.Init(dbConf)
 		t.Log(GetDB())
 	})
 }
 
 func TestGetDBR(t *testing.T) {
+	t.Run("GetDBR-Nil", func(t *testing.T) {
+		t.Log(GetDBR())
+	})
+
 	t.Run("GetDBR", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail-tester")
+		_, e1, _, e2 := db.NewFreshDB(dbConf)
+		if e1 != nil || e2 != nil {
+			return
+		}
+		db.Init(dbConf)
 		t.Log(GetDBR())
 	})
 }
 
 func TestGetDBW(t *testing.T) {
+	t.Run("GetDBW-Nil", func(t *testing.T) {
+		t.Log(GetDBW())
+	})
+
 	t.Run("GetDBW", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail-tester")
+		_, e1, _, e2 := db.NewFreshDB(dbConf)
+		if e1 != nil || e2 != nil {
+			return
+		}
+		db.Init(dbConf)
 		t.Log(GetDBW())
 	})
 }
 
 func TestNewDB(t *testing.T) {
 	t.Run("NewDB", func(t *testing.T) {
-		var loggerCfg = logger.Conf{
-			Level:    "debug",
-			Filename: "../examples/logs/testcase_components.log",
-		}
-		logger.Init(loggerCfg, "tester")
+		logger.Init(loggerConf, "tester")
 		cfg := db.Conf{
 			DriverName: "mysql",
 		}
@@ -57,7 +166,25 @@ func TestGetRedis(t *testing.T) {
 }
 
 func TestGetRedisUniversal(t *testing.T) {
-	t.Run("GetRedisUniversal", func(t *testing.T) {
+	t.Run("GetRedisUniversal-Nil", func(t *testing.T) {
+		t.Log(GetRedisUniversal())
+	})
+
+	t.Run("GetRedisUniversal-Standalone", func(t *testing.T) {
+		_, err := redis.New(sConf)
+		if err != nil {
+			return
+		}
+		redis.InitRedis(sConf)
+		t.Log(GetRedisUniversal())
+	})
+
+	t.Run("GetRedisUniversal-Cluster", func(t *testing.T) {
+		_, err := redis.NewCluster(cConf)
+		if err != nil {
+			return
+		}
+		redis.InitRedisCluster(cConf)
 		t.Log(GetRedisUniversal())
 	})
 }
@@ -209,17 +336,11 @@ func TestComponentsStartup(t *testing.T) {
 		componentsStartup("tester", cfg)
 	})
 
-	t.Run("ComponentsStartup-Panic", func(t *testing.T) {
+	t.Run("ComponentsStartup-Enable", func(t *testing.T) {
 		cfg := &config.Config{
-			RedisConf: redis.Conf{
-				Enable: true,
-			},
-			RedisClusterConf: redis.ClusterConf{
-				Enable: true,
-			},
-			DBConf: db.Conf{
-				Enable: true,
-			},
+			RedisConf:        sConf,
+			RedisClusterConf: cConf,
+			DBConf:           dbConf,
 			JwtConf: &jwt.Conf{
 				Enable: true,
 			},
@@ -231,16 +352,10 @@ func TestComponentsStartup(t *testing.T) {
 					Enable: true,
 				},
 			},
-			EtcdConf: etcd.Conf{
-				Enable: true,
-			},
-			ValKeyConf: valkey.Conf{
-				Enable: true,
-			},
+			EtcdConf:   eConf,
+			ValKeyConf: vConf,
 		}
-		assert.Panics(t, func() {
-			componentsStartup("tester", cfg)
-		})
+		componentsStartup("tester", cfg)
 	})
 }
 
@@ -250,17 +365,11 @@ func TestComponentsShutdown(t *testing.T) {
 		componentsShutdown(cfg)
 	})
 
-	t.Run("ComponentsShutdown-Panic", func(t *testing.T) {
+	t.Run("ComponentsShutdown-Enable", func(t *testing.T) {
 		cfg := &config.Config{
-			RedisConf: redis.Conf{
-				Enable: true,
-			},
-			RedisClusterConf: redis.ClusterConf{
-				Enable: true,
-			},
-			DBConf: db.Conf{
-				Enable: true,
-			},
+			RedisConf:        sConf,
+			RedisClusterConf: cConf,
+			DBConf:           dbConf,
 			JwtConf: &jwt.Conf{
 				Enable: true,
 			},
@@ -272,12 +381,8 @@ func TestComponentsShutdown(t *testing.T) {
 					Enable: true,
 				},
 			},
-			EtcdConf: etcd.Conf{
-				Enable: true,
-			},
-			ValKeyConf: valkey.Conf{
-				Enable: true,
-			},
+			EtcdConf:   eConf,
+			ValKeyConf: vConf,
 		}
 		componentsShutdown(cfg)
 	})
