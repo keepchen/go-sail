@@ -71,7 +71,6 @@ func TestCall(t *testing.T) {
 			fmt.Println("Call-mandatory-true...")
 		})
 		Call("Call-mandatory-true", true)
-
 		time.Sleep(time.Second * 2)
 	})
 
@@ -80,7 +79,6 @@ func TestCall(t *testing.T) {
 			fmt.Println("Call-mandatory-false...")
 		})
 		Call("Call-mandatory-false", false)
-
 		time.Sleep(time.Second * 2)
 	})
 }
@@ -92,7 +90,6 @@ func TestMustCall(t *testing.T) {
 		})
 		t.Log(scheduler)
 		MustCall("MustCall", true)
-
 		time.Sleep(time.Second * 2)
 	})
 }
