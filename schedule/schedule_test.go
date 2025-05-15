@@ -3,6 +3,7 @@ package schedule
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -57,10 +58,12 @@ func TestCall(t *testing.T) {
 			fmt.Println("Call...")
 		})
 		Call("Call", false)
+		time.Sleep(time.Second * 2)
 	})
 
 	t.Run("Call-NoExist", func(t *testing.T) {
 		Call("Call-NoExist", false)
+		time.Sleep(time.Second * 2)
 	})
 
 	t.Run("Call-mandatory-true", func(t *testing.T) {
@@ -68,6 +71,8 @@ func TestCall(t *testing.T) {
 			fmt.Println("Call-mandatory-true...")
 		})
 		Call("Call-mandatory-true", true)
+
+		time.Sleep(time.Second * 2)
 	})
 
 	t.Run("Call-mandatory-false", func(t *testing.T) {
@@ -75,6 +80,8 @@ func TestCall(t *testing.T) {
 			fmt.Println("Call-mandatory-false...")
 		})
 		Call("Call-mandatory-false", false)
+
+		time.Sleep(time.Second * 2)
 	})
 }
 
@@ -85,5 +92,7 @@ func TestMustCall(t *testing.T) {
 		})
 		t.Log(scheduler)
 		MustCall("MustCall", true)
+
+		time.Sleep(time.Second * 2)
 	})
 }
