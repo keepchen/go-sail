@@ -12,7 +12,7 @@ const (
 	FirstDayOfMonth                       = "0 0 1 * *"             //每月的第一天的0点0分
 	LastDayOfMonth                        = "0 0 L * *"             //每月的最后一天的0点0分
 	FirstDayOfWeek                        = "0 0 * * 1"             //每周的第一天（周一）的0点0分
-	LastDayOfWeek                         = "0 0 * * 7"             //每周的最后一天（周天）的0点0分
+	LastDayOfWeek                         = "0 0 * * 6"             //每周的最后一天（周天）的0点0分
 	TenClockAtWeekday                     = "0 10 * * MON-FRI"      //每个工作日（周一~周五）的上午10点0分
 	TenClockAtWeekend                     = "0 10 * * SAT,SUN"      //每个周末（周六和周日）的上午10点0分
 	HourlyBetween9And17ClockAtWeekday     = "0 9-17 * * MON-FRI"    //每个工作日（周一~周五）的上午9点0分到下午5点0分每小时一次

@@ -266,8 +266,23 @@ func Call(jobName string, mandatory bool) {
 	if mandatory {
 		job.task()
 	} else {
-		if job.wrappedTaskFunc != nil {
-			job.wrappedTaskFunc()
+		ticker := time.NewTicker(time.Millisecond * 500)
+		retryTimes := 0
+		defer ticker.Stop()
+	RetryLoop:
+		for {
+			select {
+			case <-ticker.C:
+				if job.wrappedTaskFunc != nil {
+					job.wrappedTaskFunc()
+					break RetryLoop
+				}
+				retryTimes++
+
+				if retryTimes > 2 {
+					break RetryLoop
+				}
+			}
 		}
 	}
 }
@@ -299,6 +314,23 @@ func MustCall(jobName string, mandatory bool) {
 	if mandatory {
 		job.task()
 	} else {
-		job.wrappedTaskFunc()
+		ticker := time.NewTicker(time.Millisecond * 500)
+		retryTimes := 0
+		defer ticker.Stop()
+	RetryLoop:
+		for {
+			select {
+			case <-ticker.C:
+				if job.wrappedTaskFunc != nil {
+					job.wrappedTaskFunc()
+					break RetryLoop
+				}
+				retryTimes++
+
+				if retryTimes > 2 {
+					break RetryLoop
+				}
+			}
+		}
 	}
 }
