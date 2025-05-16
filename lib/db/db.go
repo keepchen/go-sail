@@ -44,13 +44,20 @@ func NewFreshDB(conf Conf) (rInstance *gorm.DB, rErr error, wInstance *gorm.DB, 
 func mustInitDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 	loggerSvc := NewZapLoggerForGorm(logger.GetLogger(), conf)
 	loggerSvc.SetAsDefault()
-	dbPtr, err := gorm.Open(dialect, &gorm.Config{
+
+	gormConf := &gorm.Config{
 		Logger:                                   loggerSvc,
 		AllowGlobalUpdate:                        conf.AllowGlobalUpdate,
 		SkipDefaultTransaction:                   conf.SkipDefaultTransaction,
 		DisableNestedTransaction:                 conf.DisableNestedTransaction,
 		DisableForeignKeyConstraintWhenMigrating: conf.DisableForeignKeyConstraintWhenMigrating,
-	})
+	}
+
+	if conf.NowFunc != nil {
+		gormConf.NowFunc = conf.NowFunc
+	}
+
+	dbPtr, err := gorm.Open(dialect, gormConf)
 	if err != nil {
 		panic(err)
 	}

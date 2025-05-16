@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -26,6 +27,9 @@ var (
 			MaxIdleConnCount:       10,
 			ConnMaxLifeTimeMinutes: 30,
 			ConnMaxIdleTimeMinutes: 10,
+		},
+		NowFunc: func() time.Time {
+			return time.Now().In(time.UTC)
 		},
 		Mysql: MysqlConf{
 			Read: MysqlConfItem{

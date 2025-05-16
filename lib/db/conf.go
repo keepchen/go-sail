@@ -1,5 +1,9 @@
 package db
 
+import (
+	"time"
+)
+
 // Conf 配置信息
 //
 // <yaml example>
@@ -250,6 +254,7 @@ type Conf struct {
 	Sqlserver                                SqlserverConf      `yaml:"sqlserver" toml:"sqlserver" json:"sqlserver"`                                                                                                                             //sqlserver配置
 	Sqlite                                   SqliteConf         `yaml:"sqlite" toml:"sqlite" json:"sqlite"`                                                                                                                                      //sqlite配置
 	Clickhouse                               ClickhouseConf     `yaml:"clickhouse" toml:"clickhouse" json:"clickhouse"`                                                                                                                          //clickhouse配置
+	NowFunc                                  func() time.Time   `yaml:"-" toml:"-" json:"-"`                                                                                                                                                     //当前时间戳函数 @doc: https://gorm.io/docs/gorm_config.html#NowFunc
 }
 
 // Logger 日志配置
