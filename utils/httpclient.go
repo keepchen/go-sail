@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -63,9 +62,9 @@ func (httpClientImpl) SendRequest(method, url string, jsonPayload []byte, header
 
 	statusCode = resp.StatusCode
 	response, err = io.ReadAll(resp.Body)
-	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("http code: %d", resp.StatusCode)
-	}
+	//if resp.StatusCode != http.StatusOK {
+	//	err = fmt.Errorf("http code: %d", resp.StatusCode)
+	//}
 
 	return
 }

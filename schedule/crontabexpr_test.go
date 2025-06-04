@@ -15,6 +15,8 @@ func TestPrintExpr(t *testing.T) {
 		t.Log(LastDayOfMonth)
 		t.Log(FirstDayOfWeek)
 		t.Log(LastDayOfWeek)
+		t.Log(DailyAtTenAM)
+		t.Log(DailyAtTwentyPM)
 		t.Log(TenClockAtWeekday)
 		t.Log(TenClockAtWeekend)
 		t.Log(HourlyBetween9And17ClockAtWeekday)
