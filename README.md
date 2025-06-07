@@ -141,8 +141,11 @@ func main() {
       <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
     </td>
   </tr>
-</table>
+</table>  
+
+## 赞助  
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")  
 
 ## Star历史  
-![](https://starchart.cc/keepchen/go-sail.svg)
+![star history](https://starchart.cc/keepchen/go-sail.svg)
 
