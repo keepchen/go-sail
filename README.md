@@ -65,6 +65,7 @@ func main() {
   - Etcd  
   - Nats  
   - Redis  
+  - Valkey  
 - [x] 服务注册与发现  
   - Nacos  
   - Etcd  
@@ -124,10 +125,10 @@ func main() {
       <a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200" title="https://stardots.io"/></a>
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
+      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
+      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
     </td>
   </tr>
   <tr>
@@ -135,10 +136,10 @@ func main() {
       <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
+      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
+      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
     </td>
   </tr>
 </table>  

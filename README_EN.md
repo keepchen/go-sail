@@ -10,14 +10,14 @@
 [![Snyk Security](https://img.shields.io/badge/Snyk-Secure-blueviolet?logo=snyk)](https://snyk.io/test/github/keepchen/go-sail)
 [![LICENSE: MIT](https://img.shields.io/github/license/keepchen/go-sail.svg?style=flat)](LICENSE)    
 
-English | [简体中文](./README.md)
+English | [简体中文](./README.md)  
 
-## Whats the go-sail？
+## Whats the go-sail?  
 
 **go-sail** is a lightweight progressive web framework implemented using Go language. **It is not the product of reinventing the wheel**, but stands on the shoulders of giants and integrates existing excellent components to help users build stable and reliable services in the simplest way.
 As its name suggests, you can regard it as the beginning of your own journey in the golang ecosystem. go-sail will help you start lightly and set sail.
 
-## How to use
+## How to use  
 > go version >= 1.20  
 
 > go get -u github.com/keepchen/go-sail/v3
@@ -47,7 +47,7 @@ Console screenshot after launched like this:
 
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
-## Documentation
+## Documentation  
 [Docs](https://go-sail.dev)
 
 ## Features  
@@ -64,7 +64,8 @@ Console screenshot after launched like this:
     - Nacos
     - Etcd
     - Nats
-    - Redis
+    - Redis  
+    - Valkey
 - [x] Service Registration and Discovery  
     - Nacos
     - Etcd
@@ -106,16 +107,16 @@ Console screenshot after launched like this:
     - Redocly
     - Swagger  
 
-#### Other Plugins
+#### Other Plugins  
 [README.md](plugins/README.md)  
 
-## Big Thanks
+## Big Thanks  
 Thank you to everyone who provided valuable suggestions and comments during the experience and use, as well as provided other kinds of help!
 - Configuration modular optimization proposal [@fujilin](https://github.com/fujilin)
 - Responder syntax sugar enhancement optimization proposal [@lichuanzhang](https://github.com/lichuanzhang)
 - Logo beautification [@ShuaiRen34](https://twitter.com/ShuaiRen34)
 
-## Other
+## Other  
 - PR is welcome: [pull request](https://github.com/keepchen/go-sail/compare)
 - Issue is welcome: [issue](https://github.com/keepchen/go-sail/issues/new/choose)
 - Thank you for your star if you like this project :)  
@@ -127,10 +128,10 @@ Thank you to everyone who provided valuable suggestions and comments during the 
       <a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200" title="https://stardots.io"/></a>
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
+      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
+      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
     </td>
   </tr>
   <tr>
@@ -138,15 +139,16 @@ Thank you to everyone who provided valuable suggestions and comments during the 
       <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
+      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
     </td>
     <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
+      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
     </td>
   </tr>
+  
 </table>  
 
-## Sponor  
+## Sponsors  
 [![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")  
 
 ## Star History  
