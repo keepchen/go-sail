@@ -30,7 +30,7 @@ require (
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.6
 	github.com/tjfoc/gmsm v1.4.1
-	github.com/valkey-io/valkey-go v1.0.60
+	github.com/valkey-io/valkey-go v1.0.63
 	go.etcd.io/etcd/client/v3 v3.6.4
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.41.0
