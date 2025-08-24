@@ -275,12 +275,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		body.Code = anotherErrNoneCode.Int()
 	}
 	body.Message = constants.CodeType(body.Code).String(language...)
-	if loc != nil {
-		//loc可能用于后续其他字段，这里暂时这样调用
-		body.Timestamp = time.Now().In(loc).UnixMilli()
-	} else {
-		body.Timestamp = time.Now().UnixMilli()
-	}
+
 	switch code {
 	case anotherErrNoneCode:
 		body.Success = constants.Success
@@ -352,6 +347,13 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		case (vf.Kind() == reflect.Slice || vf.Kind() == reflect.Array) && vf.Len() == 0:
 			body.Data = emptyDataField
 		}
+	}
+
+	if loc != nil {
+		//loc可能用于后续其他字段，这里暂时这样调用
+		body.Timestamp = time.Now().In(loc).UnixMilli()
+	} else {
+		body.Timestamp = time.Now().UnixMilli()
 	}
 
 	a.requestId = requestId

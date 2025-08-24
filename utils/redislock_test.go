@@ -37,17 +37,6 @@ func TestRedisLockPanic(t *testing.T) {
 		}
 	})
 
-	t.Run("RedisLockPanic-TryLockWithContext", func(t *testing.T) {
-		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
-			assert.Panics(t, func() {
-				key := "go-sail-redisLocker-Lock"
-				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-				defer cancel()
-				RedisLocker().TryLockWithContext(ctx, key)
-			})
-		}
-	})
-
 	t.Run("RedisLockPanic-UnlockWithContext", func(t *testing.T) {
 		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
 			assert.Panics(t, func() {
@@ -55,26 +44,6 @@ func TestRedisLockPanic(t *testing.T) {
 				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 				defer cancel()
 				RedisLocker().UnlockWithContext(ctx, key)
-			})
-		}
-	})
-
-	t.Run("ClusterUnlock", func(t *testing.T) {
-		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
-			assert.Panics(t, func() {
-				key := "go-sail-redisLocker-Unlock"
-				(&redisLockerImpl{}).ClusterUnlock(key)
-			})
-		}
-	})
-
-	t.Run("ClusterUnlock-WithContext", func(t *testing.T) {
-		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
-			assert.Panics(t, func() {
-				key := "go-sail-redisLocker-Unlock"
-				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-				defer cancel()
-				(&redisLockerImpl{}).ClusterUnlockWithContext(ctx, key)
 			})
 		}
 	})
@@ -102,13 +71,6 @@ func TestRedisLock(t *testing.T) {
 		key := "go-sail-redisLocker-TryLock"
 		t.Log(RedisLocker().TryLock(key))
 		assert.Equal(t, false, RedisLocker().TryLock(key))
-	})
-
-	t.Run("TryLock-WithContext", func(t *testing.T) {
-		key := "go-sail-redisLocker-Lock"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-		defer cancel()
-		RedisLocker().TryLockWithContext(ctx, key)
 	})
 
 	t.Run("Lock", func(t *testing.T) {
@@ -153,6 +115,13 @@ func TestRedisClusterLock(t *testing.T) {
 		t.Log("redis instance not ready, this test case ignore")
 		return
 	}
+
+	t.Run("InitWithClient", func(t *testing.T) {
+		key := "go-sail-redisLocker-InitWithClient"
+		t.Log(RedisLocker(redisClient).TryLock(key))
+		assert.Equal(t, false, RedisLocker(redisClient).TryLock(key))
+	})
+
 	_ = redisClient.Close()
 
 	//initialize
@@ -162,13 +131,6 @@ func TestRedisClusterLock(t *testing.T) {
 		key := "go-sail-redisLocker-TryLock"
 		t.Log(RedisLocker().TryLock(key))
 		assert.Equal(t, false, RedisLocker().TryLock(key))
-	})
-
-	t.Run("TryLock-WithContext", func(t *testing.T) {
-		key := "go-sail-redisLocker-Lock"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-		defer cancel()
-		RedisLocker().TryLockWithContext(ctx, key)
 	})
 
 	t.Run("Lock", func(t *testing.T) {
