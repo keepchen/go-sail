@@ -120,7 +120,7 @@ func main() {
 
 ## 使用案例  
 <table style="text-align: center">
-  <tr>
+  <tr style="height:200px">
     <td style="border: 1px solid black; padding: 8px;">
       <a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200" title="https://stardots.io"/></a>
     </td>
@@ -131,7 +131,7 @@ func main() {
       <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
     </td>
   </tr>
-  <tr>
+  <tr style="height:200px">
     <td style="border: 1px solid black; padding: 8px;">
       <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
     </td>
