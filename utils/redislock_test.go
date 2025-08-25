@@ -17,6 +17,14 @@ func TestRedisLockerImplLockerValue(t *testing.T) {
 }
 
 func TestRedisLockPanic(t *testing.T) {
+	t.Run("RedisLockPanic-Init-Panic", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				t.Log(RedisLocker())
+			})
+		}
+	})
+	
 	t.Run("RedisLockPanic-Lock", func(t *testing.T) {
 		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
 			assert.Panics(t, func() {
@@ -31,7 +39,16 @@ func TestRedisLockPanic(t *testing.T) {
 	t.Run("RedisLockPanic-TryLock", func(t *testing.T) {
 		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
 			assert.Panics(t, func() {
-				key := "go-sail-redisLocker-Lock"
+				key := "go-sail-redisLocker-TryLock"
+				RedisLocker().TryLock(key)
+			})
+		}
+	})
+
+	t.Run("RedisLockPanic-TryLockWithContext", func(t *testing.T) {
+		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
+			assert.Panics(t, func() {
+				key := "go-sail-redisLocker-TryLockWithContext"
 				RedisLocker().TryLock(key)
 			})
 		}
@@ -40,7 +57,7 @@ func TestRedisLockPanic(t *testing.T) {
 	t.Run("RedisLockPanic-UnlockWithContext", func(t *testing.T) {
 		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
 			assert.Panics(t, func() {
-				key := "go-sail-redisLocker-Lock"
+				key := "go-sail-redisLocker-UnlockWithContext"
 				ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 				defer cancel()
 				RedisLocker().UnlockWithContext(ctx, key)
@@ -88,7 +105,7 @@ func TestRedisLock(t *testing.T) {
 	})
 
 	t.Run("Unlock-WithContext", func(t *testing.T) {
-		key := "go-sail-redisLocker-Unlock"
+		key := "go-sail-redisLocker-UnlockWithContext"
 		t.Log(RedisLocker().TryLock(key))
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
@@ -148,7 +165,7 @@ func TestRedisClusterLock(t *testing.T) {
 	})
 
 	t.Run("Unlock-WithContext", func(t *testing.T) {
-		key := "go-sail-redisLocker-Unlock"
+		key := "go-sail-redisLocker-UnlockWithContext"
 		t.Log(RedisLocker().TryLock(key))
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
