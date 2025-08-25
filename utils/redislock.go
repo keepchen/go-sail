@@ -27,6 +27,16 @@ type IRedisLocker interface {
 	//
 	// 该方法会立即返回锁定成功与否的结果
 	TryLock(key string) bool
+	// TryLockWithContext redis锁-尝试上锁
+	//
+	// using SetNX
+	//
+	// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+	//
+	// # Note
+	//
+	// 该方法会立即返回锁定成功与否的结果
+	TryLockWithContext(ctx context.Context, key string) bool
 	// Lock redis锁-上锁
 	//
 	// using SetNX
@@ -110,6 +120,19 @@ func (rl redisLockerImpl) TryLock(key string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), redisExecuteTimeout)
 	defer cancel()
 
+	return rl.TryLockWithContext(ctx, key)
+}
+
+// TryLockWithContext redis锁-尝试上锁
+//
+// using SetNX
+//
+// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+//
+// # Note
+//
+// 该方法会立即返回锁定成功与否的结果
+func (rl redisLockerImpl) TryLockWithContext(ctx context.Context, key string) bool {
 	lockOk, _ := rl.client.SetNX(ctx, key, lockerValue(), lockTTL).Result()
 
 	//锁定成功，开始执行自动续期
@@ -187,7 +210,7 @@ func (rl redisLockerImpl) Lock(ctx context.Context, key string) {
 			for {
 				select {
 				case <-ticker.C:
-					if ok, redisErr := rl.client.ExpireXX(innerCtx, key, lockTTL).Result(); !ok || redisErr != nil {
+					if expOk, expErr := rl.client.ExpireXX(innerCtx, key, lockTTL).Result(); !expOk || expErr != nil {
 						break LOOP
 					}
 				case <-cancelChan:
