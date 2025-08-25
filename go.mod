@@ -21,7 +21,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/prometheus/client_golang v1.22.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/segmentio/kafka-go v0.4.48
+	github.com/segmentio/kafka-go v0.4.49
 	github.com/shirou/gopsutil/v4 v4.25.7
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.9.1
