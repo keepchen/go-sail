@@ -11,9 +11,12 @@ type ICodeType interface {
 // CodeType 错误码类型
 type CodeType int
 
+// MMBox 语言码-错误码映射类型
+type MMBox map[LanguageCode]map[ICodeType]string
+
 type errorCodeTypeMsgMap struct {
 	mux  *sync.RWMutex
-	maps map[LanguageCode]map[ICodeType]string
+	maps MMBox
 }
 
 var (
@@ -73,7 +76,7 @@ func init() {
 	once.Do(func() {
 		ctm = &errorCodeTypeMsgMap{
 			mux:  &sync.RWMutex{},
-			maps: make(map[LanguageCode]map[ICodeType]string),
+			maps: make(MMBox),
 		}
 
 		for language, codeMsg := range initErrorCodeMsgMap {
