@@ -43,6 +43,8 @@ type ConfigProvider interface {
 	ViaNacos(endpoints, namespaceID, groupName, dataID string, clientCfg ...constant.ClientConfig) Parser
 }
 
+var _ ConfigProvider = &configImpl{}
+
 // ViaFile 通过文件操作配置
 func (ci *configImpl) ViaFile(filename string) Parser {
 	content, err := utils.File().GetContents(filename)
@@ -142,12 +144,19 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 	if err != nil && ci.panicWhileErr {
 		panic(err)
 	}
-	content, err := client.GetConfig(vo.ConfigParam{
-		DataId: dataID,
-		Group:  groupName,
-	})
-	if err != nil && ci.panicWhileErr {
-		panic(err)
+	if client == nil && ci.panicWhileErr {
+		panic("client is nil")
+	}
+	var content []byte
+	if client != nil {
+		data, err := client.GetConfig(vo.ConfigParam{
+			DataId: dataID,
+			Group:  groupName,
+		})
+		content = []byte(data)
+		if err != nil && ci.panicWhileErr {
+			panic(err)
+		}
 	}
 
 	//当监听函数被设置时，需要执行监听
@@ -163,7 +172,7 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 		})
 	}
 
-	return &parserImpl{content: []byte(content)}
+	return &parserImpl{content: content}
 }
 
 // parserImpl 解析器实现
@@ -177,6 +186,9 @@ type Parser interface {
 	Parse(fn func(content []byte, viaWatch bool))
 }
 
+var _ Parser = &parserImpl{}
+
+// Parse 解析处理函数
 func (pi *parserImpl) Parse(fn func(content []byte, viaWatch bool)) {
 	if fn != nil {
 		fn(pi.content, false)
