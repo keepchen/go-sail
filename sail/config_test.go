@@ -85,3 +85,19 @@ func TestConfigViaEtcd(t *testing.T) {
 		Config(false, watcherFunc).ViaEtcd(etcdConf, testConfigFilename).Parse(watcherFunc)
 	})
 }
+
+func TestConfigViaNacos(t *testing.T) {
+	t.Run("ConfigViaNacos-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			Config(true, nil).ViaNacos("127.0.0.1:8848", "", "", "this-file-not-exist.json")
+		})
+	})
+	t.Run("ConfigViaNacos-None-Panic", func(t *testing.T) {
+		Config(false, nil).ViaNacos("127.0.0.1:8848", "", "", "this-file-not-exist.json")
+	})
+	t.Run("ConfigViaNacos-Truly", func(t *testing.T) {
+		Config(false, watcherFunc).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename)
+
+		Config(false, watcherFunc).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename).Parse(watcherFunc)
+	})
+}
