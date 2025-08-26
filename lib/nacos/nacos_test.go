@@ -28,6 +28,42 @@ func TestInitClient(t *testing.T) {
 	})
 }
 
+func TestNewConfigClient(t *testing.T) {
+	t.Run("NewConfigClient-NonValue", func(t *testing.T) {
+		t.Log(NewConfigClient("go-sail", "", ""))
+		_ = os.RemoveAll("logs")
+	})
+
+	t.Run("NewConfigClient-ServerConfig", func(t *testing.T) {
+		conf := nacosV2Constant.ClientConfig{}
+		t.Log(NewConfigClient("go-sail", "127.0.0.1:8848", "abc", conf))
+		_ = os.RemoveAll("logs")
+	})
+
+	t.Run("NewConfigClient", func(t *testing.T) {
+		t.Log(NewConfigClient("go-sail", "127.0.0.1:8848", "abc"))
+		_ = os.RemoveAll("logs")
+	})
+}
+
+func TestNewNamingClient(t *testing.T) {
+	t.Run("NewNamingClient-NonValue", func(t *testing.T) {
+		t.Log(NewNamingClient("go-sail", "", ""))
+		_ = os.RemoveAll("logs")
+	})
+
+	t.Run("NewNamingClient-ServerConfig", func(t *testing.T) {
+		conf := nacosV2Constant.ClientConfig{}
+		t.Log(NewNamingClient("go-sail", "127.0.0.1:8848", "abc", conf))
+		_ = os.RemoveAll("logs")
+	})
+
+	t.Run("NewNamingClient", func(t *testing.T) {
+		t.Log(NewNamingClient("go-sail", "127.0.0.1:8848", "abc"))
+		_ = os.RemoveAll("logs")
+	})
+}
+
 func TestGetConfigClient(t *testing.T) {
 	t.Run("GetConfigClient", func(t *testing.T) {
 		t.Log(GetConfigClient())
