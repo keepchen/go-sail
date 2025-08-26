@@ -13,7 +13,7 @@ const (
 // 错误码信息表
 //
 // READONLY for concurrency safety
-var initErrorCodeMsgMap = map[LanguageCode]map[ICodeType]string{
+var initErrorCodeMsgMap = MMBox{
 	LanguageEnglish: {
 		ErrNone:                      "SUCCESS",
 		ErrRequestParamsInvalid:      "Bad request parameters",
