@@ -121,3 +121,42 @@ func TestValidTokenExpired(t *testing.T) {
 		t.Log(claims)
 	})
 }
+
+func TestEncrypt(t *testing.T) {
+	t.Run("Encrypt", func(t *testing.T) {
+		conf := &config.Config{
+			JwtConf: &jwt.Conf{
+				Enable:     true,
+				Algorithm:  string(jwt.SigningMethodRS256),
+				PublicKey:  string(publicKey),
+				PrivateKey: string(privateKey),
+			},
+		}
+		conf.JwtConf.MustLoad()
+		config.Set(conf)
+		encryptedStr, err := JWT().Encrypt(uid)
+		t.Log("Encrypt:", encryptedStr)
+		assert.NoError(t, err)
+	})
+}
+
+func TestDecrypt(t *testing.T) {
+	t.Run("Decrypt", func(t *testing.T) {
+		conf := &config.Config{
+			JwtConf: &jwt.Conf{
+				Enable:     true,
+				Algorithm:  string(jwt.SigningMethodRS256),
+				PublicKey:  string(publicKey),
+				PrivateKey: string(privateKey),
+			},
+		}
+		conf.JwtConf.MustLoad()
+		config.Set(conf)
+		encryptedStr, err := JWT().Encrypt(uid)
+		t.Log("Encrypt:", encryptedStr)
+		plaintext, err := JWT().Decrypt(encryptedStr)
+		t.Log("Decrypt:", plaintext)
+		assert.NoError(t, err)
+		assert.Equal(t, plaintext, uid)
+	})
+}
