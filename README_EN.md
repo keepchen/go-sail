@@ -47,6 +47,149 @@ Console screenshot after launched like this:
 
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
+
+## Show case  
+### Configuration  
+```go
+parseFn := func(content []byte, viaWatch bool){
+    fmt.Println("config content: ", string(content))
+    if viaWatch {
+        //reload config...	
+    }
+}
+etcdConf := etcd.Conf{
+	endpoints: "",
+	username: "",
+	password: "",
+}
+key := "go-sail.config.yaml"
+
+sail.Config(true, parseFn).ViaEtcd(etcdConf, key).Parse(parseFn)
+```
+### Log trace  
+```go
+func UserRegisterSvc(c *gin.Context) {
+  ...
+  sail.LogTrace(c).GetLogger().Warn("log something...")
+  ...
+}
+```  
+### JWT authentication  
+- Issue token  
+```go
+func UserLoginSvc(c *gin.Context) {
+  ...
+  uid := "user-1000"
+  exp := time.Now().Add(time.Hour * 24).Unix()
+  otherFields := map[string]interface{}{
+      "nickname": "go-sail",
+      "avatar": "https://go-sail.dev/assets/avatar/1.png",
+      ...
+  }
+  ok, claims, err := sail.JWT().MakeToken(uid, exp, otherFields)
+  ...
+}
+```  
+- Authentication  
+```go
+func UserInfoSvc(c *gin.Context) {
+  ...
+  ok, claims, err := sail.JWT().ValidToken(token)
+  ...
+}
+```  
+### Components  
+#### Responder  
+```go
+func UserInfoSvc(c *gin.Context) {
+  sail.Response(c).Wrap(constants.ErrNone, resp).Send()
+}
+```  
+
+#### Database  
+- Read / Write  
+```go
+func UserInfoSvc(c *gin.Context) {
+  uid := "user-1000"
+  var user models.User
+  //READ: query user info
+  sail.GetDBR().Where("uid = ?", uid).First(&user)
+  ...
+  //WRITE: update user info
+  sail.GetDBW().Model(&models.User{}).
+      Where("uid = ?", uid).
+      Updates(map[string]interface{}{
+          "avatar": "https://go-sail.dev/assets/avatar/2.png"	
+      })
+}
+```  
+- Transaction  
+```go
+func UserInfoSvc(c *gin.Context) {
+  uid := "user-1000"
+  var user models.User
+  //READ: query user info
+  sail.GetDBR().Where("uid = ?", uid).First(&user)
+  ...
+  //WRITE: update user info
+  err := sail.GetDBW().Treansaction(func(tx *gorm.DB){
+      e1 := tx.Model(&models.User{}).
+              Where("uid = ?", uid).
+              Updates(map[string]interface{}{
+                  "avatar": "https://go-sail.dev/assets/avatar/2.png"
+              }).Error
+      if e1 != nil {
+          return e1
+      }
+      e2 := tx.Create(&models.UserLoginHistory{
+                Uid: uid,
+                ...
+              }).Error
+      return e2
+  })
+}
+```  
+#### Redis
+```go
+func UserInfoSvc(c *gin.Context) {
+  ...
+  sail.GetRedis().Set(ctx, "go-sail:userInfo", "user-1000", time.Hour*24).Result()
+  ...
+}
+```  
+### Task schedule  
+- Interval  
+```go
+func TodoSomething() {
+  fn := func() { ... }
+  sail.Schedule("todoSomething", fn).Daily()
+}
+```  
+- Linux Crontab style  
+```go
+func TodoSomething() {
+  fn := func() { ... }
+  sail.Schedule("todoSomething", fn).RunAt("*/5 * * * *")
+}
+```  
+- Race detection  
+```go
+func TodoSomething() {
+  fn := func() { ... }
+  sail.Schedule("todoSomething", fn).Withoutoverlapping().RunAt("*/5 * * * *")
+}
+```  
+### Distributed lock  
+```go
+func UpdateUserBalance() {
+  if !utils.RedisLocker().TryLock(key) {
+      return false
+  }
+  defer utils.RedisLocker().Unlock(key)
+  ...
+}
+```  
+
 ## Documentation  
 [Docs](https://go-sail.dev)
 
@@ -94,18 +237,22 @@ Console screenshot after launched like this:
   - Prometheus
   - Pprof
   - Log Exporter  
-- Performance monitor  
-  - Prometheus  
-  - Pprof  
+  - Performance monitor  
+    - Prometheus  
+    - Pprof  
 - [x] API error codes
-    - Dynamic injection  
-    - Internationalization  
+  - Dynamic injection  
+  - Internationalization  
 - [x] Distributed lock based on Redis  
   - Blocking  
   - None-Blocking  
 - [x] API Documentation
-    - Redocly
-    - Swagger  
+  - Redocly
+  - Swagger  
+- [x] Configuration  
+  - File
+  - Etcd
+  - Nacos  
 
 #### Other Plugins  
 [README.md](plugins/README.md)  

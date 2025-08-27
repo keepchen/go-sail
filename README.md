@@ -47,6 +47,148 @@ func main() {
 
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />  
 
+## 示例  
+### 配置读取  
+```go
+parseFn := func(content []byte, viaWatch bool){
+    fmt.Println("config content: ", string(content))
+    if viaWatch {
+        //reload config...	
+    }
+}
+etcdConf := etcd.Conf{
+	endpoints: "",
+	username: "",
+	password: "",
+}
+key := "go-sail.config.yaml"
+
+sail.Config(true, parseFn).ViaEtcd(etcdConf, key).Parse(parseFn)
+```
+### 链路日志追踪  
+```go
+func UserRegisterSvc(c *gin.Context) {
+  ...
+  sail.LogTrace(c).GetLogger().Warn("log something...")
+  ...
+}
+```  
+### JWT认证  
+- 颁发令牌  
+```go
+func UserLoginSvc(c *gin.Context) {
+  ...
+  uid := "user-1000"
+  exp := time.Now().Add(time.Hour * 24).Unix()
+  otherFields := map[string]interface{}{
+      "nickname": "go-sail",
+      "avatar": "https://go-sail.dev/assets/avatar/1.png",
+      ...
+  }
+  ok, claims, err := sail.JWT().MakeToken(uid, exp, otherFields)
+  ...
+}
+```  
+- 认证  
+```go
+func UserInfoSvc(c *gin.Context) {
+  ...
+  ok, claims, err := sail.JWT().ValidToken(token)
+  ...
+}
+```  
+### 组件  
+#### 响应器  
+```go
+func UserInfoSvc(c *gin.Context) {
+  sail.Response(c).Wrap(constants.ErrNone, resp).Send()
+}
+```  
+
+#### 数据库  
+- 读写分离  
+```go
+func UserInfoSvc(c *gin.Context) {
+  uid := "user-1000"
+  var user models.User
+  //READ: query user info
+  sail.GetDBR().Where("uid = ?", uid).First(&user)
+  ...
+  //WRITE: update user info
+  sail.GetDBW().Model(&models.User{}).
+      Where("uid = ?", uid).
+      Updates(map[string]interface{}{
+          "avatar": "https://go-sail.dev/assets/avatar/2.png"	
+      })
+}
+```  
+- 事务  
+```go
+func UserInfoSvc(c *gin.Context) {
+  uid := "user-1000"
+  var user models.User
+  //READ: query user info
+  sail.GetDBR().Where("uid = ?", uid).First(&user)
+  ...
+  //WRITE: update user info
+  err := sail.GetDBW().Treansaction(func(tx *gorm.DB){
+      e1 := tx.Model(&models.User{}).
+              Where("uid = ?", uid).
+              Updates(map[string]interface{}{
+                  "avatar": "https://go-sail.dev/assets/avatar/2.png"
+              }).Error
+      if e1 != nil {
+          return e1
+      }
+      e2 := tx.Create(&models.UserLoginHistory{
+                Uid: uid,
+                ...
+              }).Error
+      return e2
+  })
+}
+```  
+#### Redis  
+```go
+func UserInfoSvc(c *gin.Context) {
+  ...
+  sail.GetRedis().Set(ctx, "go-sail:userInfo", "user-1000", time.Hour*24).Result()
+  ...
+}
+```  
+### 计划任务  
+- 周期性的  
+```go
+func TodoSomething() {
+  fn := func() { ... }
+  sail.Schedule("todoSomething", fn).Daily()
+}
+```  
+- Linux Crontab风格的  
+```go
+func TodoSomething() {
+  fn := func() { ... }
+  sail.Schedule("todoSomething", fn).RunAt("*/5 * * * *")
+}
+```  
+- 竞态检测  
+```go
+func TodoSomething() {
+  fn := func() { ... }
+  sail.Schedule("todoSomething", fn).Withoutoverlapping().RunAt("*/5 * * * *")
+}
+```  
+### 分布式锁  
+```go
+func UpdateUserBalance() {
+  if !utils.RedisLocker().TryLock(key) {
+      return false
+  }
+  defer utils.RedisLocker().Unlock(key)
+  ...
+}
+```  
+
 ## 文档  
 [文档传送门](https://go-sail.dev)
 
@@ -94,6 +236,9 @@ func main() {
   - Prometheus  
   - Pprof 
   - 日志导出器    
+  - 性能检测  
+    - Prometheus
+    - Pprof
 - [x] 接口错误码  
   - 动态注入  
   - 国际化  
@@ -102,7 +247,11 @@ func main() {
   - 非阻塞式  
 - [x] 接口文档  
   - Redocly  
-  - Swagger
+  - Swagger  
+- [x] 配置管理  
+  - File  
+  - Etcd  
+  - Nacos  
 
 #### 其他插件  
 [README.md](plugins/README.md)  
