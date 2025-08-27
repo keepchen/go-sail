@@ -181,10 +181,10 @@ func TodoSomething() {
 ### 分布式锁  
 ```go
 func UpdateUserBalance() {
-  if !utils.RedisLocker().TryLock(key) {
+  if !sail.RedisLocker().TryLock(key) {
       return false
   }
-  defer utils.RedisLocker().Unlock(key)
+  defer sail.RedisLocker().Unlock(key)
   ...
 }
 ```  
