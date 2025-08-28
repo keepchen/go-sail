@@ -126,12 +126,7 @@ func UserInfoSvc(c *gin.Context) {
 ```go
 func UserInfoSvc(c *gin.Context) {
   uid := "user-1000"
-  var user models.User
-  //READ: query user info
-  sail.GetDBR().Where("uid = ?", uid).First(&user)
-  ...
-  //WRITE: update user info
-  err := sail.GetDBW().Treansaction(func(tx *gorm.DB){
+  err := sail.GetDBW().Transaction(func(tx *gorm.DB){
       e1 := tx.Model(&models.User{}).
               Where("uid = ?", uid).
               Updates(map[string]interface{}{
