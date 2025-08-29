@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -104,14 +105,57 @@ type responseEngine struct {
 	httpCode  int
 	data      interface{}
 	requestId string
+	spanId    string
+	entryAt   int64
+	language  string
 }
 
 var _ Responder = &responseEngine{}
 
+// 定义 sync.Pool
+var responseEnginePool = sync.Pool{
+	New: func() interface{} {
+		return &responseEngine{}
+	},
+}
+
+// 归还 responseEngine 到池中
+func release(re *responseEngine) {
+	re.engine = nil
+	re.data = nil
+	responseEnginePool.Put(re)
+}
+
 func New(c *gin.Context) Responder {
-	return &responseEngine{
-		engine: c,
+	// 从池中获取 responseEngine
+	re := responseEnginePool.Get().(*responseEngine)
+
+	// 重置字段以避免数据污染
+	re.engine = c
+	re.language = languageCode.String()
+	re.requestId = ""
+	re.spanId = ""
+	re.entryAt = 0
+
+	if val, ok := c.Get("requestId"); ok {
+		re.requestId = val.(string)
 	}
+	if val, ok := c.Get("spanId"); ok {
+		re.spanId = val.(string)
+	}
+	if val, ok := c.Get("entryAt"); ok {
+		re.entryAt = val.(int64)
+	}
+	//从上下文中获取语言代码
+	if detectAcceptLanguage {
+		if acceptLanguage, ok := c.Get("language"); ok {
+			if lang, assertOk := acceptLanguage.(string); assertOk {
+				re.language = lang
+			}
+		}
+	}
+
+	return re
 }
 
 // Response 启动返回实例
@@ -243,38 +287,17 @@ func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, 
 // 合并处理响应体
 func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, message ...string) Responder {
 	var (
-		body      dto.Base
-		requestId string
-		httpCode  int
-		language  = []string{languageCode.String()}
+		body     dto.Base
+		httpCode int
 	)
-	//从上下文中获取语言代码
-	if detectAcceptLanguage {
-		if acceptLanguage, ok := a.engine.Get("language"); ok {
-			if lang, assertOk := acceptLanguage.(string); assertOk {
-				language[0] = lang
-			}
-		}
-	}
-	//从header中读取X-Request-Id
-	if r1Id := a.engine.GetHeader("X-Request-Id"); len(r1Id) > 0 {
-		requestId = r1Id
-		//从header中读取requestId
-	} else if r2Id := a.engine.GetHeader("requestId"); len(r2Id) > 0 {
-		requestId = r2Id
-	} else {
-		//从上下文中读取requestId
-		if r3Id, ok := a.engine.Get("requestId"); ok {
-			requestId = r3Id.(string)
-		}
-	}
-	body.RequestID = requestId
+
+	body.RequestID = a.requestId
 	body.Code = code.Int()
 	if code == constants.ErrNone && anotherErrNoneCode != constants.ErrNone {
 		//改写了默认成功code码，且当前code码为None时，需要使用改写后的值
 		body.Code = anotherErrNoneCode.Int()
 	}
-	body.Message = constants.CodeType(body.Code).String(language...)
+	body.Message = constants.CodeType(body.Code).String(a.language)
 
 	switch code {
 	case anotherErrNoneCode:
@@ -306,6 +329,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 	//如果message有值，则覆盖默认错误码所代表的错误信息
 	if len(message) > 0 {
 		var msg = strings.Builder{}
+		msg.Grow(len(message) * 16)
 		for index, v := range message {
 			_, _ = msg.WriteString(v)
 			if index < len(message)-1 {
@@ -316,37 +340,17 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 	}
 
 	//设置用户响应体
-	body.Data = resp
-	if !isTypedNil(resp) {
-		if iResp, ok := resp.(dto.IResponse); ok && !isTypedNil(iResp) {
+	//body.Data = resp
+	if resp == nil {
+		body.Data = emptyDataField
+	} else if !isTypedNil(resp) {
+		if iResp, ok := resp.(dto.IResponse); ok && iResp != nil {
 			body.Data = iResp.GetData()
 		} else {
 			body.Data = resp
 		}
 	} else {
 		body.Data = nil
-	}
-
-	//当空data配置项不为nil时，需要判断用户响应体数据类型并覆盖空data配置项
-	if emptyDataField != nil {
-		vf := reflect.ValueOf(body.Data)
-		switch true {
-		//为空
-		case body.Data == nil:
-			body.Data = emptyDataField
-		//为指针类型且为空
-		case (vf.Kind() == reflect.Pointer ||
-			vf.Kind() == reflect.Slice ||
-			vf.Kind() == reflect.Map ||
-			vf.Kind() == reflect.Interface ||
-			vf.Kind() == reflect.Func ||
-			vf.Kind() == reflect.Chan ||
-			vf.Kind() == reflect.UnsafePointer) && vf.IsNil():
-			body.Data = emptyDataField
-		//数组或切片类型且长度为0
-		case (vf.Kind() == reflect.Slice || vf.Kind() == reflect.Array) && vf.Len() == 0:
-			body.Data = emptyDataField
-		}
 	}
 
 	if loc != nil {
@@ -356,7 +360,6 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, m
 		body.Timestamp = time.Now().UnixMilli()
 	}
 
-	a.requestId = requestId
 	a.data = body
 
 	return a
@@ -379,18 +382,9 @@ func (a *responseEngine) Status(httpCode int) Responder {
 //
 // 2.会忽略 Option.ForceHttpCode200 设置
 func (a *responseEngine) SendWithCode(httpCode int) {
-	if funcBeforeWrite != nil {
-		var (
-			spanId  string
-			entryAt int64
-		)
-		if val, ok := a.engine.Get("spanId"); ok {
-			spanId = val.(string)
-		}
-		if val, ok := a.engine.Get("entryAt"); ok {
-			entryAt = val.(int64)
-		}
+	defer release(a)
 
+	if funcBeforeWrite != nil {
 		var data dto.Base
 		if val, ok := a.data.(dto.Base); ok {
 			data = val
@@ -398,7 +392,7 @@ func (a *responseEngine) SendWithCode(httpCode int) {
 			data.Data = a.data
 		}
 
-		funcBeforeWrite(a.engine.Request, entryAt, a.requestId, spanId, httpCode, data)
+		funcBeforeWrite(a.engine.Request, a.entryAt, a.requestId, a.spanId, httpCode, data)
 	}
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }

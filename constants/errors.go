@@ -1,6 +1,8 @@
 package constants
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // 错误码
 const (
@@ -12,7 +14,7 @@ const (
 
 // 错误码信息表
 //
-// READONLY for concurrency safety
+// # READONLY for concurrency safety
 var initErrorCodeMsgMap = MMBox{
 	LanguageEnglish: {
 		ErrNone:                      "SUCCESS",
@@ -36,17 +38,13 @@ var initErrorCodeMsgMap = MMBox{
 
 // String 获取错误信息字符
 func (ct CodeType) String(language ...string) string {
-	var lang = LanguageEnglish //默认使用英语
+	var lang = LanguageEnglish // 默认使用英语
 	if len(language) > 0 {
 		lang = LanguageCode(language[0])
 	}
-	ctm.mux.RLock()
-	defer ctm.mux.RUnlock()
-	if i18nMsg, ok := ctm.maps[lang]; ok {
-		if msg, iOk := i18nMsg[ct]; iOk {
-			return msg
-		}
-		return fmt.Sprintf("[Warn] ErrorCode {%d} Language {%s} not defined!", ct, lang)
+
+	if val, ok := GetCodeMsg(lang, ct); ok {
+		return val
 	}
 
 	return fmt.Sprintf("[Warn] ErrorCode {%d} Language {%s} not defined!", ct, lang)

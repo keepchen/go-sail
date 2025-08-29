@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -9,6 +10,17 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"
 )
+
+type tracerStd struct {
+	requestId string
+	spanId    string
+}
+
+var tracerStdPool = sync.Pool{
+	New: func() interface{} {
+		return &tracerStd{}
+	},
+}
 
 // LogTrace 日志追踪
 //
@@ -33,33 +45,35 @@ import (
 // logger, ok := ginContext.Get("logger").(*zap.Logger)
 func LogTrace() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var (
-			requestId string
-			spanId    string
-		)
-		requestIdInHeader := c.Request.Header.Get("requestId")
-		if len(requestIdInHeader) == 0 {
-			requestIdInHeader = c.Request.Header.Get("X-Request-Id")
+		tracer := tracerStdPool.Get().(*tracerStd)
+		tracer.requestId = ""
+		tracer.spanId = ""
+
+		tracer.requestId = c.Request.Header.Get("requestId")
+		if len(tracer.requestId) == 0 {
+			tracer.requestId = c.Request.Header.Get("X-Request-Id")
 		}
 
 		//溢出检测
 		//TODO 目前暂定为最长保留200个字符
-		if utf8.RuneCountInString(requestIdInHeader) > 200 {
-			requestIdInHeader = string([]rune(requestIdInHeader)[:200])
+		if utf8.RuneCountInString(tracer.requestId) > 200 {
+			tracer.requestId = string([]rune(tracer.requestId)[:200])
 		}
 
-		if len(requestIdInHeader) > 0 {
-			requestId = requestIdInHeader
-			spanId = uuid.New().String()
+		if len(tracer.requestId) > 0 {
+			tracer.spanId = uuid.New().String()
 		} else {
-			requestId = uuid.New().String()
-			spanId = requestId
+			tracer.requestId = uuid.New().String()
+			tracer.spanId = tracer.requestId
 		}
-		c.Set("requestId", requestId)
-		c.Set("spanId", spanId)
+		c.Set("requestId", tracer.requestId)
+		c.Set("spanId", tracer.spanId)
 		c.Set("entryAt", time.Now().UnixNano())
-		c.Set("logger", logger.GetLogger().With(zap.String("requestId", requestId),
-			zap.String("spanId", spanId)))
+		c.Set("logger", logger.GetLogger().With(zap.String("requestId", tracer.requestId),
+			zap.String("spanId", tracer.spanId)))
+
+		//release
+		tracerStdPool.Put(tracer)
 
 		c.Next()
 	}
