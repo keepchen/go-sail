@@ -113,3 +113,9 @@ func TestEnableWebsocket(t *testing.T) {
 			Hook(registerRoutes, nil, afterFunc))
 	})
 }
+
+func TestShutdown(t *testing.T) {
+	t.Run("Shutdown", func(t *testing.T) {
+		Shutdown()
+	})
+}

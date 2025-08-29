@@ -36,3 +36,15 @@ func TestRegisterCodeSingle(t *testing.T) {
 	assert.Equal(t, "1000000", c1000000.String())
 	assert.Equal(t, "1000001", c1000001.String())
 }
+
+func TestGetCodeMsg(t *testing.T) {
+	t.Run("GetCodeMsg-OK", func(t *testing.T) {
+		t.Log(GetCodeMsg(LanguageEnglish, ErrNone))
+	})
+	t.Run("GetCodeMsg-None-Language", func(t *testing.T) {
+		t.Log(GetCodeMsg(LanguageCode("unknown"), ErrNone))
+	})
+	t.Run("GetCodeMsg-None-Code", func(t *testing.T) {
+		t.Log(GetCodeMsg(LanguageEnglish, CodeType(1000000000000000)))
+	})
+}
