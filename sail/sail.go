@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"sync"
+	"syscall"
 
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"
@@ -212,4 +213,11 @@ func (l *Launcher) Launch() {
 
 	//关闭相应的组件
 	componentsShutdown(l.sa.conf)
+}
+
+// Shutdown 关闭服务
+//
+// 用于手动停止服务
+func Shutdown() {
+	go httpserver.NotifyExit(syscall.SIGINT)
 }
