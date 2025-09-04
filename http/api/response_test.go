@@ -491,12 +491,6 @@ func TestMergeBody(t *testing.T) {
 		c.Set("spanId", uuid.New().String())
 		c.Set("entryAt", time.Now().UnixNano())
 
-		re := responseEngine{
-			engine:    c,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
 		emptyDataTypes := []int{DefaultEmptyDataStructNull, DefaultEmptyDataStructObject, DefaultEmptyDataStructArray, DefaultEmptyDataStructString, 999}
 		fn := func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) {
 			//do something...
@@ -510,7 +504,17 @@ func TestMergeBody(t *testing.T) {
 				FuncBeforeWrite:  fn,
 			})
 
+			re := responseEngine{
+				engine:    c,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
 			re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3").Send()
+			re = responseEngine{
+				engine:    c,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
 			re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
 		}
 	})
