@@ -35,8 +35,8 @@
 - lib: jwt 升级到 v5 ([`5a94765`](https://github.com/keepchen/go-sail/commit/5a94765))
 - utils: redis 锁调整 `TryLockWithContext` 方法 ([`c578ab4`](https://github.com/keepchen/go-sail/commit/c578ab4))
 - other: 框架版本号修改为`3.0.6`  
-- http: api响应器性能优化  
-- other: 新增benchmark
+- http: api响应器性能优化 ([`23934799`](https://github.com/keepchen/go-sail/commit/23934799))  
+- other: 新增benchmark ([`23934799`](https://github.com/keepchen/go-sail/commit/23934799))
 
 #### 📦 依赖升级
 - github.com/golang-jwt/jwt/v5 → 5.2.2 → 5.3.0
@@ -83,8 +83,8 @@
 - lib: Upgraded jwt to v5 ([`5a94765`](https://github.com/keepchen/go-sail/commit/5a94765))
 - utils: Redis lock adjusted `TryLockWithContext` ([`c578ab4`](https://github.com/keepchen/go-sail/commit/c578ab4))
 - other: change Framework version to `3.0.6`  
-- http: Api performance optimize  
-- other: Add benchmark  
+- http: Api performance optimize ([`23934799`](https://github.com/keepchen/go-sail/commit/23934799))
+- other: Add benchmark ([`23934799`](https://github.com/keepchen/go-sail/commit/23934799))
 
 #### 📦 Dependencies
 - github.com/golang-jwt/jwt/v5 → 5.2.2 → 5.3.0
