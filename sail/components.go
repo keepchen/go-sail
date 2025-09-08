@@ -3,9 +3,6 @@ package sail
 import (
 	"fmt"
 
-	"github.com/keepchen/go-sail/v3/lib/valkey"
-
-	"github.com/gin-gonic/gin"
 	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/http/api"
 	"github.com/keepchen/go-sail/v3/lib/db"
@@ -14,7 +11,10 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
+	"github.com/keepchen/go-sail/v3/lib/valkey"
 	"github.com/keepchen/go-sail/v3/sail/config"
+
+	"github.com/gin-gonic/gin"
 	natsLib "github.com/nats-io/nats.go"
 	kafkaLib "github.com/segmentio/kafka-go"
 	valkeyLib "github.com/valkey-io/valkey-go"
