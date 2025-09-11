@@ -87,11 +87,11 @@ type IString interface {
 	Truncate(rawString string, length int) string
 }
 
-var _ IString = &stringImpl{}
+var sti IString = &stringImpl{}
 
 // String 实例化string工具类
 func String() IString {
-	return &stringImpl{}
+	return sti
 }
 
 // Wordwrap 以给定的字符和长度来打断字符串

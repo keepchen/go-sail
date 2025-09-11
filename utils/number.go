@@ -63,11 +63,11 @@ type INumber interface {
 	Pow(x, y int64) int64
 }
 
-var _ INumber = &numberImpl{}
+var nbi INumber = &numberImpl{}
 
 // Number 实例化number工具类
 func Number() INumber {
-	return &numberImpl{}
+	return nbi
 }
 
 // RandomInt64 在指定范围内取随机整数

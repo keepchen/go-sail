@@ -51,11 +51,11 @@ type IFile interface {
 	GetContentsReadLine(dst string) (<-chan string, error)
 }
 
-var _ IFile = &fileImpl{}
+var fi IFile = &fileImpl{}
 
 // File 实例化file工具类
 func File() IFile {
-	return &fileImpl{}
+	return fi
 }
 
 // Save2Dst 将文件保存到目标地址(拷贝文件)

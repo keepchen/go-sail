@@ -68,30 +68,35 @@ type IRedisLocker interface {
 
 var _ IRedisLocker = &redisLockerImpl{}
 
+var redisLockerPool = sync.Pool{
+	New: func() interface{} {
+		return &redisLockerImpl{}
+	},
+}
+
 // RedisLocker 实例化redis锁工具类
 //
 // # Note
 //
 // 若未使用自定义客户端且单实例和集群客户端都没有实例化，那么将panic
 func RedisLocker(client ...redisLib.UniversalClient) IRedisLocker {
+	rl := redisLockerPool.Get().(*redisLockerImpl)
 	//使用自定义客户端
 	if len(client) > 0 {
-		return &redisLockerImpl{
-			client: client[0],
-		}
+		rl.client = client[0]
+		return rl
 	}
 	//使用单实例客户端
 	if redis.GetInstance() != nil {
-		return &redisLockerImpl{
-			client: redis.GetInstance(),
-		}
+		rl.client = redis.GetInstance()
+		return rl
 	}
 	//使用集群客户端
 	if redis.GetClusterInstance() != nil {
-		return &redisLockerImpl{
-			client: redis.GetClusterInstance(),
-		}
+		rl.client = redis.GetClusterInstance()
+		return rl
 	}
+	redisLockerPool.Put(rl)
 	panic("using redis lock on nil redis instance")
 }
 
@@ -141,6 +146,8 @@ func (rl *redisLockerImpl) TryLockWithContext(ctx context.Context, key string) b
 		rl.autoRenewal(key)
 	}
 
+	redisLockerPool.Put(rl)
+
 	return lockOk
 }
 
@@ -178,6 +185,8 @@ func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
 	if lockOk {
 		rl.autoRenewal(key)
 	}
+
+	redisLockerPool.Put(rl)
 }
 
 // Unlock redis锁-解锁
@@ -193,6 +202,8 @@ func (rl *redisLockerImpl) Unlock(key string) bool {
 	//
 	// 调用解锁方法意图明显，因此无论是否解锁成功，都执行收尾工作
 	rl.clearListenerAndStopAutoRenewal(key)
+
+	redisLockerPool.Put(rl)
 
 	return unlockOk == 1
 }
@@ -222,6 +233,8 @@ func (rl *redisLockerImpl) UnlockWithContext(ctx context.Context, key string) {
 
 	//清理内存数据并终止自动续期
 	rl.clearListenerAndStopAutoRenewal(key)
+
+	redisLockerPool.Put(rl)
 }
 
 // 自动续期

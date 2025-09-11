@@ -37,11 +37,11 @@ type ICert interface {
 	ReportKeyWhetherMatch(certData, keyData []byte) (bool, error)
 }
 
-var _ ICert = certImpl{}
+var ci ICert = &certImpl{}
 
 // Cert 实例化证书工具类
 func Cert() ICert {
-	return &certImpl{}
+	return ci
 }
 
 // ReportValidity 报告证书有效性
