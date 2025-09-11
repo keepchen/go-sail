@@ -18,11 +18,11 @@ type IWebPush interface {
 	SendNotification(privateKey, publicKey string, sub webpush.Subscription, subscriberEmail string, body Payload) error
 }
 
-var _ IWebPush = &webPushImpl{}
+var wpi IWebPush = &webPushImpl{}
 
 // WebPush 实例化web push工具类
 func WebPush() IWebPush {
-	return &webPushImpl{}
+	return wpi
 }
 
 // GenerateVAPIDKeys 生成web push的公私钥

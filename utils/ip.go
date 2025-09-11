@@ -10,11 +10,11 @@ type IIP interface {
 	GetLocal() (string, error)
 }
 
-var _ IIP = &ipImpl{}
+var ipi IIP = &ipImpl{}
 
 // IP 实例化ip工具类
 func IP() IIP {
-	return &ipImpl{}
+	return ipi
 }
 
 // GetLocal 获取本地ip地址（单播地址）

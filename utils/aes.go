@@ -16,13 +16,13 @@ type aesImpl struct {
 type IAes interface {
 	// Encode aes加密
 	//
-	// 使用CFB
+	// 使用CTR
 	//
 	// key应该是一个16或24或32位长度的字符
 	Encode(rawString, key string) (string, error)
 	// Decode aes解密
 	//
-	// 使用CFB
+	// 使用CTR
 	//
 	// key应该是一个16或24或32位长度的字符
 	Decode(encryptedString, key string) (string, error)
@@ -30,14 +30,14 @@ type IAes interface {
 
 // Aes 实例化aes工具类
 func Aes() IAes {
-	return &aesImpl{}
+	return ai
 }
 
-var _ IAes = aesImpl{}
+var ai IAes = &aesImpl{}
 
 // Encode aes加密
 //
-// 使用CFB
+// 使用CTR
 //
 // key应该是一个16或24或32位长度的字符
 func (aesImpl) Encode(rawString, key string) (string, error) {
@@ -54,7 +54,7 @@ func (aesImpl) Encode(rawString, key string) (string, error) {
 		return "", err
 	}
 
-	stream := cipher.NewCFBEncrypter(block, iv)
+	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(cipherText[aes.BlockSize:], plainText)
 
 	return base64.StdEncoding.EncodeToString(cipherText), nil
@@ -62,7 +62,7 @@ func (aesImpl) Encode(rawString, key string) (string, error) {
 
 // Decode aes解密
 //
-// 使用CFB
+// 使用CTR
 //
 // key应该是一个16或24或32位长度的字符
 func (aesImpl) Decode(encryptedString, key string) (string, error) {
@@ -83,7 +83,7 @@ func (aesImpl) Decode(encryptedString, key string) (string, error) {
 	iv := cipherText[:aes.BlockSize]
 	cipherText = cipherText[aes.BlockSize:]
 
-	stream := cipher.NewCFBDecrypter(block, iv)
+	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(cipherText, cipherText)
 
 	return string(cipherText), nil

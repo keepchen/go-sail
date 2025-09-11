@@ -15,10 +15,10 @@ type IBase64 interface {
 
 // Base64 实例化base64工具类
 func Base64() IBase64 {
-	return &base64Impl{}
+	return bi
 }
 
-var _ IBase64 = base64Impl{}
+var bi IBase64 = &base64Impl{}
 
 // Encode base64编码
 func (base64Impl) Encode(rawBytes []byte) string {

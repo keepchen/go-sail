@@ -15,11 +15,11 @@ type IVersion interface {
 	Print(fields VersionInfoFields)
 }
 
-var _ IVersion = versionImpl{}
+var vei IVersion = versionImpl{}
 
 // Version 实例化version工具类
 func Version() IVersion {
-	return &versionImpl{}
+	return vei
 }
 
 // VersionInfoFields 版本信息字段

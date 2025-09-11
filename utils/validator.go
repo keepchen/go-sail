@@ -22,11 +22,11 @@ type IValidator interface {
 	IdentityCard(idCard string) bool
 }
 
-var _ IValidator = &validatorImpl{}
+var vi IValidator = &validatorImpl{}
 
 // Validator 实例化validator工具类
 func Validator() IValidator {
-	return &validatorImpl{}
+	return vi
 }
 
 // Email 验证邮箱格式

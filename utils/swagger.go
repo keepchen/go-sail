@@ -19,9 +19,11 @@ type ISwagger interface {
 	PrintControllerInfo(param SwaggerControllerInfoParam) string
 }
 
+var swi ISwagger = &swaggerImpl{}
+
 // Swagger 实例化swagger工具类
 func Swagger() ISwagger {
-	return &swaggerImpl{}
+	return swi
 }
 
 var (

@@ -50,11 +50,11 @@ type IDomain interface {
 	LookupCNAME(domain, cnameTarget string) bool
 }
 
-var _ IDomain = &domainImpl{}
+var doi IDomain = &domainImpl{}
 
 // Domain 实例化domain工具类
 func Domain() IDomain {
-	return &domainImpl{}
+	return doi
 }
 
 // Validate 验证域名是否合法

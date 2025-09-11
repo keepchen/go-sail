@@ -18,11 +18,11 @@ type IGzip interface {
 	Decompress(content []byte) []byte
 }
 
-var _ IGzip = &gzipImpl{}
+var gi IGzip = &gzipImpl{}
 
 // Gzip 实例化gzip工具类
 func Gzip() IGzip {
-	return &gzipImpl{}
+	return gi
 }
 
 // Compress gzip压缩

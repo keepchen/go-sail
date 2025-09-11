@@ -17,11 +17,11 @@ type ICrc64 interface {
 	ChecksumECMA(data []byte) uint64
 }
 
-var _ ICrc64 = crc64Impl{}
+var c64i ICrc64 = &crc64Impl{}
 
 // Crc64 实例化crc64工具类
 func Crc64() ICrc64 {
-	return &crc64Impl{}
+	return c64i
 }
 
 // Checksum 求crc64校验码
@@ -50,11 +50,11 @@ type ICrc32 interface {
 	ChecksumIEEE(data []byte) uint32
 }
 
-var _ ICrc32 = crc32Impl{}
+var c32i ICrc32 = crc32Impl{}
 
 // Crc32 实例化crc32工具类
 func Crc32() ICrc32 {
-	return &crc32Impl{}
+	return c32i
 }
 
 // Checksum 求crc32校验码

@@ -16,11 +16,11 @@ type ISignal interface {
 	ListeningExit(wg *sync.WaitGroup)
 }
 
-var _ ISignal = &signalImpl{}
+var si ISignal = &signalImpl{}
 
 // Signal 实例化信号工具类
 func Signal() ISignal {
-	return &signalImpl{}
+	return si
 }
 
 var signals = make(chan os.Signal, 1)
