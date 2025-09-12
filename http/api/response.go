@@ -48,6 +48,20 @@ type Responder interface {
 	//
 	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder
+	// Bundle 包装返回数据
+	//
+	// 此方法提供更加开放的响应数据组装
+	//
+	// # 提示
+	//
+	// code码需要使用 sail.Code().Register() 事先进行注册才能正常工作
+	//
+	// 如：
+	//
+	// sail.Code().Register("en", 12345, "Code description...") //注册code码
+	//
+	// Response(c).Bundle(12345, nil).Send() //使用code码
+	Bundle(code int, data interface{}, message ...string) Responder
 	// Data 返回数据
 	//
 	// 此方法直接返回响应数据，其中：
@@ -169,6 +183,23 @@ func New(c *gin.Context) Responder {
 // New 方法的语法糖
 func Response(c *gin.Context) Responder {
 	return New(c)
+}
+
+// Bundle 包装返回数据
+//
+// 此方法提供更加开放的响应数据组装
+//
+// # 提示
+//
+// code码需要使用 sail.Code().Register() 事先进行注册才能正常工作
+//
+// 如：
+//
+// sail.Code().Register("en", 12345, "Code description...") //注册code码
+//
+// Response(c).Bundle(12345, nil).Send() //使用code码
+func (a *responseEngine) Bundle(code int, resp interface{}, message ...string) Responder {
+	return a.mergeBody(constants.CodeType(code), resp, message...)
 }
 
 // Builder 组装返回数据

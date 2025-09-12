@@ -8,14 +8,12 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 创建gin测试下上文和引擎
@@ -109,6 +107,13 @@ func TestData(t *testing.T) {
 		c2, _ := createTestContextAndEngine()
 		anotherErrNoneCode = constants.CodeType(200)
 		Response(c2).Data(nil)
+	})
+}
+
+func TestBundle(t *testing.T) {
+	t.Run("Bundle()", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+		t.Log(Response(c).Bundle(200, testerResponseData{}))
 	})
 }
 
