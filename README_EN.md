@@ -58,9 +58,9 @@ parseFn := func(content []byte, viaWatch bool){
     }
 }
 etcdConf := etcd.Conf{
-	endpoints: "",
-	username: "",
-	password: "",
+	Endpoints: "",
+	Username: "",
+	Password: "",
 }
 key := "go-sail.config.yaml"
 
