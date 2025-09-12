@@ -47,7 +47,7 @@ func (ct CodeType) String(language ...string) string {
 		return val
 	}
 
-	return fmt.Sprintf("[Warn] ErrorCode {%d} Language {%s} not defined!", ct, lang)
+	return fmt.Sprintf("[Warn] ErrorCode {%d} under Language {%s} not defined!", ct, lang)
 }
 
 // Int 获取错误码
