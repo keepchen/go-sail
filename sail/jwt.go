@@ -84,9 +84,6 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interf
 func (jwtImpl) ValidToken(token string) (bool, jwt.MapClaims, error) {
 	conf := config.Get()
 	mp, err := jwt.VerifyFromMap(token, *conf.JwtConf)
-	if err != nil {
-		return false, mp, err
-	}
 
 	return err == nil, mp, err
 }
