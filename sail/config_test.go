@@ -18,8 +18,8 @@ import (
 var (
 	testConfigFilename = "test-config-file.json"
 	testConfigContent  = `{"appName":"go-sail"}`
-	watcherFunc        = func(content []byte, isWatch bool) {
-		fmt.Println("watcher: ", string(content), isWatch)
+	watcherFunc        = func(configName string, content []byte, isWatch bool) {
+		fmt.Println("watcher: ", configName, string(content), isWatch)
 	}
 )
 

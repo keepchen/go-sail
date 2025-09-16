@@ -17,7 +17,7 @@ import (
 )
 
 // Config 配置操作方法
-func Config(panicWhileErr bool, watcher func(content []byte, viaWatch bool)) ConfigProvider {
+func Config(panicWhileErr bool, watcher func(configName string, content []byte, viaWatch bool)) ConfigProvider {
 	return &configImpl{
 		panicWhileErr: panicWhileErr,
 		watcher:       watcher,
@@ -27,7 +27,7 @@ func Config(panicWhileErr bool, watcher func(content []byte, viaWatch bool)) Con
 // configImpl 配置操作方法实现
 type configImpl struct {
 	panicWhileErr      bool
-	watcher            func(content []byte, viaWatch bool)
+	watcher            func(configName string, content []byte, viaWatch bool)
 	fileLastModifyTime time.Time
 }
 
@@ -78,7 +78,7 @@ func (ci *configImpl) ViaFile(filename string) Parser {
 							fmt.Println("[Go-Sail] <Config> content has been modified (via File)")
 							data, gErr := utils.File().GetContents(filename)
 							if gErr == nil {
-								ci.watcher(data, true)
+								ci.watcher(filename, data, true)
 							}
 						}
 					}
@@ -91,7 +91,7 @@ func (ci *configImpl) ViaFile(filename string) Parser {
 		go watcher()
 	}
 
-	return &parserImpl{content: content}
+	return &parserImpl{configName: filename, content: content}
 }
 
 // ViaEtcd 通过etcd操作配置
@@ -99,6 +99,9 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	client, err := etcd.New(conf)
 	if err != nil && ci.panicWhileErr {
 		panic(err)
+	}
+	if client == nil {
+		panic("etcd client is nil")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -109,19 +112,19 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	if etcdResp == nil && ci.panicWhileErr {
 		panic(err)
 	}
-	if len(etcdResp.Kvs) == 0 && ci.panicWhileErr {
+	if etcdResp != nil && len(etcdResp.Kvs) == 0 && ci.panicWhileErr {
 		panic(err)
 	}
 
 	//当监听函数被设置时，需要执行监听
-	if ci.watcher != nil && client != nil {
+	if ci.watcher != nil {
 		watcher := func() {
 			watchChan := client.Watch(context.Background(), key)
 			for watchResp := range watchChan {
 				for _, value := range watchResp.Events {
 					if string(value.Kv.Key) == key {
 						fmt.Println("[Go-Sail] <Config> content has been modified (via Etcd)")
-						ci.watcher(value.Kv.Value, true)
+						ci.watcher(key, value.Kv.Value, true)
 					}
 				}
 			}
@@ -131,11 +134,11 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	}
 
 	var content []byte
-	if len(etcdResp.Kvs) > 0 {
+	if etcdResp != nil && len(etcdResp.Kvs) > 0 {
 		content = etcdResp.Kvs[0].Value
 	}
 
-	return &parserImpl{content: content}
+	return &parserImpl{configName: key, content: content}
 }
 
 // ViaNacos 通过nacos操作配置
@@ -163,7 +166,7 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 	if ci.watcher != nil && client != nil {
 		watcher := func(namespace string, group string, dataId string, data string) {
 			fmt.Println("[Go-Sail] <Config> content has been modified (via Nacos)")
-			ci.watcher([]byte(data), true)
+			ci.watcher(dataId, []byte(data), true)
 		}
 		_ = client.ListenConfig(vo.ConfigParam{
 			DataId:   dataID,
@@ -172,25 +175,26 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 		})
 	}
 
-	return &parserImpl{content: content}
+	return &parserImpl{configName: dataID, content: content}
 }
 
 // parserImpl 解析器实现
 type parserImpl struct {
-	content []byte
+	configName string
+	content    []byte
 }
 
 // Parser 解析器接口
 type Parser interface {
 	// Parse 解析处理函数
-	Parse(fn func(content []byte, viaWatch bool))
+	Parse(fn func(configName string, content []byte, viaWatch bool))
 }
 
 var _ Parser = &parserImpl{}
 
 // Parse 解析处理函数
-func (pi *parserImpl) Parse(fn func(content []byte, viaWatch bool)) {
+func (pi *parserImpl) Parse(fn func(configName string, content []byte, viaWatch bool)) {
 	if fn != nil {
-		fn(pi.content, false)
+		fn(pi.configName, pi.content, false)
 	}
 }
