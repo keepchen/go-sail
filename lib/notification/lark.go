@@ -1,6 +1,8 @@
 package notification
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -51,8 +53,18 @@ func LarkEmit(conf LarkConf, content string) (LarkResponseEntity, error) {
 }
 
 // 生成lark或飞书签名
+//
+// docs: https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot?lang=zh-CN#3c6592d6
 func genLarkSign(secret string, timestamp int64) (string, error) {
 	//timestamp + key 做sha256, 再进行base64 encode
 	stringToSign := fmt.Sprintf("%v\n%s", timestamp, secret)
-	return utils.Base64().Encode([]byte(stringToSign)), nil
+
+	var data []byte
+	h := hmac.New(sha256.New, []byte(stringToSign))
+	_, err := h.Write(data)
+	if err != nil {
+		return "", err
+	}
+
+	return utils.Base64().Encode(h.Sum(nil)), nil
 }
