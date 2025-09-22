@@ -24,7 +24,7 @@ func TestRedisLockPanic(t *testing.T) {
 			})
 		}
 	})
-	
+
 	t.Run("RedisLockPanic-Lock", func(t *testing.T) {
 		if redis.GetInstance() == nil && redis.GetClusterInstance() == nil {
 			assert.Panics(t, func() {
@@ -171,5 +171,32 @@ func TestRedisClusterLock(t *testing.T) {
 		defer cancel()
 		RedisLocker().UnlockWithContext(ctx, key)
 		assert.Equal(t, true, RedisLocker().TryLock(key))
+	})
+}
+
+func TestWithRedisExecuteTimeout(t *testing.T) {
+	t.Run("withRedisExecuteTimeout", func(t *testing.T) {
+		t.Log(withRedisExecuteTimeout())
+	})
+}
+
+func TestStartRenewalScheduler(t *testing.T) {
+	t.Run("startRenewalScheduler", func(t *testing.T) {
+		conf := redis.Conf{
+			Endpoint: redis.Endpoint{
+				Host: "127.0.0.1",
+				Port: 6379,
+			},
+		}
+		//try connect
+		redisClient, err := redis.New(conf)
+		if err != nil || redisClient == nil {
+			t.Log("redis instance not ready, this test case ignore")
+			return
+		}
+		rl := &redisLockerImpl{client: redisClient}
+		rl.startRenewalScheduler()
+		time.Sleep(time.Second * 2)
+		_ = redisClient.Close()
 	})
 }
