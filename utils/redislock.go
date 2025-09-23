@@ -273,9 +273,6 @@ type keyAndCtrl struct {
 //
 // 2.使用redis pipeline减少RTT
 func (rl *redisLockerImpl) startRenewalScheduler() {
-	ticker := time.NewTicker(renewalCheckInterval)
-	defer ticker.Stop()
-
 	doRenewalRound := func() {
 		states.mux.Lock()
 		if len(states.listeners) == 0 {
@@ -321,6 +318,9 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 	}
 
 	go func() {
+		ticker := time.NewTicker(renewalCheckInterval)
+		defer ticker.Stop()
+
 		for range ticker.C {
 			doRenewalRound()
 		}
