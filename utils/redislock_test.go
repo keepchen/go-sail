@@ -88,6 +88,10 @@ func TestRedisLock(t *testing.T) {
 		key := "go-sail-redisLocker-TryLock"
 		t.Log(RedisLocker().TryLock(key))
 		assert.Equal(t, false, RedisLocker().TryLock(key))
+		time.Sleep(time.Second * 15)
+		assert.Equal(t, false, RedisLocker().TryLock(key))
+		RedisLocker().Unlock(key)
+		assert.Equal(t, true, RedisLocker().TryLock(key))
 	})
 
 	t.Run("Lock", func(t *testing.T) {
