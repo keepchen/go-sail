@@ -47,6 +47,9 @@ func printSummaryInfo(conf config.HttpServerConf, ginEngine *gin.Engine) {
 		messages.WriteString(msg)
 	}
 	if conf.Prometheus.Enable {
+		if len(conf.Prometheus.AccessPath) == 0 {
+			conf.Prometheus.AccessPath = "/metrics"
+		}
 		msg := fmt.Sprintf("[Prometheus] Enabled:\n>\t%s//%s%s%s\n", protocol, localIp, conf.Prometheus.Addr, conf.Prometheus.AccessPath)
 		messages.WriteString(msg)
 	}

@@ -7,16 +7,13 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/keepchen/go-sail/v3/lib/logger"
-	"go.uber.org/zap"
-
-	"github.com/gorilla/websocket"
-
-	"github.com/keepchen/go-sail/v3/sail/config"
-
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/keepchen/go-sail/v3/http/api"
+	"github.com/keepchen/go-sail/v3/lib/logger"
+	"github.com/keepchen/go-sail/v3/sail/config"
 	"github.com/keepchen/go-sail/v3/sail/httpserver"
+	"go.uber.org/zap"
 )
 
 // Sailor 船员就位
