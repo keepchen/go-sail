@@ -11,6 +11,7 @@ func TestRandomInt64(t *testing.T) {
 		{0, 0},
 		{1, 1},
 		{0, 1000},
+		{100, 1000},
 		{-10, 0},
 		{-10, 100},
 		{-100, 100},
@@ -59,6 +60,8 @@ func TestRandomFloat64(t *testing.T) {
 		{-10.101, 100.10111111, 5},
 		{-100.1011, 100.1011111111, 6},
 		{-200, -100, 6},
+		{-1000, 100, 2},
+		{-1000, 0, 3},
 	}
 	t.Run("RandomFloat64", func(t *testing.T) {
 		for _, rn := range ranges {
