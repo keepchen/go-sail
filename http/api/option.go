@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/keepchen/go-sail/v3/http/pojo/dto"
-
 	"github.com/keepchen/go-sail/v3/constants"
+	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
 var (
@@ -150,6 +149,10 @@ func SetupOption(opt Option) {
 
 	if opt.FuncBeforeWrite != nil {
 		funcBeforeWrite = opt.FuncBeforeWrite
+	}
+
+	if len(opt.LanguageCode) != 0 {
+		languageCode = opt.LanguageCode
 	}
 }
 
