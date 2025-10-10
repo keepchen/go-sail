@@ -2,6 +2,7 @@ package go_sail
 
 import (
 	"fmt"
+	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 	"io"
 	"net"
 	"net/http"
@@ -75,7 +76,7 @@ func TestMain(m *testing.M) {
 		gin.SetMode(gin.ReleaseMode)
 		r := gin.New()
 		r.GET("/benchmark", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"code": 0})
+			c.JSON(http.StatusOK, dto.Base{})
 		})
 		server := &http.Server{
 			Addr:    addrGin,

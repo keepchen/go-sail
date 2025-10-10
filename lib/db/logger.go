@@ -39,7 +39,7 @@ func NewZapLoggerForGorm(zapLogger *zap.Logger, conf Conf) ZapLoggerForGorm {
 		SlowThreshold:             100 * time.Millisecond,
 		SkipCallerLookup:          conf.Logger.SkipCallerLookup,
 		IgnoreRecordNotFoundError: conf.Logger.IgnoreRecordNotFoundError,
-		Colorful:                  conf.Logger.SkipCallerLookup,
+		Colorful:                  conf.Logger.Colorful,
 	}
 
 	if conf.Logger.SlowThreshold != 0 {
