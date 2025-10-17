@@ -186,7 +186,10 @@ func UpdateUserBalance() {
 ```
 
 ## Documentation
-[Docs](https://go-sail.dev)
+[https://go-sail.dev](https://go-sail.dev)  
+
+## Online demo  
+[https://nav.go-sail.dev](https://nav.go-sail.dev)
 
 ## Features
 - [x] HTTP Responder
