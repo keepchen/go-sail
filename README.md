@@ -185,7 +185,10 @@ func UpdateUserBalance() {
 ```
 
 ## 文档
-[文档传送门](https://go-sail.dev)
+[https://go-sail.dev](https://go-sail.dev)  
+
+## 在线示例  
+[https://nav.go-sail.dev](https://nav.go-sail.dev)  
 
 ## 功能特性
 - [x] HTTP响应器

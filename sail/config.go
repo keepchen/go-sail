@@ -75,6 +75,7 @@ func (ci *configImpl) ViaFile(filename string) Parser {
 					{
 						f, e := os.Stat(filename)
 						if e == nil && f.ModTime().After(ci.fileLastModifyTime) {
+							ci.fileLastModifyTime = f.ModTime()
 							fmt.Println("[Go-Sail] <Config> content has been modified (via File)")
 							data, gErr := utils.File().GetContents(filename)
 							if gErr == nil {
