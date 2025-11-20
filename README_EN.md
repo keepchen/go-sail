@@ -18,7 +18,7 @@ English | [简体中文](./README.md)
 As its name suggests, you can regard it as the beginning of your own journey in the golang ecosystem. go-sail will help you start lightly and set sail.
 
 ## How to use
-> go version >= 1.20
+> go version >= 1.23
 
 > go get -u github.com/keepchen/go-sail/v3
 
@@ -58,7 +58,7 @@ parseFn := func(content []byte, viaWatch bool){
     }
 }
 etcdConf := etcd.Conf{
-	Endpoints: "",
+	Endpoints: []string{""},
 	Username: "",
 	Password: "",
 }

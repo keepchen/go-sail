@@ -104,7 +104,7 @@ func (certImpl) ReportKeyWhetherMatch(certData, keyData []byte) (bool, error) {
 		return false, fmt.Errorf("the key is invalid")
 	}
 	var (
-		privatePublicKey interface{}
+		privatePublicKey any
 		keyPublicKey     []byte
 	)
 	privateKey, err := x509.ParsePKCS8PrivateKey(keyBlock.Bytes)

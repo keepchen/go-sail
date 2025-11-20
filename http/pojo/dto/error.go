@@ -26,7 +26,7 @@ type Error400 struct {
 	// 业务数据
 	// in: body
 	// required: true
-	Data interface{} `json:"data" format:"object|array|string" validate:"required"`
+	Data any `json:"data" format:"object|array|string|boolean|number" validate:"required"`
 }
 
 // Error500 错误返回参数
@@ -55,5 +55,5 @@ type Error500 struct {
 	// 业务数据
 	// in: body
 	// required: true
-	Data interface{} `json:"data" format:"object|array|string" validate:"required"`
+	Data any `json:"data" format:"object|array|string|boolean|number" validate:"required"`
 }

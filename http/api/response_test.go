@@ -52,7 +52,7 @@ type testerResponseData struct {
 	Data string `json:"data"`
 }
 
-func (v testerResponseData) GetData() interface{} {
+func (v testerResponseData) GetData() any {
 	return v.Data
 }
 
@@ -121,20 +121,6 @@ func TestWrap(t *testing.T) {
 	t.Run("Wrap", func(t *testing.T) {
 		c, _ := createTestContextAndEngine()
 		t.Log(Response(c).Wrap(constants.ErrNone, testerResponseData{}))
-	})
-}
-
-func TestSimpleAssemble(t *testing.T) {
-	t.Run("SimpleAssemble", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-		t.Log(Response(c).SimpleAssemble(constants.ErrNone, testerResponseData{}))
-	})
-}
-
-func TestAssemble(t *testing.T) {
-	t.Run("Assemble", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-		t.Log(Response(c).Assemble(constants.ErrNone, testerResponseData{}))
 	})
 }
 
@@ -544,7 +530,7 @@ func TestIsTypedNil(t *testing.T) {
 		}
 		assert.Equal(t, false, isTypedNil(fn))
 
-		var face interface{}
+		var face any
 		assert.Equal(t, true, isTypedNil(face))
 		face = 123
 		assert.Equal(t, false, isTypedNil(face))

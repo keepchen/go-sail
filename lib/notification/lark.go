@@ -31,9 +31,9 @@ type LarkConf struct {
 
 // LarkResponseEntity 响应实体
 type LarkResponseEntity struct {
-	Code int64       `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+	Code int64  `json:"code"`
+	Msg  string `json:"msg"`
+	Data any    `json:"data"`
 }
 
 // LarkEmit 发射lark通知

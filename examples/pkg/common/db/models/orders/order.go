@@ -43,5 +43,5 @@ func (o *Order) BeforeUpdate(_ *gorm.DB) (err error) {
 }
 
 func (*Order) GenOrderNo() string {
-	return fmt.Sprintf("%d%s", utils.NewTimeWithTimeZone().Now().UnixNano(), utils.RandomDigitalChars(5))
+	return fmt.Sprintf("%d%s", utils.NewTimeWithTimeZone().Now().UnixNano(), utils.String().RandomDigitalChars(5))
 }

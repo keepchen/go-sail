@@ -95,7 +95,7 @@ func TestStringImplRandomDigitalChars(t *testing.T) {
 func TestStringImplRandomString(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33, 100}
 	for _, v := range holders {
-		s := RandomString(v)
+		s := String().RandomString(v)
 		t.Log(s)
 		assert.Equal(t, v, len(s))
 	}

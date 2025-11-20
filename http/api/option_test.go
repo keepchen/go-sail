@@ -22,7 +22,7 @@ func TestSetupOption(t *testing.T) {
 
 	t.Run("SetupOption", func(t *testing.T) {
 		emptyDataTypes := []int{DefaultEmptyDataStructNull, DefaultEmptyDataStructObject, DefaultEmptyDataStructArray, DefaultEmptyDataStructString, 999}
-		values := []interface{}{nil, struct{}{}, []bool{}, "", nil}
+		values := []any{nil, struct{}{}, []bool{}, "", nil}
 		for idx, dt := range emptyDataTypes {
 			opt := Option{
 				Timezone:             constants.DefaultTimeZone,

@@ -15,7 +15,7 @@ import (
 // appConfig 解析到目标
 //
 // format 内容格式，支持: json|yaml|toml
-func ParseConfig(configBytes []byte, appConfig interface{}, format string) error {
+func ParseConfig(configBytes []byte, appConfig any, format string) error {
 	var (
 		err        error
 		formatList = [...]string{"json", "yaml", "toml"}

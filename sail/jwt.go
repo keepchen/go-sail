@@ -15,7 +15,7 @@ type IJwt interface {
 	// exp 令牌有效期，秒级时间戳
 	//
 	// otherFields 其他可扩展字段
-	MakeToken(uid string, exp int64, otherFields ...map[string]interface{}) (string, error)
+	MakeToken(uid string, exp int64, otherFields ...map[string]any) (string, error)
 	// ValidToken 验证JWT令牌
 	//
 	// # ⚠️注意⚠️
@@ -57,9 +57,9 @@ func JWT() IJwt {
 // exp 令牌有效期，秒级时间戳
 //
 // otherFields 其他可扩展字段
-func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]interface{}) (string, error) {
+func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]any) (string, error) {
 	conf := config.Get()
-	baseMap := map[string]interface{}{
+	baseMap := map[string]any{
 		"uid": uid,
 		"iss": conf.JwtConf.TokenIssuer,
 		"exp": exp,

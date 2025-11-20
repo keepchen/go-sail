@@ -34,7 +34,7 @@ func SlackEmit(conf SlackConf, content string) (SlackResponseEntity, error) {
 		"Content-Type":  "application/json",
 		"Authorization": fmt.Sprintf("Bearer %s", conf.BotToken),
 	}
-	message := map[string]interface{}{
+	message := map[string]any{
 		"channel": conf.ChannelID,
 		"text":    content,
 	}
