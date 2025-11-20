@@ -3,18 +3,21 @@ package sail
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
 	redisLib "github.com/go-redis/redis/v8"
 	"github.com/keepchen/go-sail/v3/http/api"
 	"github.com/keepchen/go-sail/v3/lib/db"
 	"github.com/keepchen/go-sail/v3/lib/etcd"
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
+	"github.com/keepchen/go-sail/v3/lib/nacos"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
 	"github.com/keepchen/go-sail/v3/lib/valkey"
 	"github.com/keepchen/go-sail/v3/sail/config"
-
-	"github.com/gin-gonic/gin"
+	"github.com/nacos-group/nacos-sdk-go/v2/clients/config_client"
+	"github.com/nacos-group/nacos-sdk-go/v2/clients/naming_client"
+	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	natsLib "github.com/nats-io/nats.go"
 	kafkaLib "github.com/segmentio/kafka-go"
 	valkeyLib "github.com/valkey-io/valkey-go"
@@ -236,6 +239,32 @@ func NewValKey(conf valkey.Conf) (valkeyLib.Client, error) {
 	return valkey.New(conf)
 }
 
+// GetNacosConfigClient 获取nacos配置连接实例
+//
+// 注意，使用前请确保nacos组件已初始化成功。
+func GetNacosConfigClient() config_client.IConfigClient {
+	return nacos.GetConfigClient()
+}
+
+// GetNacosNamingClient 获取nacos命名空间连接实例
+//
+// 注意，使用前请确保nacos组件已初始化成功。
+func GetNacosNamingClient() naming_client.INamingClient {
+	return nacos.GetNamingClient()
+}
+
+// NewNacosConfigClient 新建nacos配置连接实例
+func NewNacosConfigClient(appName string, endpoints string, namespace string,
+	clientCfg ...constant.ClientConfig) (config_client.IConfigClient, error) {
+	return nacos.NewConfigClient(appName, endpoints, namespace, clientCfg...)
+}
+
+// NewNacosNamingClient 新建nacos命名空间连接实例
+func NewNacosNamingClient(appName string, endpoints string, namespace string,
+	clientCfg ...constant.ClientConfig) (naming_client.INamingClient, error) {
+	return nacos.NewNamingClient(appName, endpoints, namespace, clientCfg...)
+}
+
 // 根据配置依次初始化组件
 func componentsStartup(appName string, conf *config.Config) {
 	//- logger
@@ -280,7 +309,10 @@ func componentsStartup(appName string, conf *config.Config) {
 
 	//- etcd
 	if conf.EtcdConf.Enable {
-		etcd.Init(conf.EtcdConf)
+		// 可能通过config进行了初始化，因此先检测是否有全局可用变量，没有才进行初始化操作
+		if etcd.GetInstance() == nil {
+			etcd.Init(conf.EtcdConf)
+		}
 		fmt.Println("[GO-SAIL] <Components> initialize [etcd] successfully")
 	}
 
@@ -338,7 +370,7 @@ func componentsShutdown(conf *config.Config) {
 	}
 
 	//- etcd
-	if conf.EtcdConf.Enable && etcd.GetInstance() != nil {
+	if etcd.GetInstance() != nil {
 		_ = etcd.GetInstance().Close()
 		fmt.Println("[GO-SAIL] <Components> shutdown [etcd] successfully")
 	}
