@@ -168,7 +168,7 @@ import (
 type Conf struct {
 	ConsoleOutput bool     `yaml:"console_output" toml:"console_output" json:"console_output" default:"false"` //是否同时输出到终端
 	Env           string   `yaml:"env" toml:"env" json:"env" default:"prod"`                                   //日志环境，prod：生产环境，dev：开发环境
-	Level         string   `yaml:"level" toml:"level" json:"level" default:"info"`                             //日志级别，debug，info，warn，error
+	Level         string   `yaml:"level" toml:"level" json:"level" default:"debug"`                            //日志级别，debug，info，warn，error
 	Modules       []string `yaml:"modules" toml:"modules" json:"modules"`                                      //模块名称（日志记录到不同的文件中）
 	Filename      string   `yaml:"filename" toml:"filename" json:"filename" default:"logs/running.log"`        //日志文件名称
 	MaxSize       int      `yaml:"max_size" toml:"max_size" json:"max_size" default:"100"`                     //日志大小限制，单位MB

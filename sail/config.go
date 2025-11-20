@@ -17,10 +17,25 @@ import (
 )
 
 // Config 配置操作方法
-func Config(panicWhileErr bool, watcher func(configName string, content []byte, viaWatch bool)) ConfigProvider {
+//
+// panicWhileErr - 发生错误时是否panic
+//
+// watcher - 监听处理函数
+//
+// initClient - 是否初始化客户端
+//
+// # Note
+//
+// 当ConfigProvider = Nacos 或 Etcd 且连接成功时，initClient = true会全局初始化对应的客户端
+func Config(panicWhileErr bool, watcher func(configName string, content []byte, viaWatch bool), initClient ...bool) ConfigProvider {
+	var initCli = false
+	if len(initClient) > 0 {
+		initCli = initClient[0]
+	}
 	return &configImpl{
 		panicWhileErr: panicWhileErr,
 		watcher:       watcher,
+		initClient:    initCli,
 	}
 }
 
@@ -28,6 +43,7 @@ func Config(panicWhileErr bool, watcher func(configName string, content []byte, 
 type configImpl struct {
 	panicWhileErr      bool
 	watcher            func(configName string, content []byte, viaWatch bool)
+	initClient         bool
 	fileLastModifyTime time.Time
 }
 
@@ -139,6 +155,11 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 		content = etcdResp.Kvs[0].Value
 	}
 
+	//初始化客户端
+	if client != nil && ci.initClient {
+		etcd.Init(conf)
+	}
+
 	return &parserImpl{configName: key, content: content}
 }
 
@@ -174,6 +195,11 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 			Group:    groupName,
 			OnChange: watcher,
 		})
+	}
+
+	//初始化客户端
+	if client != nil && ci.initClient {
+		nacos.InitClient("Go-Sail", endpoints, namespaceID, clientCfg...)
 	}
 
 	return &parserImpl{configName: dataID, content: content}

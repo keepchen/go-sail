@@ -11,7 +11,7 @@ func TestPrintSummaryInfo(t *testing.T) {
 	t.Run("printSummaryInfo", func(t *testing.T) {
 		conf := config.Config{}
 		ginEngine := gin.Default()
-		printSummaryInfo(conf.HttpServer, ginEngine)
+		printSummaryInfo(conf, ginEngine)
 	})
 
 	t.Run("printSummaryInfo-Debug", func(t *testing.T) {
@@ -27,6 +27,6 @@ func TestPrintSummaryInfo(t *testing.T) {
 			},
 		}
 		ginEngine := gin.Default()
-		printSummaryInfo(conf.HttpServer, ginEngine)
+		printSummaryInfo(conf, ginEngine)
 	})
 }

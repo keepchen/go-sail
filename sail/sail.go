@@ -196,7 +196,7 @@ func (l *Launcher) Launch() {
 	wg.Add(1)
 	go httpserver.RunHttpServer(l.sa.conf.HttpServer, ginEngine, l.sa.apiOption, wg)
 
-	printSummaryInfo(l.sa.conf.HttpServer, ginEngine)
+	printSummaryInfo(*l.sa.conf, ginEngine)
 
 	//set config
 	config.Set(l.sa.conf)
