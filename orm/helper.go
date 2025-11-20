@@ -7,7 +7,7 @@ import (
 )
 
 // AutoMigrate 自动同步表结构
-func AutoMigrate(db *gorm.DB, tables ...interface{}) error {
+func AutoMigrate(db *gorm.DB, tables ...any) error {
 	err := db.AutoMigrate(tables...)
 	return err
 }

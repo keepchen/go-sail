@@ -13,7 +13,7 @@ func AuthCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authorization := c.GetHeader("Authorization")
 		if len(authorization) == 0 {
-			api.New(c).Assemble(constants.ErrAuthorizationTokenInvalid, nil).SendWithCode(http.StatusUnauthorized)
+			api.New(c).Wrap(constants.ErrAuthorizationTokenInvalid, nil).SendWithCode(http.StatusUnauthorized)
 			return
 		}
 

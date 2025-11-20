@@ -26,23 +26,6 @@ var (
 	once sync.Once
 )
 
-// RegisterCode 注册常量代码
-//
-// Deprecated: RegisterCode is deprecated,it will be removed in the future.
-//
-// Please use RegisterCodeTable instead.
-//
-// i18nMsg key为错误码值，value为错误信息
-//
-// 与 RegisterCodeSingle 不同的是，此方法是将code表整个覆盖。
-//
-// 当code码重复时，后者覆盖前者
-//
-// # 此方法适用于注入【固定】的错误码表的场景
-func RegisterCode(language LanguageCode, i18nMsg map[ICodeType]string) {
-	RegisterCodeTable(language, i18nMsg)
-}
-
 // RegisterCodeTable 注册错误码表
 //
 // i18nMsg key为错误码值，value为错误信息

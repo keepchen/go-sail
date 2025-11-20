@@ -216,7 +216,7 @@ func TestGetToken(t *testing.T) {
 	})
 
 	t.Run("GetToken-MapClaims", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		token, err := mp.GetToken(SigningMethodRS256, "")
 		assert.Equal(t, true, len(token) == 0)
 		assert.Error(t, err)

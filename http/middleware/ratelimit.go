@@ -131,7 +131,7 @@ func (l *Limiter) allowWithRedis(ip string) AllowResult {
 		return AllowResult{Allowed: true, Remaining: l.reqs - 1, ResetTime: time.Now().Add(l.window)}
 	}
 
-	values, ok := result.([]interface{})
+	values, ok := result.([]any)
 	if !ok || len(values) < 3 {
 		//如果返回值格式不正确，默认拒绝请求
 		return AllowResult{Allowed: false, Remaining: 0, ResetTime: time.Now().Add(l.window)}

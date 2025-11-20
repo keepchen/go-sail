@@ -21,29 +21,29 @@ import (
 )
 
 type Svc interface {
-	Model(value interface{}) Svc
-	Where(query interface{}, args ...interface{}) Svc
-	Or(query interface{}, args ...interface{}) Svc
-	Not(query interface{}, args ...interface{}) Svc
-	Joins(query string, args ...interface{}) Svc
-	Select(query interface{}, args ...interface{}) Svc
+	Model(value any) Svc
+	Where(query any, args ...any) Svc
+	Or(query any, args ...any) Svc
+	Not(query any, args ...any) Svc
+	Joins(query string, args ...any) Svc
+	Select(query any, args ...any) Svc
 	Omit(columns ...string) Svc
-	Order(value interface{}) Svc
+	Order(value any) Svc
 	Group(name string) Svc
 	Offset(offset int) Svc
 	Limit(limit int) Svc
-	Having(query interface{}, args ...interface{}) Svc
+	Having(query any, args ...any) Svc
 	Scopes(fns ...func(*gorm.DB) *gorm.DB) Svc
 	Session(session *gorm.Session) Svc
 	WithContext(ctx context.Context) Svc
 
 	Count(count *int64)
-	Create(value interface{}) error
-	Find(dest interface{}, conditions ...interface{}) error
-	First(dest interface{}, conditions ...interface{}) error
-	Updates(values interface{}) error
-	Save(values interface{}) error
-	Delete(value interface{}, conditions ...interface{}) error
+	Create(value any) error
+	Find(dest any, conditions ...any) error
+	First(dest any, conditions ...any) error
+	Updates(values any) error
+	Save(values any) error
+	Delete(value any, conditions ...any) error
 	Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) (err error)
 
 	// Unwrap 返回gorm原生实例
@@ -64,15 +64,15 @@ type Svc interface {
 	//返回:
 	//
 	//总条数和错误
-	Paginate(dest interface{}, page, pageSize int) (int64, error)
+	Paginate(dest any, page, pageSize int) (int64, error)
 	// FindOrNil 查询多条记录
 	//
 	//如果记录不存在忽略 gorm.ErrRecordNotFound 错误
-	FindOrNil(dest interface{}, conditions ...interface{}) error
+	FindOrNil(dest any, conditions ...any) error
 	// FirstOrNil 查询单条记录
 	//
 	//如果记录不存在忽略 gorm.ErrRecordNotFound 错误
-	FirstOrNil(dest interface{}, conditions ...interface{}) error
+	FirstOrNil(dest any, conditions ...any) error
 }
 
 type SvcImpl struct {
@@ -109,7 +109,7 @@ var NewSvcImplSilent = func() Svc {
 	}
 }
 
-func (a *SvcImpl) Model(value interface{}) Svc {
+func (a *SvcImpl) Model(value any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -119,7 +119,7 @@ func (a *SvcImpl) Model(value interface{}) Svc {
 	return a
 }
 
-func (a *SvcImpl) Where(query interface{}, args ...interface{}) Svc {
+func (a *SvcImpl) Where(query any, args ...any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -129,7 +129,7 @@ func (a *SvcImpl) Where(query interface{}, args ...interface{}) Svc {
 	return a
 }
 
-func (a *SvcImpl) Or(query interface{}, args ...interface{}) Svc {
+func (a *SvcImpl) Or(query any, args ...any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -139,7 +139,7 @@ func (a *SvcImpl) Or(query interface{}, args ...interface{}) Svc {
 	return a
 }
 
-func (a *SvcImpl) Not(query interface{}, args ...interface{}) Svc {
+func (a *SvcImpl) Not(query any, args ...any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -149,7 +149,7 @@ func (a *SvcImpl) Not(query interface{}, args ...interface{}) Svc {
 	return a
 }
 
-func (a *SvcImpl) Joins(query string, args ...interface{}) Svc {
+func (a *SvcImpl) Joins(query string, args ...any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -159,7 +159,7 @@ func (a *SvcImpl) Joins(query string, args ...interface{}) Svc {
 	return a
 }
 
-func (a *SvcImpl) Select(query interface{}, args ...interface{}) Svc {
+func (a *SvcImpl) Select(query any, args ...any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -179,7 +179,7 @@ func (a *SvcImpl) Omit(columns ...string) Svc {
 	return a
 }
 
-func (a *SvcImpl) Order(value interface{}) Svc {
+func (a *SvcImpl) Order(value any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -199,7 +199,7 @@ func (a *SvcImpl) Group(name string) Svc {
 	return a
 }
 
-func (a *SvcImpl) Having(query interface{}, args ...interface{}) Svc {
+func (a *SvcImpl) Having(query any, args ...any) Svc {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -276,7 +276,7 @@ func (a *SvcImpl) Count(count *int64) {
 	a.clearTx()
 }
 
-func (a *SvcImpl) Create(value interface{}) error {
+func (a *SvcImpl) Create(value any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -293,7 +293,7 @@ func (a *SvcImpl) Create(value interface{}) error {
 	return err
 }
 
-func (a *SvcImpl) Find(dest interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) Find(dest any, conditions ...any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -311,7 +311,7 @@ func (a *SvcImpl) Find(dest interface{}, conditions ...interface{}) error {
 	return err
 }
 
-func (a *SvcImpl) FindOrNil(dest interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) FindOrNil(dest any, conditions ...any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -329,7 +329,7 @@ func (a *SvcImpl) FindOrNil(dest interface{}, conditions ...interface{}) error {
 	return err
 }
 
-func (a *SvcImpl) First(dest interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) First(dest any, conditions ...any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -347,7 +347,7 @@ func (a *SvcImpl) First(dest interface{}, conditions ...interface{}) error {
 	return err
 }
 
-func (a *SvcImpl) FirstOrNil(dest interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) FirstOrNil(dest any, conditions ...any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -365,7 +365,7 @@ func (a *SvcImpl) FirstOrNil(dest interface{}, conditions ...interface{}) error 
 	return err
 }
 
-func (a *SvcImpl) Updates(values interface{}) error {
+func (a *SvcImpl) Updates(values any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -382,7 +382,7 @@ func (a *SvcImpl) Updates(values interface{}) error {
 	return err
 }
 
-func (a *SvcImpl) Save(values interface{}) error {
+func (a *SvcImpl) Save(values any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -399,7 +399,7 @@ func (a *SvcImpl) Save(values interface{}) error {
 	return err
 }
 
-func (a *SvcImpl) Delete(value interface{}, conditions ...interface{}) error {
+func (a *SvcImpl) Delete(value any, conditions ...any) error {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}
@@ -449,7 +449,7 @@ func (a *SvcImpl) W() Svc {
 	return a
 }
 
-func (a *SvcImpl) Paginate(dest interface{}, page, pageSize int) (int64, error) {
+func (a *SvcImpl) Paginate(dest any, page, pageSize int) (int64, error) {
 	if a.tx == nil {
 		a.tx = a.dbw
 	}

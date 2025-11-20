@@ -26,5 +26,5 @@ type Base struct {
 	// 业务数据
 	// in: body
 	// required: true
-	Data interface{} `json:"data" format:"object|array|string|number|boolean" validate:"required"`
+	Data any `json:"data" format:"object|array|string|number|boolean" validate:"required"`
 }

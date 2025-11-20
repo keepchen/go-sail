@@ -71,7 +71,7 @@ func SignWithMap(claims MapClaims, conf Conf) (string, error) {
 
 // Verify 验证
 func Verify(tokenString string, conf Conf) (AppClaims, error) {
-	token, err := jwtLib.ParseWithClaims(tokenString, &AppClaims{}, func(token *jwtLib.Token) (interface{}, error) {
+	token, err := jwtLib.ParseWithClaims(tokenString, &AppClaims{}, func(token *jwtLib.Token) (any, error) {
 		if _, ok := token.Method.(*jwtLib.SigningMethodHMAC); ok {
 			return []byte(conf.HmacSecret), nil
 		}
@@ -100,7 +100,7 @@ func Verify(tokenString string, conf Conf) (AppClaims, error) {
 
 // VerifyFromMap 验证
 func VerifyFromMap(tokenString string, conf Conf) (MapClaims, error) {
-	token, err := jwtLib.ParseWithClaims(tokenString, &MapClaims{}, func(token *jwtLib.Token) (interface{}, error) {
+	token, err := jwtLib.ParseWithClaims(tokenString, &MapClaims{}, func(token *jwtLib.Token) (any, error) {
 		if _, ok := token.Method.(*jwtLib.SigningMethodHMAC); ok {
 			return []byte(conf.HmacSecret), nil
 		}
@@ -128,7 +128,7 @@ func VerifyFromMap(tokenString string, conf Conf) (MapClaims, error) {
 }
 
 // GetToken 获取token
-func (c *AppClaims) GetToken(method SigningMethod, secret interface{}) (string, error) {
+func (c *AppClaims) GetToken(method SigningMethod, secret any) (string, error) {
 	if secret == nil {
 		return "", errors.New("secret is nil")
 	}
@@ -140,7 +140,7 @@ func (c *AppClaims) GetToken(method SigningMethod, secret interface{}) (string, 
 }
 
 // GetToken 获取token
-func (c *MapClaims) GetToken(method SigningMethod, secret interface{}) (string, error) {
+func (c *MapClaims) GetToken(method SigningMethod, secret any) (string, error) {
 	if secret == nil {
 		return "", errors.New("secret is nil")
 	}

@@ -18,7 +18,7 @@
 正如它的名字一般，你可以把它视作自己在golang生态的一个开始。go-sail将助力你从轻出发，扬帆起航。
 
 ## 如何使用
-> 推荐go version >= 1.20
+> 推荐go version >= 1.23
 
 > go get -u github.com/keepchen/go-sail/v3
 
@@ -57,7 +57,7 @@ parseFn := func(content []byte, viaWatch bool){
     }
 }
 etcdConf := etcd.Conf{
-	Endpoints: "",
+	Endpoints: []string{""},
 	Username: "",
 	Password: "",
 }

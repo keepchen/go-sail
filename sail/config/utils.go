@@ -85,7 +85,7 @@ func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 // dst 目标结构
 //
 // @return 返回值与参数dst类型相同，需要进行断言
-func ParseConfigFromBytesToDst(format string, source []byte, dst interface{}) (interface{}, error) {
+func ParseConfigFromBytesToDst(format string, source []byte, dst any) (any, error) {
 	var (
 		formatList = [...]string{"json", "yaml", "toml"}
 		err        error

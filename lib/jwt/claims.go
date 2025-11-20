@@ -21,7 +21,7 @@ type AppClaims struct {
 	jwtLib.RegisteredClaims
 }
 
-type MapClaims map[string]interface{}
+type MapClaims map[string]any
 
 func (c *MapClaims) GetExpirationTime() (*jwtLib.NumericDate, error) {
 	if value, ok := (*c)["exp"]; ok {
@@ -85,7 +85,7 @@ func (c *MapClaims) GetAudience() (jwtLib.ClaimStrings, error) {
 // 合并标准字段
 //
 // 如果传入的自定义字段在标准字段中存在，则用自定义字段覆盖标准字段
-func MergeStandardClaims(fields map[string]interface{}) MapClaims {
+func MergeStandardClaims(fields map[string]any) MapClaims {
 	now := time.Now()
 	defaultClaims := MapClaims{
 		"jti": uuid.New().String(),

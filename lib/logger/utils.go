@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 )
 
-//MarshalInterfaceValue 将interface序列化成字符串
+// MarshalInterfaceValue 将interface序列化成字符串
 //
-//主要用于日志记录
-func MarshalInterfaceValue(obj interface{}) string {
+// 主要用于日志记录
+func MarshalInterfaceValue(obj any) string {
 	js, _ := json.Marshal(obj)
 
 	return string(js)

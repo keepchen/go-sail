@@ -17,11 +17,11 @@ type IAnyValue interface {
 // 任意数据类型的堆
 type anyValueHeap []IAnyValue
 
-func (avh *anyValueHeap) Push(value interface{}) {
+func (avh *anyValueHeap) Push(value any) {
 	*avh = append(*avh, value.(IAnyValue))
 }
 
-func (avh *anyValueHeap) Pop() interface{} {
+func (avh *anyValueHeap) Pop() any {
 	if (*avh).Len() < 1 {
 		return nil
 	}

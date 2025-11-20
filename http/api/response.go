@@ -18,14 +18,6 @@ type Responder interface {
 	//
 	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
 	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
-	// Assemble 组装返回数据
-	//
-	// Deprecated: Assemble is deprecated,it will be removed in the future.
-	//
-	// Please use Builder instead.
-	//
-	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-	Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
 	// Status 指定http状态码
 	//
 	// 该方法会覆盖 Assemble, Builder, SimpleAssemble, Wrap 解析的http状态码值
@@ -39,15 +31,7 @@ type Responder interface {
 	// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
 	//
 	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-	Wrap(code constants.ICodeType, data interface{}, message ...string) Responder
-	// SimpleAssemble 组装返回数据(轻量版)
-	//
-	// Deprecated: SimpleAssemble is deprecated,it will be removed in the future.
-	//
-	// Please use Wrap instead.
-	//
-	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-	SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder
+	Wrap(code constants.ICodeType, data any, message ...string) Responder
 	// Bundle 包装返回数据
 	//
 	// 此方法提供更加开放的响应数据组装
@@ -61,7 +45,7 @@ type Responder interface {
 	// sail.Code().Register("en", 12345, "Code description...") //注册code码
 	//
 	// Response(c).Bundle(12345, nil).Send() //使用code码
-	Bundle(code int, data interface{}, message ...string) Responder
+	Bundle(code int, data any, message ...string) Responder
 	// Data 返回数据
 	//
 	// 此方法直接返回响应数据，其中：
@@ -70,7 +54,7 @@ type Responder interface {
 	//
 	// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
 	// 否则业务code为 constants.ErrNone
-	Data(data interface{})
+	Data(data any)
 	// Success 返回成功
 	//
 	// 此方法直接返回成功状态，响应默认数据(data为空)，其中：
@@ -117,7 +101,7 @@ type Responder interface {
 type responseEngine struct {
 	engine    *gin.Context
 	httpCode  int
-	data      interface{}
+	data      any
 	requestId string
 	spanId    string
 	entryAt   int64
@@ -128,7 +112,7 @@ var _ Responder = &responseEngine{}
 
 // 定义 sync.Pool
 var responseEnginePool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return &responseEngine{}
 	},
 }
@@ -198,7 +182,7 @@ func Response(c *gin.Context) Responder {
 // sail.Code().Register("en", 12345, "Code description...") //注册code码
 //
 // Response(c).Bundle(12345, nil).Send() //使用code码
-func (a *responseEngine) Bundle(code int, resp interface{}, message ...string) Responder {
+func (a *responseEngine) Bundle(code int, resp any, message ...string) Responder {
 	return a.mergeBody(constants.CodeType(code), resp, message...)
 }
 
@@ -273,7 +257,7 @@ func (a *responseEngine) Failure500(code constants.ICodeType, message ...string)
 //
 // 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
 // 否则业务code为 constants.ErrNone
-func (a *responseEngine) Data(data interface{}) {
+func (a *responseEngine) Data(data any) {
 	var code constants.ICodeType
 	if anotherErrNoneCode != nil {
 		code = anotherErrNoneCode
@@ -289,34 +273,12 @@ func (a *responseEngine) Data(data interface{}) {
 // 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
 //
 // 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-func (a *responseEngine) Wrap(code constants.ICodeType, data interface{}, message ...string) Responder {
+func (a *responseEngine) Wrap(code constants.ICodeType, data any, message ...string) Responder {
 	return a.mergeBody(code, data, message...)
-}
-
-// SimpleAssemble 组装返回数据(轻量版)
-//
-// Deprecated: SimpleAssemble is deprecated,it will be removed in the future.
-//
-// Please use Wrap instead.
-//
-// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-func (a *responseEngine) SimpleAssemble(code constants.ICodeType, data interface{}, message ...string) Responder {
-	return a.mergeBody(code, data, message...)
-}
-
-// Assemble 组装返回数据
-//
-// Deprecated: Assemble is deprecated,it will be removed in the future.
-//
-// Please use Builder instead.
-//
-// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-func (a *responseEngine) Assemble(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
-	return a.mergeBody(code, resp, message...)
 }
 
 // 合并处理响应体
-func (a *responseEngine) mergeBody(code constants.ICodeType, resp interface{}, message ...string) Responder {
+func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message ...string) Responder {
 	var (
 		body     dto.Base
 		httpCode int
@@ -434,7 +396,7 @@ func (a *responseEngine) Send() {
 }
 
 // 判断一个interface是否为typed nil（即类型不为nil，但内部值为nil）
-func isTypedNil(v interface{}) bool {
+func isTypedNil(v any) bool {
 	if v == nil {
 		return true
 	}
