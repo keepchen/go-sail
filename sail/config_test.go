@@ -9,9 +9,7 @@ import (
 	"time"
 
 	"github.com/keepchen/go-sail/v3/lib/etcd"
-
 	"github.com/keepchen/go-sail/v3/utils"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -83,6 +81,8 @@ func TestConfigViaEtcd(t *testing.T) {
 		Config(false, watcherFunc).ViaEtcd(etcdConf, testConfigFilename)
 
 		Config(false, watcherFunc).ViaEtcd(etcdConf, testConfigFilename).Parse(watcherFunc)
+
+		Config(false, watcherFunc, true).ViaEtcd(etcdConf, testConfigFilename)
 	})
 }
 
@@ -94,10 +94,12 @@ func TestConfigViaNacos(t *testing.T) {
 	})
 	t.Run("ConfigViaNacos-None-Panic", func(t *testing.T) {
 		Config(false, nil).ViaNacos("127.0.0.1:8848", "", "", "this-file-not-exist.json")
+		Config(false, watcherFunc, true).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename)
 	})
 	t.Run("ConfigViaNacos-Truly", func(t *testing.T) {
 		Config(false, watcherFunc).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename)
 
 		Config(false, watcherFunc).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename).Parse(watcherFunc)
+
 	})
 }

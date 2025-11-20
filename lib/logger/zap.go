@@ -99,6 +99,8 @@ func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 	//定义全局日志组件配置
 	atomicLevel := zap.NewAtomicLevel()
 	switch strings.ToLower(cfg.Level) {
+	default:
+		atomicLevel.SetLevel(zapcore.DebugLevel)
 	case "debug":
 		atomicLevel.SetLevel(zapcore.DebugLevel)
 	case "info":

@@ -188,7 +188,7 @@ func UpdateUserBalance() {
 ## Documentation
 [https://go-sail.dev](https://go-sail.dev)  
 
-## Online demo  
+## Live demo  
 [https://nav.go-sail.dev](https://nav.go-sail.dev)
 
 ## Features
