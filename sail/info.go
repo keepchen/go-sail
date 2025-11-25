@@ -11,6 +11,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/keepchen/go-sail/v3/constants"
+	"github.com/keepchen/go-sail/v3/lib/nacos"
 	"github.com/keepchen/go-sail/v3/sail/config"
 	"github.com/keepchen/go-sail/v3/utils"
 )
@@ -189,6 +190,16 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 	if conf.JwtConf != nil && conf.JwtConf.Enable {
 		tw.AppendRow(table.Row{
 			"JWT", "golang-jwt/jwt", fmt.Sprintf("Algorithm: %s", conf.JwtConf.Algorithm), "Yes", "Yes",
+		})
+	}
+	if nacos.GetConfigClient() != nil {
+		tw.AppendRow(table.Row{
+			"Nacos", "nacos-group/nacos-sdk-go", "Client: config", "Yes", "Yes",
+		})
+	}
+	if nacos.GetNamingClient() != nil {
+		tw.AppendRow(table.Row{
+			"Nacos", "nacos-group/nacos-sdk-go", "Client: naming", "Yes", "Yes",
 		})
 	}
 	//- 服务及组件信息结束位置

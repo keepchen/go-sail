@@ -308,7 +308,7 @@ func componentsStartup(appName string, conf *config.Config) {
 	}
 
 	//- etcd
-	if conf.EtcdConf.Enable {
+	if conf.EtcdConf.Enable || etcd.GetInstance() != nil {
 		// 可能通过config进行了初始化，因此先检测是否有全局可用变量，没有才进行初始化操作
 		if etcd.GetInstance() == nil {
 			etcd.Init(conf.EtcdConf)
@@ -320,6 +320,15 @@ func componentsStartup(appName string, conf *config.Config) {
 	if conf.ValKeyConf.Enable {
 		valkey.Init(conf.ValKeyConf)
 		fmt.Println("[GO-SAIL] <Components> initialize [valkey] successfully")
+	}
+
+	//- nacos
+	// 可能通过config进行了初始化，因此先检测是否有全局可用变量，全局变量可用则进行信息打印
+	if nacos.GetConfigClient() != nil {
+		fmt.Println("[GO-SAIL] <Components> initialize [nacos - configClient] successfully")
+	}
+	if nacos.GetNamingClient() != nil {
+		fmt.Println("[GO-SAIL] <Components> initialize [nacos - namingClient] successfully")
 	}
 }
 
@@ -379,5 +388,15 @@ func componentsShutdown(conf *config.Config) {
 	if conf.ValKeyConf.Enable && valkey.GetValKey() != nil {
 		valkey.GetValKey().Close()
 		fmt.Println("[GO-SAIL] <Components> shutdown [valkey] successfully")
+	}
+
+	//- nacos
+	if nacos.GetConfigClient() != nil {
+		nacos.GetConfigClient().CloseClient()
+		fmt.Println("[GO-SAIL] <Components> shutdown [nacos - configClient] successfully")
+	}
+	if nacos.GetNamingClient() != nil {
+		nacos.GetNamingClient().CloseClient()
+		fmt.Println("[GO-SAIL] <Components> shutdown [nacos - namingClient] successfully")
 	}
 }
