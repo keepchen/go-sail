@@ -22,6 +22,17 @@ import (
 	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
+func TestWakeHttp(t *testing.T) {
+	t.Run("wakeHttpPanic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			WakeupHttp("test-wakeup-panic", nil)
+		})
+	})
+	t.Run("wakeHttp", func(t *testing.T) {
+		t.Log(WakeupHttp("test-wakeup", &config.Config{}))
+	})
+}
+
 func TestLaunch(t *testing.T) {
 	conf := &config.Config{
 		LoggerConf: logger.Conf{
