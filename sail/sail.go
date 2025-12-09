@@ -86,6 +86,9 @@ var _ Launchpad = &Launcher{}
 //
 // conf 配置文件
 func WakeupHttp(appName string, conf *config.Config) Sailor {
+	if conf == nil {
+		panic("config is nil, did you forget to initialize the config?")
+	}
 	return &Sail{
 		appName: appName,
 		conf:    conf,
