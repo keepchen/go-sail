@@ -8,7 +8,9 @@
 [![codecov](https://codecov.io/github/keepchen/go-sail/graph/badge.svg?token=UNLOORRJHA)](https://codecov.io/github/keepchen/go-sail)
 [![Dependabot Status](https://img.shields.io/badge/dependabot-active-brightgreen?logo=dependabot)](https://github.com/keepchen/go-sail/security/dependabot)
 [![Snyk Security](https://img.shields.io/badge/Snyk-Secure-blueviolet?logo=snyk)](https://snyk.io/test/github/keepchen/go-sail)
-[![LICENSE: MIT](https://img.shields.io/github/license/keepchen/go-sail.svg?style=flat)](LICENSE)
+[![LICENSE: MIT](https://img.shields.io/github/license/keepchen/go-sail.svg?style=flat)](LICENSE)  
+
+[![LATEST_VERSION](https://img.shields.io/github/v/tag/keepchen/go-sail?color=ff0000&amp;&amp;logo=go&amp;label=LATEST_VERSION)](https://github.com/keepchen/go-sail/tags)  
 
 简体中文 | [English](./README_EN.md)
 
@@ -69,7 +71,7 @@ sail.Config(true, parseFn).ViaEtcd(etcdConf, key).Parse(parseFn)
 ```go
 func UserRegisterSvc(c *gin.Context) {
   ...
-  sail.LogTrace(c).GetLogger().Warn("log something...")
+  sail.LogTrace(c).Warn("log something...")
   ...
 }
 ```
@@ -312,5 +314,5 @@ ok    github.com/keepchen/go-sail/v3  3.663s
 ## 赞助
 [![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
 
-## Star历史
-![star history](https://starchart.cc/keepchen/go-sail.svg)
+## Star历史  
+[![Star History Chart](https://api.star-history.com/svg?repos=keepchen/go-sail&type=date&legend=top-left)](https://www.star-history.com/#keepchen/go-sail&type=date&legend=top-left)  
