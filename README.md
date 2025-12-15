@@ -312,7 +312,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
 </table>
 
 ## 赞助
-[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
+[![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
 
 ## Star历史  
 [![Star History Chart](https://api.star-history.com/svg?repos=keepchen/go-sail&type=date&legend=top-left)](https://www.star-history.com/#keepchen/go-sail&type=date&legend=top-left)  
