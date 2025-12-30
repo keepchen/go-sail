@@ -64,6 +64,33 @@ func TestDiscoverService(t *testing.T) {
 	})
 }
 
+func TestGetAllServices(t *testing.T) {
+	t.Run("GetAllServices", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		conf.Tls = nil
+		Init(conf)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
+		t.Log(GetAllServices(ctx, "go-sail"))
+
+		//clear
+		_ = GetInstance().Close()
+		client = nil
+	})
+
+	t.Run("GetAllServices-Panic", func(t *testing.T) {
+		assert.Panics(t, func() {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			defer cancel()
+			t.Log(GetAllServices(ctx, "go-sail"))
+		})
+	})
+}
+
 func TestWatchService(t *testing.T) {
 	t.Run("WatchService", func(t *testing.T) {
 		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
@@ -110,5 +137,20 @@ func TestWatchService(t *testing.T) {
 
 			time.Sleep(5 * time.Second)
 		})
+	})
+}
+
+func TestGenerateInstanceID(t *testing.T) {
+	t.Run("GenerateInstanceID", func(t *testing.T) {
+		var endpoints = []string{
+			"127.0.0.1:5000",
+			"127.0.0.1:6000",
+			"127.0.0.1:7000",
+			"127.0.0.1:8000",
+			"127.0.0.1:9000",
+		}
+		for _, endpoint := range endpoints {
+			t.Log(generateInstanceID(endpoint))
+		}
 	})
 }
