@@ -77,16 +77,19 @@ gen-ed25519-key:
 	openssl pkey -in $(PREFIX)/static/certifications/ed25519_private.pem -pubout -out $(PREFIX)/static/certifications/ed25519_public.pem
 
 gen-ecdsa-key-256:
-	openssl ecparam -name prime256v1 -genkey -noout -out $(PREFIX)/static/certifications/ecdsa_p256_private.pem && \
-	openssl ec -in $(PREFIX)/static/certifications/ecdsa_p256_private.pem -pubout -out $(PREFIX)/static/certifications/ecdsa_p256_public.pem
+	openssl ecparam -name prime256v1 -genkey -noout | \
+	openssl pkcs8 -topk8 -nocrypt -out $(PREFIX)/static/certifications/ecdsa_p256_private.pem
+	openssl pkey -in $(PREFIX)/static/certifications/ecdsa_p256_private.pem -pubout -out $(PREFIX)/static/certifications/ecdsa_p256_public.pem
 
 gen-ecdsa-key-384:
-	openssl ecparam -name secp384r1 -genkey -noout -out $(PREFIX)/static/certifications/ecdsa_p384_private.pem && \
-	openssl ec -in $(PREFIX)/static/certifications/ecdsa_p384_private.pem -pubout -out $(PREFIX)/static/certifications/ecdsa_p384_public.pem
+	openssl ecparam -name secp384r1 -genkey -noout | \
+	openssl pkcs8 -topk8 -nocrypt -out $(PREFIX)/static/certifications/ecdsa_p384_private.pem
+	openssl pkey -in $(PREFIX)/static/certifications/ecdsa_p384_private.pem -pubout -out $(PREFIX)/static/certifications/ecdsa_p384_public.pem
 
 gen-ecdsa-key-521:
-	openssl ecparam -name secp521r1 -genkey -noout -out $(PREFIX)/static/certifications/ecdsa_p521_private.pem && \
-	openssl ec -in $(PREFIX)/static/certifications/ecdsa_p521_private.pem -pubout -out $(PREFIX)/static/certifications/ecdsa_p521_public.pem
+	openssl ecparam -name secp521r1 -genkey -noout | \
+	openssl pkcs8 -topk8 -nocrypt -out $(PREFIX)/static/certifications/ecdsa_p521_private.pem
+	openssl pkey -in $(PREFIX)/static/certifications/ecdsa_p521_private.pem -pubout -out $(PREFIX)/static/certifications/ecdsa_p521_public.pem
 
 # swag version >= 1.8.4
 # go get -u github.com/swaggo/swag/cmd/swag@v1.8.4
