@@ -7,4 +7,6 @@ func TestPrintKeys(t *testing.T) {
 	t.Log(PublicKeyEndStr)
 	t.Log(PrivateKeyBeginStr)
 	t.Log(PrivateKeyEndStr)
+	t.Log(EcPrivateKeyBeginStr)
+	t.Log(EcPrivateKeyEndStr)
 }
