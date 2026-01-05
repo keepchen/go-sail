@@ -85,3 +85,13 @@ func TestLarkEmit(t *testing.T) {
 		t.Log(ent)
 	})
 }
+
+func TestLarkEmitPlaintext(t *testing.T) {
+	t.Run("LarkEmitPlaintext", func(t *testing.T) {
+		conf := LarkConf{}
+
+		ent, err := LarkEmitPlaintext(conf, "tester-LarkEmitPlaintext")
+		t.Log(err)
+		t.Log(ent)
+	})
+}
