@@ -236,7 +236,7 @@ func UpdateUserBalance() {
   - Prometheus
   - Pprof
   - 日志导出器
-  - 性能检测
+  - 性能监测
     - Prometheus
     - Pprof
 - [x] 接口错误码

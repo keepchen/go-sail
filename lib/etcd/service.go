@@ -10,17 +10,17 @@ import (
 )
 
 // RegisterService 注册服务
-func RegisterService(ctx context.Context, serviceName, serviceEndpoint string, ttlSeconds int64) (string, error) {
+func RegisterService(ctx context.Context, groupName, serviceName, serviceEndpoint string, ttlSeconds int64) (string, error) {
 	lease, err := GetInstance().Grant(ctx, ttlSeconds)
 	if err != nil {
 		return "", err
 	}
 
 	// 生成唯一的服务实例ID
-	instanceID := fmt.Sprintf("%s/%s", serviceName, generateInstanceID(serviceEndpoint))
+	instanceID := fmt.Sprintf("%s/%s/%s", groupName, serviceName, generateInstanceID(serviceEndpoint))
 
 	// 存储服务实例信息
-	key := fmt.Sprintf("services/%s/instances/%s", serviceName, instanceID)
+	key := fmt.Sprintf("services/%s/%s/instances/%s", groupName, serviceName, instanceID)
 	value := serviceEndpoint
 
 	_, err = GetInstance().Put(ctx, key, value, clientv3.WithLease(lease.ID))
@@ -29,7 +29,7 @@ func RegisterService(ctx context.Context, serviceName, serviceEndpoint string, t
 	}
 
 	// 同时存储服务名称用于服务发现
-	serviceKey := fmt.Sprintf("services/%s", serviceName)
+	serviceKey := fmt.Sprintf("services/%s/%s", groupName, serviceName)
 	_, err = GetInstance().Put(ctx, serviceKey, "", clientv3.WithLease(lease.ID))
 
 	ch, err := GetInstance().KeepAlive(ctx, lease.ID)
@@ -51,9 +51,9 @@ func RegisterService(ctx context.Context, serviceName, serviceEndpoint string, t
 // # Note:
 //
 // 该方法使用 rand.Intn 随机算法获取可用服务节点
-func DiscoverService(ctx context.Context, serviceName string) (string, error) {
+func DiscoverService(ctx context.Context, groupName, serviceName string) (string, error) {
 	// 使用前缀查询获取所有实例
-	prefix := fmt.Sprintf("services/%s/instances/", serviceName)
+	prefix := fmt.Sprintf("services/%s/%s/instances/", groupName, serviceName)
 	resp, err := GetInstance().Get(ctx, prefix, clientv3.WithPrefix())
 	if err != nil {
 		return "", err
@@ -69,8 +69,8 @@ func DiscoverService(ctx context.Context, serviceName string) (string, error) {
 }
 
 // GetAllServices 获取所有服务实例
-func GetAllServices(ctx context.Context, serviceName string) ([]string, error) {
-	prefix := fmt.Sprintf("services/%s/instances/", serviceName)
+func GetAllServices(ctx context.Context, groupName, serviceName string) ([]string, error) {
+	prefix := fmt.Sprintf("services/%s/%s/instances/", groupName, serviceName)
 	resp, err := GetInstance().Get(ctx, prefix, clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
@@ -89,8 +89,9 @@ func GetAllServices(ctx context.Context, serviceName string) ([]string, error) {
 // # Note:
 //
 // 该方法会阻塞进程
-func WatchService(ctx context.Context, serviceName string, fn func(k, v []byte)) {
-	Watch(ctx, serviceName, fn)
+func WatchService(ctx context.Context, groupName, serviceName string, fn func(k, v []byte)) {
+	key := fmt.Sprintf("services/%s/%s/instances/", groupName, serviceName)
+	WatchWithPrefix(ctx, key, fn)
 }
 
 func generateInstanceID(endpoint string) string {
