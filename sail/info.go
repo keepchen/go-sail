@@ -23,14 +23,15 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 		messages   bytes.Buffer
 		localIp, _ = utils.IP().GetLocal()
 		delimiter  = strings.Repeat("=", 120)
-		repoLink   = "Repository: https://github.com/keepchen/go-sail"
+		docLink    = "Documentation: https://go-sail.dev"
+		repoLink   = "Repository:    https://github.com/keepchen/go-sail"
 		blank      = strings.Repeat(" ", len(delimiter)-len(repoLink)-len(constants.GoSailVersion)-11)
 	)
 	//- 基础信息开始位置
 	messages.WriteString(delimiter)
 	info := fmt.Sprintf("%s\n", constants.GoSailLogo)
 	messages.WriteString(info)
-	versionInfo := fmt.Sprintf("\n%s%s(version: %s)\n", repoLink, blank, constants.GoSailVersion)
+	versionInfo := fmt.Sprintf("\n%s\n%s%s(version: %s)\n", docLink, repoLink, blank, constants.GoSailVersion)
 	messages.WriteString(versionInfo)
 	messages.WriteString(delimiter)
 	//- 基础信息终止位置

@@ -17,7 +17,7 @@
 ## go-sail是什么？
 
 **go-sail**是一个轻量的渐进式Web框架，使用Go语言实现。它并**不是重复造轮子的产物**，而是站在巨人的肩膀上，整合现有的优秀组件，旨在帮助使用者以最简单的方式构建稳定可靠的服务。
-正如它的名字一般，你可以把它视作自己在golang生态的一个开始。go-sail将助力你从轻出发，扬帆起航。
+正如它的名字一般，你可以把它视作自己在Golang生态的一个开始。go-sail将助力你从轻出发，扬帆起航。
 
 ## 如何使用
 > 推荐go version >= 1.23
@@ -285,34 +285,100 @@ ok    github.com/keepchen/go-sail/v3  3.663s
 - 欢迎大家提出自己的想法: [issue](https://github.com/keepchen/go-sail/issues/new/choose)
 - 感谢你的star如果你喜欢这个项目的话 :)
 
-## 使用案例
+## 使用案例  
 <table style="text-align: center">
-  <tr style="height:200px">
-    <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200" title="https://stardots.io"/></a>
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
-    </td>
-  </tr>
-  <tr style="height:200px">
-    <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
-    </td>
-  </tr>
+    <thead>
+        <tr>
+            <td style="border: 1px solid black; padding: 8px;">Logo</td>
+            <td style="border: 1px solid black; padding: 8px;">URL</td>
+            <td style="border: 1px solid black; padding: 8px;">Category</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/sendflare-logo.png" alt="sendflare.com" width="200"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                <a href="https://sendflare.com?ref=go-sail" target="_blank">https://sendflare.com</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                <a href="https://stardots.io?ref=go-sail" target="_blank">https://stardots.io</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              <a href="https://t.me/PiggyPiggyofficialbot" target="_blank">https://t.me/PiggyPiggyofficialbot</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Telegram miniprogram
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              -
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Wechat miniprogram
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              <a href="https://fantagoal.io" target="_blank">https://fantagoal.io</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              -
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              -
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## 赞助
-[![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
+[![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com?ref=go-sail "Powered by DartNode - Free VPS for Open Source")  
+[![TempMail100.com](static/sponsors/tempmail100/tempmail100-logo.webp)](https://tempmail100.com?ref=go-sail "Secure and Anonymous Temp Mail Service")
+[![StarDots.io](static/sponsors/stardots/stardots-logo-banner.png)](https://stardots.io?ref=go-sail "Your All-in-One Image Hosting and Transformation Powerhouse")
 
 ## Star历史  
 [![Star History Chart](https://api.star-history.com/svg?repos=keepchen/go-sail&type=date&legend=top-left)](https://www.star-history.com/#keepchen/go-sail&type=date&legend=top-left)  
