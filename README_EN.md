@@ -17,7 +17,7 @@ English | [简体中文](./README.md)
 ## Whats the go-sail?
 
 **go-sail** is a lightweight progressive web framework implemented using Go language. **It is not the product of reinventing the wheel**, but stands on the shoulders of giants and integrates existing excellent components to help users build stable and reliable services in the simplest way.
-As its name suggests, you can regard it as the beginning of your own journey in the golang ecosystem. go-sail will help you start lightly and set sail.
+As its name suggests, you can regard it as the beginning of your own journey in the Golang ecosystem. go-sail will help you start lightly and set sail.
 
 ## How to use
 > go version >= 1.23
@@ -287,33 +287,98 @@ Thank you to everyone who provided valuable suggestions and comments during the 
 
 ## Use cases
 <table style="text-align: center">
-  <tr style="height:200px">
-    <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://stardots.io?ref=go-sail" target="_blank"><img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200" title="https://stardots.io"/></a>
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://t.me/PiggyPiggyofficialbot" target="_blank"><img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/></a>
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
-    </td>
-  </tr>
-  <tr style="height:200px">
-    <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
-    </td>
-    <td style="border: 1px solid black; padding: 8px;">
-      <a href="https://fantagoal.io" target="_blank"><img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" title="https://fantagoal.io"/></a>
-    </td>
-  </tr>
-
+    <thead>
+        <tr>
+            <td style="border: 1px solid black; padding: 8px;">Logo</td>
+            <td style="border: 1px solid black; padding: 8px;">URL</td>
+<td style="border: 1px solid black; padding: 8px;">Category</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/sendflare-logo.png" alt="sendflare.com" width="200"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                <a href="https://sendflare.com?ref=go-sail" target="_blank">https://sendflare.com</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/stardots-logo.png" alt="stardots.io" width="200"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                <a href="https://stardots.io?ref=go-sail" target="_blank">https://stardots.io</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/piggy-logo.jpg" alt="Piggy (telegram mini-game)" width="200" title="https://t.me/PiggyPiggyofficialbot"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              <a href="https://t.me/PiggyPiggyofficialbot" target="_blank">https://t.me/PiggyPiggyofficialbot</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Telegram miniprogram
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              -
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Wechat miniprogram
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              <a href="https://fantagoal.io" target="_blank">https://fantagoal.io</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/wingoal-metaland.png" alt="WinGoal" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              -
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/pikaster-metaland.png" alt="Pikaster" width="200" />
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+              -
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## Sponsors
-[![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
+[![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com?ref=go-sail "Powered by DartNode - Free VPS for Open Source")  
+[![TempMail100.com](static/sponsors/tempmail100/tempmail100-logo.webp)](https://tempmail100.com?ref=go-sail "Secure and Anonymous Temp Mail Service")
+[![StarDots.io](static/sponsors/stardots/stardots-logo-banner.png)](https://stardots.io?ref=go-sail "Your All-in-One Image Hosting and Transformation Powerhouse")
 
 ## Star History  
 [![Star History Chart](https://api.star-history.com/svg?repos=keepchen/go-sail&type=date&legend=top-left)](https://www.star-history.com/#keepchen/go-sail&type=date&legend=top-left)  
