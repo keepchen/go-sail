@@ -65,7 +65,7 @@ etcdConf := etcd.Conf{
 }
 key := "go-sail.config.yaml"
 
-sail.Config(true, parseFn).ViaEtcd(etcdConf, key).Parse(parseFn)
+sail.Config(parseFn).ViaEtcd(etcdConf, key).Parse(parseFn)
 ```
 ### 链路日志追踪
 ```go
