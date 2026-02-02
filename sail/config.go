@@ -18,33 +18,29 @@ import (
 
 // Config 配置操作方法
 //
-// panicWhileErr - 发生错误时是否panic
-//
 // watcher - 监听处理函数
 //
-// initClient - 是否初始化客户端
+// initClientAsComponent - 是否初始化客户端作为组件
 //
 // # Note
 //
-// 当ConfigProvider = Nacos 或 Etcd 且连接成功时，initClient = true会全局初始化对应的客户端
-func Config(panicWhileErr bool, watcher func(configName string, content []byte, viaWatch bool), initClient ...bool) ConfigProvider {
-	var initCli = false
-	if len(initClient) > 0 {
-		initCli = initClient[0]
+// 当ConfigProvider = Nacos 或 Etcd 且连接成功时，initClientAsComponent = true会全局初始化对应的客户端
+func Config(watcher func(configName string, content []byte, viaWatch bool), initClientAsComponent ...bool) ConfigProvider {
+	var initClient = false
+	if len(initClientAsComponent) > 0 {
+		initClient = initClientAsComponent[0]
 	}
 	return &configImpl{
-		panicWhileErr: panicWhileErr,
-		watcher:       watcher,
-		initClient:    initCli,
+		watcher:               watcher,
+		initClientAsComponent: initClient,
 	}
 }
 
 // configImpl 配置操作方法实现
 type configImpl struct {
-	panicWhileErr      bool
-	watcher            func(configName string, content []byte, viaWatch bool)
-	initClient         bool
-	fileLastModifyTime time.Time
+	watcher               func(configName string, content []byte, viaWatch bool)
+	initClientAsComponent bool
+	fileLastModifyTime    time.Time
 }
 
 // ConfigProvider 配置操作提供方案
@@ -64,7 +60,7 @@ var _ ConfigProvider = &configImpl{}
 // ViaFile 通过文件操作配置
 func (ci *configImpl) ViaFile(filename string) Parser {
 	content, err := utils.File().GetContents(filename)
-	if err != nil && ci.panicWhileErr {
+	if err != nil {
 		panic(err)
 	}
 
@@ -114,7 +110,7 @@ func (ci *configImpl) ViaFile(filename string) Parser {
 // ViaEtcd 通过etcd操作配置
 func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	client, err := etcd.New(conf)
-	if err != nil && ci.panicWhileErr {
+	if err != nil {
 		panic(err)
 	}
 	if client == nil {
@@ -123,13 +119,13 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	etcdResp, err := client.Get(ctx, key)
-	if err != nil && ci.panicWhileErr {
+	if err != nil {
 		panic(err)
 	}
-	if etcdResp == nil && ci.panicWhileErr {
+	if etcdResp == nil {
 		panic(err)
 	}
-	if etcdResp != nil && len(etcdResp.Kvs) == 0 && ci.panicWhileErr {
+	if len(etcdResp.Kvs) == 0 {
 		panic(err)
 	}
 
@@ -151,12 +147,10 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	}
 
 	var content []byte
-	if etcdResp != nil && len(etcdResp.Kvs) > 0 {
-		content = etcdResp.Kvs[0].Value
-	}
+	content = etcdResp.Kvs[0].Value
 
 	//初始化客户端
-	if client != nil && ci.initClient {
+	if client != nil && ci.initClientAsComponent {
 		etcd.Init(conf)
 	}
 
@@ -166,26 +160,24 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 // ViaNacos 通过nacos操作配置
 func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string, clientCfg ...constant.ClientConfig) Parser {
 	client, err := nacos.NewConfigClient("Go-Sail", endpoints, namespaceID, clientCfg...)
-	if err != nil && ci.panicWhileErr {
+	if err != nil {
 		panic(err)
 	}
-	if client == nil && ci.panicWhileErr {
+	if client == nil {
 		panic("client is nil")
 	}
 	var content []byte
-	if client != nil {
-		data, err := client.GetConfig(vo.ConfigParam{
-			DataId: dataID,
-			Group:  groupName,
-		})
-		content = []byte(data)
-		if err != nil && ci.panicWhileErr {
-			panic(err)
-		}
+	data, err := client.GetConfig(vo.ConfigParam{
+		DataId: dataID,
+		Group:  groupName,
+	})
+	content = []byte(data)
+	if err != nil {
+		panic(err)
 	}
 
 	//当监听函数被设置时，需要执行监听
-	if ci.watcher != nil && client != nil {
+	if ci.watcher != nil {
 		watcher := func(namespace string, group string, dataId string, data string) {
 			fmt.Println("[Go-Sail] <Config> content has been modified (via Nacos)")
 			ci.watcher(dataId, []byte(data), true)
@@ -198,7 +190,7 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 	}
 
 	//初始化客户端
-	if client != nil && ci.initClient {
+	if ci.initClientAsComponent {
 		nacos.InitClient("Go-Sail", endpoints, namespaceID, clientCfg...)
 	}
 

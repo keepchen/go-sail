@@ -23,27 +23,24 @@ var (
 
 func TestConfig(t *testing.T) {
 	t.Run("Config", func(t *testing.T) {
-		t.Log(Config(false, nil))
+		t.Log(Config(nil))
 	})
 }
 
 func TestConfigViaFile(t *testing.T) {
 	t.Run("ConfigViaFile-Panic", func(t *testing.T) {
 		assert.Panics(t, func() {
-			Config(true, nil).ViaFile("this-file-not-exist.json")
+			Config(nil).ViaFile("this-file-not-exist.json")
 		})
-	})
-	t.Run("ConfigViaFile-None-Panic", func(t *testing.T) {
-		Config(false, nil).ViaFile("this-file-not-exist.json")
 	})
 	t.Run("ConfigViaFile-Truly-File", func(t *testing.T) {
 		_ = utils.File().PutContents([]byte(testConfigContent), testConfigFilename)
 		defer func() {
 			_ = os.Remove(testConfigFilename)
 		}()
-		Config(false, watcherFunc).ViaFile(testConfigFilename)
+		Config(watcherFunc).ViaFile(testConfigFilename)
 
-		Config(false, watcherFunc).ViaFile(testConfigFilename).Parse(watcherFunc)
+		Config(watcherFunc).ViaFile(testConfigFilename).Parse(watcherFunc)
 	})
 }
 
@@ -71,35 +68,22 @@ func TestConfigViaEtcd(t *testing.T) {
 
 	t.Run("ConfigViaEtcd-Panic", func(t *testing.T) {
 		assert.Panics(t, func() {
-			Config(true, nil).ViaEtcd(etcdConf, "this-file-not-exist.json")
+			Config(nil).ViaEtcd(etcdConf, "this-file-not-exist.json")
 		})
 	})
-	t.Run("ConfigViaEtcd-None-Panic", func(t *testing.T) {
-		Config(false, nil).ViaEtcd(etcdConf, "this-file-not-exist.json")
-	})
 	t.Run("ConfigViaEtcd-Truly", func(t *testing.T) {
-		Config(false, watcherFunc).ViaEtcd(etcdConf, testConfigFilename)
+		Config(watcherFunc).ViaEtcd(etcdConf, testConfigFilename)
 
-		Config(false, watcherFunc).ViaEtcd(etcdConf, testConfigFilename).Parse(watcherFunc)
+		Config(watcherFunc).ViaEtcd(etcdConf, testConfigFilename).Parse(watcherFunc)
 
-		Config(false, watcherFunc, true).ViaEtcd(etcdConf, testConfigFilename)
+		Config(watcherFunc, true).ViaEtcd(etcdConf, testConfigFilename)
 	})
 }
 
 func TestConfigViaNacos(t *testing.T) {
 	t.Run("ConfigViaNacos-Panic", func(t *testing.T) {
 		assert.Panics(t, func() {
-			Config(true, nil).ViaNacos("127.0.0.1:8848", "", "", "this-file-not-exist.json")
+			Config(nil).ViaNacos("127.0.0.1:8848", "", "", "this-file-not-exist.json")
 		})
-	})
-	t.Run("ConfigViaNacos-None-Panic", func(t *testing.T) {
-		Config(false, nil).ViaNacos("127.0.0.1:8848", "", "", "this-file-not-exist.json")
-		Config(false, watcherFunc, true).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename)
-	})
-	t.Run("ConfigViaNacos-Truly", func(t *testing.T) {
-		Config(false, watcherFunc).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename)
-
-		Config(false, watcherFunc).ViaNacos("127.0.0.1:8848", "", "", testConfigFilename).Parse(watcherFunc)
-
 	})
 }
