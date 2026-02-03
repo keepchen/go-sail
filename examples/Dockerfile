@@ -22,7 +22,7 @@ RUN mkdir -p /output \
     -e COMMIT_ID=$COMMIT_ID -e OUTPUT_FILE=/output/go-sail \
     -e VERSION=$VERSION -e VCS_BRANCH=$VCS_BRANCH -e EXTRA_BUILD_ARGS=$EXTRA_BUILD_ARGS
 
-FROM alpine
+FROM alpine:3.23.3
 
 RUN apk update && apk add tzdata
 
