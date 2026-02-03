@@ -291,10 +291,25 @@ Thank you to everyone who provided valuable suggestions and comments during the 
         <tr>
             <td style="border: 1px solid black; padding: 8px;">Logo</td>
             <td style="border: 1px solid black; padding: 8px;">URL</td>
-<td style="border: 1px solid black; padding: 8px;">Category</td>
+            <td style="border: 1px solid black; padding: 8px;">Category</td>
+            <td style="border: 1px solid black; padding: 8px;">Industry</td>
         </tr>
     </thead>
     <tbody>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/fsx120-logo.jpg" alt="fsx120.cn" width="200" title="Patient record system of a certain department"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                <a href="https://fsx120.cn?ref=go-sail" target="_blank">https://fsx120.cn</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Website
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Medical
+            </td>
+        </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
               <img src="static/usecases/sendflare-logo.png" alt="sendflare.com" width="200"/>
@@ -304,6 +319,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Website
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                SaaS
             </td>
         </tr>
         <tr style="height:200px">
@@ -316,6 +334,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             <td style="border: 1px solid black; padding: 8px;">
                 Website
             </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                SaaS
+            </td>
         </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
@@ -326,6 +347,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Telegram miniprogram
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
         <tr style="height:200px">
@@ -338,6 +362,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             <td style="border: 1px solid black; padding: 8px;">
                 Wechat miniprogram
             </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Lifestyle services
+            </td>
         </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
@@ -348,6 +375,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Website
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
         <tr style="height:200px">
@@ -360,6 +390,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             <td style="border: 1px solid black; padding: 8px;">
                 Website
             </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
+            </td>
         </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
@@ -370,6 +403,9 @@ Thank you to everyone who provided valuable suggestions and comments during the 
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Website
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
     </tbody>

@@ -289,12 +289,27 @@ ok    github.com/keepchen/go-sail/v3  3.663s
 <table style="text-align: center">
     <thead>
         <tr>
-            <td style="border: 1px solid black; padding: 8px;">Logo</td>
-            <td style="border: 1px solid black; padding: 8px;">URL</td>
-            <td style="border: 1px solid black; padding: 8px;">Category</td>
+            <td style="border: 1px solid black; padding: 8px;">图标</td>
+            <td style="border: 1px solid black; padding: 8px;">地址</td>
+            <td style="border: 1px solid black; padding: 8px;">类别</td>
+            <td style="border: 1px solid black; padding: 8px;">行业</td>
         </tr>
     </thead>
     <tbody>
+        <tr style="height:200px">
+            <td style="border: 1px solid black; padding: 8px;">
+              <img src="static/usecases/fsx120-logo.jpg" alt="fsx120.cn" width="200" title="某科室患者档案系统"/>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                <a href="https://fsx120.cn?ref=go-sail" target="_blank">https://fsx120.cn</a>
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                网站
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                医疗
+            </td>
+        </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
               <img src="static/usecases/sendflare-logo.png" alt="sendflare.com" width="200"/>
@@ -303,7 +318,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
                 <a href="https://sendflare.com?ref=go-sail" target="_blank">https://sendflare.com</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Website
+                网站
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                SaaS
             </td>
         </tr>
         <tr style="height:200px">
@@ -314,7 +332,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
                 <a href="https://stardots.io?ref=go-sail" target="_blank">https://stardots.io</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Website
+                网站
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                SaaS
             </td>
         </tr>
         <tr style="height:200px">
@@ -325,7 +346,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               <a href="https://t.me/PiggyPiggyofficialbot" target="_blank">https://t.me/PiggyPiggyofficialbot</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Telegram miniprogram
+                Telegram小程序
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
         <tr style="height:200px">
@@ -336,7 +360,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Wechat miniprogram
+                微信小程序
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                生活服务
             </td>
         </tr>
         <tr style="height:200px">
@@ -347,7 +374,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               <a href="https://fantagoal.io" target="_blank">https://fantagoal.io</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Website
+                网站
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
         <tr style="height:200px">
@@ -358,7 +388,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Website
+                网站
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
         <tr style="height:200px">
@@ -369,7 +402,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Website
+                网站
+            </td>
+            <td style="border: 1px solid black; padding: 8px;">
+                Web3 GameFi
             </td>
         </tr>
     </tbody>
