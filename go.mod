@@ -16,7 +16,7 @@ require (
 	github.com/jinzhu/configor v1.2.2
 	github.com/keepchen/message-queue v0.0.5
 	github.com/nacos-group/nacos-sdk-go/v2 v2.3.5
-	github.com/nats-io/nats.go v1.48.0
+	github.com/nats-io/nats.go v1.49.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/prometheus/client_golang v1.23.2
 	github.com/robfig/cron/v3 v3.0.1
