@@ -165,7 +165,10 @@ jobs:
           go-version: "1.23"
 
       - name: Test
-        run: go test $(go list ./... |grep -v /examples/ |grep -v /static/ |grep -v /plugins/) -v -coverprofile=coverage.txt
+        run: |
+          set -e
+          PACKAGES=$(go list ./... | grep -v '/examples/' | grep -v '/static/' | grep -v '/plugins/')
+ 	  go test $PACKAGES -v -coverprofile=coverage.txt
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

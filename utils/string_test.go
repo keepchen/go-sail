@@ -55,7 +55,7 @@ QwIDAQAB`,
 func TestStringImplWordwrap(t *testing.T) {
 	for i := 0; i < len(rawStrArr); i++ {
 		finalStr := String().Wordwrap(rawStrArr[i], 64, "\n")
-		t.Log(finalStr, "<---->", expectedStrArr[i])
+		//t.Log(finalStr, "<---->", expectedStrArr[i])
 		assert.Equal(t, expectedStrArr[i], finalStr)
 	}
 }
@@ -69,7 +69,7 @@ func TestStringImplWrapRedisKey(t *testing.T) {
 
 	for _, arr := range holders {
 		key := String().WrapRedisKey(arr[0], arr[1])
-		t.Log(key)
+		//t.Log(key)
 		assert.Equal(t, arr[2], key)
 	}
 }
@@ -78,7 +78,7 @@ func TestStringImplRandomLetters(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33}
 	for _, v := range holders {
 		s := String().RandomLetters(v)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
@@ -87,7 +87,7 @@ func TestStringImplRandomDigitalChars(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33}
 	for _, v := range holders {
 		s := String().RandomDigitalChars(v)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
@@ -96,7 +96,7 @@ func TestStringImplRandomString(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33, 100}
 	for _, v := range holders {
 		s := String().RandomString(v)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
@@ -105,7 +105,7 @@ func TestStringImplRandomComplexString(t *testing.T) {
 	holders := []int{0, 1, 3, 5, 7, 8, 9, 33, 100}
 	for _, v := range holders {
 		s := String().RandomComplexString(v)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v, len(s))
 	}
 }
@@ -115,7 +115,7 @@ func TestStringImplStringReverse(t *testing.T) {
 	result := []string{"", "a", "ba", "cba", "0987654321"}
 	for index, v := range holders {
 		s := String().Reverse(v)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, result[index], s)
 	}
 }
@@ -144,7 +144,7 @@ func TestStringImplPaddingLeft(t *testing.T) {
 	}
 	for _, v := range holders {
 		s := String().PaddingLeft(v.raw, v.padChar, v.length)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v.result, s)
 	}
 }
@@ -165,7 +165,7 @@ func TestStringImplPaddingRight(t *testing.T) {
 	}
 	for _, v := range holders {
 		s := String().PaddingRight(v.raw, v.padChar, v.length)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v.result, s)
 	}
 }
@@ -187,7 +187,7 @@ func TestStringImplPaddingBoth(t *testing.T) {
 	}
 	for _, v := range holders {
 		s := String().PaddingBoth(v.raw, v.padChar, v.length)
-		t.Log(s)
+		//t.Log(s)
 		assert.Equal(t, v.result, s)
 	}
 }
@@ -201,14 +201,14 @@ func TestStringImplCharCodeAt(t *testing.T) {
 	for _, letter := range arr {
 		//lowercase
 		code := String().CharCodeAt(letter)
-		t.Log(letter, ":", code)
+		//t.Log(letter, ":", code)
 		assert.Equal(t, code, asciiLowercase)
 		asciiLowercase++
 
 		//uppercase
 		upLetter := strings.ToUpper(letter)
 		codeUp := String().CharCodeAt(upLetter)
-		t.Log(upLetter, ":", codeUp)
+		//t.Log(upLetter, ":", codeUp)
 		assert.Equal(t, codeUp, asciiUppercase)
 		asciiUppercase++
 	}
@@ -221,14 +221,14 @@ func TestStringImplFromCharCode(t *testing.T) {
 	for _, letter := range arr {
 		//lowercase
 		character := String().FromCharCode(asciiLowercase)
-		t.Log(asciiLowercase, ":", character)
+		//t.Log(asciiLowercase, ":", character)
 		assert.Equal(t, letter, character)
 		asciiLowercase++
 
 		//uppercase
 		upLetter := strings.ToUpper(letter)
 		characterUp := String().FromCharCode(asciiUppercase)
-		t.Log(asciiUppercase, ":", characterUp)
+		//t.Log(asciiUppercase, ":", characterUp)
 		assert.Equal(t, upLetter, characterUp)
 		asciiUppercase++
 	}
@@ -238,7 +238,7 @@ func TestStringImplCharCodeRange(t *testing.T) {
 	for i := 0; i < 256; i++ {
 		character := String().FromCharCode(int32(i))
 		code := String().CharCodeAt(character)
-		t.Log("character:", character, "code:", code, []byte(character), int32(i))
+		//t.Log("character:", character, "code:", code, []byte(character), int32(i))
 		assert.Equal(t, int32(i), code)
 	}
 }
