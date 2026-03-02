@@ -23,7 +23,7 @@ func TestNewLimiter(t *testing.T) {
 		})
 		for i := 0; i < challenges; i++ {
 			result := limiter.Allow("127.0.0.1")
-			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
+			//t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
 			assert.Equal(t, i < limit, result.Allowed)
 		}
 
@@ -57,7 +57,7 @@ func TestNewLimiter(t *testing.T) {
 		})
 		for i := 0; i < challenges; i++ {
 			result := limiter.Allow("127.0.0.1")
-			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
+			//t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
 			assert.Equal(t, i < limit, result.Allowed)
 
 			result2 := limiter.Allow("192.168.100.1")
@@ -102,11 +102,11 @@ func TestNewLimiter(t *testing.T) {
 		})
 		for i := 0; i < challenges; i++ {
 			result := limiter.Allow("127.0.0.1")
-			t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
+			//t.Log(i, result.Allowed, result.Remaining, result.ResetTime)
 			assert.Equal(t, i < limit, result.Allowed)
 
 			result2 := limiter.Allow("192.168.100.1")
-			t.Log(i, result2.Allowed, result2.Remaining, result2.ResetTime)
+			//t.Log(i, result2.Allowed, result2.Remaining, result2.ResetTime)
 			assert.Equal(t, i < limit, result2.Allowed)
 		}
 
