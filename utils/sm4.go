@@ -24,11 +24,11 @@ type ISM4 interface {
 	ECBDecrypt(hexKey, base64Raw string) (string, error)
 }
 
-var _ ISM4 = &sm4impl{}
+var smi ISM4 = &sm4impl{}
 
 // SM4 实例化sm4工具类
 func SM4() ISM4 {
-	return &sm4impl{}
+	return smi
 }
 
 // ECBEncrypt ECB加密

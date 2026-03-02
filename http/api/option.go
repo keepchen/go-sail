@@ -5,17 +5,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/keepchen/go-sail/v3/http/pojo/dto"
-
 	"github.com/keepchen/go-sail/v3/constants"
+	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
 var (
-	emptyDataField       interface{} = nil                       //空data字段
-	forceHttpCode200                 = false                     //强制使用200作为http的状态码
-	timezone                         = constants.DefaultTimeZone //时区
-	detectAcceptLanguage             = false                     //是否检测客户端语言
-	languageCode                     = constants.LanguageEnglish //语言代码
+	emptyDataField       any = nil                       //空data字段
+	forceHttpCode200         = false                     //强制使用200作为http的状态码
+	timezone                 = constants.DefaultTimeZone //时区
+	detectAcceptLanguage     = false                     //是否检测客户端语言
+	languageCode             = constants.LanguageEnglish //语言代码
 )
 
 // 可被覆盖的内置错误码
@@ -150,6 +149,10 @@ func SetupOption(opt Option) {
 
 	if opt.FuncBeforeWrite != nil {
 		funcBeforeWrite = opt.FuncBeforeWrite
+	}
+
+	if len(opt.LanguageCode) != 0 {
+		languageCode = opt.LanguageCode
 	}
 }
 

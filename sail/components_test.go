@@ -5,21 +5,17 @@ import (
 	"testing"
 
 	"github.com/keepchen/go-sail/v3/constants"
-
-	"github.com/keepchen/go-sail/v3/lib/jwt"
-
-	"github.com/stretchr/testify/assert"
-
-	"github.com/keepchen/go-sail/v3/lib/valkey"
-
-	"github.com/keepchen/go-sail/v3/lib/etcd"
-
 	"github.com/keepchen/go-sail/v3/lib/db"
+	"github.com/keepchen/go-sail/v3/lib/etcd"
+	"github.com/keepchen/go-sail/v3/lib/jwt"
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
+	"github.com/keepchen/go-sail/v3/lib/valkey"
 	"github.com/keepchen/go-sail/v3/sail/config"
+	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -391,5 +387,33 @@ func TestComponentsShutdown(t *testing.T) {
 			ValKeyConf: vConf,
 		}
 		componentsShutdown(cfg)
+	})
+}
+
+func TestGetNacosConfigClient(t *testing.T) {
+	t.Run("GetNacosConfigClient", func(t *testing.T) {
+		GetNacosConfigClient()
+	})
+}
+
+func TestGetNacosNamingClient(t *testing.T) {
+	t.Run("GetNacosNamingClient", func(t *testing.T) {
+		GetNacosNamingClient()
+	})
+}
+
+var clientCfg = constant.ClientConfig{
+	LogDir: "../examples/logs",
+}
+
+func TestNewNacosConfigClient(t *testing.T) {
+	t.Run("NewNacosConfigClient", func(t *testing.T) {
+		t.Log(NewNacosConfigClient("go-sail", "127.0.0.1:8848", "a-b-c", clientCfg))
+	})
+}
+
+func TestNewNacosNamingClient(t *testing.T) {
+	t.Run("NewNacosNamingClient", func(t *testing.T) {
+		t.Log(NewNacosNamingClient("go-sail", "127.0.0.1:8848", "a-b-c", clientCfg))
 	})
 }

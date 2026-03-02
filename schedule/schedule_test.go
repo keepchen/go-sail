@@ -2,8 +2,11 @@ package schedule
 
 import (
 	"fmt"
+	"net"
 	"testing"
 	"time"
+
+	"github.com/keepchen/go-sail/v3/lib/redis"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -90,5 +93,23 @@ func TestMustCall(t *testing.T) {
 		t.Log(scheduler)
 		MustCall("MustCall", true)
 		time.Sleep(time.Second * 2)
+	})
+}
+
+func TestSetRedisClientOnce(t *testing.T) {
+	t.Run("Run-SetRedisClientOnce", func(t *testing.T) {
+		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		if err != nil {
+			return
+		}
+		_ = conn.Close()
+		redisClient, err := redis.New(sConf)
+
+		assert.NoError(t, err)
+
+		SetRedisClientOnce(redisClient)
+		//multiple set
+		SetRedisClientOnce(redisClient)
+		SetRedisClientOnce(redisClient)
 	})
 }

@@ -63,11 +63,11 @@ type INumber interface {
 	Pow(x, y int64) int64
 }
 
-var _ INumber = &numberImpl{}
+var nbi INumber = &numberImpl{}
 
 // Number 实例化number工具类
 func Number() INumber {
-	return &numberImpl{}
+	return nbi
 }
 
 // RandomInt64 在指定范围内取随机整数
@@ -103,9 +103,13 @@ func (numberImpl) RandomInt64(start, end int64) int64 {
 		return 0 - (fixedEnd + rand.Int63n(fixedStart))
 	}
 	//如果是一正一负
-	if start < 0 && end >= 0 {
+	if start < 0 {
 		fixed := 0 - start
 		return rand.Int63n(fixed+end) - fixed
+	}
+	//如果都为正
+	if start > 0 && end > 0 {
+		return rand.Int63n(end-start) + start
 	}
 	//起始为0
 	if start == 0 {

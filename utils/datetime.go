@@ -58,11 +58,11 @@ type IDatetime interface {
 	ParseDate(date, layout string, loc *time.Location) (time.Time, error)
 }
 
-var _ IDatetime = &datetimeImpl{}
+var dti IDatetime = &datetimeImpl{}
 
 // Datetime 实例化日期时间工具类
 func Datetime() IDatetime {
-	return &datetimeImpl{}
+	return dti
 }
 
 // FormatDate 时间对象转字符串

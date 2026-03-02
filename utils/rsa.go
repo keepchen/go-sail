@@ -52,9 +52,11 @@ type IRsa interface {
 	VerifySign(rawStringBytes, sign, publicKey []byte) (bool, error)
 }
 
+var ri IRsa = &rsaImpl{}
+
 // RSA 实例化rsa工具类
 func RSA() IRsa {
-	return &rsaImpl{}
+	return ri
 }
 
 // Encrypt rsa加密

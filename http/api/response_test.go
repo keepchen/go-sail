@@ -8,14 +8,12 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 创建gin测试下上文和引擎
@@ -54,7 +52,7 @@ type testerResponseData struct {
 	Data string `json:"data"`
 }
 
-func (v testerResponseData) GetData() interface{} {
+func (v testerResponseData) GetData() any {
 	return v.Data
 }
 
@@ -112,24 +110,17 @@ func TestData(t *testing.T) {
 	})
 }
 
+func TestBundle(t *testing.T) {
+	t.Run("Bundle()", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+		t.Log(Response(c).Bundle(200, testerResponseData{}))
+	})
+}
+
 func TestWrap(t *testing.T) {
 	t.Run("Wrap", func(t *testing.T) {
 		c, _ := createTestContextAndEngine()
 		t.Log(Response(c).Wrap(constants.ErrNone, testerResponseData{}))
-	})
-}
-
-func TestSimpleAssemble(t *testing.T) {
-	t.Run("SimpleAssemble", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-		t.Log(Response(c).SimpleAssemble(constants.ErrNone, testerResponseData{}))
-	})
-}
-
-func TestAssemble(t *testing.T) {
-	t.Run("Assemble", func(t *testing.T) {
-		c, _ := createTestContextAndEngine()
-		t.Log(Response(c).Assemble(constants.ErrNone, testerResponseData{}))
 	})
 }
 
@@ -491,12 +482,6 @@ func TestMergeBody(t *testing.T) {
 		c.Set("spanId", uuid.New().String())
 		c.Set("entryAt", time.Now().UnixNano())
 
-		re := responseEngine{
-			engine:    c,
-			data:      nil,
-			requestId: uuid.New().String(),
-		}
-
 		emptyDataTypes := []int{DefaultEmptyDataStructNull, DefaultEmptyDataStructObject, DefaultEmptyDataStructArray, DefaultEmptyDataStructString, 999}
 		fn := func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) {
 			//do something...
@@ -510,7 +495,17 @@ func TestMergeBody(t *testing.T) {
 				FuncBeforeWrite:  fn,
 			})
 
+			re := responseEngine{
+				engine:    c,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
 			re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3").Send()
+			re = responseEngine{
+				engine:    c,
+				data:      nil,
+				requestId: uuid.New().String(),
+			}
 			re.mergeBody(constants.ErrNone, dto.Base{}, "error1", "error2", "error3").Send()
 		}
 	})
@@ -535,7 +530,7 @@ func TestIsTypedNil(t *testing.T) {
 		}
 		assert.Equal(t, false, isTypedNil(fn))
 
-		var face interface{}
+		var face any
 		assert.Equal(t, true, isTypedNil(face))
 		face = 123
 		assert.Equal(t, false, isTypedNil(face))

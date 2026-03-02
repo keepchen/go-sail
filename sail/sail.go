@@ -5,17 +5,15 @@ import (
 	"runtime"
 	"runtime/debug"
 	"sync"
-
-	"github.com/keepchen/go-sail/v3/lib/logger"
-	"go.uber.org/zap"
-
-	"github.com/gorilla/websocket"
-
-	"github.com/keepchen/go-sail/v3/sail/config"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/keepchen/go-sail/v3/http/api"
+	"github.com/keepchen/go-sail/v3/lib/logger"
+	"github.com/keepchen/go-sail/v3/sail/config"
 	"github.com/keepchen/go-sail/v3/sail/httpserver"
+	"go.uber.org/zap"
 )
 
 // Sailor 船员就位
@@ -88,6 +86,9 @@ var _ Launchpad = &Launcher{}
 //
 // conf 配置文件
 func WakeupHttp(appName string, conf *config.Config) Sailor {
+	if conf == nil {
+		panic("config is nil, did you forget to initialize the config?")
+	}
 	return &Sail{
 		appName: appName,
 		conf:    conf,
@@ -198,7 +199,7 @@ func (l *Launcher) Launch() {
 	wg.Add(1)
 	go httpserver.RunHttpServer(l.sa.conf.HttpServer, ginEngine, l.sa.apiOption, wg)
 
-	printSummaryInfo(l.sa.conf.HttpServer, ginEngine)
+	printSummaryInfo(*l.sa.conf, ginEngine)
 
 	//set config
 	config.Set(l.sa.conf)
@@ -212,4 +213,11 @@ func (l *Launcher) Launch() {
 
 	//关闭相应的组件
 	componentsShutdown(l.sa.conf)
+}
+
+// Shutdown 关闭服务
+//
+// 用于手动停止服务
+func Shutdown() {
+	go httpserver.NotifyExit(syscall.SIGINT)
 }

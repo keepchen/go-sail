@@ -9,7 +9,7 @@ import (
 
 func TestMergeStandardClaims(t *testing.T) {
 	t.Run("MergeStandardClaims", func(t *testing.T) {
-		fields := map[string]interface{}{
+		fields := map[string]any{
 			"uid": "1000",
 			"acc": "account-1000",
 			"jti": "AAA-BBB-CCC-DDD-EEE",
@@ -23,7 +23,7 @@ func TestMergeStandardClaims(t *testing.T) {
 
 func TestGetExpirationTime(t *testing.T) {
 	t.Run("GetExpirationTime", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{
+		var mp MapClaims = map[string]any{
 			"exp": time.Now().Add(time.Hour).Unix(),
 		}
 		exp, err := mp.GetExpirationTime()
@@ -32,7 +32,7 @@ func TestGetExpirationTime(t *testing.T) {
 	})
 
 	t.Run("GetExpirationTime-Failure", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		exp, err := mp.GetExpirationTime()
 		assert.Nil(t, exp)
 		assert.Error(t, err)
@@ -41,7 +41,7 @@ func TestGetExpirationTime(t *testing.T) {
 
 func TestGetIssuedAt(t *testing.T) {
 	t.Run("GetIssuedAt", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{
+		var mp MapClaims = map[string]any{
 			"iat": time.Now().Unix(),
 		}
 		iat, err := mp.GetIssuedAt()
@@ -50,7 +50,7 @@ func TestGetIssuedAt(t *testing.T) {
 	})
 
 	t.Run("GetIssuedAt-Failure", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		iat, err := mp.GetIssuedAt()
 		assert.Nil(t, iat)
 		assert.Error(t, err)
@@ -59,7 +59,7 @@ func TestGetIssuedAt(t *testing.T) {
 
 func TestGetNotBefore(t *testing.T) {
 	t.Run("GetNotBefore", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{
+		var mp MapClaims = map[string]any{
 			"nbf": time.Now().Unix(),
 		}
 		nbf, err := mp.GetNotBefore()
@@ -68,7 +68,7 @@ func TestGetNotBefore(t *testing.T) {
 	})
 
 	t.Run("GetNotBefore-Failure", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		nbf, err := mp.GetNotBefore()
 		assert.Nil(t, nbf)
 		assert.Error(t, err)
@@ -77,7 +77,7 @@ func TestGetNotBefore(t *testing.T) {
 
 func TestGetIssuer(t *testing.T) {
 	t.Run("GetIssuer", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{
+		var mp MapClaims = map[string]any{
 			"iss": defaultTokenIssuer,
 		}
 		iss, err := mp.GetIssuer()
@@ -86,7 +86,7 @@ func TestGetIssuer(t *testing.T) {
 	})
 
 	t.Run("GetIssuer-Failure", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		iss, err := mp.GetIssuer()
 		assert.Equal(t, true, len(iss) == 0)
 		assert.Error(t, err)
@@ -95,7 +95,7 @@ func TestGetIssuer(t *testing.T) {
 
 func TestGetSubject(t *testing.T) {
 	t.Run("GetSubject", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{
+		var mp MapClaims = map[string]any{
 			"sub": defaultTokenIssuer,
 		}
 		sub, err := mp.GetSubject()
@@ -104,7 +104,7 @@ func TestGetSubject(t *testing.T) {
 	})
 
 	t.Run("GetSubject-Failure", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		sub, err := mp.GetSubject()
 		assert.Equal(t, true, len(sub) == 0)
 		assert.Error(t, err)
@@ -113,7 +113,7 @@ func TestGetSubject(t *testing.T) {
 
 func TestGetAudience(t *testing.T) {
 	t.Run("GetAudience", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{
+		var mp MapClaims = map[string]any{
 			"aud": defaultTokenIssuer,
 		}
 		aud, err := mp.GetAudience()
@@ -122,7 +122,7 @@ func TestGetAudience(t *testing.T) {
 	})
 
 	t.Run("GetAudience-Failure", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		aud, err := mp.GetAudience()
 		assert.Equal(t, true, len(aud[0]) == 0)
 		assert.Error(t, err)

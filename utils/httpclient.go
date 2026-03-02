@@ -21,11 +21,11 @@ type IHttpClient interface {
 	SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error)
 }
 
-var _ IHttpClient = &httpClientImpl{}
+var hci IHttpClient = &httpClientImpl{}
 
 // HttpClient 实例化http client工具类
 func HttpClient() IHttpClient {
-	return &httpClientImpl{}
+	return hci
 }
 
 // SendRequest 发送请求

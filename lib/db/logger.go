@@ -39,7 +39,7 @@ func NewZapLoggerForGorm(zapLogger *zap.Logger, conf Conf) ZapLoggerForGorm {
 		SlowThreshold:             100 * time.Millisecond,
 		SkipCallerLookup:          conf.Logger.SkipCallerLookup,
 		IgnoreRecordNotFoundError: conf.Logger.IgnoreRecordNotFoundError,
-		Colorful:                  conf.Logger.SkipCallerLookup,
+		Colorful:                  conf.Logger.Colorful,
 	}
 
 	if conf.Logger.SlowThreshold != 0 {
@@ -59,21 +59,21 @@ func (zg ZapLoggerForGorm) LogMode(level gormLogger.LogLevel) gormLogger.Interfa
 	return &newLogger
 }
 
-func (zg ZapLoggerForGorm) Info(_ context.Context, tpl string, v ...interface{}) {
+func (zg ZapLoggerForGorm) Info(_ context.Context, tpl string, v ...any) {
 	if zg.LogLevel < gormLogger.Info {
 		return
 	}
 	zg.ZapLogger.Sugar().Infof(tpl, v...)
 }
 
-func (zg ZapLoggerForGorm) Warn(_ context.Context, tpl string, v ...interface{}) {
+func (zg ZapLoggerForGorm) Warn(_ context.Context, tpl string, v ...any) {
 	if zg.LogLevel < gormLogger.Warn {
 		return
 	}
 	zg.ZapLogger.Sugar().Warnf(tpl, v...)
 }
 
-func (zg ZapLoggerForGorm) Error(_ context.Context, tpl string, v ...interface{}) {
+func (zg ZapLoggerForGorm) Error(_ context.Context, tpl string, v ...any) {
 	if zg.LogLevel < gormLogger.Error {
 		return
 	}

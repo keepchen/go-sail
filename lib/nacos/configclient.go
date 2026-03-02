@@ -15,7 +15,7 @@ import (
 // appConfig 解析到目标
 //
 // format 配置文件格式，支持: json|yaml|toml
-func GetConfig(groupName, dataID string, appConfig interface{}, format string) error {
+func GetConfig(groupName, dataID string, appConfig any, format string) error {
 	content, err := GetConfigClient().GetConfig(vo.ConfigParam{
 		DataId: dataID,
 		Group:  groupName,
@@ -38,7 +38,7 @@ func GetConfig(groupName, dataID string, appConfig interface{}, format string) e
 // format 配置文件格式，支持: json|yaml|toml
 //
 // printData 打印配置内容(可选项)，为true将打印配置内容，注意隐私保护
-func ListenConfig(groupName, dataID string, appConfig interface{}, format string, printData ...bool) error {
+func ListenConfig(groupName, dataID string, appConfig any, format string, printData ...bool) error {
 	err := GetConfigClient().ListenConfig(vo.ConfigParam{
 		DataId: dataID,
 		Group:  groupName,

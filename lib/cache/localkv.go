@@ -9,7 +9,7 @@ import (
 
 type localCacheValue struct {
 	expiredAt int64
-	content   interface{}
+	content   any
 }
 
 type localCache struct {
@@ -34,7 +34,7 @@ func init() {
 // Put 保存key-value键值对
 //
 // 若不设置过期时间，则默认过期时间为一个小时
-func Put(key string, val interface{}, expiredTimeDuration ...time.Duration) bool {
+func Put(key string, val any, expiredTimeDuration ...time.Duration) bool {
 	var expiredAt int64
 	if len(expiredTimeDuration) > 0 {
 		expiredAt = utils.NewTimeWithTimeZone().Now().Add(expiredTimeDuration[0]).Unix()
@@ -50,7 +50,7 @@ func Put(key string, val interface{}, expiredTimeDuration ...time.Duration) bool
 
 // Get 根据key获取对应的value值
 // ret的表示(0:key存在且未过期,-1:key已过期,-2:key不存在)
-func Get(key string) (value interface{}, ret int) {
+func Get(key string) (value any, ret int) {
 	lc.mux.Lock()
 	defer lc.mux.Unlock()
 	if val, ok := lc.maps[key]; ok {

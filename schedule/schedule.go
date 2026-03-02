@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	redisLib "github.com/go-redis/redis/v8"
+
 	"github.com/keepchen/go-sail/v3/utils"
 	"github.com/robfig/cron/v3"
 )
@@ -155,6 +157,18 @@ func init() {
 
 func generateJobNameKey(name string) string {
 	return fmt.Sprintf("go-sail:task-schedule-locker:%s", utils.Base64().Encode([]byte(name)))
+}
+
+var (
+	setRedisOnce = &sync.Once{}
+	redisClients = make([]redisLib.UniversalClient, 0)
+)
+
+// SetRedisClientOnce 设置redis连接客户端
+func SetRedisClientOnce(client redisLib.UniversalClient) {
+	setRedisOnce.Do(func() {
+		redisClients = append(redisClients, client)
+	})
 }
 
 // NewJob 实例化任务

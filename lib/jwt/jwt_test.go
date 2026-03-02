@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	privateKey = []byte(`-----BEGIN PRIVATE KEY-----
+	rsaPrivateKey = []byte(`-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDUvUDx+LPQ0S+L
 +5UmtD2EJw1L953mVCMWBJktBbqPTIhDmrd33+3cNq0t7rXuALhoqZS/53nDchU1
 wsCveieNDR7SsdO4HMS4bnxgyuYCkC1ugAdyvJ2FCv7xUppc7PvyIQ1gQS/nOP0w
@@ -40,7 +40,7 @@ RIXvUK2duHjDxiaPKtANi2P4
 -----END PRIVATE KEY-----
 	`)
 
-	publicKey = []byte(`-----BEGIN PUBLIC KEY-----
+	rsaPublicKey = []byte(`-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1L1A8fiz0NEvi/uVJrQ9
 hCcNS/ed5lQjFgSZLQW6j0yIQ5q3d9/t3DatLe617gC4aKmUv+d5w3IVNcLAr3on
 jQ0e0rHTuBzEuG58YMrmApAtboAHcrydhQr+8VKaXOz78iENYEEv5zj9MCnGYhYq
@@ -49,23 +49,91 @@ u/Wq722YIEH39RpL2ydxTP2q5bBNrLeDWdxyBxZlP9zZ/T7AW+boqIGDdPHKBmWr
 KTJQ+GGzUqOGzruYQ5sM3TnU8Avb4OF36uyADBwA4bP944tKSNSET7BC3N0UerRo
 QwIDAQAB
 -----END PUBLIC KEY-----`)
+
+	ed25519PublicKey = []byte(`-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAULc3WGEBwX9ZnS5n44dWwf9/4rZOuDWNvSoxHw4nPUc=
+-----END PUBLIC KEY-----`)
+
+	ed25519PrivateKey = []byte(`-----BEGIN PRIVATE KEY-----
+MC4CAQAwBQYDK2VwBCIEIGsoHvm67+edKGCXSa+LQO7mUWzA1cFF/FB7B2cc2DWj
+-----END PRIVATE KEY-----`)
+
+	ecdsa256PublicKey = []byte(`-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmCPXCEvaUaLR682mRKIWYtpS2l7O
+V1UN75b5zuEz8MdK8UEtcJpvzsYkbYaK001ekjjCYvWTvFWZJqazdm2KnQ==
+-----END PUBLIC KEY-----`)
+
+	ecdsa256PrivateKey = []byte(`-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgJXd7bPHBJfP0b6MS
+KWEaAJJMu6TzMfpeL/a+1Nx116yhRANCAASYI9cIS9pRotHrzaZEohZi2lLaXs5X
+VQ3vlvnO4TPwx0rxQS1wmm/OxiRthorTTV6SOMJi9ZO8VZkmprN2bYqd
+-----END PRIVATE KEY-----`)
+
+	ecdsa384PublicKey = []byte(`-----BEGIN PUBLIC KEY-----
+MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEp8drJIb1rXHmeI0HQoA5ObnC92FhskT6
+4n49e4YArW7i1XXPql08CZQ56zRbCJGxRAIkJMatYcWNJUPtHWzsKXSUtjYydONx
+ZMrEV9gp+Ql8/7cjB2EWVNOtN9KjTVn9
+-----END PUBLIC KEY-----`)
+
+	ecdsa384PrivateKey = []byte(`-----BEGIN PRIVATE KEY-----
+MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDD+m7bfdzLjT+sOGbAX
+uIhYI54ll1gZSaCr44E81XDfLkw4JqTmkezxRKnMwPIIgdmhZANiAASnx2skhvWt
+ceZ4jQdCgDk5ucL3YWGyRPrifj17hgCtbuLVdc+qXTwJlDnrNFsIkbFEAiQkxq1h
+xY0lQ+0dbOwpdJS2NjJ043FkysRX2Cn5CXz/tyMHYRZU06030qNNWf0=
+-----END PRIVATE KEY-----`)
+
+	ecdsa521PublicKey = []byte(`-----BEGIN PUBLIC KEY-----
+MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBLCS7Dyu2SpLBiTwHk8oo9aCsy1f4
+WN9h1lhtXw/8F0g5QLiOi5fmesE6y8cYg4vFn3R11191Okmb9Cxm39mSmGUAh6MJ
+V3Wx390urz5Dmzk+VjKA5P6Du/mPlm3B/X9cVT0rVIfYVDY5gwc68a5m7ehggkjJ
+Sg+Ux9Qh1+hxxbQfALA=
+-----END PUBLIC KEY-----`)
+
+	ecdsa521PrivateKey = []byte(`-----BEGIN PRIVATE KEY-----
+MIHuAgEAMBAGByqGSM49AgEGBSuBBAAjBIHWMIHTAgEBBEIAzIkcHJlsIQlvIMqE
+b9TQua6LaxRfr2NI2vSgWXW/KSM0YJbIu9aoI4eTKOEjqIOowq5MbHw0U8VmiY0d
+9q2VYVqhgYkDgYYABAEsJLsPK7ZKksGJPAeTyij1oKzLV/hY32HWWG1fD/wXSDlA
+uI6Ll+Z6wTrLxxiDi8WfdHXXX3U6SZv0LGbf2ZKYZQCHowlXdbHf3S6vPkObOT5W
+MoDk/oO7+Y+WbcH9f1xVPStUh9hUNjmDBzrxrmbt6GCCSMlKD5TH1CHX6HHFtB8A
+sA==
+-----END PRIVATE KEY-----`)
 )
 
 var (
 	confArr = []Conf{
 		{
-			Algorithm:  string(SigningMethodHS512),
+			Algorithm:  SigningMethodHS512.String(),
 			HmacSecret: "a-b-c-d-e-f-g",
 		},
 		{
-			Algorithm:  string(SigningMethodRS256),
-			PrivateKey: string(privateKey),
-			PublicKey:  string(publicKey),
+			Algorithm:  SigningMethodRS256.String(),
+			PrivateKey: string(rsaPrivateKey),
+			PublicKey:  string(rsaPublicKey),
 		},
 		{
-			Algorithm:  string(SigningMethodRS512),
-			PrivateKey: string(privateKey),
-			PublicKey:  string(publicKey),
+			Algorithm:  SigningMethodRS512.String(),
+			PrivateKey: string(rsaPrivateKey),
+			PublicKey:  string(rsaPublicKey),
+		},
+		{
+			Algorithm:  SigningMethodEdDSA.String(),
+			PrivateKey: string(ed25519PrivateKey),
+			PublicKey:  string(ed25519PublicKey),
+		},
+		{
+			Algorithm:  SigningMethodES256.String(),
+			PrivateKey: string(ecdsa256PrivateKey),
+			PublicKey:  string(ecdsa256PublicKey),
+		},
+		{
+			Algorithm:  SigningMethodES384.String(),
+			PrivateKey: string(ecdsa384PrivateKey),
+			PublicKey:  string(ecdsa384PublicKey),
+		},
+		{
+			Algorithm:  SigningMethodES512.String(),
+			PrivateKey: string(ecdsa521PrivateKey),
+			PublicKey:  string(ecdsa521PublicKey),
 		},
 	}
 
@@ -144,25 +212,25 @@ func TestVerify(t *testing.T) {
 			t.Log("----------------", conf.Algorithm, "----------------")
 			conf.Load()
 			token, err := Sign(appClaim, conf)
-			t.Log(err)
-			t.Log("struct claim:", token)
+			t.Log(conf.Algorithm, err)
+			t.Log("signed claim:", token)
 			assert.NoError(t, err)
 
 			claim, err := Verify(token, conf)
-			t.Log(err)
-			t.Log("struct claim:", claim)
+			t.Log(conf.Algorithm, err)
+			t.Log("verify claim:", claim)
 			assert.NoError(t, err)
 
 			for _, claim := range mapClaims {
 				delete(claim, "iss")
 				token2, err := SignWithMap(claim, conf)
-				t.Log(err)
-				t.Log("map claim:", token2)
+				t.Log(conf.Algorithm, err)
+				t.Log("map signed token:", token2)
 				assert.NoError(t, err)
 
 				claim2, err := VerifyFromMap(token2, conf)
-				t.Log(err)
-				t.Log("map claim:", claim2)
+				t.Log(conf.Algorithm, err)
+				t.Log("map verify claim:", claim2)
 				if claim["valid"].(bool) {
 					assert.NoError(t, err)
 				} else {
@@ -178,25 +246,25 @@ func TestVerify(t *testing.T) {
 			conf.Load()
 			appClaim.Issuer = ""
 			token, err := Sign(appClaim, conf)
-			t.Log(err)
-			t.Log("struct claim:", token)
+			t.Log(conf.Algorithm, err)
+			t.Log("signed token:", token)
 			assert.NoError(t, err)
 
 			claim, err := Verify(token, conf)
-			t.Log(err)
-			t.Log("struct claim:", claim)
+			t.Log(conf.Algorithm, err)
+			t.Log("verify claim:", claim)
 			assert.NoError(t, err)
 
 			for _, claim := range mapClaims {
 				delete(claim, "iss")
 				token2, err := SignWithMap(claim, conf)
 				t.Log(err)
-				t.Log("map claim:", token2)
+				t.Log("map signed token:", token2)
 				assert.NoError(t, err)
 
 				claim2, err := VerifyFromMap(token2, conf)
-				t.Log(err)
-				t.Log("map claim:", claim2)
+				t.Log(conf.Algorithm, err)
+				t.Log("map verify claim:", claim2)
 				if claim["valid"].(bool) {
 					assert.NoError(t, err)
 				} else {
@@ -216,9 +284,21 @@ func TestGetToken(t *testing.T) {
 	})
 
 	t.Run("GetToken-MapClaims", func(t *testing.T) {
-		var mp MapClaims = map[string]interface{}{}
+		var mp MapClaims = map[string]any{}
 		token, err := mp.GetToken(SigningMethodRS256, "")
 		assert.Equal(t, true, len(token) == 0)
 		assert.Error(t, err)
+	})
+}
+
+func TestSigningMethodString(t *testing.T) {
+	t.Run("SigningMethodString", func(t *testing.T) {
+		t.Log(SigningMethodRS256.String())
+		t.Log(SigningMethodRS512.String())
+		t.Log(SigningMethodHS512.String())
+		t.Log(SigningMethodEdDSA.String())
+		t.Log(SigningMethodES256.String())
+		t.Log(SigningMethodES384.String())
+		t.Log(SigningMethodES512.String())
 	})
 }

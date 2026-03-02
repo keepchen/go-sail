@@ -24,13 +24,16 @@ jobs:
 
       - name: Start etcd container
         run: |
+          # Log in to ghcr.io
+          echo "${{ secrets.GHCRIO_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCRIO_USERNAME }}" --password-stdin
+
           # 启动单节点 etcd，暴露客户端端口 2379
           docker run -d --name etcd-server \
               --publish 2379:2379 \
               --publish 2380:2380 \
               --env ALLOW_NONE_AUTHENTICATION=yes \
               --env ETCD_ADVERTISE_CLIENT_URLS=http://127.0.0.1:2379 \
-              bitnami/etcd:3.5.21
+              ghcr.io/keepchen/etcd:3.6.3
 
           sleep 5  # 等待容器启动
 
