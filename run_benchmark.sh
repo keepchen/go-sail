@@ -3,15 +3,15 @@ set -e
 mkdir -p bench_results
 
 # CPU profile
-go test -bench=. -benchmem -benchtime=1s \
+go test -bench=. -benchmem -benchtime=5s \
     -cpuprofile bench_results/cpu.out
 
 # Memory profile
-go test -bench=. -benchmem -benchtime=1s \
+go test -bench=. -benchmem -benchtime=5s \
     -memprofile bench_results/mem.out
 
 # Trace
-go test -bench=. -benchmem -benchtime=1s \
+go test -bench=. -benchmem -benchtime=5s \
     -trace bench_results/trace.out
 
 echo "✅ Benchmark done. Results saved in bench_results/"
