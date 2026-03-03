@@ -1,8 +1,10 @@
 package logger
 
 import (
-	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"testing"
+
+	"github.com/keepchen/go-sail/v3/lib/kafka"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -20,14 +22,15 @@ var (
 func TestKafkaSync(t *testing.T) {
 	t.Run("Sync", func(t *testing.T) {
 		writer := &kafkaWriterStd{}
-		t.Log(writer.Sync())
+		//t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 }
 
 func TestKafkaWrite(t *testing.T) {
 	t.Run("Write", func(t *testing.T) {
 		rd, err := kafka.NewWriter(kafkaConf, "go-sail-tester-logger-topic")
-		t.Log(err)
+		//t.Log(err)
 		if rd == nil || err != nil {
 			return
 		}
@@ -35,6 +38,6 @@ func TestKafkaWrite(t *testing.T) {
 			writer: rd,
 			topic:  "go-sail-tester-logger-topic",
 		}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 }

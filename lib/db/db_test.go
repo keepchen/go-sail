@@ -61,7 +61,7 @@ func TestNewFreshDB(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		dbr, err1, dbw, err2 := NewFreshDB(dbConf)
 		if dbr == nil || dbw == nil {
-			t.Log("database instance is nil, testing not emit.")
+			//t.Log("database instance is nil, testing not emit.")
 			return
 		}
 		assert.NoError(t, err1)
@@ -80,7 +80,7 @@ func TestNew(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		dbr, err1, dbw, err2 := New(dbConf)
 		if dbr == nil || dbw == nil {
-			t.Log("database instance is nil, testing not emit.")
+			//t.Log("database instance is nil, testing not emit.")
 			return
 		}
 		assert.NoError(t, err1)

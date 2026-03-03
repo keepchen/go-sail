@@ -1,6 +1,10 @@
 package email
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestNew(t *testing.T) {
 	conf := Conf{
@@ -8,7 +12,8 @@ func TestNew(t *testing.T) {
 		Port: awsSesPort,
 	}
 	t.Run("New", func(t *testing.T) {
-		t.Log(New(conf))
+		//t.Log(New(conf))
+		assert.NotNil(t, New(conf))
 	})
 }
 
@@ -19,6 +24,7 @@ func TestSendMailWithTLS(t *testing.T) {
 	}
 	client := New(conf)
 	t.Run("New", func(t *testing.T) {
-		t.Log(client.SendMailWithTLS([]string{"tester@go-sail.dev"}, []byte(`test send`)))
+		//t.Log(client.SendMailWithTLS([]string{"tester@go-sail.dev"}, []byte(`test send`)))
+		assert.Error(t, client.SendMailWithTLS([]string{"tester@go-sail.dev"}, []byte(`test send`)))
 	})
 }

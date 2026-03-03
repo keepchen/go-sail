@@ -34,7 +34,9 @@ func TestInit(t *testing.T) {
 func TestNew(t *testing.T) {
 	t.Run("New", func(t *testing.T) {
 		conf := Conf{}
-		t.Log(New(conf))
+		conn, err := New(conf)
+		assert.Error(t, err)
+		assert.Nil(t, conn)
 	})
 
 	t.Run("New-Credentials", func(t *testing.T) {
@@ -42,6 +44,8 @@ func TestNew(t *testing.T) {
 			Username: "username",
 			Password: "password",
 		}
-		t.Log(New(conf))
+		conn, err := New(conf)
+		assert.Error(t, err)
+		assert.Nil(t, conn)
 	})
 }

@@ -235,7 +235,7 @@ func TestGetLogger(t *testing.T) {
 func TestMarshalInterfaceValue(t *testing.T) {
 	t.Run("MarshalInterfaceValue", func(t *testing.T) {
 		cfg := logger.Conf{}
-		t.Log(MarshalInterfaceValue(cfg))
+		assert.NotEmpty(t, MarshalInterfaceValue(cfg))
 	})
 }
 

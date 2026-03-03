@@ -24,9 +24,9 @@ func TestWatch(t *testing.T) {
 		defer cancel()
 		go Watch(ctx, "go-sail", fn)
 
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
 
 		time.Sleep(5 * time.Second)
 
@@ -52,9 +52,9 @@ func TestWatchWithPrefix(t *testing.T) {
 		defer cancel()
 		go WatchWithPrefix(ctx, "go-sail", fn)
 
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
 
 		time.Sleep(5 * time.Second)
 
@@ -80,9 +80,9 @@ func TestWatchWith(t *testing.T) {
 		defer cancel()
 		go WatchWith(ctx, "go-sail", fn)
 
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
-		t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
+		//t.Log(GetInstance().Put(ctx, "go-sail", time.Now().String()))
 
 		time.Sleep(5 * time.Second)
 

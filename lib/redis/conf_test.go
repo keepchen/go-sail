@@ -13,15 +13,18 @@ func TestPrintConf(t *testing.T) {
 	t.Run("PrintConf", func(t *testing.T) {
 		conf := Conf{}
 		js, err := json.Marshal(&conf)
-		t.Log(string(js))
+		//t.Log(string(js))
+		assert.Equal(t, true, len(js) > 0)
 		assert.NoError(t, err)
 
 		tm, err := toml.Marshal(&conf)
-		t.Log(string(tm))
+		//t.Log(string(tm))
+		assert.Equal(t, true, len(tm) > 0)
 		assert.NoError(t, err)
 
 		ym, err := yaml.Marshal(&conf)
-		t.Log(string(ym))
+		//t.Log(string(ym))
+		assert.Equal(t, true, len(ym) > 0)
 		assert.NoError(t, err)
 	})
 }
@@ -34,7 +37,7 @@ func TestParseConf(t *testing.T) {
 		conf.Username = "username"
 		conf.Password = "password"
 		js, err := json.Marshal(&conf)
-		t.Log(string(js))
+		//t.Log(string(js))
 		assert.NoError(t, err)
 
 		var jsConf Conf
@@ -45,7 +48,7 @@ func TestParseConf(t *testing.T) {
 		assert.Equal(t, conf.Password, jsConf.Password)
 
 		tm, err := toml.Marshal(&conf)
-		t.Log(string(tm))
+		//t.Log(string(tm))
 		assert.NoError(t, err)
 
 		var tmConf Conf
@@ -56,7 +59,7 @@ func TestParseConf(t *testing.T) {
 		assert.Equal(t, conf.Password, tmConf.Password)
 
 		ym, err := yaml.Marshal(&conf)
-		t.Log(string(ym))
+		//t.Log(string(ym))
 		assert.NoError(t, err)
 
 		var ymConf Conf
@@ -72,15 +75,18 @@ func TestPrintClusterConf(t *testing.T) {
 	t.Run("PrintClusterConf", func(t *testing.T) {
 		conf := ClusterConf{}
 		js, err := json.Marshal(&conf)
-		t.Log(string(js))
+		//t.Log(string(js))
+		assert.Equal(t, true, len(js) > 0)
 		assert.NoError(t, err)
 
 		tm, err := toml.Marshal(&conf)
-		t.Log(string(tm))
+		//t.Log(string(tm))
+		assert.Equal(t, true, len(tm) > 0)
 		assert.NoError(t, err)
 
 		ym, err := yaml.Marshal(&conf)
-		t.Log(string(ym))
+		//t.Log(string(ym))
+		assert.Equal(t, true, len(ym) > 0)
 		assert.NoError(t, err)
 	})
 }
@@ -94,7 +100,7 @@ func TestParseClusterConf(t *testing.T) {
 			},
 		}
 		js, err := json.Marshal(&conf)
-		t.Log(string(js))
+		//t.Log(string(js))
 		assert.NoError(t, err)
 
 		var jsConf ClusterConf
@@ -105,7 +111,7 @@ func TestParseClusterConf(t *testing.T) {
 		assert.Equal(t, conf.Endpoints[0].Password, jsConf.Endpoints[0].Password)
 
 		tm, err := toml.Marshal(&conf)
-		t.Log(string(tm))
+		//t.Log(string(tm))
 		assert.NoError(t, err)
 
 		var tmConf ClusterConf
@@ -116,7 +122,7 @@ func TestParseClusterConf(t *testing.T) {
 		assert.Equal(t, conf.Endpoints[0].Password, tmConf.Endpoints[0].Password)
 
 		ym, err := yaml.Marshal(&conf)
-		t.Log(string(ym))
+		assert.Equal(t, true, len(ym) > 0)
 		assert.NoError(t, err)
 
 		var ymConf ClusterConf

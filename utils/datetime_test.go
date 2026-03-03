@@ -57,6 +57,6 @@ func TestDatetimeImplFormatDate(t *testing.T) {
 
 	now := NewTimeWithTimeZone("Asia/Shanghai").Now()
 	for _, style := range styles {
-		t.Log(Datetime().FormatDate(now, style))
+		assert.NotEmpty(t, Datetime().FormatDate(now, style))
 	}
 }

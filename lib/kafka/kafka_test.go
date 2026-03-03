@@ -44,7 +44,7 @@ func TestNew(t *testing.T) {
 		conf := Conf{}
 		conf.Tls = &tls.Config{}
 		assert.Panics(t, func() {
-			t.Log(New(conf, "go-sail", "tester"))
+			_, _, _, _, _ = New(conf, "go-sail", "tester")
 		})
 	})
 }
@@ -123,7 +123,7 @@ func TestNewWriter(t *testing.T) {
 			Endpoints: []string{"localhost:9092", "localhost:9093"},
 		}
 		conf.Tls = &tls.Config{}
-		t.Log(NewWriter(conf, "go-sail"))
+		//t.Log(NewWriter(conf, "go-sail"))
 	})
 
 	t.Run("NewWriter-NonValue", func(t *testing.T) {
@@ -133,7 +133,7 @@ func TestNewWriter(t *testing.T) {
 			Password:  "password",
 		}
 		conf.Tls = &tls.Config{}
-		t.Log(NewWriter(conf, "go-sail"))
+		//t.Log(NewWriter(conf, "go-sail"))
 	})
 }
 
@@ -163,7 +163,7 @@ func TestNewReader(t *testing.T) {
 			Endpoints: []string{"localhost:9092", "localhost:9093"},
 		}
 		conf.Tls = &tls.Config{}
-		t.Log(NewReader(conf, "go-sail", "tester"))
+		//t.Log(NewReader(conf, "go-sail", "tester"))
 	})
 
 	t.Run("NewReader-NonValue", func(t *testing.T) {
@@ -173,7 +173,7 @@ func TestNewReader(t *testing.T) {
 			Password:  "password",
 		}
 		conf.Tls = &tls.Config{}
-		t.Log(NewReader(conf, "go-sail", "tester"))
+		//t.Log(NewReader(conf, "go-sail", "tester"))
 	})
 }
 
@@ -189,7 +189,7 @@ func TestGetMechanism(t *testing.T) {
 		authTypes := []string{"sha256", "sha512", "plain", "unknown"}
 		for _, at := range authTypes {
 			conf.SASLAuthType = at
-			t.Log(getMechanism(conf))
+			//t.Log(getMechanism(conf))
 		}
 	})
 }

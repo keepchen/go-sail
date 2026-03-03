@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/keepchen/go-sail/v3/lib/nats"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -22,21 +23,22 @@ var (
 func TestNatsSync(t *testing.T) {
 	t.Run("Sync", func(t *testing.T) {
 		writer := &natsWriterStd{}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 }
 
 func TestNatsWrite(t *testing.T) {
 	t.Run("Write", func(t *testing.T) {
 		rd, err := nats.New(natsConf)
-		t.Log(err)
+		//t.Log(err)
 		if rd == nil {
 			return
 		}
+		assert.Nil(t, err)
 		writer := &natsWriterStd{
 			cli:        rd,
 			subjectKey: "go-sail-tester-logger-subject",
 		}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 }

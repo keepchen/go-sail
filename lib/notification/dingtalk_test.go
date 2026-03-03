@@ -16,15 +16,15 @@ func TestPrintDingTalkConf(t *testing.T) {
 
 		js, err := json.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(js))
+		assert.NotEmpty(t, js)
 
 		ym, err := yaml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(ym))
+		assert.NotEmpty(t, ym)
 
 		tm, err := toml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(tm))
+		assert.NotEmpty(t, tm)
 	})
 }
 
@@ -34,7 +34,7 @@ func TestParseTalkConf(t *testing.T) {
 
 		js, err := json.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(js))
+		assert.NotEmpty(t, js)
 
 		var jsConf DingTalkConf
 		err = json.Unmarshal(js, &jsConf)
@@ -44,7 +44,7 @@ func TestParseTalkConf(t *testing.T) {
 
 		ym, err := yaml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(ym))
+		assert.NotEmpty(t, ym)
 
 		var ymConf DingTalkConf
 		err = yaml.Unmarshal(ym, &ymConf)
@@ -54,7 +54,7 @@ func TestParseTalkConf(t *testing.T) {
 
 		tm, err := toml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(tm))
+		assert.NotEmpty(t, tm)
 
 		var tmConf DingTalkConf
 		err = toml.Unmarshal(tm, &tmConf)
@@ -72,7 +72,7 @@ func TestGenDingTalkSign(t *testing.T) {
 		)
 		sign, err := genDingTalkSign(secret, timestamp)
 		assert.NoError(t, err)
-		t.Log(sign)
+		assert.NotEmpty(t, sign)
 	})
 }
 
@@ -81,7 +81,7 @@ func TestDingTalkEmit(t *testing.T) {
 		conf := DingTalkConf{}
 
 		ent, err := DingTalkEmit(conf, "tester-DingTalkEmit")
-		t.Log(err)
-		t.Log(ent)
+		assert.Error(t, err)
+		assert.NotNil(t, ent)
 	})
 }

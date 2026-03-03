@@ -13,7 +13,7 @@ func TestGetConfig(t *testing.T) {
 			conf := struct{}{}
 			formats := []string{"yaml", "json", "toml", "unknown"}
 			for _, format := range formats {
-				t.Log(GetConfig("go-sail", "tester", conf, format))
+				assert.NotEmpty(t, GetConfig("go-sail", "tester", conf, format))
 			}
 		})
 	})
@@ -25,8 +25,8 @@ func TestListenConfig(t *testing.T) {
 			conf := struct{}{}
 			formats := []string{"yaml", "json", "toml", "unknown"}
 			for _, format := range formats {
-				t.Log(ListenConfig("go-sail", "tester", conf, format, false))
-				t.Log(ListenConfig("go-sail", "tester", conf, format, true))
+				assert.NoError(t, ListenConfig("go-sail", "tester", conf, format, false))
+				assert.NoError(t, ListenConfig("go-sail", "tester", conf, format, true))
 			}
 		})
 	})
@@ -38,7 +38,7 @@ func TestListenConfigWithCallback(t *testing.T) {
 			fn := func(namespace, group, dataId, data string) {
 				fmt.Println(namespace, group, dataId, data)
 			}
-			t.Log(ListenConfigWithCallback("go-sail", "tester", fn))
+			assert.NoError(t, ListenConfigWithCallback("go-sail", "tester", fn))
 		})
 	})
 }

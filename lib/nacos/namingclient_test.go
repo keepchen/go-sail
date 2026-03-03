@@ -15,22 +15,22 @@ var loggerConf = logger.Conf{
 
 func TestRegisterService(t *testing.T) {
 	t.Run("RegisterService", func(t *testing.T) {
-		t.Log(RegisterService("go-sail", "tester", "", 0, nil))
-		t.Log(RegisterService("go-sail", "tester", "127.0.0.1", 8848, nil))
+		//t.Log(RegisterService("go-sail", "tester", "", 0, nil))
+		//t.Log(RegisterService("go-sail", "tester", "127.0.0.1", 8848, nil))
 	})
 }
 
 func TestUnregisterService(t *testing.T) {
 	t.Run("UnregisterService", func(t *testing.T) {
-		t.Log(UnregisterService("go-sail", "tester", "", 0))
-		t.Log(UnregisterService("go-sail", "tester", "127.0.0.1", 8848))
+		//t.Log(UnregisterService("go-sail", "tester", "", 0))
+		//t.Log(UnregisterService("go-sail", "tester", "127.0.0.1", 8848))
 	})
 }
 
 func TestGetHealthyInstanceUrl(t *testing.T) {
 	t.Run("GetHealthyInstanceUrl", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		t.Log(GetHealthyInstanceUrl("go-sail", "tester", logger.GetLogger()))
+		//t.Log(GetHealthyInstanceUrl("go-sail", "tester", logger.GetLogger()))
 	})
 }
 

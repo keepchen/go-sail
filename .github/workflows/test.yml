@@ -16,161 +16,97 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: go_sail
         ports: ["3306:3306"]
-      redis-6:
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis-single:  # 可选，保留单机 Redis
         image: redis:6-alpine
         ports: ["6379:6379"]
+
+      redis-cluster:
+        image: ghcr.io/keepchen/redis-cluster:6.2.6
+        ports:
+          - 7000:7000
+          - 7001:7001
+          - 7002:7002
+          - 7003:7003
+          - 7004:7004
+          - 7005:7005
+          - 17000:17000
+          - 17001:17001
+          - 17002:17002
+          - 17003:17003
+          - 17004:17004
+          - 17005:17005
+        options: >-
+          --health-cmd "redis-cli -p 7000 ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      valkey-cluster:
+        image: ghcr.io/keepchen/valkey-cluster:9
+        ports:
+          - 8000:8000
+          - 8001:8001
+          - 8002:8002
+          - 8003:8003
+          - 8004:8004
+          - 8005:8005
+          - 18000:18000
+          - 18001:18001
+          - 18002:18002
+          - 18003:18003
+          - 18004:18004
+          - 18005:18005
+        options: >-
+          --health-cmd "redis-cli -p 8000 ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      etcd:
+        image: ghcr.io/keepchen/etcd:3.6.3
+        env:
+          ALLOW_NONE_AUTHENTICATION: "yes"
+          ETCD_ADVERTISE_CLIENT_URLS: http://0.0.0.0:2379
+        ports: ["2379:2379"]
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Start etcd container
+      # ── 验证各个服务是否 ready ────────────────────────────────
+      - name: Verify services are ready
         run: |
-          # Log in to ghcr.io
-          echo "${{ secrets.GHCRIO_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCRIO_USERNAME }}" --password-stdin
-
-          # 启动单节点 etcd，暴露客户端端口 2379
-          docker run -d --name etcd-server \
-              --publish 2379:2379 \
-              --publish 2380:2380 \
-              --env ALLOW_NONE_AUTHENTICATION=yes \
-              --env ETCD_ADVERTISE_CLIENT_URLS=http://127.0.0.1:2379 \
-              ghcr.io/keepchen/etcd:3.6.3
-
-          sleep 5  # 等待容器启动
-
-      - name: Verify etcd
-        run: |
-          # 安装 etcdctl 客户端
-          sudo apt-get update && sudo apt-get install -y etcd-client
-
-          # 检查健康状态
-          etcdctl endpoint health --endpoints=http://127.0.0.1:2379
-          etcdctl --endpoints=http://127.0.0.1:2379 member list
-
-      - name: Test etcd
-        run: |
-          # 读写测试
-          etcdctl --endpoints=http://127.0.0.1:2379 put foo bar
-          etcdctl --endpoints=http://127.0.0.1:2379 get foo
-
-      - name: Install Redis (Cluster)
-        run: |
-          # sudo apt-get update
-          # sudo apt-get install -y redis-server redis-tools
-          #
-          curl -fsSL https://download.redis.io/releases/redis-6.2.6.tar.gz -o redis.tar.gz
-          tar xzf redis.tar.gz
-          cd redis-6.2.6 && make -j$(nproc)
-          sudo make install
-
-      - name: Configure Redis Cluster Nodes
-        run: |
-          # 创建6个节点的配置（3主3从）
-          chmod +x scripts/setup-redis-cluster.sh
-          ./scripts/setup-redis-cluster.sh
-
-      - name: Start Redis (Cluster)
-        run: |
-          for port in 7000 7001 7002 7003 7004 7005; do
-            # debug
-            cat redis-cluster/$port/redis.conf
-            redis-server redis-cluster/$port/redis.conf
-          done
-          sleep 20  # 等待实例启动
-          ps aux | grep redis-server
-          ss -tln | grep -E '7000|7001|7002|7003|7004|7005'
-
-      - name: Create Redis (Cluster)
-        run: |
-          # # 自动确认集群配置
-          # echo "yes" | redis-cli --cluster create \
-          #   127.0.0.1:7000 \
-          #   127.0.0.1:7001 \
-          #   127.0.0.1:7002 \
-          #   127.0.0.1:7003 \
-          #   127.0.0.1:7004 \
-          #   127.0.0.1:7005 \
-          #   --cluster-replicas 1
-          #
-          # 让 6 个节点互相认识（用 7000 发起 meet）
-          for port in 7001 7002 7003 7004 7005; do
-            redis-cli -p $port cluster meet 127.0.0.1 7000
-          done
-          sleep 3
-          # 手动分配槽位：每个 master 分 5461 个槽（共 16384 槽）
-          redis-cli -p 7000 cluster addslots $(seq 0 5460)
-          redis-cli -p 7001 cluster addslots $(seq 5461 10922)
-          redis-cli -p 7002 cluster addslots $(seq 10923 16383)
-          # 设置 3 个从节点为各自的 replica
-          NODE0=$(redis-cli -p 7000 cluster myid)
-          NODE1=$(redis-cli -p 7001 cluster myid)
-          NODE2=$(redis-cli -p 7002 cluster myid)
-
-          redis-cli -p 7003 cluster replicate $NODE0
-          redis-cli -p 7004 cluster replicate $NODE1
-          redis-cli -p 7005 cluster replicate $NODE2
-
-      - name: Verify Cluster Status
-        run: |
-          sleep 5
-          redis-cli --cluster check 127.0.0.1:7000
-
-      - name: Install Valkey (Cluster)
-        run: |
-          # 安装依赖项
           sudo apt-get update
-          sudo apt-get install -y build-essential tcl
+          sudo apt-get install -y redis-tools etcd-client
 
-          # 下载并编译 Valkey
-          git clone https://github.com/valkey-io/valkey.git
-          cd valkey
-          make -j$(nproc)          # 多线程编译加速
-          sudo make install        # 安装到系统路径
+          # 等 healthcheck（通常 30-60s 内通过）
+          sleep 10  # 小缓冲
 
-      - name: Configure Valkey Cluster Nodes
-        run: |
-          # 创建 6 个节点（3主3从）
-          chmod +x scripts/setup-valkey-cluster.sh
-          ./scripts/setup-valkey-cluster.sh
+          echo "Verifying etcd..."
+          etcdctl endpoint health --endpoints=http://127.0.0.1:2379 || { echo "etcd failed"; exit 1; }
+          etcdctl put foo bar && etcdctl get foo
 
-      - name: Start Valkey (Cluster)
-        run: |
-          for port in 8000 8001 8002 8003 8004 8005; do
-            # debug
-            cat valkey-cluster/$port/valkey.conf
-            valkey-server valkey-cluster/$port/valkey.conf
-          done
-          sleep 20  # 等待实例启动
-          ps aux | grep valkey-server
-          ss -tln | grep -E '8000|8001|8002|8003|8004|8005'
+          echo "Verifying Redis Cluster..."
+          redis-cli -p 7000 cluster info | grep -q 'cluster_state:ok' || { echo "Redis Cluster not OK"; exit 1; }
 
-      - name: Create Valkey Cluster
-        run: |
-          # 自动确认集群配置
-          echo "yes" | valkey-cli --cluster create \
-            127.0.0.1:8000 \
-            127.0.0.1:8001 \
-            127.0.0.1:8002 \
-            127.0.0.1:8003 \
-            127.0.0.1:8004 \
-            127.0.0.1:8005 \
-            --cluster-replicas 1
+          echo "Verifying Valkey Cluster..."
+          redis-cli -p 8000 cluster info | grep -q 'cluster_state:ok' || { echo "Valkey Cluster not OK"; exit 1; }
 
-      - name: Verify Cluster Status
-        run: |
-          valkey-cli --cluster check 127.0.0.1:8000
+          echo "All clusters ready!"
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      # ── Go 测试 ────────────────────────────────────────────────
+      - uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version: "1.25"
 
       - name: Test
         run: |
           set -e
-          PACKAGES=$(go list ./... | grep -v '/examples/' | grep -v '/static/' | grep -v '/plugins/')
- 	  go test $PACKAGES -v -coverprofile=coverage.txt
+          PACKAGES=$(go list ./... | grep -v '/examples/' | grep -v '/static/' | grep -v '/plugins/' | grep -v '/docker/')
+          go test $PACKAGES -v -coverprofile=coverage.txt
 
-      - name: Upload coverage reports to Codecov
+      - name: Upload coverage
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

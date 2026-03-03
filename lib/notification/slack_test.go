@@ -53,7 +53,7 @@ func TestParseSlackConf(t *testing.T) {
 
 		tm, err := toml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(tm))
+		assert.NotEmpty(t, tm)
 
 		var tmConf SlackConf
 		err = toml.Unmarshal(tm, &tmConf)
@@ -68,7 +68,7 @@ func TestSlackEmit(t *testing.T) {
 		conf := SlackConf{}
 
 		ent, err := SlackEmit(conf, "tester-SlackEmit")
-		t.Log(err)
-		t.Log(ent)
+		assert.Error(t, err)
+		assert.NotNil(t, ent)
 	})
 }

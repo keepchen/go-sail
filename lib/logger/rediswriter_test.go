@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/keepchen/go-sail/v3/lib/redis"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -33,12 +34,12 @@ var (
 func TestRedisSync(t *testing.T) {
 	t.Run("Sync-Standalone", func(t *testing.T) {
 		writer := &redisWriterStd{}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 
 	t.Run("Sync-Cluster", func(t *testing.T) {
 		writer := &redisClusterWriterStd{}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 }
 
@@ -53,7 +54,7 @@ func TestRedisWrite(t *testing.T) {
 			cli:     rd,
 			listKey: "go-sail-tester-logger-list",
 		}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 
 	t.Run("Write-Cluster", func(t *testing.T) {
@@ -66,6 +67,6 @@ func TestRedisWrite(t *testing.T) {
 			cli:     rd,
 			listKey: "go-sail-tester-logger-list",
 		}
-		t.Log(writer.Sync())
+		assert.Nil(t, writer.Sync())
 	})
 }

@@ -2,9 +2,10 @@ package valkey
 
 import (
 	"encoding/json"
+	"testing"
+
 	"github.com/pelletier/go-toml/v2"
 	"gopkg.in/yaml.v2"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -13,15 +14,15 @@ func TestPrintConf(t *testing.T) {
 	t.Run("PrintConf", func(t *testing.T) {
 		conf := Conf{}
 		js, err := json.Marshal(&conf)
-		t.Log(string(js))
+		assert.Equal(t, true, len(js) > 0)
 		assert.NoError(t, err)
 
 		tm, err := toml.Marshal(&conf)
-		t.Log(string(tm))
+		assert.Equal(t, true, len(tm) > 0)
 		assert.NoError(t, err)
 
 		ym, err := yaml.Marshal(&conf)
-		t.Log(string(ym))
+		assert.Equal(t, true, len(ym) > 0)
 		assert.NoError(t, err)
 	})
 }
@@ -33,7 +34,7 @@ func TestParseConf(t *testing.T) {
 		Password: "password",
 	}
 	js, err := json.Marshal(&conf)
-	t.Log(string(js))
+	assert.Equal(t, true, len(js) > 0)
 	assert.NoError(t, err)
 
 	var jsConf Conf
@@ -44,7 +45,7 @@ func TestParseConf(t *testing.T) {
 	assert.Equal(t, conf.Password, jsConf.Password)
 
 	tm, err := toml.Marshal(&conf)
-	t.Log(string(tm))
+	assert.Equal(t, true, len(tm) > 0)
 	assert.NoError(t, err)
 
 	var tmConf Conf
@@ -55,7 +56,7 @@ func TestParseConf(t *testing.T) {
 	assert.Equal(t, conf.Password, tmConf.Password)
 
 	ym, err := yaml.Marshal(&conf)
-	t.Log(string(ym))
+	assert.Equal(t, true, len(ym) > 0)
 	assert.NoError(t, err)
 
 	var ymConf Conf

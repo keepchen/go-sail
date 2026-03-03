@@ -24,13 +24,17 @@ func TestNew(t *testing.T) {
 		}
 		_ = conn.Close()
 		instance, err := New(conf)
-		t.Log(instance, err)
+		//t.Log(instance, err)
+		assert.NoError(t, err)
+		assert.NotNil(t, instance)
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		t.Log("----Put----")
-		t.Log(instance.Put(ctx, "go-sail-key", "go-sail"))
-		t.Log("----Get----")
-		t.Log(instance.Get(ctx, "go-sail-key"))
+		pr, pe := instance.Put(ctx, "go-sail-key", "go-sail")
+		assert.NoError(t, pe)
+		assert.NotNil(t, pr)
+		gr, ge := instance.Get(ctx, "go-sail-key")
+		assert.NoError(t, ge)
+		assert.NotNil(t, gr)
 	})
 
 	t.Run("New-Auth", func(t *testing.T) {
@@ -42,7 +46,9 @@ func TestNew(t *testing.T) {
 		conf.Username = "username"
 		conf.Password = "password"
 		instance, err := New(conf)
-		t.Log(instance, err)
+		//t.Log(instance, err)
+		assert.NoError(t, err)
+		assert.NotNil(t, instance)
 	})
 
 	t.Run("New-TlsEnable", func(t *testing.T) {
@@ -54,19 +60,23 @@ func TestNew(t *testing.T) {
 		assert.Panics(t, func() {
 			conf.Tls = &tls.Config{}
 			instance, err := New(conf)
-			t.Log(instance, err)
-			t.Log(instance, err)
+			assert.Error(t, err)
+			assert.Nil(t, instance)
+			//t.Log(instance, err)
+			//t.Log(instance, err)
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			t.Log("----Put----")
+			//t.Log("----Put----")
 			resultP, errP := instance.Put(ctx, "go-sail-key", "go-sail")
-			t.Log(resultP, errP)
+			//t.Log(resultP, errP)
 			assert.Error(t, errP)
-			t.Log("----Get----")
+			assert.Nil(t, resultP)
+			//t.Log("----Get----")
 			resultG, errG := instance.Get(ctx, "go-sail-key")
-			t.Log()
-			t.Log(resultG, errG)
+			//t.Log()
+			//t.Log(resultG, errG)
 			assert.Error(t, errG)
+			assert.Nil(t, resultG)
 		})
 	})
 }

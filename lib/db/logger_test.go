@@ -26,7 +26,7 @@ func TestNewZapLoggerForGorm(t *testing.T) {
 		for _, level := range levels {
 			dbConf.Logger.Level = level
 			dbConf.Logger.SlowThreshold = 500
-			t.Log(NewZapLoggerForGorm(logger.GetLogger(), dbConf))
+			//t.Log(NewZapLoggerForGorm(logger.GetLogger(), dbConf))
 		}
 	})
 }
@@ -37,7 +37,7 @@ func TestSetAsDefault(t *testing.T) {
 		zg := NewZapLoggerForGorm(logger.GetLogger(), dbConf)
 		assert.NotNil(t, zg)
 		zg.SetAsDefault()
-		t.Log(gormLogger.Default)
+		//t.Log(gormLogger.Default)
 	})
 }
 
@@ -50,7 +50,7 @@ func TestLogMode(t *testing.T) {
 		assert.NotNil(t, zg)
 
 		for _, level := range levels {
-			t.Log(zg.LogMode(level))
+			assert.NotNil(t, zg.LogMode(level))
 		}
 	})
 }
@@ -131,7 +131,7 @@ func TestTrace(t *testing.T) {
 		)
 
 		for _, level := range levels {
-			t.Log(zg.LogMode(level))
+			assert.NotNil(t, zg.LogMode(level))
 			zg.Trace(context.Background(), time.Now(), fn, nil)
 		}
 

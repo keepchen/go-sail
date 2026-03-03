@@ -1,10 +1,14 @@
 package logger
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestMarshalInterfaceValue(t *testing.T) {
 	t.Run("MarshalInterfaceValue", func(t *testing.T) {
-		t.Log(MarshalInterfaceValue(map[string]any{
+		assert.NotNil(t, MarshalInterfaceValue(map[string]any{
 			"name":       "go-sail",
 			"opensource": true,
 		}))

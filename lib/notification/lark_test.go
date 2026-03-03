@@ -16,15 +16,15 @@ func TestPrintLarkConf(t *testing.T) {
 
 		js, err := json.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(js))
+		assert.NotEmpty(t, js)
 
 		ym, err := yaml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(ym))
+		assert.NotEmpty(t, ym)
 
 		tm, err := toml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(tm))
+		assert.NotEmpty(t, tm)
 	})
 }
 
@@ -34,7 +34,7 @@ func TestParseLarkConf(t *testing.T) {
 
 		js, err := json.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(js))
+		assert.NotEmpty(t, js)
 
 		var jsConf LarkConf
 		err = json.Unmarshal(js, &jsConf)
@@ -44,7 +44,7 @@ func TestParseLarkConf(t *testing.T) {
 
 		ym, err := yaml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(ym))
+		assert.NotEmpty(t, ym)
 
 		var ymConf LarkConf
 		err = yaml.Unmarshal(ym, &ymConf)
@@ -54,7 +54,7 @@ func TestParseLarkConf(t *testing.T) {
 
 		tm, err := toml.Marshal(&conf)
 		assert.NoError(t, err)
-		t.Log(string(tm))
+		assert.NotEmpty(t, tm)
 
 		var tmConf LarkConf
 		err = toml.Unmarshal(tm, &tmConf)
@@ -72,7 +72,7 @@ func TestGenLarkSign(t *testing.T) {
 		)
 		sign, err := genLarkSign(secret, timestamp)
 		assert.NoError(t, err)
-		t.Log(sign)
+		assert.NotEmpty(t, sign)
 	})
 }
 
@@ -81,8 +81,8 @@ func TestLarkEmit(t *testing.T) {
 		conf := LarkConf{}
 
 		ent, err := LarkEmit(conf, "tester-LarkEmit")
-		t.Log(err)
-		t.Log(ent)
+		assert.Error(t, err)
+		assert.NotNil(t, ent)
 	})
 }
 
@@ -91,7 +91,7 @@ func TestLarkEmitPlaintext(t *testing.T) {
 		conf := LarkConf{}
 
 		ent, err := LarkEmitPlaintext(conf, "tester-LarkEmitPlaintext")
-		t.Log(err)
-		t.Log(ent)
+		assert.Error(t, err)
+		assert.NotNil(t, ent)
 	})
 }

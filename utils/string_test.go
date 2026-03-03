@@ -256,7 +256,7 @@ func TestStringImplTruncate(t *testing.T) {
 	for _, v := range holders {
 		for i := -1; i < 20; i++ {
 			s := String().Truncate(v, i)
-			t.Log(s)
+			_ = s
 		}
 	}
 }

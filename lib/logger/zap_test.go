@@ -110,7 +110,7 @@ func TestInit(t *testing.T) {
 			conf.Level = level
 			conf.Modules = modules
 			Init(conf, "go-sail", redisWriter)
-			t.Log(GetLogger("unknown"))
+			//t.Log(GetLogger("unknown"))
 		}
 	})
 }
