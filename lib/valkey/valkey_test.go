@@ -28,7 +28,7 @@ func TestInit(t *testing.T) {
 		}
 		_ = conn.Close()
 		Init(testCaseConf)
-		t.Log("valkey mode:", GetValKey().Mode())
+		//t.Log("valkey mode:", GetValKey().Mode())
 		assert.NoError(t, GetValKey().Do(context.Background(), GetValKey().B().Ping().Build()).Error())
 
 		assert.NoError(t, GetValKey().Do(context.Background(), GetValKey().B().Set().Key("test-Init-set-key").Value("123").Build()).Error())
@@ -50,7 +50,7 @@ func TestNew(t *testing.T) {
 		_ = conn.Close()
 		newClient, err := New(testCaseConf)
 		assert.NoError(t, err)
-		t.Log("valkey mode:", newClient.Mode())
+		//t.Log("valkey mode:", newClient.Mode())
 		assert.NoError(t, newClient.Do(context.Background(), newClient.B().Ping().Build()).Error())
 
 		assert.NoError(t, newClient.Do(context.Background(), newClient.B().Set().Key("test-New-set-key").Value("123").Build()).Error())

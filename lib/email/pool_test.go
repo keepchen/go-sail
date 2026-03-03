@@ -3,6 +3,8 @@ package email
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -16,7 +18,8 @@ func TestNewPool(t *testing.T) {
 			Host: awsSesHost,
 			Port: awsSesPort,
 		}
-		t.Log(NewPool(conf))
+		//t.Log(NewPool(conf))
+		assert.NotNil(t, NewPool(conf))
 	})
 }
 
@@ -27,9 +30,9 @@ func TestMount(t *testing.T) {
 			Port: awsSesPort,
 		}
 		pool := NewPool(conf)
-		t.Log(pool)
+		//t.Log(pool)
 		envelope := &Envelope{}
-		t.Log(envelope)
+		//t.Log(envelope)
 		pool.Mount(0, envelope)
 	})
 }
@@ -41,9 +44,9 @@ func TestEmit(t *testing.T) {
 			Port: awsSesPort,
 		}
 		pool := NewPool(conf)
-		t.Log(pool)
+		//t.Log(pool)
 		envelope := &Envelope{}
-		t.Log(envelope)
+		//t.Log(envelope)
 		pool.Mount(0, envelope)
 
 		pool.Emit()
@@ -57,9 +60,9 @@ func TestDone(t *testing.T) {
 			Port: awsSesPort,
 		}
 		pool := NewPool(conf)
-		t.Log(pool)
+		//t.Log(pool)
 		envelope := &Envelope{}
-		t.Log(envelope)
+		//t.Log(envelope)
 		pool.Mount(0, envelope)
 
 		pool.Emit()

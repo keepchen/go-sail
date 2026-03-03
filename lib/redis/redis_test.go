@@ -44,7 +44,7 @@ func TestInitRedis(t *testing.T) {
 
 		result, err := GetInstance().Get(ctx, "tester-InitRedis-set").Result()
 		assert.NoError(t, err)
-		t.Log(result)
+		//t.Log(result)
 		assert.Equal(t, "go-sail", result)
 
 		_ = GetInstance().Close()
@@ -69,7 +69,7 @@ func TestInitRedis(t *testing.T) {
 
 			result, err := GetInstance().Get(ctx, "tester-InitRedis-set").Result()
 			assert.NoError(t, err)
-			t.Log(result)
+			//t.Log(result)
 			assert.Equal(t, "go-sail", result)
 
 			_ = GetInstance().Close()
@@ -97,7 +97,7 @@ func TestInitRedis(t *testing.T) {
 
 			result, err := GetInstance().Get(ctx, "tester-InitRedis-set").Result()
 			assert.NoError(t, err)
-			t.Log(result)
+			//t.Log(result)
 			assert.Equal(t, "go-sail", result)
 
 			_ = GetInstance().Close()
@@ -122,7 +122,7 @@ func TestInitRedis(t *testing.T) {
 
 			result, err := GetInstance().Get(ctx, "tester-InitRedis-set").Result()
 			assert.NoError(t, err)
-			t.Log(result)
+			//t.Log(result)
 			assert.Equal(t, "go-sail", result)
 
 			_ = GetInstance().Close()
@@ -150,7 +150,7 @@ func TestNewRedis(t *testing.T) {
 
 		result, err := newClient.Get(context.Background(), "tester-NewRedis-set").Result()
 		assert.NoError(t, err)
-		t.Log(result)
+		//t.Log(result)
 		assert.Equal(t, "go-sail", result)
 
 		_ = newClient.Close()
@@ -160,7 +160,7 @@ func TestNewRedis(t *testing.T) {
 		sConf.SSLEnable = true
 		newClient, err := New(sConf)
 		assert.Error(t, err)
-		t.Log(newClient)
+		//t.Log(newClient)
 
 		_, err = newClient.Ping(context.Background()).Result()
 		assert.Error(t, err)
@@ -170,7 +170,8 @@ func TestNewRedis(t *testing.T) {
 
 		result, err := newClient.Get(context.Background(), "tester-NewRedis-set").Result()
 		assert.Error(t, err)
-		t.Log(result)
+		//t.Log(result)
+		assert.Empty(t, result)
 
 		_ = newClient.Close()
 	})
@@ -181,7 +182,7 @@ func TestNewRedis(t *testing.T) {
 		sConf.Password = "password"
 		newClient, err := New(sConf)
 		assert.Error(t, err)
-		t.Log(newClient)
+		//t.Log(newClient)
 
 		_, err = newClient.Ping(context.Background()).Result()
 		assert.Error(t, err)
@@ -191,7 +192,8 @@ func TestNewRedis(t *testing.T) {
 
 		result, err := newClient.Get(context.Background(), "tester-NewRedis-set").Result()
 		assert.Error(t, err)
-		t.Log(result)
+		//t.Log(result)
+		assert.Empty(t, result)
 
 		_ = newClient.Close()
 	})

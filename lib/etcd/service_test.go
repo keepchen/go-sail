@@ -21,7 +21,9 @@ func TestRegisterService(t *testing.T) {
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		t.Log(RegisterService(ctx, "go-sail", "testcase", "endpoint-local-tester", 60))
+		rr, re := RegisterService(ctx, "go-sail", "testcase", "endpoint-local-tester", 60)
+		assert.NoError(t, re)
+		assert.NotNil(t, rr)
 
 		//clear
 		_ = GetInstance().Close()
@@ -32,7 +34,9 @@ func TestRegisterService(t *testing.T) {
 		assert.Panics(t, func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 			defer cancel()
-			t.Log(RegisterService(ctx, "go-sail", "testcase", "endpoint-local-tester", 60))
+			rr, re := RegisterService(ctx, "go-sail", "testcase", "endpoint-local-tester", 60)
+			assert.Error(t, re)
+			assert.Nil(t, rr)
 		})
 	})
 }
@@ -48,7 +52,12 @@ func TestDiscoverService(t *testing.T) {
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		t.Log(DiscoverService(ctx, "go-sail", "testcase"))
+		dr, de := DiscoverService(ctx, "go-sail", "testcase")
+		if len(dr) == 0 {
+			assert.Error(t, de)
+		} else {
+			assert.NoError(t, de)
+		}
 
 		//clear
 		_ = GetInstance().Close()
@@ -59,7 +68,9 @@ func TestDiscoverService(t *testing.T) {
 		assert.Panics(t, func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 			defer cancel()
-			t.Log(DiscoverService(ctx, "go-sail", "testcase"))
+			dr, de := DiscoverService(ctx, "go-sail", "testcase")
+			assert.Error(t, de)
+			assert.Nil(t, dr)
 		})
 	})
 }
@@ -75,7 +86,9 @@ func TestGetAllServices(t *testing.T) {
 		Init(conf)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
-		t.Log(GetAllServices(ctx, "go-sail", "testcase"))
+		gr, ge := GetAllServices(ctx, "go-sail", "testcase")
+		assert.NoError(t, ge)
+		assert.NotNil(t, gr)
 
 		//clear
 		_ = GetInstance().Close()
@@ -86,7 +99,9 @@ func TestGetAllServices(t *testing.T) {
 		assert.Panics(t, func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 			defer cancel()
-			t.Log(GetAllServices(ctx, "go-sail", "testcase"))
+			gr, ge := GetAllServices(ctx, "go-sail", "testcase")
+			assert.Error(t, ge)
+			assert.Nil(t, gr)
 		})
 	})
 }
@@ -109,8 +124,10 @@ func TestWatchService(t *testing.T) {
 		go WatchService(ctx, "go-sail", "testcase", fn)
 
 		time.Sleep(time.Second)
-		t.Log(RegisterService(ctx, "go-sail", "testcase",
-			fmt.Sprintf("endpoint-local-tester-%s", time.Now().String()), 60))
+		rr, re := RegisterService(ctx, "go-sail", "testcase",
+			fmt.Sprintf("endpoint-local-tester-%s", time.Now().String()), 60)
+		assert.NoError(t, re)
+		assert.NotNil(t, rr)
 
 		time.Sleep(5 * time.Second)
 
@@ -131,8 +148,10 @@ func TestWatchService(t *testing.T) {
 
 			go func() {
 				time.Sleep(time.Second)
-				t.Log(RegisterService(ctx, "go-sail", "testcase",
-					fmt.Sprintf("endpoint-local-tester-%s", time.Now().String()), 60))
+				rr, re := RegisterService(ctx, "go-sail", "testcase",
+					fmt.Sprintf("endpoint-local-tester-%s", time.Now().String()), 60)
+				assert.Error(t, re)
+				assert.Nil(t, rr)
 			}()
 
 			time.Sleep(5 * time.Second)

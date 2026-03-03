@@ -117,7 +117,7 @@ func TestParseConfig(t *testing.T) {
 	for tag, cfg := range configArr {
 		var conf config.Config
 		err := ParseConfig(cfg, &conf, tag)
-		t.Logf("parse format: {%s}, test field env: {%s}, error: %v", tag, conf.LoggerConf.Env, err)
+		//t.Logf("parse format: {%s}, test field env: {%s}, error: %v", tag, conf.LoggerConf.Env, err)
 		assert.Equal(t, nil, err)
 		assert.Equal(t, "prod", conf.LoggerConf.Env)
 	}

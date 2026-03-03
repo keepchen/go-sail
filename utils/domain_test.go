@@ -67,7 +67,7 @@ func TestDomainImplRefererMatch(t *testing.T) {
 		{"https://a.b.example.com:8443", "*.example.com", true},
 	}
 	for _, v := range domains {
-		t.Log(v.referer, v.domain)
+		//t.Log(v.referer, v.domain)
 		assert.Equal(t, Domain().RefererMatch(v.referer, v.domain), v.valid)
 	}
 }

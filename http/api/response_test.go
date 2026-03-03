@@ -165,7 +165,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -186,7 +186,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -216,7 +216,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -246,7 +246,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -274,7 +274,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -304,7 +304,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -334,7 +334,7 @@ func TestMergeBody(t *testing.T) {
 		}
 
 		for _, code := range codes {
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 		}
 	})
 
@@ -367,8 +367,8 @@ func TestMergeBody(t *testing.T) {
 				requestId: uuid.New().String(),
 			}
 
-			t.Log(re.mergeBody(code, nil))
-			t.Log(forceHttpCode200, anotherErrNoneCode, anotherErrInternalServerErrorCode, code, re.httpCode)
+			assert.NotNil(t, re.mergeBody(code, nil))
+			//t.Log(forceHttpCode200, anotherErrNoneCode, anotherErrInternalServerErrorCode, code, re.httpCode)
 			assert.Equal(t, true, (code == 0 && re.httpCode == http.StatusOK) || (code != 0 && re.httpCode != http.StatusOK))
 			assert.Equal(t, statusCodes[idx], re.httpCode)
 		}
@@ -393,7 +393,7 @@ func TestMergeBody(t *testing.T) {
 				requestId: uuid.New().String(),
 			}
 
-			t.Log(re.mergeBody(code, nil))
+			assert.NotNil(t, re.mergeBody(code, nil))
 			assert.Equal(t, true, re.httpCode == http.StatusOK)
 		}
 	})
@@ -416,7 +416,7 @@ func TestMergeBody(t *testing.T) {
 				requestId: uuid.New().String(),
 			}
 
-			t.Log(re.mergeBody(code, nil, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, nil, "error1", "error2", "error3"))
 		}
 	})
 
@@ -439,12 +439,12 @@ func TestMergeBody(t *testing.T) {
 				data:      nil,
 				requestId: uuid.New().String(),
 			}
-			t.Log(re.mergeBody(code, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(code, nil, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(code, (*testerResponseData)(nil), "error1", "error2", "error3"))
-			t.Log(re.mergeBody(code, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(code, []string{"1", "2", "3"}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(code, []string{}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, nil, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, (*testerResponseData)(nil), "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, []string{"1", "2", "3"}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(code, []string{}, "error1", "error2", "error3"))
 		}
 	})
 
@@ -465,13 +465,13 @@ func TestMergeBody(t *testing.T) {
 
 			emptyDataField = dt
 
-			t.Log(re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(constants.ErrNone, nil, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(constants.ErrNone, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(constants.ErrNone, (*testerResponseData)(nil), "error1", "error2", "error3"))
-			t.Log(re.mergeBody(constants.ErrNone, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(constants.ErrNone, []string{"1", "2", "3"}, "error1", "error2", "error3"))
-			t.Log(re.mergeBody(constants.ErrNone, []string{}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, testerResponseData{}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, nil, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, testerResponseData{Data: "123"}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, (*testerResponseData)(nil), "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, &testerResponseData{Data: "abc"}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, []string{"1", "2", "3"}, "error1", "error2", "error3"))
+			assert.NotNil(t, re.mergeBody(constants.ErrNone, []string{}, "error1", "error2", "error3"))
 		}
 	})
 

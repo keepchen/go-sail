@@ -1,0 +1,91 @@
+# docker-compose.yml
+# 基于你的 GitHub Actions services 转换
+# 使用 docker compose up -d 启动所有服务
+# 使用 docker compose down 停止并清理
+# 注意：
+#   - 端口映射全部暴露到主机（和 Actions 一致），本地访问用 localhost:端口
+#   - 添加了 healthcheck（原 options 翻译而来）
+#   - redis-cluster 和 valkey-cluster 使用你的自定义镜像
+#   - mysql 添加了 volumes 持久化数据（可选，但本地推荐）
+#   - etcd 没有持久化（和 CI 一致）
+
+version: '3.9'
+
+services:
+  mysql-8:
+    image: mysql:8.0.23
+    container_name: go-sail-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: go_sail
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - mysql-data:/var/lib/mysql  # 本地持久化，可选删除
+
+  redis-single:
+    image: redis:6-alpine
+    container_name: go-sail-redis-single
+    ports:
+      - "6379:6379"
+
+  redis-cluster:
+    image: ghcr.io/keepchen/redis-cluster:6.2.6
+    container_name: go-sail-redis-cluster
+    ports:
+      - "7000:7000"
+      - "7001:7001"
+      - "7002:7002"
+      - "7003:7003"
+      - "7004:7004"
+      - "7005:7005"
+      - "17000:17000"
+      - "17001:17001"
+      - "17002:17002"
+      - "17003:17003"
+      - "17004:17004"
+      - "17005:17005"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7000", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  valkey-cluster:
+    image: ghcr.io/keepchen/valkey-cluster:9
+    container_name: go-sail-valkey-cluster
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+      - "8003:8003"
+      - "8004:8004"
+      - "8005:8005"
+      - "18000:18000"
+      - "18001:18001"
+      - "18002:18002"
+      - "18003:18003"
+      - "18004:18004"
+      - "18005:18005"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "8000", "ping"]   # 如果镜像用 valkey-cli，改成 valkey-cli
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  etcd:
+    image: ghcr.io/keepchen/etcd:3.6.3
+    container_name: go-sail-etcd
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: http://0.0.0.0:2379
+    ports:
+      - "2379:2379"
+
+volumes:
+  mysql-data:   # 用于 mysql 持久化数据

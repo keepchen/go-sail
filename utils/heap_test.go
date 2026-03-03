@@ -43,7 +43,7 @@ func TestAscHeap(t *testing.T) {
 				current = value.GetScore()
 				continue
 			}
-			t.Log("score: ", value.GetScore())
+			//t.Log("score: ", value.GetScore())
 			assert.Equal(t, true, current > value.GetScore())
 			current = value.GetScore()
 		}
@@ -81,7 +81,7 @@ func TestDescHeap(t *testing.T) {
 		if i == 10 {
 			assert.Equal(t, false, ok)
 		} else {
-			t.Log("score: ", value.GetScore())
+			//t.Log("score: ", value.GetScore())
 			assert.Equal(t, true, current < value.GetScore())
 			current = value.GetScore()
 		}
@@ -110,7 +110,7 @@ func TestAscHeapFloat(t *testing.T) {
 		if i == 10 {
 			assert.Equal(t, false, ok)
 		} else {
-			t.Log("score: ", value.GetScore())
+			//t.Log("score: ", value.GetScore())
 			assert.Equal(t, true, current < value.GetScore())
 			current = value.GetScore()
 		}
@@ -139,7 +139,7 @@ func TestAscHeapInt(t *testing.T) {
 		if i == 10 {
 			assert.Equal(t, false, ok)
 		} else {
-			t.Log("score: ", value.GetScore())
+			//t.Log("score: ", value.GetScore())
 			assert.Equal(t, true, current < value.GetScore())
 			current = value.GetScore()
 		}

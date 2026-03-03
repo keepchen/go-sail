@@ -1,6 +1,10 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestGzipImplCompressAndDecompress(t *testing.T) {
 	var bytesArr = [][]byte{
@@ -10,14 +14,14 @@ func TestGzipImplCompressAndDecompress(t *testing.T) {
 
 	t.Run("TestGzipImplCompress", func(t *testing.T) {
 		for _, byt := range bytesArr {
-			t.Log(Gzip().Compress(byt))
+			assert.NotEmpty(t, Gzip().Compress(byt))
 		}
 	})
 
 	t.Run("TestGzipImplDecompress", func(t *testing.T) {
 		for _, byt := range bytesArr {
 			s := Gzip().Compress(byt)
-			t.Log(string(s), "--->", string(Gzip().Decompress(s)))
+			assert.NotEmpty(t, string(Gzip().Decompress(s)))
 		}
 	})
 }

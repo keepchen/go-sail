@@ -7,7 +7,7 @@ import (
 )
 
 func TestPrintConfigFields(t *testing.T) {
-	t.Log(&Config{})
+	assert.NotNil(t, &Config{})
 }
 
 func TestConfigSet(t *testing.T) {

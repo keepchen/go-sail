@@ -65,7 +65,8 @@ func TestFileExistsWithError(t *testing.T) {
 func TestWordwrap(t *testing.T) {
 	t.Run("wordwrap", func(t *testing.T) {
 		for _, rawStr := range rawStrArr {
-			t.Log(wordwrap(rawStr, 20, "\n"))
+			assert.Equal(t, len(rawStr) > 0, len(wordwrap(rawStr, 20, "\n")) > 0)
+			//t.Log(wordwrap(rawStr, 20, "\n"))
 		}
 	})
 }

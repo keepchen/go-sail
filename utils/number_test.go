@@ -18,9 +18,10 @@ func TestNumberImplRandomInt64(t *testing.T) {
 	}
 	t.Run("RandomInt64", func(t *testing.T) {
 		for _, rn := range ranges {
-			t.Log("range: from", rn[0], "to", rn[1])
+			//t.Log("range: from", rn[0], "to", rn[1])
 			for i := 0; i < 10; i++ {
-				t.Log(Number().RandomInt64(rn[0], rn[1]))
+				result := Number().RandomInt64(rn[0], rn[1])
+				assert.Equal(t, true, result >= rn[0] && result <= rn[1])
 			}
 
 			for j := 0; j < 1000; j++ {
@@ -37,12 +38,12 @@ func TestNumberImplRandomInt64(t *testing.T) {
 
 	t.Run("RandomInt64-Panic", func(t *testing.T) {
 		assert.Panics(t, func() {
-			t.Log(Number().RandomInt64(1, 0))
+			Number().RandomInt64(1, 0)
 		})
 	})
 
 	t.Run("RandomInt64-BothNegative", func(t *testing.T) {
-		t.Log(Number().RandomInt64(-2, -1))
+		Number().RandomInt64(-2, -1)
 	})
 }
 
@@ -63,9 +64,10 @@ func TestNumberImplRandomFloat64(t *testing.T) {
 	}
 	t.Run("RandomFloat64", func(t *testing.T) {
 		for _, rn := range ranges {
-			t.Log("range: from", rn.start, "to", rn.end, "precision", rn.precision)
+			//t.Log("range: from", rn.start, "to", rn.end, "precision", rn.precision)
 			for i := 0; i < 10; i++ {
-				t.Log(Number().RandomFloat64(rn.start, rn.end, rn.precision))
+				result := Number().RandomFloat64(rn.start, rn.end, rn.precision)
+				assert.Equal(t, true, result >= rn.start && result <= rn.end)
 			}
 
 			for j := 0; j < 1000; j++ {
@@ -82,7 +84,7 @@ func TestNumberImplRandomFloat64(t *testing.T) {
 
 	t.Run("RandomFloat64-Panic", func(t *testing.T) {
 		assert.Panics(t, func() {
-			t.Log(Number().RandomFloat64(100, 10, 4))
+			Number().RandomFloat64(100, 10, 4)
 		})
 	})
 }

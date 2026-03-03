@@ -15,9 +15,10 @@ func TestMergeStandardClaims(t *testing.T) {
 			"jti": "AAA-BBB-CCC-DDD-EEE",
 			"iss": "A Inc.",
 		}
-		t.Log(MergeStandardClaims(fields))
+		assert.NotNil(t, MergeStandardClaims(fields))
+		//t.Log(MergeStandardClaims(fields))
 
-		t.Log(MergeStandardClaims(nil))
+		//t.Log(MergeStandardClaims(nil))
 	})
 }
 
