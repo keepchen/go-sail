@@ -96,6 +96,10 @@ type Responder interface {
 	//
 	// 2.业务码为code
 	Failure500(code constants.ICodeType, message ...string)
+	// WithHeaders 为响应设置响应头
+	WithHeaders(headers map[string]string) Responder
+	// WithCookies 为响应设置Cookie
+	WithCookies(cookies []CookieStd) Responder
 }
 
 type responseEngine struct {
@@ -169,6 +173,22 @@ func Response(c *gin.Context) Responder {
 	return New(c)
 }
 
+// Builder 组装返回数据
+//
+// Assemble 方法的语法糖
+func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
+	return a.mergeBody(code, resp, message...)
+}
+
+// Wrap 组装返回数据(轻量版)
+//
+// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
+//
+// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+func (a *responseEngine) Wrap(code constants.ICodeType, data any, message ...string) Responder {
+	return a.mergeBody(code, data, message...)
+}
+
 // Bundle 包装返回数据
 //
 // 此方法提供更加开放的响应数据组装
@@ -186,11 +206,22 @@ func (a *responseEngine) Bundle(code int, resp any, message ...string) Responder
 	return a.mergeBody(constants.CodeType(code), resp, message...)
 }
 
-// Builder 组装返回数据
-//
-// Assemble 方法的语法糖
-func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
-	return a.mergeBody(code, resp, message...)
+// WithHeaders 为响应设置响应头
+func (a *responseEngine) WithHeaders(headers map[string]string) Responder {
+	for k, v := range headers {
+		a.engine.Header(k, v)
+	}
+
+	return a
+}
+
+// WithCookies 为响应设置Cookie
+func (a *responseEngine) WithCookies(cookies []CookieStd) Responder {
+	for _, cookie := range cookies {
+		a.engine.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, cookie.Domain, cookie.Secure, cookie.HttpOnly)
+	}
+
+	return a
 }
 
 // Success 返回成功
@@ -266,15 +297,6 @@ func (a *responseEngine) Data(data any) {
 	}
 
 	a.Wrap(code, data).Send()
-}
-
-// Wrap 组装返回数据(轻量版)
-//
-// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
-//
-// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
-func (a *responseEngine) Wrap(code constants.ICodeType, data any, message ...string) Responder {
-	return a.mergeBody(code, data, message...)
 }
 
 // 合并处理响应体

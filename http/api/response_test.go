@@ -111,7 +111,7 @@ func TestData(t *testing.T) {
 }
 
 func TestBundle(t *testing.T) {
-	t.Run("Bundle()", func(t *testing.T) {
+	t.Run("Bundle", func(t *testing.T) {
 		c, _ := createTestContextAndEngine()
 		t.Log(Response(c).Bundle(200, testerResponseData{}))
 	})
@@ -549,5 +549,47 @@ func TestIsTypedNil(t *testing.T) {
 		assert.Equal(t, true, isTypedNil(ptr))
 		ptr = unsafe.Pointer(&dto.Base{})
 		assert.Equal(t, false, isTypedNil(ptr))
+	})
+}
+
+func TestWithHeaders(t *testing.T) {
+	t.Run("WithHeaders-Nil", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+		assert.NotNil(t, Response(c).WithHeaders(nil))
+	})
+	t.Run("WithHeaders", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+		assert.NotNil(t, Response(c).WithHeaders(map[string]string{"x-sail-version": "1.0.0"}))
+	})
+}
+
+func TestWithCookies(t *testing.T) {
+	t.Run("WithCookies-Nil", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+		assert.NotNil(t, Response(c).WithCookies(nil))
+	})
+	t.Run("WithCookies", func(t *testing.T) {
+		c, _ := createTestContextAndEngine()
+		cookies := []CookieStd{
+			{
+				Name:     "name",
+				Value:    "go-sail",
+				MaxAge:   100,
+				Path:     "/",
+				Domain:   "go-sail.dev",
+				Secure:   true,
+				HttpOnly: true,
+			},
+			{
+				Name:     "version",
+				Value:    "1.0.0",
+				MaxAge:   100,
+				Path:     "/",
+				Domain:   "go-sail.dev",
+				Secure:   true,
+				HttpOnly: true,
+			},
+		}
+		assert.NotNil(t, Response(c).WithCookies(cookies))
 	})
 }
