@@ -67,6 +67,19 @@ func mustInitDB(conf Conf, dialect gorm.Dialector) *gorm.DB {
 		panic(err)
 	}
 
+	if conf.ConnectionPool.MaxOpenConnCount == 0 {
+		conf.ConnectionPool.MaxOpenConnCount = 100
+	}
+	if conf.ConnectionPool.MaxIdleConnCount == 0 {
+		conf.ConnectionPool.MaxIdleConnCount = 10
+	}
+	if conf.ConnectionPool.ConnMaxLifeTimeMinutes == 0 {
+		conf.ConnectionPool.ConnMaxLifeTimeMinutes = 30
+	}
+	if conf.ConnectionPool.ConnMaxIdleTimeMinutes == 0 {
+		conf.ConnectionPool.ConnMaxIdleTimeMinutes = 10
+	}
+
 	sqlDB.SetMaxOpenConns(conf.ConnectionPool.MaxOpenConnCount)
 	sqlDB.SetMaxIdleConns(conf.ConnectionPool.MaxIdleConnCount)
 	sqlDB.SetConnMaxLifetime(time.Minute * time.Duration(conf.ConnectionPool.ConnMaxLifeTimeMinutes))

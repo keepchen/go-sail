@@ -71,6 +71,12 @@ func sqlserverDsn(conf SqlserverConfItem) string {
 // 组装clickhouse的dsn
 // dsn := "tcp://localhost:9000?database=gorm&username=gorm&password=gorm&read_timeout=10&write_timeout=20"
 func clickhouseDsn(conf ClickhouseConfItem) string {
+	if conf.ReadTimeout == 0 {
+		conf.ReadTimeout = 20
+	}
+	if conf.WriteTimeout == 0 {
+		conf.WriteTimeout = 20
+	}
 	return fmt.Sprintf("tcp://%s:%d?database=%s&username=%s&password=%s&read_timeout=%d&write_timeout=%d",
 		conf.Host, conf.Port, conf.Database,
 		conf.Username, conf.Password,

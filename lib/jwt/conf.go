@@ -52,12 +52,12 @@ import (
 //
 // token_issuer = "authority"
 type Conf struct {
-	Enable            bool   `yaml:"enable" toml:"enable" json:"enable"`                   //是否启用
-	PublicKey         string `yaml:"public_key" toml:"public_key" json:"public_key"`       //公钥字符串或公钥文件地址(支持rsa、ecdsa、ed25519)
-	PrivateKey        string `yaml:"private_key" toml:"private_key" json:"private_key"`    //私钥字符串或私钥文件地址(支持rsa、ecdsa、ed25519)
-	Algorithm         string `yaml:"algorithm" toml:"algorithm" json:"algorithm"`          //加密算法: RS256 | RS512 | HS512 | EdDSA | ES256 | ES384 | ES512
-	HmacSecret        string `yaml:"hmac_secret" toml:"hmac_secret" json:"hmac_secret"`    //密钥
-	TokenIssuer       string `yaml:"token_issuer" toml:"token_issuer" json:"token_issuer"` //令牌颁发者
+	Enable            bool   `yaml:"enable" toml:"enable" json:"enable"`                                     //是否启用
+	PublicKey         string `yaml:"public_key" toml:"public_key" json:"public_key"`                         //公钥字符串或公钥文件地址(支持rsa、ecdsa、ed25519)
+	PrivateKey        string `yaml:"private_key" toml:"private_key" json:"private_key"`                      //私钥字符串或私钥文件地址(支持rsa、ecdsa、ed25519)
+	Algorithm         string `yaml:"algorithm" toml:"algorithm" json:"algorithm"`                            //加密算法: RS256 | RS512 | HS512 | EdDSA | ES256 | ES384 | ES512
+	HmacSecret        string `yaml:"hmac_secret" toml:"hmac_secret" json:"hmac_secret"`                      //密钥
+	TokenIssuer       string `yaml:"token_issuer" toml:"token_issuer" json:"token_issuer" default:"Go-Sail"` //令牌颁发者
 	rsaPrivateKey     *rsa.PrivateKey
 	rsaPublicKey      *rsa.PublicKey
 	ed25519PrivateKey crypto.PrivateKey

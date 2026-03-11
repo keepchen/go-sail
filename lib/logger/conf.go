@@ -173,7 +173,7 @@ type Conf struct {
 	Filename      string   `yaml:"filename" toml:"filename" json:"filename" default:"logs/running.log"`        //日志文件名称
 	MaxSize       int      `yaml:"max_size" toml:"max_size" json:"max_size" default:"100"`                     //日志大小限制，单位MB
 	MaxBackups    int      `yaml:"max_backups" toml:"max_backups" json:"max_backups" default:"10"`             //最大历史文件保留数量
-	Compress      bool     `yaml:"compress" toml:"compress" json:"compress" default:"true"`                    //是否压缩历史日志文件
+	Compress      bool     `yaml:"compress" toml:"compress" json:"compress"`                                   //是否压缩历史日志文件
 	Exporter      Exporter `yaml:"exporter" toml:"exporter" json:"exporter"`                                   //导出器
 }
 

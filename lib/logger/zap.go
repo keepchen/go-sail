@@ -140,6 +140,12 @@ func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 		if len(cfg.Filename) == 0 {
 			cfg.Filename = "logs/running.log"
 		}
+		if cfg.MaxSize == 0 {
+			cfg.MaxSize = 100
+		}
+		if cfg.MaxBackups == 0 {
+			cfg.MaxBackups = 10
+		}
 		if mn != gDefaultModeName {
 			filename = strings.Replace(cfg.Filename, ".log", fmt.Sprintf("_%s.log", mn), 1)
 		} else {

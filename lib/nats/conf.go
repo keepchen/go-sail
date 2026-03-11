@@ -29,8 +29,8 @@ package nats
 //
 // password = "changeMe"
 type Conf struct {
-	Enable    bool     `yaml:"enable" toml:"enable" json:"enable" default:"false"` //是否启用
-	Endpoints []string `yaml:"endpoints" toml:"endpoints" json:"endpoints"`        //服务实例列表
-	Username  string   `yaml:"username" toml:"username" json:"username"`           //用户名
-	Password  string   `yaml:"password" toml:"password" json:"password"`           //密码
+	Enable    bool     `yaml:"enable" toml:"enable" json:"enable"`          //是否启用
+	Endpoints []string `yaml:"endpoints" toml:"endpoints" json:"endpoints"` //服务实例列表
+	Username  string   `yaml:"username" toml:"username" json:"username"`    //用户名
+	Password  string   `yaml:"password" toml:"password" json:"password"`    //密码
 }

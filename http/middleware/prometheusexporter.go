@@ -77,10 +77,14 @@ func SetDiskPath(path string) {
 
 // SetSampleInterval 设置采样间隔(频率)
 func SetSampleInterval(interval string) {
+	if len(interval) != 0 {
+		sampleInterval = time.Minute
+		return
+	}
 	td, err := time.ParseDuration(interval)
 	//若小于1ms，则使用默认值1分钟
 	if err != nil || td.Milliseconds() == 0 {
-		return
+		td = time.Minute
 	}
 	sampleInterval = td
 }
