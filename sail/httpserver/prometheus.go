@@ -27,6 +27,9 @@ func RunPrometheusServerWhenEnable(conf config.PrometheusConf) {
 	if len(path) == 0 {
 		path = "/metrics"
 	}
+	if len(conf.Addr) == 0 {
+		conf.Addr = ":19100"
+	}
 
 	mux := http.NewServeMux()
 	mux.Handle(path, promhttp.Handler())

@@ -42,9 +42,10 @@ func NewZapLoggerForGorm(zapLogger *zap.Logger, conf Conf) ZapLoggerForGorm {
 		Colorful:                  conf.Logger.Colorful,
 	}
 
-	if conf.Logger.SlowThreshold != 0 {
-		zfg.SlowThreshold = time.Duration(conf.Logger.SlowThreshold) * time.Millisecond
+	if conf.Logger.SlowThreshold == 0 {
+		conf.Logger.SlowThreshold = 100
 	}
+	zfg.SlowThreshold = time.Duration(conf.Logger.SlowThreshold) * time.Millisecond
 
 	return zfg
 }
