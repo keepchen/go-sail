@@ -3,34 +3,43 @@ package constants
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPrintTimezone(t *testing.T) {
-	t.Log(DefaultTimeZone)
-	t.Log(TimeZoneUTCSub11)
-	t.Log(TimeZoneUTCSub10)
-	t.Log(TimeZoneUTCSub9)
-	t.Log(TimeZoneUTCSub8)
-	t.Log(TimeZoneUTCSub7)
-	t.Log(TimeZoneUTCSub6)
-	t.Log(TimeZoneUTCSub5)
-	t.Log(TimeZoneUTCSub4)
-	t.Log(TimeZoneUTCSub3)
-	t.Log(TimeZoneUTCSub2)
-	t.Log(TimeZoneUTCSub1)
-	t.Log(TimeZoneUTC0)
-	t.Log(TimeZoneUTCPlus1)
-	t.Log(TimeZoneUTCPlus2)
-	t.Log(TimeZoneUTCPlus3)
-	t.Log(TimeZoneUTCPlus4)
-	t.Log(TimeZoneUTCPlus5)
-	t.Log(TimeZoneUTCPlus6)
-	t.Log(TimeZoneUTCPlus7)
-	t.Log(TimeZoneUTCPlus8)
-	t.Log(TimeZoneUTCPlus9)
-	t.Log(TimeZoneUTCPlus10)
-	t.Log(TimeZoneUTCPlus11)
-	t.Log(TimeZoneUTCPlus12)
+	zones := []string{
+		DefaultTimeZone,
+		TimeZoneUTCSub11,
+		TimeZoneUTCSub10,
+		TimeZoneUTCSub9,
+		TimeZoneUTCSub8,
+		TimeZoneUTCSub7,
+		TimeZoneUTCSub6,
+		TimeZoneUTCSub5,
+		TimeZoneUTCSub4,
+		TimeZoneUTCSub3,
+		TimeZoneUTCSub2,
+		TimeZoneUTCSub1,
+		TimeZoneUTC0,
+		TimeZoneUTCPlus1,
+		TimeZoneUTCPlus2,
+		TimeZoneUTCPlus3,
+		TimeZoneUTCPlus4,
+		TimeZoneUTCPlus5,
+		TimeZoneUTCPlus6,
+		TimeZoneUTCPlus7,
+		TimeZoneUTCPlus8,
+		TimeZoneUTCPlus9,
+		TimeZoneUTCPlus10,
+		TimeZoneUTCPlus11,
+		TimeZoneUTCPlus12,
+	}
+	for _, zone := range zones {
+		loc, err := time.LoadLocation(zone)
+		assert.NoError(t, err)
+		assert.NotNil(t, loc)
+	}
 }
 
 func TestPrintLayout(t *testing.T) {
