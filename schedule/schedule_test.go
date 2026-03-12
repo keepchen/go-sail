@@ -108,7 +108,7 @@ func TestSetRedisClientOnce(t *testing.T) {
 		assert.NoError(t, err)
 
 		SetRedisClientOnce(redisClient)
-		//multiple set
+		//multiple set will be ignored
 		SetRedisClientOnce(redisClient)
 		SetRedisClientOnce(redisClient)
 	})

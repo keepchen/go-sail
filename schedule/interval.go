@@ -23,11 +23,17 @@ func (j *taskJob) run() {
 	go func() {
 		ticker := time.NewTicker(j.interval)
 		defer ticker.Stop()
+
+		j.mux.Lock()
 		j.wrappedTaskFunc = func() {
+			j.runningMux.Lock()
 			j.running = true
+			j.runningMux.Unlock()
 
 			defer func() {
+				j.runningMux.Lock()
 				j.running = false
+				j.runningMux.Unlock()
 			}()
 
 			if !j.withoutOverlapping {
@@ -43,6 +49,8 @@ func (j *taskJob) run() {
 				j.task()
 			}
 		}
+		j.mux.Unlock()
+
 	LISTEN:
 		for {
 			select {

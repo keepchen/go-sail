@@ -1,8 +1,9 @@
 package httpserver
 
 import (
-	"github.com/keepchen/go-sail/v3/sail/config"
 	"testing"
+
+	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
 func TestRunPrometheusServerWhenEnable(t *testing.T) {

@@ -178,7 +178,7 @@ type Conf struct {
 }
 
 type Exporter struct {
-	Provider string        `yaml:"provider" toml:"provider" json:"provider" default:""` //导出器，目前支持redis、redis-cluster、nats和kafka，为空表示不启用
+	Provider string        `yaml:"provider" toml:"provider" json:"provider"` //导出器，目前支持redis、redis-cluster、nats和kafka，为空表示不启用
 	Redis    ProviderRedis `yaml:"redis" toml:"redis" json:"redis"`
 	Nats     ProviderNats  `yaml:"nats" toml:"nats" json:"nats"`
 	Kafka    ProviderKafka `yaml:"kafka" toml:"kafka" json:"kafka"`

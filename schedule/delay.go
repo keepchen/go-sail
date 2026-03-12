@@ -15,11 +15,16 @@ func (j *taskJob) RunAfter(delay time.Duration) (cancel CancelFunc) {
 	timer := time.After(delay)
 	cancel = j.cancelFunc
 
+	j.mux.Lock()
 	j.wrappedTaskFunc = func() {
+		j.runningMux.Lock()
 		j.running = true
+		j.runningMux.Unlock()
 
 		defer func() {
+			j.runningMux.Lock()
 			j.running = false
+			j.runningMux.Unlock()
 		}()
 
 		if !j.withoutOverlapping {
@@ -35,6 +40,7 @@ func (j *taskJob) RunAfter(delay time.Duration) (cancel CancelFunc) {
 			j.task()
 		}
 	}
+	j.mux.Unlock()
 
 	go func() {
 	LOOP:
