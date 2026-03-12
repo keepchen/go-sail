@@ -54,6 +54,45 @@ var (
 			},
 		},
 	}
+	dbConfDefaultValue = Conf{
+		Enable:      true,
+		DriverName:  "mysql",
+		AutoMigrate: true,
+		Logger: Logger{
+			Level: "",
+		},
+		ConnectionPool: ConnectionPoolConf{
+			MaxOpenConnCount:       0,
+			MaxIdleConnCount:       0,
+			ConnMaxLifeTimeMinutes: 0,
+			ConnMaxIdleTimeMinutes: 0,
+		},
+		NowFunc: func() time.Time {
+			return time.Now().In(time.UTC)
+		},
+		Mysql: MysqlConf{
+			Read: MysqlConfItem{
+				Host:      "127.0.0.1",
+				Port:      3306,
+				Username:  "root",
+				Password:  "root",
+				Database:  "go_sail",
+				Charset:   "utf8mb4",
+				ParseTime: true,
+				Loc:       "",
+			},
+			Write: MysqlConfItem{
+				Host:      "127.0.0.1",
+				Port:      3306,
+				Username:  "root",
+				Password:  "root",
+				Database:  "go_sail",
+				Charset:   "utf8mb4",
+				ParseTime: true,
+				Loc:       "",
+			},
+		},
+	}
 )
 
 func TestNewFreshDB(t *testing.T) {
@@ -73,12 +112,46 @@ func TestNewFreshDB(t *testing.T) {
 		w, _ := dbw.DB()
 		_ = w.Close()
 	})
+
+	t.Run("NewFreshDB-DefaultValue", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, err1, dbw, err2 := NewFreshDB(dbConfDefaultValue)
+		if dbr == nil || dbw == nil {
+			//t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		assert.NoError(t, err1)
+		assert.NoError(t, err2)
+		assert.NotNil(t, dbr)
+		assert.NotNil(t, dbw)
+		r, _ := dbr.DB()
+		_ = r.Close()
+		w, _ := dbw.DB()
+		_ = w.Close()
+	})
 }
 
 func TestNew(t *testing.T) {
 	t.Run("New", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
 		dbr, err1, dbw, err2 := New(dbConf)
+		if dbr == nil || dbw == nil {
+			//t.Log("database instance is nil, testing not emit.")
+			return
+		}
+		assert.NoError(t, err1)
+		assert.NoError(t, err2)
+		assert.NotNil(t, dbr)
+		assert.NotNil(t, dbw)
+		r, _ := dbr.DB()
+		_ = r.Close()
+		w, _ := dbw.DB()
+		_ = w.Close()
+	})
+
+	t.Run("New-DefaultValue", func(t *testing.T) {
+		logger.Init(loggerConf, "go-sail")
+		dbr, err1, dbw, err2 := New(dbConfDefaultValue)
 		if dbr == nil || dbw == nil {
 			//t.Log("database instance is nil, testing not emit.")
 			return

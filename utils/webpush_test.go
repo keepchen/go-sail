@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/SherClockHolmes/webpush-go"
 	"testing"
+
+	"github.com/SherClockHolmes/webpush-go"
 )
 
 func TestGenerateVAPIDKeys(t *testing.T) {

@@ -1,12 +1,13 @@
 package httpserver
 
 import (
-	"github.com/keepchen/go-sail/v3/http/api"
-	"github.com/keepchen/go-sail/v3/lib/logger"
 	"os"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/keepchen/go-sail/v3/http/api"
+	"github.com/keepchen/go-sail/v3/lib/logger"
 
 	"github.com/keepchen/go-sail/v3/sail/config"
 )

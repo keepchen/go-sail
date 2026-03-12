@@ -241,7 +241,7 @@ import (
 // file = "sqlite.db"
 type Conf struct {
 	Enable                                   bool               `yaml:"enable" toml:"enable" json:"enable"`                                                                                                                      //是否启用
-	DriverName                               string             `yaml:"driver_name" toml:"driver_name" json:"driver_name" default:"mysql"`                                                                                       //数据库类型
+	DriverName                               string             `yaml:"driver_name" toml:"driver_name" json:"driver_name"`                                                                                                       //数据库类型
 	AutoMigrate                              bool               `yaml:"auto_migrate" toml:"auto_migrate" json:"auto_migrate"`                                                                                                    //是否自动同步表结构
 	DisableForeignKeyConstraintWhenMigrating bool               `yaml:"disable_foreign_key_constraint_when_migrating" toml:"disable_foreign_key_constraint_when_migrating" json:"disable_foreign_key_constraint_when_migrating"` //同步表结构时禁止外键约束
 	DisableNestedTransaction                 bool               `yaml:"disable_nested_transaction" toml:"disable_nested_transaction" json:"disable_nested_transaction"`                                                          //禁止嵌套事务

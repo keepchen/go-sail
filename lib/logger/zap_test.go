@@ -28,6 +28,13 @@ func TestInit(t *testing.T) {
 		Init(conf, "go-sail")
 	})
 
+	t.Run("Init-DefaultValue", func(t *testing.T) {
+		conf := Conf{
+			Filename: "",
+		}
+		Init(conf, "go-sail")
+	})
+
 	t.Run("Init-WithSyncers", func(t *testing.T) {
 		conf := Conf{
 			Filename: "../../examples/logs/logger_tester.log",

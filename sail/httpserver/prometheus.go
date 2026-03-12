@@ -8,9 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/keepchen/go-sail/v3/lib/logger"
 	"go.uber.org/zap"
 
+	"github.com/keepchen/go-sail/v3/lib/logger"
 	"github.com/keepchen/go-sail/v3/sail/config"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"

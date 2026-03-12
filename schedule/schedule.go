@@ -126,9 +126,12 @@ type taskJob struct {
 	lockerKey          string
 	lockedByMe         bool
 	running            bool
+	runningMux         sync.RWMutex
 	withoutOverlapping bool
 	cancelFunc         CancelFunc
 	cancelTaskChan     chan struct{}
+	cancelOnce         sync.Once
+	mux                sync.RWMutex
 }
 
 var _ Scheduler = &taskJob{}
@@ -167,7 +170,7 @@ var (
 // SetRedisClientOnce 设置redis连接客户端
 func SetRedisClientOnce(client redisLib.UniversalClient) {
 	setRedisOnce.Do(func() {
-		redisClients = append(redisClients, client)
+		redisClients = []redisLib.UniversalClient{client}
 	})
 }
 
@@ -199,17 +202,20 @@ func Job(name string, task func()) Scheduler {
 		lockerKey:      generateJobNameKey(name),
 		task:           task,
 		cancelTaskChan: make(chan struct{}),
+		cancelOnce:     sync.Once{},
 	}
 
 	job.cancelFunc = func() {
-		go func() {
-			job.cancelTaskChan <- struct{}{}
-			close(job.cancelTaskChan)
-			taskSchedules.mux.Lock()
-			delete(taskSchedules.pool, job.lockerKey)
-			taskSchedules.mux.Unlock()
-			fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", job.name)
-		}()
+		job.cancelOnce.Do(func() {
+			go func() {
+				job.cancelTaskChan <- struct{}{}
+				close(job.cancelTaskChan)
+				taskSchedules.mux.Lock()
+				delete(taskSchedules.pool, job.lockerKey)
+				taskSchedules.mux.Unlock()
+				fmt.Printf("[GO-SAIL] <Schedule> cancel job {%s} successfully\n", job.name)
+			}()
+		})
 	}
 
 	taskSchedules.mux.Lock()
@@ -247,7 +253,9 @@ func JobIsRunning(jobName string) bool {
 	)
 	taskSchedules.mux.RLock()
 	if job, ok := taskSchedules.pool[name]; ok {
+		job.runningMux.RLock()
 		running = job.running
+		job.runningMux.RUnlock()
 	}
 	taskSchedules.mux.RUnlock()
 
@@ -287,8 +295,11 @@ func Call(jobName string, mandatory bool) {
 		for {
 			select {
 			case <-ticker.C:
-				if job.wrappedTaskFunc != nil {
-					job.wrappedTaskFunc()
+				job.mux.RLock()
+				wrappedTaskFunc := job.wrappedTaskFunc
+				job.mux.RUnlock()
+				if wrappedTaskFunc != nil {
+					wrappedTaskFunc()
 					break RetryLoop
 				}
 				retryTimes++
@@ -335,8 +346,11 @@ func MustCall(jobName string, mandatory bool) {
 		for {
 			select {
 			case <-ticker.C:
-				if job.wrappedTaskFunc != nil {
-					job.wrappedTaskFunc()
+				job.mux.RLock()
+				wrappedTaskFunc := job.wrappedTaskFunc
+				job.mux.RUnlock()
+				if wrappedTaskFunc != nil {
+					wrappedTaskFunc()
 					break RetryLoop
 				}
 				retryTimes++
