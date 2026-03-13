@@ -32,7 +32,7 @@ func TestGetCodeMsg(t *testing.T) {
 		t.Log(GetCodeMsg(LanguageEnglish, ErrNone))
 	})
 	t.Run("GetCodeMsg-None-Language", func(t *testing.T) {
-		t.Log(GetCodeMsg(LanguageCode("unknown"), ErrNone))
+		t.Log(GetCodeMsg("unknown", ErrNone))
 	})
 	t.Run("GetCodeMsg-None-Code", func(t *testing.T) {
 		t.Log(GetCodeMsg(LanguageEnglish, CodeType(1000000000000000)))
