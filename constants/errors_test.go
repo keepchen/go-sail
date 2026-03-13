@@ -14,7 +14,7 @@ func TestString(t *testing.T) {
 	assert.Equal(t, "成功", ErrNone.String(LanguageChinesePRC.String()))
 
 	t.Log(ErrNone.String("unknown"))
-	assert.Contains(t, ErrNone.String("unknown"), "not defined")
+	assert.Contains(t, ErrNone.String("unknown"), ErrNone.String(LanguageEnglish.String()))
 
 	var notRegisteredCode = CodeType(-1)
 	t.Log(notRegisteredCode.String("unknown"))

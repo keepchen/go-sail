@@ -46,6 +46,12 @@ func (ct CodeType) String(language ...string) string {
 	if val, ok := GetCodeMsg(lang, ct); ok {
 		return val
 	}
+	//如果传入的语言不是英文，且没有被找到，则回退到使用英文
+	if lang != LanguageEnglish {
+		if val, ok := GetCodeMsg(LanguageEnglish, ct); ok {
+			return val
+		}
+	}
 
 	return fmt.Sprintf("[Warn] ErrorCode {%d} under Language {%s} not defined!", ct, lang)
 }
