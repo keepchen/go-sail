@@ -12,7 +12,7 @@
 
 [![LATEST_VERSION](https://img.shields.io/github/v/tag/keepchen/go-sail?color=ff0000&amp;&amp;logo=go&amp;label=LATEST_VERSION)](https://github.com/keepchen/go-sail/tags)  
 
-English | [简体中文](./README.md)
+English | [简体中文](./README.md) | [日本語](./README_JA.md)
 
 ## Whats the go-sail?
 

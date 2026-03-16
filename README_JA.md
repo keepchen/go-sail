@@ -12,15 +12,15 @@
 
 [![LATEST_VERSION](https://img.shields.io/github/v/tag/keepchen/go-sail?color=ff0000&amp;&amp;logo=go&amp;label=LATEST_VERSION)](https://github.com/keepchen/go-sail/tags)  
 
-简体中文 | [English](./README_EN.md) | [日本語](./README_JA.md)
+日本語 | [简体中文](./README.md) | [English](./README_EN.md)
 
-## go-sail是什么？
+## go-sailとは？
 
-**go-sail**是一个轻量的渐进式Web框架，使用Go语言实现。它并**不是重复造轮子的产物**，而是站在巨人的肩膀上，整合现有的优秀组件，旨在帮助使用者以最简单的方式构建稳定可靠的服务。
-正如它的名字一般，你可以把它视作自己在Golang生态的一个开始。go-sail将助力你从轻出发，扬帆起航。
+**go-sail**はGo言語で実装された軽量プログレッシブWebフレームワークです。**新たに車輪の再発明をしたのではなく**、巨人の肩の上に立ち、既存の優れたコンポーネントを統合し、最もシンプルな方法でユーザーが安定した信頼性の高いサービスを構築するのを支援します。
+その名前が示す通り、Go 言語エコシステムの冒険の始まりとしてお使いください。go-sailは、軽やかに新しい航海へとあなたを導きます。
 
-## 如何使用
-> 推荐go version >= 1.23
+## 使い方
+> goバージョン >= 1.23
 
 > go get -u github.com/keepchen/go-sail/v3
 
@@ -45,17 +45,18 @@ func main() {
     sail.WakeupHttp("go-sail", conf).Hook(registerRoutes, nil, nil).Launch()
 }
 ```
-当你看到终端如下图所示内容就表示服务启动成功了：
+このように起動した後のコンソール画面例：
 
 <img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />
 
-## 示例
-### 配置读取
+
+## 使用例
+### 設定
 ```go
 parseFn := func(content []byte, viaWatch bool){
     fmt.Println("config content: ", string(content))
     if viaWatch {
-        //reload config...
+        //設定ファイルを再読込...
     }
 }
 etcdConf := etcd.Conf{
@@ -67,16 +68,16 @@ key := "go-sail.config.yaml"
 
 sail.Config(parseFn).ViaEtcd(etcdConf, key).Parse(parseFn)
 ```
-### 链路日志追踪
+### ログトレース
 ```go
 func UserRegisterSvc(c *gin.Context) {
   ...
-  sail.LogTrace(c).Warn("log something...")
+  sail.LogTrace(c).Warn("ログ出力例...")
   ...
 }
 ```
-### JWT认证
-- 颁发令牌
+### JWT認証
+- トークン発行
 ```go
 func UserLoginSvc(c *gin.Context) {
   ...
@@ -91,7 +92,7 @@ func UserLoginSvc(c *gin.Context) {
   ...
 }
 ```
-- 认证
+- 認証
 ```go
 func UserInfoSvc(c *gin.Context) {
   ...
@@ -99,24 +100,24 @@ func UserInfoSvc(c *gin.Context) {
   ...
 }
 ```
-### 组件
-#### 响应器
+### コンポーネント
+#### レスポンダー
 ```go
 func UserInfoSvc(c *gin.Context) {
   sail.Response(c).Wrap(constants.ErrNone, resp).Send()
 }
 ```
 
-#### 数据库
-- 读写分离
+#### データベース
+- 読み取り / 書き込み
 ```go
 func UserInfoSvc(c *gin.Context) {
   uid := "user-1000"
   var user models.User
-  //READ: query user info
+  //読み取り: ユーザー情報取得
   sail.GetDBR().Where("uid = ?", uid).First(&user)
   ...
-  //WRITE: update user info
+  //書き込み: ユーザー情報更新
   sail.GetDBW().Model(&models.User{}).
       Where("uid = ?", uid).
       Updates(map[string]interface{}{
@@ -124,7 +125,7 @@ func UserInfoSvc(c *gin.Context) {
       })
 }
 ```
-- 事务
+- トランザクション
 ```go
 func UserInfoSvc(c *gin.Context) {
   uid := "user-1000"
@@ -153,29 +154,29 @@ func UserInfoSvc(c *gin.Context) {
   ...
 }
 ```
-### 计划任务
-- 周期性的
+### タスクスケジューラ
+- インターバル実行
 ```go
 func TodoSomething() {
   fn := func() { ... }
   sail.Schedule("todoSomething", fn).Daily()
 }
 ```
-- Linux Crontab风格的
+- Linux Crontab形式
 ```go
 func TodoSomething() {
   fn := func() { ... }
   sail.Schedule("todoSomething", fn).RunAt("*/5 * * * *")
 }
 ```
-- 竞态检测
+- レース検出
 ```go
 func TodoSomething() {
   fn := func() { ... }
   sail.Schedule("todoSomething", fn).Withoutoverlapping().RunAt("*/5 * * * *")
 }
 ```
-### 分布式锁
+### 分散ロック
 ```go
 func UpdateUserBalance() {
   if !sail.RedisLocker().TryLock(key) {
@@ -186,81 +187,81 @@ func UpdateUserBalance() {
 }
 ```
 
-## 文档
+## ドキュメント
 [https://go-sail.dev](https://go-sail.dev)  
 
-## 在线示例  
-[https://nav.go-sail.dev](https://nav.go-sail.dev)  
+## ライブデモ  
+[https://nav.go-sail.dev](https://nav.go-sail.dev)
 
-## 功能特性
-- [x] HTTP响应器
-  - 统一响应字段
-  - 管理HTTP状态码
-  - 管理业务码
-- [x] 组件库
-  - Database
-  - Email
-  - Jwt
-  - Kafka
-  - Logger
-  - Nacos
-  - Etcd
-  - Nats
-  - Redis
-  - Valkey
-- [x] 服务注册与发现
-  - Nacos
-  - Etcd
-- [x] 工具类
-  - 加解密
-  - 文件
-  - ip
-  - 字符串
-  - 随机数
-  - 日期时间
-  - ...
-- [x] 日志收集与导出
-  - 本地文件
-  - 导出器
-    - Redis
+## 特徴
+- [x] HTTPレスポンダー
+    - 統一されたレスポンスフィールド
+    - HTTPステータスコード管理
+    - ビジネスコード管理
+- [x] 様々なコンポーネント
+    - データベース
+    - メール
+    - JWT
     - Kafka
+    - ロガー
+    - Nacos
+    - Etcd
     - Nats
-- [x] 计划任务
-  - 可取消的
-  - 一次性的
-  - 周期性的
-  - Linux Crontab风格的
-  - 竞态检测
-- [x] 遥测与可观测性
-  - 调用链追踪
+    - Redis
+    - Valkey
+- [x] サービス登録・発見
+    - Nacos
+    - Etcd
+- [x] ツールキット
+    - 暗号化・復号化
+    - ファイル操作
+    - IP
+    - 文字列
+    - 乱数
+    - 日時
+    - ...
+- [x] ログ収集・エクスポート
+    - ローカルファイル
+    - エクスポーター
+      - Redis
+      - Kafka
+      - Nats
+- [x] スケジュールタスク
+    - キャンセル可能
+    - 単発実行
+    - 定期実行
+    - Linux Crontab形式
+    - レース検出
+- [x] テレメトリ・オブザーバビリティ
+  - 呼び出しチェーントレース
   - Prometheus
   - Pprof
-  - 日志导出器
-  - 性能监测
+  - ログエクスポーター
+  - パフォーマンス監視
     - Prometheus
     - Pprof
-- [x] 接口错误码
-  - 动态注入
-  - 国际化
-- [x] 基于Redis的分布式锁
-  - 阻塞式
-  - 非阻塞式
-- [x] 接口文档
+- [x] APIエラーコード
+  - 動的挿入
+  - 多言語対応
+- [x] Redisベース分散ロック
+  - ブロッキング
+  - 非ブロッキング
+- [x] APIドキュメント生成
   - Redocly
   - Swagger
-- [x] 配置管理
-  - File
+- [x] 設定
+  - ファイル
   - Etcd
   - Nacos
 
-#### 其他插件
+#### その他プラグイン
 [README.md](plugins/README.md)
 
-## 基准测试
+## ベンチマーク
 ```shell
 ulimit -n 65535 && sh run_benchmark.sh
 ```  
-测试结果（真实的HTTP请求）  
+テスト結果 (実際のHTTPリクエスト)  
 ```text
 goos: darwin
 goarch: amd64
@@ -271,43 +272,42 @@ BenchmarkGinParallel-12       96548    11722 ns/op    7187 B/op    82 allocs/op
 PASS
 ok    github.com/keepchen/go-sail/v3  3.663s
 ```  
-![benchmark-result.png](static/benchmark-result.png)  
+![benchmark-result.png](static/benchmark-result.png)
 
+## 感謝
+本プロジェクトを体験、使用中に貴重な提案やコメント、さらに色々なご支援をしてくれた皆様に、心より感謝いたします！
+- 設定管理のモジュール最適化提案 [@fujilin](https://github.com/fujilin)
+- レスポンダー構文補強最適化提案 [@lichuanzhang](https://github.com/lichuanzhang)
+- ロゴ美化 [@ShuaiRen34](https://twitter.com/ShuaiRen34)
 
-## 大感谢
-感谢在体验、使用过程中提出宝贵建议和意见以及提供过其他各种帮助的各位小伙伴！
-- 配置模块化优化建议 [@fujilin](https://github.com/fujilin)
-- 响应器语法糖增强优化建议 [@lichuanzhang](https://github.com/lichuanzhang)
-- Logo美化 [@ShuaiRen34](https://twitter.com/ShuaiRen34)
+## その他
+- PR歓迎: [pull request](https://github.com/keepchen/go-sail/compare)
+- Issue歓迎: [issue](https://github.com/keepchen/go-sail/issues/new/choose)
+- 本プロジェクトが気に入ったら、ぜひStarをお願いします :)
 
-## 其他
-- 欢迎大家提PR: [pull request](https://github.com/keepchen/go-sail/compare)
-- 欢迎大家提出自己的想法: [issue](https://github.com/keepchen/go-sail/issues/new/choose)
-- 感谢你的star如果你喜欢这个项目的话 :)
-
-## 使用案例  
+## 導入事例
 <table style="text-align: center">
     <thead>
         <tr>
-            <td style="border: 1px solid black; padding: 8px;">图标</td>
-            <td style="border: 1px solid black; padding: 8px;">地址</td>
-            <td style="border: 1px solid black; padding: 8px;">类别</td>
-            <td style="border: 1px solid black; padding: 8px;">行业</td>
+            <td style="border: 1px solid black; padding: 8px;">ロゴ</td>
+            <td style="border: 1px solid black; padding: 8px;">URL</td>
+            <td style="border: 1px solid black; padding: 8px;">カテゴリ</td>
+            <td style="border: 1px solid black; padding: 8px;">業界</td>
         </tr>
     </thead>
     <tbody>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
-              <img src="static/usecases/fsx120-logo.jpg" alt="fsx120.cn" width="200" title="某科室患者档案系统"/>
+              <img src="static/usecases/fsx120-logo.jpg" alt="fsx120.cn" width="200" title="部署の患者記録システム"/>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 <a href="https://fsx120.cn?ref=go-sail" target="_blank">https://fsx120.cn</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                网站
+                Webサイト
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                医疗
+                医療
             </td>
         </tr>
         <tr style="height:200px">
@@ -318,7 +318,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
                 <a href="https://sendflare.com?ref=go-sail" target="_blank">https://sendflare.com</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                网站
+                Webサイト
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 SaaS
@@ -332,7 +332,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
                 <a href="https://stardots.io?ref=go-sail" target="_blank">https://stardots.io</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                网站
+                Webサイト
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 SaaS
@@ -346,7 +346,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               <a href="https://t.me/PiggyPiggyofficialbot" target="_blank">https://t.me/PiggyPiggyofficialbot</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                Telegram小程序
+                Telegramミニプログラム
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Web3 GameFi
@@ -354,16 +354,16 @@ ok    github.com/keepchen/go-sail/v3  3.663s
         </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
-              <img src="static/usecases/miniprogram-hpp.png" alt="生活好评助手-小程序" width="200" />
+              <img src="static/usecases/miniprogram-hpp.png" alt="生活好評助手-小程序" width="200" />
             </td>
             <td style="border: 1px solid black; padding: 8px;">
               -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                微信小程序
+                WeChatミニプログラム
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                生活服务
+                生活サービス
             </td>
         </tr>
         <tr style="height:200px">
@@ -374,7 +374,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               <a href="https://fantagoal.io" target="_blank">https://fantagoal.io</a>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                网站
+                Webサイト
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Web3 GameFi
@@ -388,7 +388,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                网站
+                Webサイト
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Web3 GameFi
@@ -402,7 +402,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-                网站
+                Webサイト
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Web3 GameFi
@@ -411,10 +411,10 @@ ok    github.com/keepchen/go-sail/v3  3.663s
     </tbody>
 </table>
 
-## 赞助
+## スポンサー
 [![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com?ref=go-sail "Powered by DartNode - Free VPS for Open Source")  
 [![TempMail100.com](static/sponsors/tempmail100/tempmail100-logo.webp)](https://tempmail100.com?ref=go-sail "Secure and Anonymous Temp Mail Service")
 [![StarDots.io](static/sponsors/stardots/stardots-logo-banner.png)](https://stardots.io?ref=go-sail "Your All-in-One Image Hosting and Transformation Powerhouse")
 
-## Star历史  
+## Star History  
 [![Star History Chart](https://api.star-history.com/svg?repos=keepchen/go-sail&type=date&legend=top-left)](https://www.star-history.com/#keepchen/go-sail&type=date&legend=top-left)  
