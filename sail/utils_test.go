@@ -91,4 +91,10 @@ func TestUtilsFunc(t *testing.T) {
 	t.Run("UtilsFunc-WebPush", func(t *testing.T) {
 		t.Log(Utils().WebPush())
 	})
+	t.Run("UtilsFunc-Bcrypt", func(t *testing.T) {
+		t.Log(Utils().Bcrypt())
+	})
+	t.Run("UtilsFunc-Argon2", func(t *testing.T) {
+		t.Log(Utils().Argon2())
+	})
 }

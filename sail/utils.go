@@ -29,6 +29,8 @@ type IUtils interface {
 	Validator() utils.IValidator
 	Version() utils.IVersion
 	WebPush() utils.IWebPush
+	Bcrypt() utils.IBCrypt
+	Argon2(argon2Config ...utils.Argon2Config) utils.IArgon2
 }
 
 type utilsImpl struct{}
@@ -126,4 +128,12 @@ func (u *utilsImpl) Version() utils.IVersion {
 
 func (u *utilsImpl) WebPush() utils.IWebPush {
 	return utils.WebPush()
+}
+
+func (u *utilsImpl) Bcrypt() utils.IBCrypt {
+	return utils.Bcrypt()
+}
+
+func (u *utilsImpl) Argon2(argon2Config ...utils.Argon2Config) utils.IArgon2 {
+	return utils.Argon2(argon2Config...)
 }

@@ -40,3 +40,22 @@ func TestAesImplDecode(t *testing.T) {
 		assert.NotEqual(t, decodedString, rawString)
 	})
 }
+
+func TestAesGCMEncrypt(t *testing.T) {
+	t.Run("GCMEncrypt", func(t *testing.T) {
+		result, err := Aes().GCMEncrypt(rawString, KeyForTest)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, result)
+	})
+}
+
+func TestAesGCMDecrypt(t *testing.T) {
+	t.Run("GCMDecrypt", func(t *testing.T) {
+		result, err := Aes().GCMEncrypt(rawString, KeyForTest)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, result)
+		r2, err := Aes().GCMDecrypt(result, KeyForTest)
+		assert.NoError(t, err)
+		assert.Equal(t, r2, rawString)
+	})
+}
