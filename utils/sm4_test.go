@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSM4ImplECBEncrypt(t *testing.T) {
+func TestSM4ImplEncrypt(t *testing.T) {
 	testCases := []struct {
 		Key           string
 		Raw           string
@@ -49,9 +49,26 @@ func TestSM4ImplECBEncrypt(t *testing.T) {
 			//assert.Equal(t, v.Result, result)
 		}
 	})
+
+	t.Run("GCMEncrypt", func(t *testing.T) {
+		for _, v := range testCases {
+			key := v.Key
+			if !v.MustReturnErr {
+				key = v.Key[:16]
+			}
+			result, err := SM4().GCMEncrypt(key, v.Raw)
+			if v.MustReturnErr {
+				assert.Error(t, err)
+				assert.Empty(t, result)
+			} else {
+				assert.NoError(t, err)
+				assert.NotEmpty(t, result)
+			}
+		}
+	})
 }
 
-func TestSM4ImplECBDecrypt(t *testing.T) {
+func TestSM4ImplDecrypt(t *testing.T) {
 	testCases := []struct {
 		Key           string
 		Raw           string
@@ -92,6 +109,28 @@ func TestSM4ImplECBDecrypt(t *testing.T) {
 			_, err := SM4().ECBDecrypt(v.Key+"?", v.Raw)
 			assert.Error(t, err)
 			//assert.NotEqual(t, v.Result, result)
+		}
+	})
+
+	t.Run("GCMDecrypt", func(t *testing.T) {
+		for _, v := range testCases {
+			key := v.Key
+			if !v.MustReturnErr {
+				key = v.Key[:16]
+			}
+			result, err1 := SM4().GCMEncrypt(key, v.Raw)
+			r2, err2 := SM4().GCMDecrypt(key, result)
+			if v.MustReturnErr {
+				assert.Error(t, err1)
+				assert.Empty(t, result)
+				assert.Error(t, err2)
+				assert.Empty(t, r2)
+			} else {
+				assert.NoError(t, err1)
+				assert.NotEmpty(t, result)
+				assert.NoError(t, err2)
+				assert.NotEmpty(t, r2)
+			}
 		}
 	})
 }
