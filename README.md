@@ -152,7 +152,39 @@ func UserInfoSvc(c *gin.Context) {
   sail.GetRedis().Set(ctx, "go-sail:userInfo", "user-1000", time.Hour*24).Result()
   ...
 }
+```  
+#### 密码  
+- RSA  
+```go
+sail.Password().RSAEncrypt(plaintext, publicKey)
+
+sail.Password().RSADecrypt(encryptedStr, privateKey)
+```  
+- Bcrypt  
+```go
+sail.Password().BcryptHashMake(plaintext)
+
+sail.Password().BcryptHashCheck(plaintext, hash)
+```  
+- Argon2
+```go
+sail.Password().Argon2HashMake(plaintext)
+
+sail.Password().Argon2HashCheck(plaintext, hash)
+```  
+- Aes  
+```go
+sail.Password().AesGCMEncrypt(plaintext, key)
+
+sail.Password().AesGCMDecrypt(ciphertext, key)
+``` 
+- SM4
+```go
+sail.Password().SM4GCMEncrypt(plaintext, key)
+
+sail.Password().SM4GCMDecrypt(ciphertext, key)
 ```
+
 ### 计划任务
 - 周期性的
 ```go
