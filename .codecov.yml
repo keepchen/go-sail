@@ -4,6 +4,9 @@ coverage:
       default:
         # 忽略指定目录/文件，不参与覆盖率计算和状态检查
         ignore:
-          - "examples/**" # 忽略示例目录
-          - "plugins/**"  # 忽略插件目录
-          - "static/**"   # 忽略静态资源目录
+          - "examples/**"      # 忽略示例目录
+          - "plugins/**"       # 忽略插件目录
+          - "static/**"        # 忽略静态资源目录
+          - "bench_results/**" # 忽略benchmark目录
+          - "docker/**"        # 忽略镜像目录
+          - "scripts/**"       # 忽略脚本目录
