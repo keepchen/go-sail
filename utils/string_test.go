@@ -2,6 +2,7 @@ package utils
 
 import (
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -259,4 +260,91 @@ func TestStringImplTruncate(t *testing.T) {
 			_ = s
 		}
 	}
+}
+
+func TestStrToBytes(t *testing.T) {
+	t.Run("TestStrToBytes", func(t *testing.T) {
+		t.Log(String().StrToBytes("abc"))
+	})
+}
+
+func TestBytesToStr(t *testing.T) {
+	t.Run("TestBytesToStr", func(t *testing.T) {
+		t.Log(String().BytesToStr([]byte("abc")))
+	})
+}
+
+func TestRandomIdentity(t *testing.T) {
+	t.Run("TestRandomIdentity", func(t *testing.T) {
+		wg := &sync.WaitGroup{}
+		for i := 0; i < 10; i++ {
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				for j := 1; j <= 100; j++ {
+					id, err := String().RandomIdentity(j)
+					assert.NoError(t, err)
+					assert.NotEmpty(t, id)
+				}
+				wg.Done()
+			}(wg)
+		}
+		wg.Wait()
+	})
+}
+
+func TestMaskString(t *testing.T) {
+	t.Run("TestMaskString", func(t *testing.T) {
+		var cases = []struct {
+			raw       string
+			maskChar  string
+			maskLen   int
+			prefixLen int
+			suffixLen int
+			result    string
+		}{{
+			raw:       "123456789",
+			maskChar:  "*",
+			maskLen:   4,
+			prefixLen: 2,
+			suffixLen: 2,
+			result:    "12****89",
+		},
+			{
+				raw:       "123456789",
+				maskChar:  "*",
+				maskLen:   4,
+				prefixLen: 0,
+				suffixLen: 0,
+				result:    "****",
+			},
+			{
+				raw:       "123456789",
+				maskChar:  "*",
+				maskLen:   -1,
+				prefixLen: -1,
+				suffixLen: -1,
+				result:    "****",
+			},
+			{
+				raw:       "12",
+				maskChar:  "*",
+				maskLen:   4,
+				prefixLen: 2,
+				suffixLen: 2,
+				result:    "12****",
+			},
+			{
+				raw:       "123",
+				maskChar:  "*",
+				maskLen:   4,
+				prefixLen: 2,
+				suffixLen: 2,
+				result:    "12****3",
+			},
+		}
+
+		for _, c := range cases {
+			assert.Equal(t, String().MaskString(c.raw, c.maskChar, c.maskLen, c.prefixLen, c.suffixLen), c.result)
+		}
+	})
 }
