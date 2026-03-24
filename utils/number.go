@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 
 	"github.com/shopspring/decimal"
 )
@@ -100,20 +100,20 @@ func (numberImpl) RandomInt64(start, end int64) int64 {
 	//如果范围都是负值区间
 	if start < 0 && end < 0 {
 		fixedStart, fixedEnd := 0-start, 0-end
-		return 0 - (fixedEnd + rand.Int63n(fixedStart))
+		return 0 - (fixedEnd + rand.Int64N(fixedStart))
 	}
 	//如果是一正一负
 	if start < 0 {
 		fixed := 0 - start
-		return rand.Int63n(fixed+end) - fixed
+		return rand.Int64N(fixed+end) - fixed
 	}
 	//如果都为正
 	if start > 0 && end > 0 {
-		return rand.Int63n(end-start) + start
+		return rand.Int64N(end-start) + start
 	}
 	//起始为0
 	if start == 0 {
-		return rand.Int63n(end)
+		return rand.Int64N(end)
 	}
 
 	return start

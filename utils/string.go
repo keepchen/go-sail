@@ -1,8 +1,10 @@
 package utils
 
 import (
+	crand "crypto/rand"
 	"fmt"
-	"math/rand"
+	"math/big"
+	"math/rand/v2"
 	"strings"
 	"unicode/utf8"
 )
@@ -85,6 +87,80 @@ type IString interface {
 	//
 	// length若超出字符串长度则返回字符串本身
 	Truncate(rawString string, length int) string
+	// StrToBytes 字符串转换为字节数组
+	StrToBytes(s string) []byte
+	// BytesToStr 字节数组转换为字符串
+	BytesToStr(b []byte) string
+
+	// RandomIdentity 随机的ID生成
+	//
+	// 生成指定长度的随机字符，已去掉易混淆的字符如1和l以及I等，可用于无规律且有冲突要求的随机字符生成场景，
+	// 如文件名、随机帐号等。
+	//
+	// 因len(alphabet) = 32
+	//
+	// 总空间 = 32^length = 2^(5*length)
+	//
+	// 【冲突概率】
+	//
+	// 近似公式： P ≈ n² / (2N)
+	//
+	//   - n=生成总数量
+	//
+	//   - N=总空间
+	//
+	// 实际场景，如length=10
+	//
+	//	N=2^50≈1.12e15
+	//
+	//	n=1e5
+	//
+	// P ≈ (1e5)^2 / (2 × 1.12e15) ≈ 1e10 / 2.24e15 ≈ 4.5e-6 ≈ 0.00045%
+	//
+	// length = 12, P ≈ 0.00000043%
+	RandomIdentity(length int) (string, error)
+	// MaskString 对字符串进行脱敏
+	//
+	// rawString - 原字符串
+	//
+	// maskChar - 混淆字符
+	//
+	// maskLen - 混淆字符所占长度
+	//
+	// prefixLen - 原字符保留前缀长度
+	//
+	// suffixLen - 原字符保留后缀长度
+	//
+	// 举例1：
+	//
+	// rawString = 123456789
+	//
+	// markChar = *
+	//
+	// maskLen = 4
+	//
+	// prefixLen = 2
+	//
+	// suffixLen = 2
+	//
+	// 结果：12****89
+	//
+	// ------------------------------------------
+	//
+	// 举例2：
+	//
+	// rawString = 12
+	//
+	// markChar = *
+	//
+	// maskLen = 4
+	//
+	// prefixLen = 2
+	//
+	// suffixLen = 2
+	//
+	// 结果：12****
+	MaskString(rawString string, maskChar string, maskLen, prefixLen, suffixLen int) string
 }
 
 var sti IString = &stringImpl{}
@@ -154,7 +230,7 @@ func (stringImpl) RandomLetters(length int) string {
 	b := make([]byte, length)
 
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[rand.IntN(len(letters))]
 	}
 
 	return string(b)
@@ -169,7 +245,7 @@ func (stringImpl) RandomDigitalChars(length int) string {
 	b := make([]byte, length)
 
 	for i := range b {
-		b[i] = digitalChars[rand.Intn(len(digitalChars))]
+		b[i] = digitalChars[rand.IntN(len(digitalChars))]
 	}
 
 	return string(b)
@@ -182,7 +258,7 @@ func (stringImpl) RandomString(length int) string {
 	b := make([]byte, length)
 
 	for i := range b {
-		b[i] = s[rand.Intn(len(s))]
+		b[i] = s[rand.IntN(len(s))]
 	}
 
 	return string(b)
@@ -195,7 +271,7 @@ func (stringImpl) RandomComplexString(length int) string {
 	b := make([]byte, length)
 
 	for i := range b {
-		b[i] = s[rand.Intn(len(s))]
+		b[i] = s[rand.IntN(len(s))]
 	}
 
 	return string(b)
@@ -229,7 +305,7 @@ func (stringImpl) Shuffle(s string) string {
 	arr := strings.Split(s, "")
 
 	for range arr {
-		r0, r1 := rand.Intn(length), rand.Intn(length)
+		r0, r1 := rand.IntN(length), rand.IntN(length)
 		arr[r0], arr[r1] = arr[r1], arr[r0]
 	}
 
@@ -353,4 +429,129 @@ func (stringImpl) Truncate(rawString string, length int) string {
 		return rawString
 	}
 	return string([]rune(rawString)[:length])
+}
+
+const alphabet = "23456789abcdefghjkmnpqrstuvwxyz"
+
+// RandomIdentity 随机的ID生成
+//
+// 生成指定长度的随机字符，已去掉易混淆的字符如1和l以及I等，可用于无规律且有冲突要求的随机字符生成场景，
+// 如文件名、随机帐号等。
+//
+// 因len(alphabet) = 32
+//
+// 总空间 = 32^length = 2^(5*length)
+//
+// 【冲突概率】
+//
+// 近似公式： P ≈ n² / (2N)
+//
+//   - n=生成总数量
+//
+//   - N=总空间
+//
+// 实际场景，如length=10
+//
+//	N=2^50≈1.12e15
+//
+//	n=1e5
+//
+// P ≈ (1e5)^2 / (2 × 1.12e15) ≈ 1e10 / 2.24e15 ≈ 4.5e-6 ≈ 0.00045%
+//
+// length = 12, P ≈ 0.00000043%
+func (stringImpl) RandomIdentity(length int) (string, error) {
+	b := make([]byte, length)
+
+	for i := 0; i < length; i++ {
+		n, err := crand.Int(crand.Reader, big.NewInt(int64(len(alphabet))))
+		if err != nil {
+			return "", err
+		}
+		b[i] = alphabet[n.Int64()]
+	}
+
+	return string(b), nil
+}
+
+// MaskString 对字符串进行脱敏
+//
+// rawString - 原字符串
+//
+// maskChar - 混淆字符
+//
+// maskLen - 混淆字符所占长度
+//
+// prefixLen - 原字符保留前缀长度
+//
+// suffixLen - 原字符保留后缀长度
+//
+// 举例1：
+//
+// rawString = 123456789
+//
+// markChar = *
+//
+// maskLen = 4
+//
+// prefixLen = 2
+//
+// suffixLen = 2
+//
+// 结果：12****89
+//
+// ------------------------------------------
+//
+// 举例2：
+//
+// rawString = 12
+//
+// markChar = *
+//
+// maskLen = 4
+//
+// prefixLen = 2
+//
+// suffixLen = 2
+//
+// 结果：12****
+func (stringImpl) MaskString(rawString string, maskChar string, maskLen, prefixLen, suffixLen int) string {
+	if len(rawString) == 0 {
+		return ""
+	}
+
+	runes := []rune(rawString)
+	n := len(runes)
+
+	// 边界保护
+	if prefixLen < 0 {
+		prefixLen = 0
+	}
+	if suffixLen < 0 {
+		suffixLen = 0
+	}
+	if maskLen < 1 {
+		maskLen = 4
+	}
+
+	var builder strings.Builder
+
+	// 前缀（最多取 n）
+	if prefixLen > n {
+		prefixLen = n
+	}
+	builder.WriteString(string(runes[:prefixLen]))
+
+	// 强制填充 maskLen
+	builder.WriteString(strings.Repeat(maskChar, maskLen))
+
+	// 后缀（注意不能和前缀重叠）
+	if suffixLen > 0 {
+		start := n - suffixLen
+		if start < prefixLen {
+			start = prefixLen
+		}
+		builder.WriteString(string(runes[start:]))
+	}
+
+	return builder.String()
 }
