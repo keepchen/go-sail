@@ -2,6 +2,7 @@ package utils
 
 import (
 	crand "crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"math/rand/v2"
@@ -91,7 +92,6 @@ type IString interface {
 	StrToBytes(s string) []byte
 	// BytesToStr 字节数组转换为字符串
 	BytesToStr(b []byte) string
-
 	// RandomIdentity 随机的ID生成
 	//
 	// 生成指定长度的随机字符，已去掉易混淆的字符如1和l以及I等，可用于无规律且有冲突要求的随机字符生成场景，
@@ -161,6 +161,10 @@ type IString interface {
 	//
 	// 结果：12****
 	MaskString(rawString string, maskChar string, maskLen, prefixLen, suffixLen int) string
+	// RandHexString 生成指定长度的16进制字符串
+	//
+	// length - 字符串长度
+	RandHexString(length int) string
 }
 
 var sti IString = &stringImpl{}
@@ -554,4 +558,26 @@ func (stringImpl) MaskString(rawString string, maskChar string, maskLen, prefixL
 	}
 
 	return builder.String()
+}
+
+// RandHexString 生成指定长度的16进制字符串
+//
+// length - 字符串长度
+func (stringImpl) RandHexString(length int) string {
+	if length <= 0 {
+		return ""
+	}
+
+	// hex是1 byte -> 2 chars
+	byteLen := (length + 1) / 2
+
+	b := make([]byte, byteLen)
+	if _, err := crand.Read(b); err != nil {
+		return ""
+	}
+
+	s := hex.EncodeToString(b)
+
+	// 截断到指定长度
+	return s[:length]
 }
