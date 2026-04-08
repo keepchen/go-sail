@@ -348,3 +348,17 @@ func TestMaskString(t *testing.T) {
 		}
 	})
 }
+
+func TestRandHexString(t *testing.T) {
+	t.Run("TestRandHexString", func(t *testing.T) {
+		for i := 0; i < 100; i++ {
+			result := String().RandHexString(i)
+			assert.Equal(t, len(result), i)
+			if i == 0 {
+				assert.Empty(t, result)
+				continue
+			}
+			assert.NotEmpty(t, result)
+		}
+	})
+}

@@ -28,13 +28,13 @@ type ISM4 interface {
 	ECBDecrypt(hexKey, base64Raw string) (string, error)
 	// GCMEncrypt GCM加密
 	//
-	// hexKey 16进制key 长度32位
+	// hexKey 16进制key 长度16位
 	//
 	// raw 待加密内容
 	GCMEncrypt(hexKey, raw string) (string, error)
 	// GCMDecrypt GCM解密
 	//
-	// hexKey 16进制key 长度32位
+	// hexKey 16进制key 长度16位
 	//
 	// base64Raw 加密内容 base64格式
 	GCMDecrypt(hexKey, base64Raw string) (string, error)
