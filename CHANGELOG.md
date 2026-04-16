@@ -8,48 +8,53 @@
 <summary>中文</summary>
 
 #### 🚀 新功能
-- utils: 新增 `bcrypt` 与 `argon2` 哈希方法 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- utils: AES 与 SM4 新增 GCM 模式加解密 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/jwt: 新增 ECDSA 与 Ed25519 算法支持 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/etcd: 服务注册与发现支持分组参数 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/lark: 支持发送纯文本消息 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: 新增 `Password` 语法糖 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: 新增 Nacos 实例创建与获取能力 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- feature/response: 新增 `WithHeaders` 与 `WithCookies` 方法 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- other: 新增日语 README ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- utils: 新增 `bcrypt` 与 `argon2` 哈希方法 ([`be8e5cb`](https://github.com/keepchen/go-sail/commit/be8e5cb))
+- utils: AES 与 SM4 新增 GCM 模式加解密 ([`be8e5cb`](https://github.com/keepchen/go-sail/commit/be8e5cb))
+- lib/jwt: 新增 ECDSA 与 Ed25519 算法支持 ([`ba59b0e`](https://github.com/keepchen/go-sail/commit/ba59b0e))
+- lib/etcd: 服务注册与发现支持分组参数 ([`b4095f2`](https://github.com/keepchen/go-sail/commit/b4095f2))
+- lib/etcd: 服务注册与发现能力增强 ([`d3e233b`](https://github.com/keepchen/go-sail/commit/d3e233b))
+- lib/lark: 支持发送纯文本消息 ([`3f89ea6`](https://github.com/keepchen/go-sail/commit/3f89ea6))
+- sail: 新增 password 语法糖 ([`be8e5cb`](https://github.com/keepchen/go-sail/commit/be8e5cb))
+- sail: 新增 Nacos 实例创建与获取能力 ([`8718e68`](https://github.com/keepchen/go-sail/commit/8718e68))
+- feature/response: 新增 `WithHeaders` 与 `WithCookies` 方法 ([`e7bf952`](https://github.com/keepchen/go-sail/commit/e7bf952))
+- other: 新增日语 README ([`5819e21`](https://github.com/keepchen/go-sail/commit/5819e21))
 
 #### 🐛 修复
-- examples: 修复 Dockerfile 安全问题 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: wakeupHttp 方法增加 conf 空指针提示 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- examples: 修复 Dockerfile 安全问题 ([`2d53517`](https://github.com/keepchen/go-sail/commit/2d53517))
+- sail: wakeupHttp 方法增加 conf 空指针提示 ([`efe513b`](https://github.com/keepchen/go-sail/commit/efe513b))
 
 #### 🔧 优化 / 调整
-- schedule: 增强并发安全性 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: 启动信息增强，新增组件状态与文档链接打印 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: Nacos 组件新增启动提示与优雅关闭 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- config: 整理默认值并新增 `initClient` 参数 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- constants: 错误码语言未匹配时回退英文 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/logger: 默认日志级别调整为 debug ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- utils: 统一 Redis 测试连接实例 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- test: 减少测试输出，优化测试结构与默认值用例 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- benchmark: 调整运行时间为 5 秒，提高稳定性 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- benchmark: 使用固定端口（12026 / 12027） ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- code: 优化 import 排序与代码结构 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- schedule: 增强并发安全性 ([`2e2bf48`](https://github.com/keepchen/go-sail/commit/2e2bf48))
+- sail: 启动信息增强，新增组件状态与文档链接打印 ([`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
+- sail: 打印信息新增官方文档链接 ([`d28aba2`](https://github.com/keepchen/go-sail/commit/d28aba2))
+- sail: Nacos 组件新增启动提示与优雅关闭 ([`aea4de5`](https://github.com/keepchen/go-sail/commit/aea4de5))
+- config: 整理默认值并新增 `initClient` 参数 ([`3f61617`](https://github.com/keepchen/go-sail/commit/3f61617), [`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
+- constants: 错误码语言未匹配时回退英文 ([`87f3ac0`](https://github.com/keepchen/go-sail/commit/87f3ac0))
+- constants: 优化 time 测试用例 ([`d2c6d7d`](https://github.com/keepchen/go-sail/commit/d2c6d7d))
+- lib/logger: 默认日志级别调整为 debug ([`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
+- utils: 统一 Redis 测试连接实例 ([`efe513b`](https://github.com/keepchen/go-sail/commit/efe513b))
+- test: 减少测试输出，优化测试结构与默认值用例 ([`b171800`](https://github.com/keepchen/go-sail/commit/b171800), [`2e2bf48`](https://github.com/keepchen/go-sail/commit/2e2bf48))
+- benchmark: 调整运行时间为 5 秒，提高稳定性 ([`63165b6`](https://github.com/keepchen/go-sail/commit/63165b6))
+- benchmark: 使用固定端口（12026 / 12027） ([`1f04e6d`](https://github.com/keepchen/go-sail/commit/1f04e6d))
+- code: 优化 import 排序与代码结构 ([`2e2bf48`](https://github.com/keepchen/go-sail/commit/2e2bf48))
 
 #### 🔧 重构
-- core: 移除所有废弃方法 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- core: 非接口定义中的 `interface{}` 替换为 `any` ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- config: 移除 `panicWhileErr` 参数 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- core: 移除所有废弃方法 ([`1f04e6d`](https://github.com/keepchen/go-sail/commit/1f04e6d))
+- core: 非接口定义中的 `interface{}` 替换为 `any` ([`1f04e6d`](https://github.com/keepchen/go-sail/commit/1f04e6d))
+- config: 移除 `panicWhileErr` 参数 ([`ba451a0`](https://github.com/keepchen/go-sail/commit/ba451a0))
 
 #### 🧱 构建与工作流
-- workflow: 优化 CI 流程与测试基础设施 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- workflow: Go 版本升级至 1.25 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- workflow: 优化 CI 流程与测试基础设施 ([`b171800`](https://github.com/keepchen/go-sail/commit/b171800))
+- workflow: Go 版本升级至 1.25 ([`b171800`](https://github.com/keepchen/go-sail/commit/b171800))
 
 #### 📦 依赖
-- chore(deps): 升级 gin / kafka-go / gopsutil / jwt / etcd / prometheus 等依赖 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- build: Go 最低版本升级至 1.23 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- chore(deps): 升级 gin / kafka-go / gopsutil / jwt / etcd / prometheus 等依赖  
+  ([`ccf65ae`](https://github.com/keepchen/go-sail/commit/ccf65ae), [`89c0d52`](https://github.com/keepchen/go-sail/commit/89c0d52), [`e3b0525`](https://github.com/keepchen/go-sail/commit/e3b0525), [`510e29a`](https://github.com/keepchen/go-sail/commit/510e29a), [`8cb5957`](https://github.com/keepchen/go-sail/commit/8cb5957), [`5d67eb2`](https://github.com/keepchen/go-sail/commit/5d67eb2), [`f3661e7`](https://github.com/keepchen/go-sail/commit/f3661e7), [`8467eeb`](https://github.com/keepchen/go-sail/commit/8467eeb), [`7d5dd33`](https://github.com/keepchen/go-sail/commit/7d5dd33), [`8fe25ea`](https://github.com/keepchen/go-sail/commit/8fe25ea), [`128393e`](https://github.com/keepchen/go-sail/commit/128393e), [`30c5d96`](https://github.com/keepchen/go-sail/commit/30c5d96), [`ef86da0`](https://github.com/keepchen/go-sail/commit/ef86da0), [`f843824`](https://github.com/keepchen/go-sail/commit/f843824))
+- build: Go 最低版本升级至 1.23 ([`1f04e6d`](https://github.com/keepchen/go-sail/commit/1f04e6d))
 
 #### 📖 文档
-- other: 多次更新 README 与使用示例 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- other: 多次更新 README 与使用示例  
+  ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac), [`9906ac6`](https://github.com/keepchen/go-sail/commit/9906ac6), [`6246ad0`](https://github.com/keepchen/go-sail/commit/6246ad0), [`0d07dfa`](https://github.com/keepchen/go-sail/commit/0d07dfa), [`ba451a0`](https://github.com/keepchen/go-sail/commit/ba451a0), [`d28aba2`](https://github.com/keepchen/go-sail/commit/d28aba2), [`b4095f2`](https://github.com/keepchen/go-sail/commit/b4095f2), [`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
 
 </details>
 
@@ -59,48 +64,45 @@
 <summary>English</summary>
 
 #### 🚀 Features
-- utils: Added `bcrypt` and `argon2` hashing methods ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- utils: Added AES / SM4 GCM encryption mode ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/jwt: Added ECDSA and Ed25519 support ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/etcd: Added grouping support for service discovery ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- lib/lark: Added plain text message support ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: Added password helper ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: Added Nacos instance creation & retrieval ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- response: Added `WithHeaders` and `WithCookies` ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- docs: Added Japanese README ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- utils: Added `bcrypt` and `argon2` hashing ([`be8e5cb`](https://github.com/keepchen/go-sail/commit/be8e5cb))
+- utils: Added AES / SM4 GCM mode ([`be8e5cb`](https://github.com/keepchen/go-sail/commit/be8e5cb))
+- lib/jwt: Added ECDSA and Ed25519 support ([`ba59b0e`](https://github.com/keepchen/go-sail/commit/ba59b0e))
+- lib/etcd: Added grouping support ([`b4095f2`](https://github.com/keepchen/go-sail/commit/b4095f2))
+- lib/etcd: Enhanced service discovery ([`d3e233b`](https://github.com/keepchen/go-sail/commit/d3e233b))
+- lib/lark: Added plain text message support ([`3f89ea6`](https://github.com/keepchen/go-sail/commit/3f89ea6))
+- sail: Added password helper ([`be8e5cb`](https://github.com/keepchen/go-sail/commit/be8e5cb))
+- sail: Added Nacos instance management ([`8718e68`](https://github.com/keepchen/go-sail/commit/8718e68))
+- response: Added `WithHeaders` and `WithCookies` ([`e7bf952`](https://github.com/keepchen/go-sail/commit/e7bf952))
+- docs: Added Japanese README ([`5819e21`](https://github.com/keepchen/go-sail/commit/5819e21))
 
 #### 🐛 Fixes
-- examples: Fixed Dockerfile vulnerabilities ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: Added nil-check warning in wakeupHttp ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- examples: Fixed Dockerfile vulnerabilities ([`2d53517`](https://github.com/keepchen/go-sail/commit/2d53517))
+- sail: Added nil-check in wakeupHttp ([`efe513b`](https://github.com/keepchen/go-sail/commit/efe513b))
 
 #### 🔧 Improvements / Refactors
-- schedule: Improved concurrency safety ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: Enhanced startup logs with component status & docs link ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- sail: Improved Nacos lifecycle handling ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- config: Refined defaults and added `initClient` ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- constants: Fallback to English for missing locale ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- logger: Default log level set to debug ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- utils: Unified Redis test connections ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- test: Reduced noisy outputs and improved structure ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- benchmark: Increased duration to 5s for stability ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- benchmark: Fixed ports (12026 / 12027) ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- code: Improved import sorting and structure ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- schedule: Improved concurrency safety ([`2e2bf48`](https://github.com/keepchen/go-sail/commit/2e2bf48))
+- sail: Enhanced startup logs & component status ([`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
+- sail: Added documentation links in logs ([`d28aba2`](https://github.com/keepchen/go-sail/commit/d28aba2))
+- sail: Improved Nacos lifecycle ([`aea4de5`](https://github.com/keepchen/go-sail/commit/aea4de5))
+- config: Refined defaults & added `initClient` ([`3f61617`](https://github.com/keepchen/go-sail/commit/3f61617), [`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
+- constants: Fallback to English locale ([`87f3ac0`](https://github.com/keepchen/go-sail/commit/87f3ac0))
+- logger: Default level set to debug ([`be66598`](https://github.com/keepchen/go-sail/commit/be66598))
+- test: Reduced noisy outputs ([`b171800`](https://github.com/keepchen/go-sail/commit/b171800))
+- benchmark: Improved stability ([`63165b6`](https://github.com/keepchen/go-sail/commit/63165b6))
 
 #### 🔧 Refactor
-- core: Removed deprecated APIs ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- core: Replaced `interface{}` with `any` ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- config: Removed `panicWhileErr` ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- core: Removed deprecated APIs ([`1f04e6d`](https://github.com/keepchen/go-sail/commit/1f04e6d))
+- core: Replaced `interface{}` with `any` ([`1f04e6d`](https://github.com/keepchen/go-sail/commit/1f04e6d))
+- config: Removed `panicWhileErr` ([`ba451a0`](https://github.com/keepchen/go-sail/commit/ba451a0))
 
 #### 🧱 Build & Workflow
-- workflow: Improved CI and test infrastructure ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- workflow: Upgraded Go version to 1.25 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- workflow: Improved CI & infrastructure ([`b171800`](https://github.com/keepchen/go-sail/commit/b171800))
 
 #### 📦 Dependencies
-- chore(deps): Upgraded gin / kafka-go / gopsutil / jwt / etcd / prometheus, etc. ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
-- build: Minimum Go version bumped to 1.23 ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- Multiple dependency upgrades (gin, kafka-go, gopsutil, jwt, etc.)
 
 #### 📖 Docs
-- docs: Multiple README and example updates ([`27888ac`](https://github.com/keepchen/go-sail/commit/27888ac))
+- Multiple README and example updates
 
 </details>
 
