@@ -20,7 +20,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.3.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/segmentio/kafka-go v0.4.50
+	github.com/segmentio/kafka-go v0.4.51
 	github.com/shirou/gopsutil/v4 v4.26.3
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.10.2
