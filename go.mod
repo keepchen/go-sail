@@ -31,7 +31,7 @@ require (
 	github.com/tjfoc/gmsm v1.4.1
 	github.com/valkey-io/valkey-go v1.0.74
 	go.etcd.io/etcd/client/v3 v3.6.10
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.50.0
 	golang.org/x/net v0.53.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
