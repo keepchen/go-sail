@@ -28,4 +28,9 @@ func TestHttpClientImplSendRequest(t *testing.T) {
 		_, statusCode, err := HttpClient().SendRequest("UNKNOWN", "https://github.com", nil, nil)
 		t.Log(statusCode, err)
 	})
+
+	t.Run("HttpClientImplSendRequest-WithLimit", func(t *testing.T) {
+		_, statusCode, err := HttpClient().WithLimit(100).SendRequest("GET", "https://github.com", nil, map[string]string{})
+		t.Log(statusCode, err)
+	})
 }
