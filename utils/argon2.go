@@ -95,8 +95,11 @@ func (a *argon2Impl) HashCheck(plaintext, hashed string) (bool, error) {
 	if len(parts) != 6 {
 		return false, fmt.Errorf("invalid hashed format: %s", hashed)
 	}
-	var version int
-	var cfg Argon2Config
+
+	var (
+		version int
+		cfg     Argon2Config
+	)
 	_, err := fmt.Sscanf(parts[2], "v=%d", &version)
 	if err != nil {
 		return false, err
@@ -105,15 +108,18 @@ func (a *argon2Impl) HashCheck(plaintext, hashed string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	salt, err := base64.RawStdEncoding.DecodeString(parts[4])
 	if err != nil {
 		return false, err
 	}
+
 	cfg.SaltLength = uint32(len(salt))
 	hash, err := base64.RawStdEncoding.DecodeString(parts[5])
 	if err != nil {
 		return false, err
 	}
+
 	cfg.KeyLength = uint32(len(hash))
 	//重新计算哈希
 	computedHash := argon2.IDKey([]byte(plaintext), salt,

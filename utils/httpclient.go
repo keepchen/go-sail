@@ -8,16 +8,26 @@ import (
 )
 
 var (
-	requestTimeout = time.Second * 5
+	requestTimeout         = time.Second * 5
+	defaultMaxReadBodySize = 1 << 21 //2MB
 )
 
 type httpClientImpl struct {
+	maxReadBodySize int64
 }
 
 type IHttpClient interface {
+	// WithLimit 设置限制参数
+	//
+	// maxReadBodySize 最大读取响应体字节数
+	WithLimit(maxReadBodySize int64) IHttpClient
 	// SendRequest 发送请求
 	//
 	// 默认Content-Type为application/json; charset=utf-8
+	//
+	// # 注意
+	//
+	// 默认读取的响应体大小为2MB，若要改变此限制，请使用 WithLimit 进行设置
 	SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error)
 }
 
@@ -28,10 +38,22 @@ func HttpClient() IHttpClient {
 	return hci
 }
 
+// WithLimit 设置限制参数
+//
+// maxReadBodySize 最大读取响应体字节数
+func (hc httpClientImpl) WithLimit(maxReadBodySize int64) IHttpClient {
+	if maxReadBodySize <= 0 {
+		maxReadBodySize = int64(defaultMaxReadBodySize)
+	}
+	hc.maxReadBodySize = maxReadBodySize
+
+	return hc
+}
+
 // SendRequest 发送请求
 //
 // 默认Content-Type为application/json; charset=utf-8
-func (httpClientImpl) SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error) {
+func (hc httpClientImpl) SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error) {
 	requestData := bytes.NewReader(jsonPayload)
 
 	req, err := http.NewRequest(method, url, requestData)
@@ -61,7 +83,7 @@ func (httpClientImpl) SendRequest(method, url string, jsonPayload []byte, header
 	}()
 
 	statusCode = resp.StatusCode
-	response, err = io.ReadAll(resp.Body)
+	response, err = io.ReadAll(io.LimitReader(resp.Body, hc.maxReadBodySize))
 	//if resp.StatusCode != http.StatusOK {
 	//	err = fmt.Errorf("http code: %d", resp.StatusCode)
 	//}
