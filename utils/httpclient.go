@@ -27,7 +27,7 @@ type IHttpClient interface {
 	//
 	// # 注意
 	//
-	// 默认读取的响应体大小为2MB，若要改变此限制，请使用 WithLimit 进行设置
+	// 默认不限制读取响应体的大小，若需要进行限制，请使用 WithLimit 进行设置
 	SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error)
 }
 
@@ -53,6 +53,10 @@ func (hc httpClientImpl) WithLimit(maxReadBodySize int64) IHttpClient {
 // SendRequest 发送请求
 //
 // 默认Content-Type为application/json; charset=utf-8
+//
+// # 注意
+//
+// 默认不限制读取响应体的大小，若需要进行限制，请使用 WithLimit 进行设置
 func (hc httpClientImpl) SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error) {
 	requestData := bytes.NewReader(jsonPayload)
 
@@ -83,7 +87,11 @@ func (hc httpClientImpl) SendRequest(method, url string, jsonPayload []byte, hea
 	}()
 
 	statusCode = resp.StatusCode
-	response, err = io.ReadAll(io.LimitReader(resp.Body, hc.maxReadBodySize))
+	if hc.maxReadBodySize > 0 {
+		response, err = io.ReadAll(io.LimitReader(resp.Body, hc.maxReadBodySize))
+		return
+	}
+	response, err = io.ReadAll(resp.Body)
 	//if resp.StatusCode != http.StatusOK {
 	//	err = fmt.Errorf("http code: %d", resp.StatusCode)
 	//}
