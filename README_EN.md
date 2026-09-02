@@ -450,4 +450,10 @@ Thank you to everyone who provided valuable suggestions and comments during the 
 [![StarDots.io](static/sponsors/stardots/stardots-logo-banner.png)](https://stardots.io?ref=go-sail "Your All-in-One Image Hosting and Transformation Powerhouse")
 
 ## Star History  
-[![Star History Chart](https://api.star-history.com/svg?repos=keepchen/go-sail&type=date&legend=top-left)](https://www.star-history.com/#keepchen/go-sail&type=date&legend=top-left)  
+<a href="https://www.star-history.com/?repos=keepchen%2Fgo-sail&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=keepchen/go-sail&type=date&theme=dark&legend=top-left&sealed_token=MZ3BICVPpSEVxgP9pzFBz0-IDj5VeY9NVzYp38L3wBtIrmYekmeVw58Iakwrc_WK4BzbIzDasZQgW_mR35ca9Sik-tK2yoOfkt0kiJWeD5AyS3YgcEWsaw" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=keepchen/go-sail&type=date&legend=top-left&sealed_token=MZ3BICVPpSEVxgP9pzFBz0-IDj5VeY9NVzYp38L3wBtIrmYekmeVw58Iakwrc_WK4BzbIzDasZQgW_mR35ca9Sik-tK2yoOfkt0kiJWeD5AyS3YgcEWsaw" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=keepchen/go-sail&type=date&legend=top-left&sealed_token=MZ3BICVPpSEVxgP9pzFBz0-IDj5VeY9NVzYp38L3wBtIrmYekmeVw58Iakwrc_WK4BzbIzDasZQgW_mR35ca9Sik-tK2yoOfkt0kiJWeD5AyS3YgcEWsaw" />
+ </picture>
+</a>
