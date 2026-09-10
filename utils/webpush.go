@@ -58,6 +58,9 @@ func (webPushImpl) SendNotification(privateKey, publicKey string, sub webpush.Su
 		return fmt.Errorf("endpoint: %s | response body: %s | error: %v", sub.Endpoint, "", respErr)
 	}
 	respBody, _ := io.ReadAll(respData.Body)
+	defer func() {
+		_ = respData.Body.Close()
+	}()
 	if respData.StatusCode < 200 || respData.StatusCode > 299 {
 		return fmt.Errorf("endpoint: %s | response body: %s | error: %v", sub.Endpoint, string(respBody), respErr)
 	}
