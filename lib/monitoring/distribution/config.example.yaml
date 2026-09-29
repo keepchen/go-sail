@@ -1,0 +1,27 @@
+distribution:
+  enabled: true
+  namespace: production
+  service: user-center
+  nodeID: user-center-01
+
+  localWindow: 10s
+  aggregateWindow: 1m
+  allowedLateness: 20s
+  relativeAccuracy: 0.01
+
+  quantiles:
+    - 0.85
+    - 0.99
+    - 0.999
+
+  reporter:
+    driver: redis
+    queueSize: 1024
+    retention: 24h
+
+  aggregator:
+    enabled: true
+    leaderKey: go-sail:distribution:user-center:leader
+    leaderTTL: 15s
+    scanInterval: 5s
+    resultRetention: 168h

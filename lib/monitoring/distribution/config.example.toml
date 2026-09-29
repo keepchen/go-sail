@@ -1,0 +1,23 @@
+[distribution]
+enabled = true
+namespace = "production"
+service = "user-center"
+nodeID = "user-center-01"
+# time.Duration 在 TOML 中使用纳秒整数。
+localWindow = 10000000000
+aggregateWindow = 60000000000
+allowedLateness = 20000000000
+relativeAccuracy = 0.01
+quantiles = [0.85, 0.99, 0.999]
+
+[distribution.reporter]
+driver = "redis"
+queueSize = 1024
+retention = 86400000000000
+
+[distribution.aggregator]
+enabled = true
+leaderKey = "go-sail:distribution:user-center:leader"
+leaderTTL = 15000000000
+scanInterval = 5000000000
+resultRetention = 604800000000000

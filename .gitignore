@@ -2,6 +2,7 @@
 config.toml
 config.*.toml
 !config.sample.toml
+!config.example.toml
 examples/logs/**
 coverage.txt
 go-sail.test

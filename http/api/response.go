@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
+	"github.com/keepchen/go-sail/v3/lib/monitoring/distribution"
 )
 
 // Responder 响应器
@@ -409,6 +411,21 @@ func (a *responseEngine) SendWithCode(httpCode int) {
 
 		funcBeforeWrite(a.engine.Request, a.entryAt, a.requestId, a.spanId, httpCode, data)
 	}
+
+	//记录分位数统计
+	if registry != nil {
+		status := httpCode / 100
+		registry.ObserveDuration(
+			"http.server.duration",
+			time.Since(time.Unix(0, a.entryAt)),
+			distribution.Labels{
+				"method": a.engine.Request.Method,
+				"route":  a.engine.FullPath(),
+				"status": strconv.Itoa(status) + "xx",
+			},
+		)
+	}
+
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }
 
