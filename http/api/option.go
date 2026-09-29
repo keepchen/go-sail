@@ -7,6 +7,7 @@ import (
 
 	"github.com/keepchen/go-sail/v3/constants"
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
+	"github.com/keepchen/go-sail/v3/lib/monitoring/distribution"
 )
 
 var (
@@ -28,6 +29,7 @@ var (
 var (
 	loc             *time.Location                                                                                                 //时区
 	funcBeforeWrite func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) //写入响应前的处理函数
+	registry        *distribution.Registry                                                                                         //分布式分位数统计
 )
 
 // Option 配置项
@@ -171,4 +173,9 @@ func DefaultSetupOption() *Option {
 		ForceHttpCode200:                    false,
 		LanguageCode:                        constants.LanguageEnglish,
 	}
+}
+
+// SetRegistry 设置分布式分位数统计
+func SetRegistry(reg *distribution.Registry) {
+	registry = reg
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/jwt"
 	"github.com/keepchen/go-sail/v3/lib/kafka"
 	"github.com/keepchen/go-sail/v3/lib/logger"
+	"github.com/keepchen/go-sail/v3/lib/monitoring/distribution"
 	"github.com/keepchen/go-sail/v3/lib/nats"
 	"github.com/keepchen/go-sail/v3/lib/redis"
 	"github.com/keepchen/go-sail/v3/lib/valkey"
@@ -14,17 +15,18 @@ import (
 
 // Config 配置
 type Config struct {
-	HttpServer       HttpServerConf    `yaml:"http_conf" toml:"http_conf" json:"http_conf"`                            //http服务配置
-	LoggerConf       logger.Conf       `yaml:"logger_conf" toml:"logger_conf" json:"logger_conf"`                      //日志配置
-	DBConf           db.Conf           `yaml:"db_conf" toml:"db_conf" json:"db_conf"`                                  //数据库配置
-	RedisConf        redis.Conf        `yaml:"redis_conf" toml:"redis_conf" json:"redis_conf"`                         //redis配置(standalone)
-	RedisClusterConf redis.ClusterConf `yaml:"redis_cluster_conf" toml:"redis_cluster_conf" json:"redis_cluster_conf"` //redis配置(cluster)
-	NatsConf         nats.Conf         `yaml:"nats_conf" toml:"nats_conf" json:"nats_conf"`                            //nats配置
-	JwtConf          *jwt.Conf         `yaml:"jwt_conf" toml:"jwt_conf" json:"jwt_conf"`                               //jwt配置
-	EmailConf        email.Conf        `yaml:"email_conf" toml:"email_conf" json:"email_conf"`                         //邮件配置
-	KafkaConf        KafkaExtraConf    `yaml:"kafka_conf" toml:"kafka_conf" json:"kafka_conf"`                         //kafka配置
-	EtcdConf         etcd.Conf         `yaml:"etcd_conf" toml:"etcd_conf" json:"etcd_conf"`                            //etcd配置
-	ValKeyConf       valkey.Conf       `yaml:"valkey_conf" toml:"valkey_conf" json:"valkey_conf"`                      //valkey配置
+	HttpServer             HttpServerConf    `yaml:"http_conf" toml:"http_conf" json:"http_conf"`                            //http服务配置
+	LoggerConf             logger.Conf       `yaml:"logger_conf" toml:"logger_conf" json:"logger_conf"`                      //日志配置
+	DBConf                 db.Conf           `yaml:"db_conf" toml:"db_conf" json:"db_conf"`                                  //数据库配置
+	RedisConf              redis.Conf        `yaml:"redis_conf" toml:"redis_conf" json:"redis_conf"`                         //redis配置(standalone)
+	RedisClusterConf       redis.ClusterConf `yaml:"redis_cluster_conf" toml:"redis_cluster_conf" json:"redis_cluster_conf"` //redis配置(cluster)
+	NatsConf               nats.Conf         `yaml:"nats_conf" toml:"nats_conf" json:"nats_conf"`                            //nats配置
+	JwtConf                *jwt.Conf         `yaml:"jwt_conf" toml:"jwt_conf" json:"jwt_conf"`                               //jwt配置
+	EmailConf              email.Conf        `yaml:"email_conf" toml:"email_conf" json:"email_conf"`                         //邮件配置
+	KafkaConf              KafkaExtraConf    `yaml:"kafka_conf" toml:"kafka_conf" json:"kafka_conf"`                         //kafka配置
+	EtcdConf               etcd.Conf         `yaml:"etcd_conf" toml:"etcd_conf" json:"etcd_conf"`                            //etcd配置
+	ValKeyConf             valkey.Conf       `yaml:"valkey_conf" toml:"valkey_conf" json:"valkey_conf"`                      //valkey配置
+	MonitorDistributorConf distribution.Conf `yaml:"monitor_conf" toml:"monitor_conf" json:"monitor_conf"`                   //分布式分位数统计（pX延迟统计）
 }
 
 // HttpServerConf http服务配置

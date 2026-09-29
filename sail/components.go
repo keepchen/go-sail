@@ -1,6 +1,7 @@
 package sail
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -265,6 +266,10 @@ func NewNacosNamingClient(appName string, endpoints string, namespace string,
 	return nacos.NewNamingClient(appName, endpoints, namespace, clientCfg...)
 }
 
+var (
+	monitoringCtx, monitoringCancel = context.WithCancel(context.Background())
+)
+
 // 根据配置依次初始化组件
 func componentsStartup(appName string, conf *config.Config) {
 	//- logger
@@ -330,10 +335,24 @@ func componentsStartup(appName string, conf *config.Config) {
 	if nacos.GetNamingClient() != nil {
 		fmt.Println("[GO-SAIL] <Components> initialize [nacos - namingClient] successfully")
 	}
+
+	//-monitor/distribution
+	if conf.MonitorDistributorConf.Enabled {
+		if GetRedis() != nil {
+			Monitoring(monitoringCtx, GetLogger()).Distribution(&conf.MonitorDistributorConf, GetRedis())
+			fmt.Println("[GO-SAIL] <Components> initialize [monitor-distribution] successfully")
+		} else {
+			fmt.Println("[GO-SAIL] <Components> initialize [monitor-distribution] canceled, because the redis is disabled")
+		}
+	}
 }
 
 // 根据配置依次停止组件服务
 func componentsShutdown(conf *config.Config) {
+	//- monitor/distribution
+	if conf.MonitorDistributorConf.Enabled {
+		monitoringCancel()
+	}
 	//- redis(standalone)
 	if conf.RedisConf.Enable && redis.GetInstance() != nil {
 		_ = redis.GetInstance().Close()

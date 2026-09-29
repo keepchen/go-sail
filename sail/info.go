@@ -203,6 +203,11 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 			"Nacos", "nacos-group/nacos-sdk-go", "Client: naming", "Yes", "Yes",
 		})
 	}
+	if conf.MonitorDistributorConf.Enabled && GetMonitor() != nil {
+		tw.AppendRow(table.Row{
+			"Monitor/Distribution", "DataDog/sketches-go/ddsketch", conf.MonitorDistributorConf.Namespace, "Yes", "Yes",
+		})
+	}
 	//- 服务及组件信息结束位置
 	tw.AppendSeparator()
 	tw.SetCaption(fmt.Sprintf("Launched at: %s\n\n", time.Now().Format(time.DateTime)))

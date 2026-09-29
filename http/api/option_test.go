@@ -57,3 +57,11 @@ func TestDefaultSetupOption(t *testing.T) {
 		t.Log(DefaultSetupOption())
 	})
 }
+
+func TestSetRegistry(t *testing.T) {
+	t.Run("SetRegistry", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			SetRegistry(nil)
+		})
+	})
+}
