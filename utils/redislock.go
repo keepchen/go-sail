@@ -2,14 +2,13 @@ package utils
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
 	redisLib "github.com/go-redis/redis/v8"
-
 	"github.com/keepchen/go-sail/v3/lib/redis"
 )
 
@@ -104,7 +103,26 @@ func RedisLocker(client ...redisLib.UniversalClient) IRedisLocker {
 type cancelControl struct {
 	ctx    context.Context
 	cancel context.CancelFunc
+	token  string
 }
+
+// lua脚本-原子操作-对比并删除
+const compareAndDeleteScript = `
+if redis.call("GET", KEYS[1]) == ARGV[1] then
+	return redis.call("DEL", KEYS[1])
+end
+return 0
+`
+
+// lua脚本-原子操作-对比并续期
+const compareAndExpireScript = `
+if redis.call("GET", KEYS[1]) == ARGV[1] then
+	return redis.call("PEXPIRE", KEYS[1], ARGV[2])
+end
+return 0
+`
+
+var releaseLockScript = redisLib.NewScript(compareAndDeleteScript)
 
 type stateListeners struct {
 	mux       *sync.RWMutex
@@ -149,14 +167,15 @@ func (rl *redisLockerImpl) TryLockWithContext(ctx context.Context, key string) b
 		return false
 	}
 
-	lockOk, lockErr := rl.client.SetNX(ctx, key, lockerValue(), lockTTL).Result()
+	token := lockerValue()
+	lockOk, lockErr := rl.client.SetNX(ctx, key, token, lockTTL).Result()
 	if lockErr != nil {
 		fmt.Printf("[Go-Sail] <redisLock> key: %s lock err: %v\n", key, lockErr)
 	}
 
 	//锁定成功，开始执行自动续期
 	if lockOk {
-		rl.autoRenewal(key)
+		rl.autoRenewal(key, token)
 	}
 
 	return lockOk
@@ -172,7 +191,8 @@ func (rl *redisLockerImpl) TryLockWithContext(ctx context.Context, key string) b
 //
 // 该方法会阻塞住线程直到上锁成功 或者 触发ctx.Done()
 func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
-	lockOk, lockErr := rl.client.SetNX(ctx, key, lockerValue(), lockTTL).Result()
+	token := lockerValue()
+	lockOk, lockErr := rl.client.SetNX(ctx, key, token, lockTTL).Result()
 
 	if lockErr != nil {
 		fmt.Printf("[Go-Sail] <redisLock> key: %s lock error: %v\n", key, lockErr)
@@ -189,7 +209,8 @@ func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
 			case <-ctx.Done():
 				break LOOP
 			case <-retryTicker.C:
-				lockOk, lockErr = rl.client.SetNX(ctx, key, lockerValue(), lockTTL).Result()
+				token = lockerValue()
+				lockOk, lockErr = rl.client.SetNX(ctx, key, token, lockTTL).Result()
 				if lockOk && lockErr == nil {
 					break LOOP
 				}
@@ -199,56 +220,46 @@ func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
 
 	//锁定成功，开始执行自动续期
 	if lockOk {
-		rl.autoRenewal(key)
+		rl.autoRenewal(key, token)
 	}
 }
 
 // Unlock redis锁-解锁
 //
-// using Del
+// 使用Lua脚本原子校验所有权令牌并删除锁
 func (rl *redisLockerImpl) Unlock(key string) bool {
 	ctx, cancel := withRedisExecuteTimeout()
 	defer cancel()
 
-	//持有者一致性检测(如果获取失败，也认为不符合一致性)
-	lv, err := rl.client.Get(ctx, key).Result()
-	if err != nil {
-		fmt.Printf("[Go-Sail] <redisLock> key: %s unlock get key err: %v\n", key, err)
-		return false
-	}
-	if !holderConsistencyDetection(lv) {
+	ctrl, ok := listener(key)
+	if !ok {
 		return false
 	}
 
-	unlockOk, unlockErr := rl.client.Del(ctx, key).Result()
+	unlockOk, unlockErr := releaseLockScript.Run(ctx, rl.client, []string{key}, ctrl.token).Int64()
 	if unlockErr != nil {
-		fmt.Printf("[Go-Sail] <redisLock> key: %s unlock delete key error: %v\n", key, unlockErr)
+		fmt.Printf("[Go-Sail] <redisLock> key: %s unlock key error: %v\n", key, unlockErr)
 	}
 
 	//清理内存数据并终止自动续期
 	//
 	// 调用解锁方法意图明显，因此无论是否解锁成功，都执行收尾工作
-	rl.clearListenerAndStopAutoRenewal(key)
+	rl.clearListenerAndStopAutoRenewal(key, ctrl)
 
 	return unlockOk == 1
 }
 
 // UnlockWithContext redis锁-解锁
 //
-// using Del
+// 使用Lua脚本原子校验所有权令牌并删除锁
 func (rl *redisLockerImpl) UnlockWithContext(ctx context.Context, key string) bool {
-	//持有者一致性检测(如果获取失败，也认为不符合一致性)
-	lv, err := rl.client.Get(ctx, key).Result()
-	if err != nil {
-		fmt.Printf("[Go-Sail] <redisLock> key: %s unlock with context get key err: %v\n", key, err)
+	ctrl, ok := listener(key)
+	if !ok {
 		return false
 	}
-	if !holderConsistencyDetection(lv) {
-		return false
-	}
-	unlockOk, unlockErr := rl.client.Del(ctx, key).Result()
+	unlockOk, unlockErr := releaseLockScript.Run(ctx, rl.client, []string{key}, ctrl.token).Int64()
 
-	if unlockOk != 1 || unlockErr != nil {
+	if unlockErr != nil {
 		ticker := time.NewTicker(retryInterval)
 		defer ticker.Stop()
 
@@ -258,8 +269,8 @@ func (rl *redisLockerImpl) UnlockWithContext(ctx context.Context, key string) bo
 			case <-ctx.Done():
 				break LOOP
 			case <-ticker.C:
-				unlockOk, unlockErr = rl.client.Del(ctx, key).Result()
-				if unlockOk > 0 && unlockErr == nil {
+				unlockOk, unlockErr = releaseLockScript.Run(ctx, rl.client, []string{key}, ctrl.token).Int64()
+				if unlockErr == nil {
 					break LOOP
 				}
 			}
@@ -267,15 +278,15 @@ func (rl *redisLockerImpl) UnlockWithContext(ctx context.Context, key string) bo
 	}
 
 	//清理内存数据并终止自动续期
-	rl.clearListenerAndStopAutoRenewal(key)
+	rl.clearListenerAndStopAutoRenewal(key, ctrl)
 
 	return unlockOk == 1
 }
 
 // 自动续期
-func (rl *redisLockerImpl) autoRenewal(key string) {
+func (rl *redisLockerImpl) autoRenewal(key, token string) {
 	ctx, cancel := context.WithCancel(context.Background())
-	ctrl := &cancelControl{ctx: ctx, cancel: cancel}
+	ctrl := &cancelControl{ctx: ctx, cancel: cancel, token: token}
 
 	states.mux.Lock()
 	states.listeners[key] = ctrl
@@ -283,9 +294,9 @@ func (rl *redisLockerImpl) autoRenewal(key string) {
 }
 
 // 清理监听器并停止自动续期
-func (rl *redisLockerImpl) clearListenerAndStopAutoRenewal(key string) {
+func (rl *redisLockerImpl) clearListenerAndStopAutoRenewal(key string, expected *cancelControl) {
 	states.mux.Lock()
-	if ctrl, ok := states.listeners[key]; ok {
+	if ctrl, ok := states.listeners[key]; ok && ctrl == expected {
 		ctrl.cancel()
 		delete(states.listeners, key)
 	}
@@ -295,6 +306,7 @@ func (rl *redisLockerImpl) clearListenerAndStopAutoRenewal(key string) {
 type keyAndCtrl struct {
 	key  string
 	ctrl *cancelControl
+	cmd  *redisLib.Cmd
 }
 
 // 续期的统一调度器
@@ -324,15 +336,16 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 		ctx, cancel := withRedisExecuteTimeout()
 		defer cancel()
 
-		validKeys := make([]*keyAndCtrl, 0, len(processingKeys))
+		validCommands := make([]*keyAndCtrl, 0, len(processingKeys))
 		invalidKeys := make([]*keyAndCtrl, 0, len(processingKeys))
-		cmds, pipeErr := rl.client.Pipelined(ctx, func(pipe redisLib.Pipeliner) error {
+		_, pipeErr := rl.client.Pipelined(ctx, func(pipe redisLib.Pipeliner) error {
 			for index := range processingKeys {
 				if processingKeys[index].ctrl.ctx.Err() != nil {
 					invalidKeys = append(invalidKeys, processingKeys[index])
 				} else {
-					pipe.Expire(ctx, processingKeys[index].key, lockTTL)
-					validKeys = append(validKeys, processingKeys[index])
+					processingKeys[index].cmd = pipe.Eval(ctx, compareAndExpireScript, []string{processingKeys[index].key},
+						processingKeys[index].ctrl.token, lockTTL.Milliseconds())
+					validCommands = append(validCommands, processingKeys[index])
 				}
 			}
 			return nil
@@ -344,19 +357,24 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 		}
 
 		states.mux.Lock()
-		for index := range cmds {
-			if expOk, expErr := cmds[index].(*redisLib.BoolCmd).Result(); !expOk || expErr != nil {
+		for _, command := range validCommands {
+			expResult, expErr := command.cmd.Int64()
+			if expResult != 1 || expErr != nil {
 				if expErr != nil {
-					fmt.Printf("[Go-Sail] <redisLock> key: %s renewal err: %v\n", validKeys[index].key, expErr)
+					fmt.Printf("[Go-Sail] <redisLock> key: %s renewal err: %v\n", command.key, expErr)
 				}
-				validKeys[index].ctrl.cancel() //续期失败也要清理掉
-				delete(states.listeners, validKeys[index].key)
+				if current, ok := states.listeners[command.key]; ok && current == command.ctrl {
+					current.cancel() //续期失败也要清理掉
+					delete(states.listeners, command.key)
+				}
 			}
 		}
 		//清理已经过期的
 		for index := range invalidKeys {
-			invalidKeys[index].ctrl.cancel() //保险的再次调用以确保触发ctx.Done
-			delete(states.listeners, invalidKeys[index].key)
+			if current, ok := states.listeners[invalidKeys[index].key]; ok && current == invalidKeys[index].ctrl {
+				current.cancel() //保险的再次调用以确保触发ctx.Done
+				delete(states.listeners, invalidKeys[index].key)
+			}
 		}
 		states.mux.Unlock()
 	}
@@ -381,6 +399,13 @@ func canDoLockPreflight(key string) bool {
 	return !exist
 }
 
+func listener(key string) (*cancelControl, bool) {
+	states.mux.RLock()
+	defer states.mux.RUnlock()
+	ctrl, ok := states.listeners[key]
+	return ctrl, ok
+}
+
 // redis操作超时控制
 func withRedisExecuteTimeout() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), redisExecuteTimeout)
@@ -394,21 +419,6 @@ var (
 
 // 锁的持有者信息
 func lockerValue() string {
-	return fmt.Sprintf("lockedAt:%s@%s<%d>(%s)",
-		hostname, ip, processId, time.Now().Format("2006-01-02T15:04:05.000000Z"))
-}
-
-// 持有者一致性检测
-//
-// # 注意：
-//
-// 一致性检测以【机器主机名+ip+进程id】为判断依据，
-//
-// 这样设计为的是锁只能被【持有者自己】释放，若进程
-//
-// down掉，堆栈中的自动维护信息会被释放，
-//
-// 因此即便是重新启动获取到了相同的进程号，也不受影响。
-func holderConsistencyDetection(lockerValue string) bool {
-	return strings.HasPrefix(lockerValue, fmt.Sprintf("lockedAt:%s@%s<%d>(", hostname, ip, processId))
+	return fmt.Sprintf("lockedAt:%s@%s<%d>(%s:%s)",
+		hostname, ip, processId, time.Now().Format("2006-01-02T15:04:05.000000Z"), rand.Text())
 }
