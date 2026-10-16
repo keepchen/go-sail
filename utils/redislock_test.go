@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -13,18 +12,13 @@ import (
 )
 
 func TestRedisLockerImplLockerValue(t *testing.T) {
+	values := make(map[string]struct{}, 10)
 	for i := 0; i < 10; i++ {
-		t.Log(lockerValue())
+		value := lockerValue()
+		_, duplicated := values[value]
+		assert.False(t, duplicated)
+		values[value] = struct{}{}
 	}
-}
-
-func TestHolderConsistencyDetection(t *testing.T) {
-	t.Run("holderConsistencyDetection", func(t *testing.T) {
-		realLv := fmt.Sprintf("lockedAt:%s@%s<%d>(", hostname, ip, processId)
-		assert.Equal(t, true, holderConsistencyDetection(realLv))
-		fakeLv := fmt.Sprintf("lockedAt:%s@%s<%d>(", hostname, ip, 0)
-		assert.Equal(t, false, holderConsistencyDetection(fakeLv))
-	})
 }
 
 func TestCanDoLockPreflight(t *testing.T) {
@@ -143,6 +137,39 @@ func TestRedisLock(t *testing.T) {
 		defer cancel()
 		RedisLocker(redisClient).UnlockWithContext(ctx, key)
 		assert.Equal(t, true, RedisLocker(redisClient).TryLock(key))
+	})
+
+	t.Run("Unlock-DoesNotDeleteLockOwnedByAnotherToken", func(t *testing.T) {
+		key := "go-sail-redisLocker-standalone-Unlock-ownership"
+		locker := RedisLocker(redisClient)
+		assert.True(t, locker.TryLock(key))
+
+		ctx := context.Background()
+		const anotherToken = "another-owner-token"
+		assert.NoError(t, redisClient.Set(ctx, key, anotherToken, lockTTL).Err())
+		assert.False(t, locker.Unlock(key))
+
+		value, err := redisClient.Get(ctx, key).Result()
+		assert.NoError(t, err)
+		assert.Equal(t, anotherToken, value)
+		_ = redisClient.Del(ctx, key).Err()
+	})
+
+	t.Run("Renew-DoesNotExtendLockOwnedByAnotherToken", func(t *testing.T) {
+		key := "go-sail-redisLocker-standalone-Renew-ownership"
+		ctx := context.Background()
+		const currentToken = "current-owner-token"
+		assert.NoError(t, redisClient.Set(ctx, key, currentToken, time.Second).Err())
+
+		result, err := redisClient.Eval(ctx, compareAndExpireScript, []string{key},
+			"stale-owner-token", lockTTL.Milliseconds()).Int64()
+		assert.NoError(t, err)
+		assert.EqualValues(t, 0, result)
+
+		ttl, err := redisClient.PTTL(ctx, key).Result()
+		assert.NoError(t, err)
+		assert.LessOrEqual(t, ttl, time.Second)
+		_ = redisClient.Del(ctx, key).Err()
 	})
 }
 
