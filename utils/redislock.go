@@ -68,7 +68,7 @@ type IRedisLocker interface {
 
 var _ IRedisLocker = &redisLockerImpl{}
 
-var onceStarRenewalScheduler sync.Once
+var onceStartRenewalScheduler sync.Once
 
 // RedisLocker 实例化redis锁工具类
 //
@@ -80,7 +80,7 @@ var onceStarRenewalScheduler sync.Once
 func RedisLocker(client ...redisLib.UniversalClient) IRedisLocker {
 	rl := &redisLockerImpl{}
 
-	defer onceStarRenewalScheduler.Do(rl.startRenewalScheduler)
+	defer onceStartRenewalScheduler.Do(rl.startRenewalScheduler)
 
 	//使用自定义客户端
 	if len(client) > 0 {
