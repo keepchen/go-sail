@@ -18,9 +18,9 @@ func (w *redisWriterStd) Sync() error {
 }
 
 func (w *redisWriterStd) Write(p []byte) (int, error) {
-	n, err := w.cli.RPush(context.Background(), w.listKey, p).Result()
+	_, err := w.cli.RPush(context.Background(), w.listKey, p).Result()
 
-	return int(n), err
+	return len(p), err
 }
 
 type redisClusterWriterStd struct {
@@ -35,7 +35,7 @@ func (w *redisClusterWriterStd) Sync() error {
 }
 
 func (w *redisClusterWriterStd) Write(p []byte) (int, error) {
-	n, err := w.cli.RPush(context.Background(), w.listKey, p).Result()
+	_, err := w.cli.RPush(context.Background(), w.listKey, p).Result()
 
-	return int(n), err
+	return len(p), err
 }
