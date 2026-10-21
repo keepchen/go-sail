@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
+	"sync/atomic"
 	"syscall"
 	"testing"
 	"time"
@@ -129,4 +131,78 @@ func TestShutdown(t *testing.T) {
 	t.Run("Shutdown", func(t *testing.T) {
 		Shutdown()
 	})
+}
+
+func TestComponentsBeforeShutdownWaitForCaller(t *testing.T) {
+	resetComponentsWaitForCallerState(t)
+
+	ComponentsBeforeShutdownWaitForCaller()
+
+	assert.Equal(t, int32(1), atomic.LoadInt32(&componentsWaitForCallerState))
+	select {
+	case <-waitForMeChan:
+		t.Fatal("wait channel should remain blocked before caller is ready")
+	default:
+	}
+
+	// Repeated calls should be idempotent.
+	ComponentsBeforeShutdownWaitForCaller()
+	assert.Equal(t, int32(1), atomic.LoadInt32(&componentsWaitForCallerState))
+}
+
+func TestComponentsShouldShutdownCauseImReady(t *testing.T) {
+	t.Run("readyAfterWaitEnabled", func(t *testing.T) {
+		resetComponentsWaitForCallerState(t)
+		ComponentsBeforeShutdownWaitForCaller()
+
+		const callers = 16
+		start := make(chan struct{})
+		var wg sync.WaitGroup
+		wg.Add(callers)
+		for range callers {
+			go func() {
+				defer wg.Done()
+				<-start
+				ComponentsShouldShutdownCauseImReady()
+			}()
+		}
+		close(start)
+		wg.Wait()
+
+		assert.Equal(t, int32(1), atomic.LoadInt32(&closeWaitChanState))
+		assertWaitForMeChanClosed(t)
+	})
+
+	t.Run("readyBeforeWaitEnabled", func(t *testing.T) {
+		resetComponentsWaitForCallerState(t)
+
+		ComponentsShouldShutdownCauseImReady()
+		ComponentsBeforeShutdownWaitForCaller()
+
+		assert.Equal(t, int32(1), atomic.LoadInt32(&componentsWaitForCallerState))
+		assert.Equal(t, int32(1), atomic.LoadInt32(&closeWaitChanState))
+		assertWaitForMeChanClosed(t)
+	})
+}
+
+func resetComponentsWaitForCallerState(t *testing.T) {
+	t.Helper()
+	t.Cleanup(func() {
+		atomic.StoreInt32(&componentsWaitForCallerState, 0)
+		atomic.StoreInt32(&closeWaitChanState, 0)
+		waitForMeChan = make(chan struct{})
+	})
+	atomic.StoreInt32(&componentsWaitForCallerState, 0)
+	atomic.StoreInt32(&closeWaitChanState, 0)
+	waitForMeChan = make(chan struct{})
+}
+
+func assertWaitForMeChanClosed(t *testing.T) {
+	t.Helper()
+	select {
+	case _, ok := <-waitForMeChan:
+		assert.False(t, ok, "wait channel should be closed")
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for caller-ready signal")
+	}
 }
