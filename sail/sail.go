@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"sync"
+	"sync/atomic"
 	"syscall"
 
 	"github.com/gin-gonic/gin"
@@ -168,7 +169,7 @@ func (l *Launcher) Launch() {
 	//:: 根据配置依次初始化组件、启动服务 ::
 	componentsStartup(l.sa.appName, l.sa.conf)
 
-	//- gin
+	//- Gin
 	ginEngine := httpserver.InitGinEngine(l.sa.conf.HttpServer)
 
 	//- 注册自定义路由
@@ -186,13 +187,13 @@ func (l *Launcher) Launch() {
 		}
 	}
 
-	//- pprof
+	//- Pprof
 	httpserver.EnablePProfOnDebugMode(l.sa.conf.HttpServer, ginEngine)
 
-	//- prometheus
+	//- Prometheus
 	httpserver.RunPrometheusServerWhenEnable(l.sa.conf.HttpServer.Prometheus)
 
-	//- swagger
+	//- Swagger
 	httpserver.RunSwaggerServerWhenEnable(l.sa.conf.HttpServer.Swagger, ginEngine)
 
 	//- http server
@@ -211,6 +212,11 @@ func (l *Launcher) Launch() {
 
 	wg.Wait()
 
+	//设置了组件关闭前应等待调用者，需要等待调用者发送退出信号
+	if atomic.LoadInt32(&componentsWaitForCallerState) == 1 {
+		<-waitForMeChan
+	}
+
 	//关闭相应的组件
 	componentsShutdown(l.sa.conf)
 }
@@ -220,4 +226,41 @@ func (l *Launcher) Launch() {
 // 用于手动停止服务
 func Shutdown() {
 	go httpserver.NotifyExit(syscall.SIGINT)
+}
+
+var (
+	componentsWaitForCallerState int32
+	waitForMeChan                = make(chan struct{})
+	closeWaitChanState           int32
+)
+
+// ComponentsBeforeShutdownWaitForCaller 组件关闭前等待调用者
+//
+// 框架默认行为：监听到退出信号后会停止http服务并关闭已启动的组件
+//
+// 调用此方法后，在关闭已启动的组件前会等待调用方发出指令，指令发出后才会执行
+// 关闭组件的动作。
+//
+// 调用方可以调用 ComponentsShouldShutdownCauseImReady 方法指示组件退出。
+//
+// # 使用示例：
+//
+//		  beforeFunc := func() {
+//	       sail.ComponentsBeforeShutdownWaitForCaller()
+//		  }
+//
+//			 sail.WakeupHttp("go-sail", conf).
+//					Hook(nil, beforeFunc, nil).
+//					Launch()
+func ComponentsBeforeShutdownWaitForCaller() {
+	atomic.CompareAndSwapInt32(&componentsWaitForCallerState, 0, 1)
+}
+
+// ComponentsShouldShutdownCauseImReady 我已就绪，组件可以关闭了
+//
+// 此方法需要与 ComponentsBeforeShutdownWaitForCaller 方法配合使用
+func ComponentsShouldShutdownCauseImReady() {
+	if atomic.CompareAndSwapInt32(&closeWaitChanState, 0, 1) {
+		close(waitForMeChan)
+	}
 }
