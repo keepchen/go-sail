@@ -42,6 +42,10 @@ func (j *taskJob) RunAfter(delay time.Duration) (cancel CancelFunc) {
 	}
 	j.mux.Unlock()
 
+	if j.runOnceImmediately {
+		go j.wrappedTaskFunc()
+	}
+
 	go func() {
 	LOOP:
 		for {

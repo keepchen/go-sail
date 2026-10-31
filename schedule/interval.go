@@ -51,6 +51,10 @@ func (j *taskJob) run() {
 		}
 		j.mux.Unlock()
 
+		if j.runOnceImmediately {
+			go j.wrappedTaskFunc()
+		}
+
 	LISTEN:
 		for {
 			select {
