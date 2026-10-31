@@ -21,16 +21,24 @@ type CancelFunc func()
 
 // Scheduler 调度器
 type Scheduler interface {
-	// WithoutOverlapping 禁止并发执行
+	// WithoutOverlapping 防止任务堆叠，即禁止并发执行
 	//
 	// 一个任务仅允许存在一个运行态
 	//
-	// Note: 该方法使用redis锁来保证'全局'唯一性，
+	// # Note: 该方法使用redis锁来保证'全局'唯一性，
 	//
 	// 因此请确保先使用 redis.InitRedis 或
 	//
 	// redis.InitRedisCluster 实例化redis连接
 	WithoutOverlapping() Scheduler
+	// RunOnceImmediately 立即执行一次
+	//
+	// 在任务注册成功后定时触发之前立即执行一次
+	//
+	// # Note:
+	//
+	// 依然遵循 WithoutOverlapping 原则（如果有的话）
+	RunOnceImmediately() Scheduler
 	// Every 每隔多久执行一次
 	//
 	// Note: interval至少需要大于等于1毫秒，否则将被设置为1毫秒
@@ -132,6 +140,7 @@ type taskJob struct {
 	cancelTaskChan     chan struct{}
 	cancelOnce         sync.Once
 	mux                sync.RWMutex
+	runOnceImmediately bool
 }
 
 var _ Scheduler = &taskJob{}
@@ -230,17 +239,30 @@ func Job(name string, task func()) Scheduler {
 	return job
 }
 
-// WithoutOverlapping 禁止并发执行
+// WithoutOverlapping 防止任务堆叠，即禁止并发执行
 //
 // 一个任务仅允许存在一个运行态
 //
-// Note: 该方法使用redis锁来保证'全局'唯一性，
+// # Note: 该方法使用redis锁来保证'全局'唯一性，
 //
 // 因此请确保先使用 redis.InitRedis 或
 //
 // redis.InitRedisCluster 实例化redis连接
 func (j *taskJob) WithoutOverlapping() Scheduler {
 	j.withoutOverlapping = true
+
+	return j
+}
+
+// RunOnceImmediately 立即执行一次
+//
+// 在任务注册成功后定时触发之前立即执行一次
+//
+// # Note:
+//
+// 依然遵循 WithoutOverlapping 原则（如果有的话）
+func (j *taskJob) RunOnceImmediately() Scheduler {
+	j.runOnceImmediately = true
 
 	return j
 }

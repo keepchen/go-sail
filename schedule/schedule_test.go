@@ -3,6 +3,7 @@ package schedule
 import (
 	"fmt"
 	"net"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -93,6 +94,60 @@ func TestMustCall(t *testing.T) {
 		t.Log(scheduler)
 		MustCall("MustCall", true)
 		time.Sleep(time.Second * 2)
+	})
+}
+
+func TestRunOnceImmediatelyInterval(t *testing.T) {
+	t.Run("RunOnceImmediately-Interval", func(t *testing.T) {
+		var (
+			counter   int64
+			closeChan = make(chan struct{})
+		)
+		cancel := NewJob("RunOnceImmediately-Interval", func() {
+			fmt.Println("RunOnceImmediately-Interval...")
+			atomic.AddInt64(&counter, 1)
+			close(closeChan)
+		}).RunOnceImmediately().Every(time.Minute)
+
+		cancel()
+		<-closeChan
+		assert.Equal(t, int64(1), atomic.LoadInt64(&counter))
+	})
+}
+
+func TestRunOnceImmediatelySpecs(t *testing.T) {
+	t.Run("RunOnceImmediately-Specs", func(t *testing.T) {
+		var (
+			counter   int64
+			closeChan = make(chan struct{})
+		)
+		cancel := NewJob("RunOnceImmediately-Specs", func() {
+			fmt.Println("RunOnceImmediately-Specs...")
+			atomic.AddInt64(&counter, 1)
+			close(closeChan)
+		}).RunOnceImmediately().RunAt(EveryFiveMinute)
+
+		cancel()
+		<-closeChan
+		assert.Equal(t, int64(1), atomic.LoadInt64(&counter))
+	})
+}
+
+func TestRunOnceImmediatelyDelay(t *testing.T) {
+	t.Run("RunOnceImmediately-Delay", func(t *testing.T) {
+		var (
+			counter   int64
+			closeChan = make(chan struct{})
+		)
+		cancel := NewJob("RunOnceImmediately-Delay", func() {
+			fmt.Println("RunOnceImmediately-Delay...")
+			atomic.AddInt64(&counter, 1)
+			close(closeChan)
+		}).RunOnceImmediately().RunAfter(time.Minute)
+
+		cancel()
+		<-closeChan
+		assert.Equal(t, int64(1), atomic.LoadInt64(&counter))
 	})
 }
 

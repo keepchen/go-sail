@@ -56,6 +56,10 @@ func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 		}
 	}
 
+	if j.runOnceImmediately {
+		go j.wrappedTaskFunc()
+	}
+
 	jobID, jobErr := cronJob.AddFunc(crontabExpr, j.wrappedTaskFunc)
 	if jobErr != nil {
 		fmt.Printf("[GO-SAIL] <Schedule> add job {%s} failed: %v\n", j.name, jobErr.Error())
