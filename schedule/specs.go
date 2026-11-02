@@ -11,26 +11,14 @@ import (
 //
 // 重复地在某个时间点执行任务
 //
-// crontabExpr Linux crontab风格的表达式
+// crontabExpr 支持五字段和六字段表达式，省略秒字段时默认为0。
 //
-// *    *    *    *    *
-//
-// -    -    -    -    -
-//
-// |    |    |    |    |
-//
-// |    |    |    |    +-- day of week (0 - 7) (Sunday=0 or 7) OR sun...sat
-//
-// |    |    |    +---------- month (1 - 12) OR jan,feb,mar,apr ...
-//
-// |    |    +--------------- day of month (1 - 31)
-//
-// |    +-------------------- hour (0 - 23)
-//
-// +------------------------- minute (0 - 59)
+// 格式：[秒(0-59)] 分(0-59) 时(0-23) 日(1-31) 月(1-12) 星期(0-6，周日为0)。
+// 月份和星期也支持英文缩写；支持 @daily、@every 等描述符。
+// LastDayOfMonth 是额外支持的月末预设，不支持其他含 L 的表达式。
 func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 	cronStartOnce.Do(func() {
-		cronJob = cron.New()
+		cronJob = cron.New(cron.WithParser(scheduleParser{}))
 		cronJob.Start()
 	})
 
