@@ -25,6 +25,8 @@ type IRsa interface {
 	// - Standard format
 	//
 	// - Single-line string without the prefix and suffix
+	//
+	// Deprecated: PKCS #1 v1.5 encryption is unsafe. Use EncryptOAEP for new data.
 	Encrypt(rawString string, publicKey []byte) (string, error)
 	// Decrypt RSA decryption
 	//
@@ -33,7 +35,17 @@ type IRsa interface {
 	// - Standard format
 	//
 	// - Single-line string without the prefix and suffix
+	//
+	// Deprecated: PKCS #1 v1.5 decryption is unsafe. Use DecryptOAEP for OAEP ciphertext.
 	Decrypt(encodedString string, privateKey []byte) (string, error)
+	// EncryptOAEP encrypts with RSA-OAEP using SHA-256 and the supplied label, returning Base64 ciphertext.
+	// It accepts the same public key formats as Encrypt. Plaintext is limited to the key size in bytes minus 66.
+	// label may be nil; decryption must use the same label.
+	EncryptOAEP(rawString string, publicKey, label []byte) (string, error)
+	// DecryptOAEP decrypts Base64 RSA-OAEP ciphertext using SHA-256 and the supplied label.
+	// It accepts the same private key formats as Decrypt and does not accept PKCS #1 v1.5 ciphertext.
+	// label must match the encryption label; nil and empty labels are equivalent.
+	DecryptOAEP(encodedString string, privateKey, label []byte) (string, error)
 	// Sign RSA signing
 	//
 	// Supported privateKey formats:
@@ -60,6 +72,8 @@ func RSA() IRsa {
 }
 
 // Encrypt RSA encryption
+//
+// Deprecated: PKCS #1 v1.5 encryption is unsafe. Use EncryptOAEP for new data.
 func (rsaImpl) Encrypt(rawString string, publicKey []byte) (string, error) {
 	pubObj := parsePublicKey(publicKey)
 	if pubObj == nil {
@@ -75,6 +89,8 @@ func (rsaImpl) Encrypt(rawString string, publicKey []byte) (string, error) {
 }
 
 // Decrypt RSA decryption
+//
+// Deprecated: PKCS #1 v1.5 decryption is unsafe. Use DecryptOAEP for OAEP ciphertext.
 func (rsaImpl) Decrypt(encodedString string, privateKey []byte) (string, error) {
 	encodedByte, err := Base64().Decode(encodedString)
 	if err != nil {
@@ -86,6 +102,45 @@ func (rsaImpl) Decrypt(encodedString string, privateKey []byte) (string, error) 
 		return "", errors.New("private key is nil")
 	}
 	decodedByte, err := rsa.DecryptPKCS1v15(rand.Reader, priObj, encodedByte) //nolint:staticcheck // Existing clients may supply PKCS #1 v1.5 ciphertext; OAEP requires an explicit API migration.
+	if err != nil {
+		return "", err
+	}
+
+	return string(decodedByte), nil
+}
+
+// EncryptOAEP encrypts with RSA-OAEP using SHA-256 and the supplied label, returning Base64 ciphertext.
+// Plaintext is limited to the key size in bytes minus 66.
+// label may be nil; decryption must use the same label.
+func (rsaImpl) EncryptOAEP(rawString string, publicKey, label []byte) (string, error) {
+	pubObj := parsePublicKey(publicKey)
+	if pubObj == nil {
+		return "", errors.New("public key is nil")
+	}
+
+	encodedByte, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, pubObj, []byte(rawString), label)
+	if err != nil {
+		return "", err
+	}
+
+	return Base64().Encode(encodedByte), nil
+}
+
+// DecryptOAEP decrypts Base64 RSA-OAEP ciphertext using SHA-256 and the supplied label.
+// PKCS #1 v1.5 ciphertext is not accepted.
+// label must match the encryption label; nil and empty labels are equivalent.
+func (rsaImpl) DecryptOAEP(encodedString string, privateKey, label []byte) (string, error) {
+	encodedByte, err := Base64().Decode(encodedString)
+	if err != nil {
+		return "", errors.New("invalid base64 encode string")
+	}
+
+	priObj := parsePrivateKey(privateKey)
+	if priObj == nil {
+		return "", errors.New("private key is nil")
+	}
+
+	decodedByte, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, priObj, encodedByte, label)
 	if err != nil {
 		return "", err
 	}
@@ -149,7 +204,7 @@ func parsePublicKey(key []byte) *rsa.PublicKey {
 	if err != nil {
 		return nil
 	}
-	pub := pubInterface.(*rsa.PublicKey)
+	pub, _ := pubInterface.(*rsa.PublicKey)
 
 	return pub
 }
@@ -166,7 +221,7 @@ func parsePrivateKey(key []byte) *rsa.PrivateKey {
 	if err != nil {
 		return nil
 	}
-	priObj := pri.(*rsa.PrivateKey)
+	priObj, _ := pri.(*rsa.PrivateKey)
 
 	return priObj
 }

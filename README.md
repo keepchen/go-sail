@@ -158,9 +158,13 @@ func UserInfoSvc(c *gin.Context) {
 #### Password  
 - RSA
 ```go
-sail.Password().RSAEncrypt(plaintext, publicKey)
+sail.Password().RSAEncrypt(plaintext, publicKey) // Deprecated: PKCS #1 v1.5 encryption is unsafe. Use EncryptOAEP for new data.
 
-sail.Password().RSADecrypt(encryptedStr, privateKey)
+sail.Password().RSADecrypt(encryptedStr, privateKey) // Deprecated: PKCS #1 v1.5 decryption is unsafe. Use DecryptOAEP for OAEP ciphertext.
+
+sail.Password().RSAEncryptOAEP(plaintext, publicKey)
+
+sail.Password().RSADecryptOAEP(encryptedStr, privateKey)
 ```  
 - Bcrypt
 ```go
