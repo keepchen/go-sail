@@ -1,11 +1,11 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"time"
 
 	"go.uber.org/zap"
-	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 )

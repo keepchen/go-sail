@@ -86,7 +86,7 @@ func TestLogTrace(t *testing.T) {
 func registerRoutes4LogTrace(r *gin.Engine) {
 	r.GET("/ping", func(c *gin.Context) {
 		defer func() {
-			recover()
+			_ = recover()
 
 			c.String(http.StatusOK, "%s", "pong")
 		}()

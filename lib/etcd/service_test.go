@@ -12,7 +12,7 @@ import (
 
 func TestRegisterService(t *testing.T) {
 	t.Run("RegisterService", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -43,7 +43,7 @@ func TestRegisterService(t *testing.T) {
 
 func TestDiscoverService(t *testing.T) {
 	t.Run("DiscoverService", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -77,7 +77,7 @@ func TestDiscoverService(t *testing.T) {
 
 func TestGetAllServices(t *testing.T) {
 	t.Run("GetAllServices", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -108,7 +108,7 @@ func TestGetAllServices(t *testing.T) {
 
 func TestWatchService(t *testing.T) {
 	t.Run("WatchService", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}

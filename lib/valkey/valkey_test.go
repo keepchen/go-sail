@@ -2,8 +2,8 @@ package valkey
 
 import (
 	"context"
-	"fmt"
 	"net"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ var testCaseConf = Conf{
 
 func TestInit(t *testing.T) {
 	t.Run("Init", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", testCaseConf.Endpoints[0].Host, testCaseConf.Endpoints[0].Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(testCaseConf.Endpoints[0].Host, strconv.Itoa(testCaseConf.Endpoints[0].Port)))
 		if err != nil {
 			return
 		}
@@ -43,7 +43,7 @@ func TestInit(t *testing.T) {
 
 func TestNew(t *testing.T) {
 	t.Run("New", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", testCaseConf.Endpoints[0].Host, testCaseConf.Endpoints[0].Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(testCaseConf.Endpoints[0].Host, strconv.Itoa(testCaseConf.Endpoints[0].Port)))
 		if err != nil {
 			return
 		}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"gorm.io/gorm"
@@ -185,7 +186,7 @@ func TestSvcUsage(t *testing.T) {
 func TestOr(t *testing.T) {
 	t.Run("Or", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -198,7 +199,7 @@ func TestOr(t *testing.T) {
 func TestWhere(t *testing.T) {
 	t.Run("Where", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -211,7 +212,7 @@ func TestWhere(t *testing.T) {
 func TestNot(t *testing.T) {
 	t.Run("Not", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -224,7 +225,7 @@ func TestNot(t *testing.T) {
 func TestJoins(t *testing.T) {
 	t.Run("Joins", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -237,7 +238,7 @@ func TestJoins(t *testing.T) {
 func TestOrder(t *testing.T) {
 	t.Run("Order", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -250,7 +251,7 @@ func TestOrder(t *testing.T) {
 func TestGroup(t *testing.T) {
 	t.Run("Group", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -263,7 +264,7 @@ func TestGroup(t *testing.T) {
 func TestHaving(t *testing.T) {
 	t.Run("Having", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -276,7 +277,7 @@ func TestHaving(t *testing.T) {
 func TestOffset(t *testing.T) {
 	t.Run("Offset", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -289,7 +290,7 @@ func TestOffset(t *testing.T) {
 func TestLimit(t *testing.T) {
 	t.Run("Limit", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -302,7 +303,7 @@ func TestLimit(t *testing.T) {
 func TestScopes(t *testing.T) {
 	t.Run("Scopes", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -315,7 +316,7 @@ func TestScopes(t *testing.T) {
 func TestSession(t *testing.T) {
 	t.Run("Session", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -328,7 +329,7 @@ func TestSession(t *testing.T) {
 func TestWithContext(t *testing.T) {
 	t.Run("WithContext", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -341,7 +342,7 @@ func TestWithContext(t *testing.T) {
 func TestUnwrap(t *testing.T) {
 	t.Run("Unwrap", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -354,7 +355,7 @@ func TestUnwrap(t *testing.T) {
 func TestCount(t *testing.T) {
 	t.Run("Count", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -368,7 +369,7 @@ func TestCount(t *testing.T) {
 func TestCreate(t *testing.T) {
 	t.Run("Create", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -381,7 +382,7 @@ func TestCreate(t *testing.T) {
 func TestSave(t *testing.T) {
 	t.Run("Save", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -394,7 +395,7 @@ func TestSave(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -407,7 +408,7 @@ func TestDelete(t *testing.T) {
 func TestTransaction(t *testing.T) {
 	t.Run("Transaction", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -421,7 +422,7 @@ func TestTransaction(t *testing.T) {
 
 	t.Run("Transaction-Error", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}

@@ -123,16 +123,18 @@ func (certImpl) ReportKeyWhetherMatch(certData, keyData []byte) (bool, error) {
 		}
 	} else {
 		//Try parsing other private key formats (PKCS1 or EC)
-		privateKey, err = x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
-		if err == nil && privateKey != nil {
-			privatePublicKey = privateKey.(*rsa.PrivateKey).Public()
+		var rsaPrivateKey *rsa.PrivateKey
+		rsaPrivateKey, err = x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
+		if err == nil {
+			privatePublicKey = rsaPrivateKey.Public()
 			keyPublicKey, _ = x509.MarshalPKIXPublicKey(privatePublicKey)
 		}
 
 		if err != nil {
-			privateKey, err = x509.ParseECPrivateKey(keyBlock.Bytes)
-			if err == nil && privateKey != nil {
-				privatePublicKey = privateKey.(ed25519.PrivateKey).Public()
+			var ecPrivateKey *ecdsa.PrivateKey
+			ecPrivateKey, err = x509.ParseECPrivateKey(keyBlock.Bytes)
+			if err == nil {
+				privatePublicKey = ecPrivateKey.Public()
 				keyPublicKey, _ = x509.MarshalPKIXPublicKey(privatePublicKey)
 			}
 		}

@@ -96,16 +96,13 @@ func TestRSAImplDecrypt(t *testing.T) {
 	})
 
 	t.Run("Decrypt-Error", func(t *testing.T) {
-		encodedString, err := RSA().Encrypt(rawString, publicKey)
-		//t.Log(encodedString)
-		assert.NoError(t, err)
 		decodedString, err := RSA().Decrypt("foo", privateKey)
 		//t.Log(decodedString)
 		assert.Error(t, err)
 		assert.NotEqual(t, decodedString, rawString)
 
 		//inline
-		encodedString, err = RSA().Encrypt(rawString, publicKeyInline)
+		encodedString, err := RSA().Encrypt(rawString, publicKeyInline)
 		//t.Log(encodedString)
 		assert.NoError(t, err)
 		decodedString, err = RSA().Decrypt(encodedString, privateKeyInline)

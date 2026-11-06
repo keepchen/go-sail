@@ -28,7 +28,7 @@ func ParseConfig(configBytes []byte, appConfig any, format string) error {
 	case formatList[2]:
 		err = toml.Unmarshal(configBytes, appConfig)
 	default:
-		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s", format)
 	}
 
 	return err

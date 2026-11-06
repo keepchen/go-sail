@@ -10,7 +10,7 @@ import (
 
 func TestWatch(t *testing.T) {
 	t.Run("Watch", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -38,7 +38,7 @@ func TestWatch(t *testing.T) {
 
 func TestWatchWithPrefix(t *testing.T) {
 	t.Run("WatchWithPrefix", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -66,7 +66,7 @@ func TestWatchWithPrefix(t *testing.T) {
 
 func TestWatchWith(t *testing.T) {
 	t.Run("WatchWith", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}

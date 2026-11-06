@@ -146,8 +146,7 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 		go watcher()
 	}
 
-	var content []byte
-	content = etcdResp.Kvs[0].Value
+	content := etcdResp.Kvs[0].Value
 
 	//Initialize the client
 	if client != nil && ci.initClientAsComponent {

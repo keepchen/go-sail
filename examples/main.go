@@ -1,4 +1,4 @@
-package examples
+package main
 
 import (
 	"github.com/keepchen/go-sail/v3/examples/cmd"

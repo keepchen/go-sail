@@ -1,8 +1,8 @@
 package orm
 
 import (
-	"fmt"
 	"net"
+	"strconv"
 	"testing"
 
 	"github.com/keepchen/go-sail/v3/lib/db"
@@ -11,7 +11,7 @@ import (
 
 func TestAutoMigrate(t *testing.T) {
 	t.Run("AutoMigrate", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -24,7 +24,7 @@ func TestAutoMigrate(t *testing.T) {
 
 func TestPaginate(t *testing.T) {
 	t.Run("Paginate", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -36,7 +36,7 @@ func TestPaginate(t *testing.T) {
 	})
 
 	t.Run("Paginate-Condition", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -50,7 +50,7 @@ func TestPaginate(t *testing.T) {
 
 func TestIgnoreErrRecordNotFound(t *testing.T) {
 	t.Run("IgnoreErrRecordNotFound", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}

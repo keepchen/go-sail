@@ -1,9 +1,9 @@
 package db
 
 import (
-	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"testing"
 	"time"
 
@@ -182,7 +182,7 @@ func TestInitDB(t *testing.T) {
 
 	t.Run("InitDB", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -216,7 +216,7 @@ func TestInit(t *testing.T) {
 
 	t.Run("Init", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -253,7 +253,7 @@ func TestMustInitDB(t *testing.T) {
 
 	t.Run("mustInitDB", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -289,7 +289,7 @@ func TestOnlyInitDB(t *testing.T) {
 
 	t.Run("initDB", func(t *testing.T) {
 		logger.Init(loggerConf, "go-sail")
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
