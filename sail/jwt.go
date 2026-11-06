@@ -30,6 +30,8 @@ type IJwt interface {
 	// # Note
 	//
 	// This method calls utils.RSA and encrypts with PublicKey from jwt.Conf
+	//
+	// Deprecated: PKCS #1 v1.5 encryption is unsafe. Use EncryptOAEP for new data.
 	Encrypt(plaintext string) (string, error)
 	//Decrypt decrypts a string
 	//
@@ -38,7 +40,15 @@ type IJwt interface {
 	// # Note
 	//
 	// This method calls utils.RSA and decrypts with PrivateKey from jwt.Conf
+	//
+	// Deprecated: PKCS #1 v1.5 decryption is unsafe. Use DecryptOAEP for OAEP ciphertext.
 	Decrypt(encryptedStr string) (string, error)
+	// EncryptOAEP encrypts with PublicKey from jwt.Conf using RSA-OAEP, SHA-256, and an empty label.
+	// It returns Base64 ciphertext. Plaintext is limited to the key size in bytes minus 66.
+	EncryptOAEP(plaintext string) (string, error)
+	// DecryptOAEP decrypts Base64 RSA-OAEP ciphertext with PrivateKey from jwt.Conf using SHA-256 and an empty label.
+	// PKCS #1 v1.5 ciphertext is not accepted.
+	DecryptOAEP(encryptedStr string) (string, error)
 }
 
 type jwtImpl struct{}
@@ -90,11 +100,13 @@ func (jwtImpl) ValidToken(token string) (bool, jwt.MapClaims, error) {
 
 // Encrypt encrypts a string
 //
-// This method pairs with Decrypt for encryption and decryption
+// # This method pairs with Decrypt for encryption and decryption
 //
 // # Note
 //
-// This method calls utils.RSA and encrypts with PublicKey from jwt.Conf
+// # This method calls utils.RSA and encrypts with PublicKey from jwt.Conf
+//
+// Deprecated: PKCS #1 v1.5 encryption is unsafe. Use EncryptOAEP for new data.
 func (jwtImpl) Encrypt(plaintext string) (string, error) {
 	conf := config.Get()
 	return utils.RSA().Encrypt(plaintext, []byte(conf.JwtConf.PublicKey))
@@ -102,12 +114,26 @@ func (jwtImpl) Encrypt(plaintext string) (string, error) {
 
 // Decrypt decrypts a string
 //
-// This method pairs with Encrypt for encryption and decryption
+// # This method pairs with Encrypt for encryption and decryption
 //
 // # Note
 //
-// This method calls utils.RSA and decrypts with PrivateKey from jwt.Conf
+// # This method calls utils.RSA and decrypts with PrivateKey from jwt.Conf
+//
+// Deprecated: PKCS #1 v1.5 decryption is unsafe. Use DecryptOAEP for OAEP ciphertext.
 func (jwtImpl) Decrypt(encryptedStr string) (string, error) {
 	conf := config.Get()
 	return utils.RSA().Decrypt(encryptedStr, []byte(conf.JwtConf.PrivateKey))
+}
+
+// EncryptOAEP encrypts with PublicKey from jwt.Conf using RSA-OAEP, SHA-256, and an empty label.
+func (jwtImpl) EncryptOAEP(plaintext string) (string, error) {
+	conf := config.Get()
+	return utils.RSA().EncryptOAEP(plaintext, []byte(conf.JwtConf.PublicKey), nil)
+}
+
+// DecryptOAEP decrypts Base64 RSA-OAEP ciphertext with PrivateKey from jwt.Conf using SHA-256 and an empty label.
+func (jwtImpl) DecryptOAEP(encryptedStr string) (string, error) {
+	conf := config.Get()
+	return utils.RSA().DecryptOAEP(encryptedStr, []byte(conf.JwtConf.PrivateKey), nil)
 }

@@ -37,6 +37,8 @@ type IPassword interface {
 	// - Standard format
 	//
 	// - Single-line string without the prefix and suffix
+	//
+	// Deprecated: PKCS #1 v1.5 encryption is unsafe. Use RSAEncryptOAEP for new data.
 	RSAEncrypt(plaintext string, publicKey []byte) (string, error)
 	// RSADecrypt RSA decryption
 	//
@@ -45,7 +47,15 @@ type IPassword interface {
 	// - Standard format
 	//
 	// - Single-line string without the prefix and suffix
+	//
+	// Deprecated: PKCS #1 v1.5 decryption is unsafe. Use RSADecryptOAEP for OAEP ciphertext.
 	RSADecrypt(ciphertext string, privateKey []byte) (string, error)
+	// RSAEncryptOAEP encrypts with RSA-OAEP using SHA-256 and an empty label, returning Base64 ciphertext.
+	// It accepts the same public key formats as RSAEncrypt. Plaintext is limited to the key size in bytes minus 66.
+	RSAEncryptOAEP(plaintext string, publicKey []byte) (string, error)
+	// RSADecryptOAEP decrypts Base64 RSA-OAEP ciphertext using SHA-256 and an empty label.
+	// It accepts the same private key formats as RSADecrypt and does not accept PKCS #1 v1.5 ciphertext.
+	RSADecryptOAEP(ciphertext string, privateKey []byte) (string, error)
 	// BcryptHashMake generates a hash string
 	//
 	// plaintext - plaintext string
@@ -97,12 +107,26 @@ func (*passwordImpl) SM4GCMDecrypt(ciphertext, key string) (string, error) {
 	return utils.SM4().GCMDecrypt(key, ciphertext)
 }
 
+// RSAEncrypt encrypts with RSA PKCS #1 v1.5.
+//
+// Deprecated: PKCS #1 v1.5 encryption is unsafe. Use RSAEncryptOAEP for new data.
 func (*passwordImpl) RSAEncrypt(plaintext string, publicKey []byte) (string, error) {
 	return utils.RSA().Encrypt(plaintext, publicKey)
 }
 
+// RSADecrypt decrypts RSA PKCS #1 v1.5 ciphertext.
+//
+// Deprecated: PKCS #1 v1.5 decryption is unsafe. Use RSADecryptOAEP for OAEP ciphertext.
 func (*passwordImpl) RSADecrypt(ciphertext string, privateKey []byte) (string, error) {
 	return utils.RSA().Decrypt(ciphertext, privateKey)
+}
+
+func (*passwordImpl) RSAEncryptOAEP(plaintext string, publicKey []byte) (string, error) {
+	return utils.RSA().EncryptOAEP(plaintext, publicKey, nil)
+}
+
+func (*passwordImpl) RSADecryptOAEP(ciphertext string, privateKey []byte) (string, error) {
+	return utils.RSA().DecryptOAEP(ciphertext, privateKey, nil)
 }
 
 func (*passwordImpl) BcryptHashMake(plaintext string, costs ...int) (string, error) {
