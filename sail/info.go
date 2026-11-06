@@ -16,7 +16,7 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 )
 
-// 启动终端打印概览信息
+// Print overview information to the terminal on startup
 func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 	var (
 		protocol   = "http:"
@@ -27,16 +27,16 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 		repoLink   = "Repository:    https://github.com/keepchen/go-sail"
 		blank      = strings.Repeat(" ", len(delimiter)-len(repoLink)-len(constants.GoSailVersion)-11)
 	)
-	//- 基础信息开始位置
+	//- Start of basic information
 	messages.WriteString(delimiter)
 	info := fmt.Sprintf("%s\n", constants.GoSailLogo)
 	messages.WriteString(info)
 	versionInfo := fmt.Sprintf("\n%s\n%s%s(version: %s)\n", docLink, repoLink, blank, constants.GoSailVersion)
 	messages.WriteString(versionInfo)
 	messages.WriteString(delimiter)
-	//- 基础信息终止位置
+	//- End of basic information
 
-	//- 服务及组件信息开始位置
+	//- Start of service and component information
 	tw := table.NewWriter()
 	style := table.StyleLight
 	style.Title.Align = text.AlignCenter
@@ -45,7 +45,7 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 	//tw.AppendHeader(table.Row{constants.GoSailLogo, "", "", "", ""}, table.RowConfig{AutoMerge: true, AutoMergeAlign: text.AlignCenter})
 	tw.AppendRow(table.Row{"<<Routes>>", "", "", "", ""}, table.RowConfig{AutoMerge: true, AutoMergeAlign: text.AlignCenter})
 	tw.AppendSeparator()
-	//第一行标题
+	//First row header
 	tw.AppendRow(table.Row{
 		"<Name>", "<Url / Port>", "<Description>", "", "",
 	}, table.RowConfig{AutoMerge: true, AutoMergeAlign: text.AlignCenter})
@@ -97,7 +97,7 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 	tw.AppendSeparator()
 	tw.AppendRow(table.Row{"<<Components>>", "", "", "", ""}, table.RowConfig{AutoMerge: true, AutoMergeAlign: text.AlignCenter})
 	tw.AppendSeparator()
-	//第一行标题
+	//First row header
 	tw.AppendRow(table.Row{
 		"<Name>", "<Library>", "<Description>", "<Enable>", "<Available>",
 	})
@@ -208,7 +208,7 @@ func printSummaryInfo(conf config.Config, ginEngine *gin.Engine) {
 			"Monitor/Distribution", "DataDog/sketches-go/ddsketch", conf.MonitorDistributorConf.Namespace, "Yes", "Yes",
 		})
 	}
-	//- 服务及组件信息结束位置
+	//- End of service and component information
 	tw.AppendSeparator()
 	tw.SetCaption(fmt.Sprintf("Launched at: %s\n\n", time.Now().Format(time.DateTime)))
 

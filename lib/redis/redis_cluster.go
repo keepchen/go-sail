@@ -11,14 +11,14 @@ import (
 
 var redisClusterInstance *redisLib.ClusterClient
 
-// InitRedisCluster 初始化redis集群连接
+// InitRedisCluster initializes the Redis cluster connection
 func InitRedisCluster(conf ClusterConf) {
 	rdb := mustInitRedisCluster(conf)
 
 	redisClusterInstance = rdb
 }
 
-// GetClusterInstance 获取redis集群连接实例
+// GetClusterInstance retrieves the Redis cluster connection instance
 func GetClusterInstance() *redisLib.ClusterClient {
 	return redisClusterInstance
 }
@@ -112,7 +112,7 @@ func initRedisCluster(conf ClusterConf) (*redisLib.ClusterClient, error) {
 	return rdb, err
 }
 
-// NewCluster 实例化新的实例
+// NewCluster instantiates a new instance
 func NewCluster(conf ClusterConf) (*redisLib.ClusterClient, error) {
 	return initRedisCluster(conf)
 }

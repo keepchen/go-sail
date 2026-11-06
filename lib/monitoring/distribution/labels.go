@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-// Labels 标识一条指标序列。调用方将其传给 Registry 的观测方法后，
-// 不应再修改该映射。
+// Labels identifies a metric series. Callers should not modify the map after passing it
+// to a Registry observation method.
 type Labels map[string]string
 
-// Clone 返回标签集合的独立副本。
+// Clone returns an independent copy of the label set.
 func (l Labels) Clone() Labels {
 	result := make(Labels, len(l))
 	for key, value := range l {
@@ -20,7 +20,7 @@ func (l Labels) Clone() Labels {
 	return result
 }
 
-// CanonicalString 返回按键排序且结果稳定的标签字符串。
+// CanonicalString returns a stable label string sorted by key.
 func (l Labels) CanonicalString() string {
 	if len(l) == 0 {
 		return ""
@@ -42,7 +42,7 @@ func (l Labels) CanonicalString() string {
 	return builder.String()
 }
 
-// BuildMetricKey 返回指标序列的稳定标识。
+// BuildMetricKey returns a stable identifier for a metric series.
 func BuildMetricKey(namespace string, service string, metric string, labels Labels) string {
 	raw := strings.Join([]string{
 		namespace,

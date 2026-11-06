@@ -12,7 +12,7 @@ import (
 	kafkaLib "github.com/segmentio/kafka-go"
 )
 
-// Instance 连接实例
+// Instance connection instance
 type Instance struct {
 	Connections []*kafkaLib.Conn
 	Writer      *kafkaLib.Writer
@@ -21,48 +21,48 @@ type Instance struct {
 
 var instance *Instance
 
-// GetConnections 获取连接
+// GetConnections retrieves connections
 //
-// 调用此方法前需要先调用 Init 进行初始化
+// Call Init to initialize before calling this method
 func GetConnections() []*kafkaLib.Conn {
 	return instance.Connections
 }
 
-// GetWriter 获取写实例
+// GetWriter retrieves the writer instance
 //
-// 调用此方法前需要先调用 Init 进行初始化
+// Call Init to initialize before calling this method
 func GetWriter() *kafkaLib.Writer {
 	return instance.Writer
 }
 
-// GetReader 获取读实例
+// GetReader retrieves the reader instance
 //
-// 调用此方法前需要先调用 Init 进行初始化
+// Call Init to initialize before calling this method
 func GetReader() *kafkaLib.Reader {
 	return instance.Reader
 }
 
-// GetInstance 获取完整实例
+// GetInstance retrieves the complete instance
 //
-// 包含连接、读实例、写实例
+// Includes connections, reader, and writer instances
 func GetInstance() *Instance {
 	return instance
 }
 
-// Init 初始化连接
+// Init initializes connections
 //
-// 该方法会初始化连接、读实例、写实例
+// This method initializes connections, reader, and writer instances
 //
-// 初始化后，可调用 GetInstance 方法获取完整实例
+// After initialization, call GetInstance to retrieve the complete instance
 func Init(conf Conf, topic, groupID string) {
 	InitConnections(conf)
 	InitWriter(conf, topic)
 	InitReader(conf, topic, groupID)
 }
 
-// New 初始化连接
+// New initializes connections
 //
-// 该方法会初始化连接、读实例、写实例
+// This method initializes connections, reader, and writer instances
 func New(conf Conf, topic, groupID string) (connections []*kafkaLib.Conn,
 	writer *kafkaLib.Writer, wErr error,
 	reader *kafkaLib.Reader, rErr error) {
@@ -73,7 +73,7 @@ func New(conf Conf, topic, groupID string) (connections []*kafkaLib.Conn,
 	return
 }
 
-// InitConnections 初始化连接
+// InitConnections initializes connections
 func InitConnections(conf Conf) {
 	var connections = make([]*kafkaLib.Conn, 0, len(conf.Endpoints))
 	for _, addr := range conf.Endpoints {
@@ -81,7 +81,7 @@ func InitConnections(conf Conf) {
 			conn *kafkaLib.Conn
 			err  error
 		)
-		//无账号密码连接
+		//Connect without a username or password
 		if len(conf.Username) == 0 && len(conf.Password) == 0 {
 			conn, err = kafkaLib.Dial("tcp", addr)
 		} else {
@@ -112,7 +112,7 @@ func InitConnections(conf Conf) {
 	instance.Connections = connections
 }
 
-// NewConnections 实例化新的连接
+// NewConnections instantiates new connections
 func NewConnections(conf Conf) []*kafkaLib.Conn {
 	var connections = make([]*kafkaLib.Conn, 0, len(conf.Endpoints))
 	for _, addr := range conf.Endpoints {
@@ -120,7 +120,7 @@ func NewConnections(conf Conf) []*kafkaLib.Conn {
 			conn *kafkaLib.Conn
 			err  error
 		)
-		//无账号密码连接
+		//Connect without a username or password
 		if len(conf.Username) == 0 && len(conf.Password) == 0 {
 			conn, err = kafkaLib.Dial("tcp", addr)
 		} else {
@@ -147,7 +147,7 @@ func NewConnections(conf Conf) []*kafkaLib.Conn {
 	return connections
 }
 
-// InitWriter 初始化写实例
+// InitWriter initializes the writer instance
 func InitWriter(conf Conf, topic string) {
 	writer := &kafkaLib.Writer{
 		Addr:     kafkaLib.TCP(conf.Endpoints...),
@@ -176,7 +176,7 @@ func InitWriter(conf Conf, topic string) {
 	instance.Writer = writer
 }
 
-// NewWriter 实例化新的写实例
+// NewWriter instantiates a new writer
 func NewWriter(conf Conf, topic string) (*kafkaLib.Writer, error) {
 	writer := &kafkaLib.Writer{
 		Addr:     kafkaLib.TCP(conf.Endpoints...),
@@ -201,7 +201,7 @@ func NewWriter(conf Conf, topic string) (*kafkaLib.Writer, error) {
 	return writer, nil
 }
 
-// InitReader 初始化读实例
+// InitReader initializes the reader instance
 func InitReader(conf Conf, topic, groupID string) {
 	if conf.Timeout < 1 {
 		conf.Timeout = 10000
@@ -237,7 +237,7 @@ func InitReader(conf Conf, topic, groupID string) {
 	instance.Reader = reader
 }
 
-// NewReader 实例化新的读实例
+// NewReader instantiates a new reader
 func NewReader(conf Conf, topic, groupID string) (*kafkaLib.Reader, error) {
 	if conf.Timeout < 1 {
 		conf.Timeout = 10000
@@ -269,7 +269,7 @@ func NewReader(conf Conf, topic, groupID string) (*kafkaLib.Reader, error) {
 	return reader, nil
 }
 
-// 根据SASL授权类型获取认证装置
+// Get the authentication mechanism for the SASL authentication type
 func getMechanism(conf Conf) (sasl.Mechanism, error) {
 	switch conf.SASLAuthType {
 	default:

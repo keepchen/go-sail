@@ -6,93 +6,93 @@ import (
 	"go.uber.org/zap"
 )
 
-// LogTracer 链路日志追踪器
+// LogTracer log tracer for call chains
 type LogTracer interface {
-	// RequestID 获取请求id
+	// RequestID retrieves the request ID
 	//
-	// 尝试从上下文中获取请求id
+	// Try to retrieve the request ID from the context
 	RequestID() string
-	// SpanID 获取内部链路id
+	// SpanID retrieves the internal span ID
 	//
-	// 尝试从上下文中获取内部链路id
+	// Try to retrieve the internal span ID from the context
 	SpanID() string
-	// EntryAt 获取请求到达纳秒时间戳
+	// EntryAt retrieves the request arrival timestamp in nanoseconds
 	//
-	// 尝试从上下文中获取请求到达纳秒时间戳
+	// Try to retrieve the request arrival timestamp in nanoseconds from the context
 	EntryAt() int64
-	// GetLogger 获取 zap.Logger 实例
+	// GetLogger retrieves the zap.Logger instance
 	//
-	// 此实例携带了上下文的requestId和spanId，用于链路追踪
+	// This instance includes the context's requestId and spanId for tracing
 	GetLogger() *zap.Logger
-	// Debug 打印日志
+	// Debug prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：Debug
+	// Log level: Debug
 	Debug(message string, fields ...zap.Field)
-	// Info 打印日志
+	// Info prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：Info
+	// Log level: Info
 	Info(message string, fields ...zap.Field)
-	// Warn 打印日志
+	// Warn prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：Warn
+	// Log level: Warn
 	Warn(message string, fields ...zap.Field)
-	// Error 打印日志
+	// Error prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：Error
+	// Log level: Error
 	Error(message string, fields ...zap.Field)
-	// DPanic 打印日志
+	// DPanic prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：DPanic
+	// Log level: DPanic
 	DPanic(message string, fields ...zap.Field)
-	// Panic 打印日志
+	// Panic prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：Panic
+	// Log level: Panic
 	Panic(message string, fields ...zap.Field)
-	// Fatal 打印日志
+	// Fatal prints a log
 	//
-	// 尝试从上下文中获取logger实例进行打印，
+	// Try to retrieve a logger instance from the context for logging;
 	//
-	// 从上下文中获取的logger实例会携带链路追踪的字段。
+	// the context logger includes tracing fields.
 	//
-	// 若获取失败，则调用logger库进行打印
+	// If retrieval fails, use the logger library to print
 	//
-	// 日志级别：Fatal
+	// Log level: Fatal
 	Fatal(message string, fields ...zap.Field)
 }
 
@@ -103,7 +103,7 @@ type logTrace struct {
 
 var _ LogTracer = (*logTrace)(nil)
 
-// LogTrace 链路日志追踪
+// LogTrace call chain log tracing
 func LogTrace(c *gin.Context) LogTracer {
 	var zapLogger *zap.Logger
 	if loggerSvc, ok := c.Get("logger"); ok {

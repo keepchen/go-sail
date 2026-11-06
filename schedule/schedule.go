@@ -11,109 +11,109 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-// CancelFunc 取消函数
+// CancelFunc cancellation function
 //
-// 尚未启动或未在运行中的任务将被直接取消。
-// 正在运行中的任务将等待其运行结束，之后便不再启动。
+// Tasks that have not started or are not running are canceled immediately.
+// Running tasks are allowed to finish and will not run again.
 //
-// 调用此方法后，任务将从任务列表中移除。
+// Calling this method removes the task from the task list.
 type CancelFunc func()
 
-// Scheduler 调度器
+// Scheduler scheduler
 type Scheduler interface {
-	// WithoutOverlapping 防止任务堆叠，即禁止并发执行
+	// WithoutOverlapping prevents task overlap by disallowing concurrent execution
 	//
-	// 一个任务仅允许存在一个运行态
+	// Only one execution of a task may be running at a time
 	//
-	// # Note: 该方法使用redis锁来保证'全局'唯一性，
+	// # Note: this method uses a Redis lock to ensure 'global' uniqueness,
 	//
-	// 因此请确保先使用 redis.InitRedis 或
+	// so initialize the Redis connection first with redis.InitRedis or
 	//
-	// redis.InitRedisCluster 实例化redis连接
+	// redis.InitRedisCluster
 	WithoutOverlapping() Scheduler
-	// RunOnceImmediately 立即执行一次
+	// RunOnceImmediately runs once immediately
 	//
-	// 在任务注册成功后定时触发之前立即执行一次
+	// Run once immediately after successful registration, before the scheduled trigger
 	//
 	// # Note:
 	//
-	// 依然遵循 WithoutOverlapping 原则（如果有的话）
+	// Still respects WithoutOverlapping (if enabled)
 	RunOnceImmediately() Scheduler
-	// Every 每隔多久执行一次
+	// Every runs at the specified interval
 	//
-	// Note: interval至少需要大于等于1毫秒，否则将被设置为1毫秒
+	// Note: interval must be at least 1 millisecond; otherwise it is set to 1 millisecond
 	Every(interval time.Duration) (cancel CancelFunc)
-	// EverySecond 每秒执行一次
+	// EverySecond runs every second
 	EverySecond() (cancel CancelFunc)
-	// EveryFiveSeconds 每5秒执行一次
+	// EveryFiveSeconds runs every 5 seconds
 	EveryFiveSeconds() (cancel CancelFunc)
-	// EveryTenSeconds 每10秒执行一次
+	// EveryTenSeconds runs every 10 seconds
 	EveryTenSeconds() (cancel CancelFunc)
-	// EveryFifteenSeconds 每15秒执行一次
+	// EveryFifteenSeconds runs every 15 seconds
 	EveryFifteenSeconds() (cancel CancelFunc)
-	// EveryTwentySeconds 每20秒执行一次
+	// EveryTwentySeconds runs every 20 seconds
 	EveryTwentySeconds() (cancel CancelFunc)
-	// EveryThirtySeconds 每30秒执行一次
+	// EveryThirtySeconds runs every 30 seconds
 	EveryThirtySeconds() (cancel CancelFunc)
-	// EveryMinute 每分钟执行一次
+	// EveryMinute runs every minute
 	EveryMinute() (cancel CancelFunc)
-	// EveryFiveMinutes 每5分钟执行一次
+	// EveryFiveMinutes runs every 5 minutes
 	EveryFiveMinutes() (cancel CancelFunc)
-	// EveryTenMinutes 每10分钟执行一次
+	// EveryTenMinutes runs every 10 minutes
 	EveryTenMinutes() (cancel CancelFunc)
-	// EveryFifteenMinutes 每15分钟执行一次
+	// EveryFifteenMinutes runs every 15 minutes
 	EveryFifteenMinutes() (cancel CancelFunc)
-	// EveryTwentyMinutes 每20分钟执行一次
+	// EveryTwentyMinutes runs every 20 minutes
 	EveryTwentyMinutes() (cancel CancelFunc)
-	// EveryThirtyMinutes 每30分钟执行一次
+	// EveryThirtyMinutes runs every 30 minutes
 	EveryThirtyMinutes() (cancel CancelFunc)
-	// Hourly 每1小时执行一次
+	// Hourly runs every hour
 	Hourly() (cancel CancelFunc)
-	// EveryFiveHours 每5小时执行一次
+	// EveryFiveHours runs every 5 hours
 	EveryFiveHours() (cancel CancelFunc)
-	// EveryTenHours 每10小时执行一次
+	// EveryTenHours runs every 10 hours
 	EveryTenHours() (cancel CancelFunc)
-	// EveryTwentyHours 每20小时执行一次
+	// EveryTwentyHours runs every 20 hours
 	EveryTwentyHours() (cancel CancelFunc)
-	// Daily 每天执行一次（每24小时）
+	// Daily runs every day (every 24 hours)
 	Daily() (cancel CancelFunc)
-	// Weekly 每周执行一次（每7天）
+	// Weekly runs every week (every 7 days)
 	Weekly() (cancel CancelFunc)
-	// Monthly 每月执行一次（每30天）
+	// Monthly runs every month (every 30 days)
 	Monthly() (cancel CancelFunc)
-	// Yearly 每年执行一次（每365天）
+	// Yearly runs every year (every 365 days)
 	Yearly() (cancel CancelFunc)
-	// RunAfter 在一定时间后执行
+	// RunAfter runs after a specified duration
 	//
 	// # Note
 	//
-	// 这是一个一次性任务，不会重复执行
+	// This is a one-time task and does not repeat
 	RunAfter(delay time.Duration) (cancel CancelFunc)
-	// RunAt 在某一时刻执行
+	// RunAt runs at a specified time
 	//
-	//重复地在某个时间点执行任务
+	//Run tasks repeatedly at a specified time
 	//
-	// crontabExpr 支持五字段和六字段表达式，省略秒字段时默认为0。
+	// crontabExpr supports five- and six-field expressions; omitted seconds default to 0.
 	//
-	// 格式：[秒(0-59)] 分(0-59) 时(0-23) 日(1-31) 月(1-12) 星期(0-6，周日为0)。
-	// 月份和星期也支持英文缩写；支持 @daily、@every 等描述符。
-	// LastDayOfMonth 是额外支持的月末预设，不支持其他含 L 的表达式。
+	// Format: [second(0-59)] minute(0-59) hour(0-23) day(1-31) month(1-12) weekday(0-6, Sunday is 0).
+	// Months and weekdays also support English abbreviations; descriptors such as @daily and @every are supported.
+	// LastDayOfMonth is an additional month-end preset; other expressions containing L are not supported.
 	RunAt(crontabExpr string) (cancel CancelFunc)
-	// TenClockAtWeekday 每个工作日（周一~周五）上午10点
+	// TenClockAtWeekday runs at 10:00 every weekday (Monday-Friday)
 	TenClockAtWeekday() (cancel CancelFunc)
-	// TenClockAtWeekend 每个周末（周六和周日）上午10点
+	// TenClockAtWeekend runs at 10:00 every weekend day (Saturday and Sunday)
 	TenClockAtWeekend() (cancel CancelFunc)
-	// FirstDayOfMonthly 每月1号
+	// FirstDayOfMonthly runs on the first day of every month
 	FirstDayOfMonthly() (cancel CancelFunc)
-	// LastDayOfMonthly 每月最后一天
+	// LastDayOfMonthly runs on the last day of every month
 	LastDayOfMonthly() (cancel CancelFunc)
-	// FirstDayOfWeek 每周1的00:00
+	// FirstDayOfWeek runs at 00:00 every Monday
 	FirstDayOfWeek() (cancel CancelFunc)
-	// LastDayOfWeek 每周天的00:00
+	// LastDayOfWeek runs at 00:00 every Sunday
 	LastDayOfWeek() (cancel CancelFunc)
 }
 
-// taskJob 任务
+// taskJob task
 type taskJob struct {
 	name               string
 	task               func()
@@ -164,35 +164,35 @@ var (
 	redisClients = make([]redisLib.UniversalClient, 0)
 )
 
-// SetRedisClientOnce 设置redis连接客户端
+// SetRedisClientOnce sets the Redis connection client
 func SetRedisClientOnce(client redisLib.UniversalClient) {
 	setRedisOnce.Do(func() {
 		redisClients = []redisLib.UniversalClient{client}
 	})
 }
 
-// NewJob 实例化任务
+// NewJob instantiates a task
 //
-// name 任务名称唯一标识
+// name unique task name identifier
 //
-// task 任务处理函数
+// task task handler
 //
 // # Note:
 //
-// 如果name重复，将会panic
+// Panics if name is duplicated
 func NewJob(name string, task func()) Scheduler {
 	return Job(name, task)
 }
 
-// Job 实例化任务
+// Job instantiates a task
 //
-// name 任务名称唯一标识
+// name unique task name identifier
 //
-// task 任务处理函数
+// task task handler
 //
 // # Note:
 //
-// 如果name重复，将会panic
+// Panics if name is duplicated
 func Job(name string, task func()) Scheduler {
 	job := &taskJob{
 		name:           name,
@@ -227,35 +227,35 @@ func Job(name string, task func()) Scheduler {
 	return job
 }
 
-// WithoutOverlapping 防止任务堆叠，即禁止并发执行
+// WithoutOverlapping prevents task overlap by disallowing concurrent execution
 //
-// 一个任务仅允许存在一个运行态
+// Only one execution of a task may be running at a time
 //
-// # Note: 该方法使用redis锁来保证'全局'唯一性，
+// # Note: this method uses a Redis lock to ensure 'global' uniqueness,
 //
-// 因此请确保先使用 redis.InitRedis 或
+// so initialize the Redis connection first with redis.InitRedis or
 //
-// redis.InitRedisCluster 实例化redis连接
+// redis.InitRedisCluster
 func (j *taskJob) WithoutOverlapping() Scheduler {
 	j.withoutOverlapping = true
 
 	return j
 }
 
-// RunOnceImmediately 立即执行一次
+// RunOnceImmediately runs once immediately
 //
-// 在任务注册成功后定时触发之前立即执行一次
+// Run once immediately after successful registration, before the scheduled trigger
 //
 // # Note:
 //
-// 依然遵循 WithoutOverlapping 原则（如果有的话）
+// Still respects WithoutOverlapping (if enabled)
 func (j *taskJob) RunOnceImmediately() Scheduler {
 	j.runOnceImmediately = true
 
 	return j
 }
 
-// JobIsRunning 查看任务是否正在执行
+// JobIsRunning checks whether a task is running
 func JobIsRunning(jobName string) bool {
 	var (
 		running = false
@@ -272,15 +272,15 @@ func JobIsRunning(jobName string) bool {
 	return running
 }
 
-// Call 手动启动任务
+// Call starts a task manually
 //
-// jobName 任务名称
+// jobName task name
 //
-// mandatory 如果为true，将不检测堆叠状态而直接执行
+// mandatory if true, execute directly without checking for overlap
 //
 // # Note
 //
-// 内部函数将被同步式的调用
+// The internal function is called synchronously
 func Call(jobName string, mandatory bool) {
 	var (
 		job       *taskJob
@@ -322,17 +322,17 @@ func Call(jobName string, mandatory bool) {
 	}
 }
 
-// MustCall 手动启动任务
+// MustCall starts a task manually
 //
-// jobName 任务名称
+// jobName task name
 //
-// mandatory 如果为true，将不检测堆叠状态而直接执行
+// mandatory if true, execute directly without checking for overlap
 //
 // # Note
 //
-// 1.若jobName在任务列表中不存在（如未注册或被取消），将panic
+// 1.Panics if jobName is absent from the task list (e.g. not registered or canceled)
 //
-// 2.内部函数将被同步式的调用
+// 2.The internal function is called synchronously
 func MustCall(jobName string, mandatory bool) {
 	var (
 		job       *taskJob

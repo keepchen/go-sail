@@ -4,15 +4,15 @@ import (
 	"fmt"
 )
 
-// 错误码
+// Error codes
 const (
-	ErrNone                      = CodeType(0)      //没有错误，占位
-	ErrRequestParamsInvalid      = CodeType(100000) //请求参数有误
-	ErrAuthorizationTokenInvalid = CodeType(100001) //令牌已失效
-	ErrInternalServerError       = CodeType(999999) //服务器内部错误
+	ErrNone                      = CodeType(0)      //No error; placeholder
+	ErrRequestParamsInvalid      = CodeType(100000) //Invalid request parameters
+	ErrAuthorizationTokenInvalid = CodeType(100001) //Token has expired
+	ErrInternalServerError       = CodeType(999999) //Internal server error
 )
 
-// 错误码信息表
+// Error code message table
 //
 // # READONLY for concurrency safety
 var initErrorCodeMsgMap = MMBox{
@@ -36,9 +36,9 @@ var initErrorCodeMsgMap = MMBox{
 	},
 }
 
-// String 获取错误信息字符
+// String returns the error message string
 func (ct CodeType) String(language ...string) string {
-	var lang = LanguageEnglish // 默认使用英语
+	var lang = LanguageEnglish // Use English by default
 	if len(language) > 0 {
 		lang = LanguageCode(language[0])
 	}
@@ -46,7 +46,7 @@ func (ct CodeType) String(language ...string) string {
 	if val, ok := GetCodeMsg(lang, ct); ok {
 		return val
 	}
-	//如果传入的语言不是英文，且没有被找到，则回退到使用英文
+	//Fall back to English if the requested language is not English and cannot be found
 	if lang != LanguageEnglish {
 		if val, ok := GetCodeMsg(LanguageEnglish, ct); ok {
 			return val
@@ -56,7 +56,7 @@ func (ct CodeType) String(language ...string) string {
 	return fmt.Sprintf("[Warn] ErrorCode {%d} under Language {%s} not defined!", ct, lang)
 }
 
-// Int 获取错误码
+// Int returns the error code
 func (ct CodeType) Int() int {
 	return int(ct)
 }

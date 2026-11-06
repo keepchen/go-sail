@@ -9,19 +9,19 @@ type swaggerImpl struct {
 }
 
 type ISwagger interface {
-	// PrintSummaryInfo 打印swagger概览信息参数
+	// PrintSummaryInfo prints Swagger summary information parameters
 	//
-	// 用于生成swagger注释
+	// Used to generate Swagger comments
 	PrintSummaryInfo(param SwaggerSummaryInfoParam) string
-	// PrintControllerInfo 打印swagger控制器信息
+	// PrintControllerInfo prints Swagger controller information
 	//
-	// 用于生成swagger注释
+	// Used to generate Swagger comments
 	PrintControllerInfo(param SwaggerControllerInfoParam) string
 }
 
 var swi ISwagger = &swaggerImpl{}
 
-// Swagger 实例化swagger工具类
+// Swagger instantiates Swagger utilities
 func Swagger() ISwagger {
 	return swi
 }
@@ -70,24 +70,24 @@ var (
 	controllerInfoPayloadTpl       = `payload body`
 )
 
-// SwaggerSummaryInfoParam 概览信息参数
+// SwaggerSummaryInfoParam summary information parameters
 type SwaggerSummaryInfoParam struct {
-	Title            string //标题
-	Version          string //版本
-	Description      string //描述
-	TermOfServiceUrl string //服务条款地址
-	ContactName      string //联系人
-	ContactUrl       string //联系网址
-	ContactEmail     string //联系邮箱
-	LicenseUrl       string //证书网址
-	Host             string //接口主机地址
-	BasePath         string //接口公共前缀路径
-	NeedAuthorize    bool   //是否需要token授权
+	Title            string //Title
+	Version          string //Version
+	Description      string //Description
+	TermOfServiceUrl string //Terms of service URL
+	ContactName      string //Contact
+	ContactUrl       string //Contact website
+	ContactEmail     string //Contact email
+	LicenseUrl       string //License URL
+	Host             string //API host address
+	BasePath         string //Common API base path
+	NeedAuthorize    bool   //Whether token authorization is required
 }
 
-// PrintSummaryInfo 打印swagger概览信息参数
+// PrintSummaryInfo prints Swagger summary information parameters
 //
-// 用于生成swagger注释
+// Used to generate Swagger comments
 func (swaggerImpl) PrintSummaryInfo(param SwaggerSummaryInfoParam) string {
 	var needAuthorizeString string
 	if param.NeedAuthorize {
@@ -99,23 +99,23 @@ func (swaggerImpl) PrintSummaryInfo(param SwaggerSummaryInfoParam) string {
 		param.ContactEmail, param.LicenseUrl, param.Host, param.BasePath, needAuthorizeString)
 }
 
-// SwaggerControllerInfoParam 控制器信息参数
+// SwaggerControllerInfoParam controller information parameters
 type SwaggerControllerInfoParam struct {
-	FunctionName       string //方法名称
-	FunctionDesc       string //方法描述
-	Tag                string //分类标签
-	Summary            string //简要标题
-	Description        string //接口描述
-	Method             string //请求方法
-	RequestParamString string //请求参数字符
-	ResponseBodyString string //返回体字符
-	ApiPath            string //接口路径
-	NeedAuthorize      bool   //是否需要授权
+	FunctionName       string //Method name
+	FunctionDesc       string //Method description
+	Tag                string //Category tags
+	Summary            string //Summary title
+	Description        string //API description
+	Method             string //Request method
+	RequestParamString string //Request parameter string
+	ResponseBodyString string //Response body string
+	ApiPath            string //API path
+	NeedAuthorize      bool   //Whether authorization is required
 }
 
-// PrintControllerInfo 打印swagger控制器信息
+// PrintControllerInfo prints Swagger controller information
 //
-// 用于生成swagger注释
+// Used to generate Swagger comments
 func (swaggerImpl) PrintControllerInfo(param SwaggerControllerInfoParam) string {
 	var (
 		requestString       string

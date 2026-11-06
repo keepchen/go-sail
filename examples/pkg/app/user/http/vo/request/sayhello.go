@@ -2,10 +2,10 @@ package request
 
 import "github.com/keepchen/go-sail/v3/constants"
 
-// SayHello 欢迎请求参数
+// SayHello greeting request parameters
 // swagger: model
 type SayHello struct {
-	Nickname string `json:"nickname" form:"nickname" query:"nickname"` // 昵称
+	Nickname string `json:"nickname" form:"nickname" query:"nickname"` // Nickname
 }
 
 func (v SayHello) Validator() (constants.ICodeType, error) {

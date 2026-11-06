@@ -31,9 +31,9 @@ func init() {
 	})
 }
 
-// Put 保存key-value键值对
+// Put stores a key-value pair
 //
-// 若不设置过期时间，则默认过期时间为一个小时
+// The default expiration is one hour if no expiration is specified
 func Put(key string, val any, expiredTimeDuration ...time.Duration) bool {
 	var expiredAt int64
 	if len(expiredTimeDuration) > 0 {
@@ -48,14 +48,14 @@ func Put(key string, val any, expiredTimeDuration ...time.Duration) bool {
 	return true
 }
 
-// Get 根据key获取对应的value值
-// ret的表示(0:key存在且未过期,-1:key已过期,-2:key不存在)
+// Get retrieves the value for a key
+// ret indicates (0:key exists and has not expired,-1:key has expired,-2:key does not exist)
 func Get(key string) (value any, ret int) {
 	lc.mux.Lock()
 	defer lc.mux.Unlock()
 	if val, ok := lc.maps[key]; ok {
 		if val.expiredAt < utils.NewTimeWithTimeZone().Now().Unix() {
-			delete(lc.maps, key) // <- 删除过期key
+			delete(lc.maps, key) // <- Delete expired keys
 			return nil, -1
 		}
 		value = val.content
@@ -66,7 +66,7 @@ func Get(key string) (value any, ret int) {
 	}
 }
 
-// Forget 根据key删除对应的value值
+// Forget deletes the value for a key
 func Forget(key string) bool {
 	lc.mux.Lock()
 	defer lc.mux.Unlock()
@@ -78,7 +78,7 @@ func Forget(key string) bool {
 	return false
 }
 
-// Expire 为key设置过期时间
+// Expire sets the expiration for a key
 func Expire(key string, expiredTimeDuration time.Duration) bool {
 	var optOk bool
 

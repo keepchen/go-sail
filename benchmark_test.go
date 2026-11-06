@@ -18,7 +18,7 @@ import (
 	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
-// ----------- 共享变量 -------------
+// ----------- Shared variables -------------
 var (
 	listeningAddrSail = ":12026"
 	listeningAddrGin  = ":12027"
@@ -27,9 +27,9 @@ var (
 	serviceReadyGin  = make(chan struct{})
 )
 
-// TestMain: 启动 go-sail 与原生 gin 两个服务
+// TestMain: Start both go-sail and native Gin services
 func TestMain(m *testing.M) {
-	// 启动 go-sail
+	// Start go-sail
 	go func() {
 		conf := config.Config{
 			LoggerConf: logger.Conf{
@@ -55,7 +55,7 @@ func TestMain(m *testing.M) {
 			Launch()
 	}()
 
-	// 启动原生 Gin
+	// Start native Gin
 	go func() {
 		gin.SetMode(gin.ReleaseMode)
 		r := gin.New()
@@ -70,21 +70,21 @@ func TestMain(m *testing.M) {
 			Addr:    listeningAddrGin,
 			Handler: r,
 		}
-		// 启动时标记就绪
+		// Mark as ready on startup
 		close(serviceReadyGin)
 		if err := server.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			_, _ = fmt.Fprintf(os.Stderr, "Gin server error: %v\n", err)
 		}
 	}()
 
-	// 等待两个服务都就绪
+	// Wait until both services are ready
 	<-serviceReadySail
 	<-serviceReadyGin
 
-	// 跑基准
+	// Run benchmarks
 	code := m.Run()
 
-	// 关闭 go-sail
+	// Shut down go-sail
 	sail.Shutdown()
 
 	os.Exit(code)

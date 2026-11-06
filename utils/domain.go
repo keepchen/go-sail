@@ -12,13 +12,13 @@ type domainImpl struct {
 }
 
 type IDomain interface {
-	// Validate 验证域名是否合法
+	// Validate checks whether a domain name is valid
 	//
-	// 不支持通配符
+	// Wildcards are not supported
 	Validate(domain string) bool
-	// ValidateWithWildcard 验证域名是否合法
+	// ValidateWithWildcard checks whether a domain name is valid
 	//
-	// 包含通配符规则验证
+	// Includes wildcard rule validation
 	//
 	// eg.
 	//
@@ -32,43 +32,43 @@ type IDomain interface {
 	//
 	// example*.com   -> ✖
 	ValidateWithWildcard(domain string) bool
-	// RefererMatch refer是否匹配域名
+	// RefererMatch checks whether the referer matches a domain
 	//
-	// 提示：
+	// Tips:
 	//
-	// 1.referer和域名大小写不敏感
+	// 1.Referer and domain comparisons are case-insensitive
 	//
-	// 2.此函数支持通配符域名检测
+	// 2.This function supports wildcard domain matching
 	RefererMatch(referer, domain string) bool
-	// LookupCNAME 查询域名cname记录
+	// LookupCNAME queries a domain's CNAME record
 	//
-	// # 注意
+	// # Note
 	//
-	// nslookup的结果会在域名后增加一个「.」，
-	// 因此此函数在对比前会检测cnameTarget参数是否以「.」
-	// 结尾，如果不是，则会在结尾加上「.」，然后再进行对比。
+	// nslookup appends a "." to domain names,
+	// so this function checks whether cnameTarget ends with "."
+	// before comparing; if not, it appends "." and then compares.
 	LookupCNAME(domain, cnameTarget string) bool
 }
 
 var doi IDomain = &domainImpl{}
 
-// Domain 实例化domain工具类
+// Domain instantiates domain utilities
 func Domain() IDomain {
 	return doi
 }
 
-// Validate 验证域名是否合法
+// Validate checks whether a domain name is valid
 //
-// 不支持通配符
+// Wildcards are not supported
 func (domainImpl) Validate(domain string) bool {
 	ok, err := regexp.MatchString("^([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$", domain)
 
 	return ok && err == nil
 }
 
-// ValidateWithWildcard 验证域名是否合法
+// ValidateWithWildcard checks whether a domain name is valid
 //
-// 包含通配符规则验证
+// Includes wildcard rule validation
 //
 // eg.
 //
@@ -87,13 +87,13 @@ func (domainImpl) ValidateWithWildcard(domain string) bool {
 	return ok && err == nil
 }
 
-// RefererMatch refer是否匹配域名
+// RefererMatch checks whether the referer matches a domain
 //
-// 提示：
+// Tips:
 //
-// 1.referer和域名大小写不敏感
+// 1.Referer and domain comparisons are case-insensitive
 //
-// 2.此函数支持通配符域名检测
+// 2.This function supports wildcard domain matching
 func (domainImpl) RefererMatch(referer, domain string) bool {
 	if domain == "*" {
 		return true
@@ -109,11 +109,11 @@ func (domainImpl) RefererMatch(referer, domain string) bool {
 	} else {
 		host = u.Host
 	}
-	//域名不包含星号，直接检测两者是否相等
+	//If the domain has no asterisk, compare the two directly
 	if !strings.HasPrefix(domain, "*") {
 		return strings.EqualFold(host, domain)
 	}
-	//去除掉星号，检测是否包含
+	//Remove the asterisk and check for containment
 	clearDomain := strings.Replace(domain, "*", "", 1)
 
 	// host=a.b.com
@@ -121,13 +121,13 @@ func (domainImpl) RefererMatch(referer, domain string) bool {
 	return strings.HasSuffix(strings.ToLower(host), strings.ToLower(clearDomain))
 }
 
-// LookupCNAME 查询域名cname记录
+// LookupCNAME queries a domain's CNAME record
 //
-// # 注意
+// # Note
 //
-// nslookup的结果会在域名后增加一个「.」，
-// 因此此函数在对比前会检测cnameTarget参数是否以「.」
-// 结尾，如果不是，则会在结尾加上「.」，然后再进行对比。
+// nslookup appends a "." to domain names,
+// so this function checks whether cnameTarget ends with "."
+// before comparing; if not, it appends "." and then compares.
 func (domainImpl) LookupCNAME(domain, cnameTarget string) bool {
 	if !strings.HasSuffix(cnameTarget, ".") {
 		cnameTarget = fmt.Sprintf("%s.", cnameTarget)

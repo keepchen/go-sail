@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Aggregator 通过选主确定唯一进程，将节点级 Sketch 合并为服务级终态聚合窗口。
+// Aggregator elects a single process to merge node-level Sketches into finalized service-level aggregation windows.
 type Aggregator struct {
 	config *Conf
 
@@ -20,7 +20,7 @@ type Aggregator struct {
 	logger     *zap.Logger
 }
 
-// NewAggregator 使用指定的存储和租约后端创建聚合器。
+// NewAggregator creates an aggregator with the specified storage and lease backend.
 func NewAggregator(config *Conf, store Store, leadership Leadership, logger *zap.Logger) *Aggregator {
 	if logger == nil {
 		logger = zap.NewNop()
@@ -34,8 +34,8 @@ func NewAggregator(config *Conf, store Store, leadership Leadership, logger *zap
 	}
 }
 
-// Run 参与选主并持续聚合已关闭窗口，直至 ctx 被取消。
-// 运行期间遗漏的窗口会从持久化游标处依次补算。
+// Run participates in leader election and continuously aggregates closed windows until ctx is canceled.
+// Windows missed during operation are backfilled sequentially from the persisted cursor.
 func (a *Aggregator) Run(ctx context.Context) {
 	if !a.config.Aggregator.Enabled {
 		return
@@ -100,7 +100,7 @@ func (a *Aggregator) aggregateClosedWindow(ctx context.Context, now time.Time) e
 		return fmt.Errorf("[Go-Sail] <monitoring> load aggregation cursor: %w", err)
 	}
 	if cursor.IsZero() {
-		// 首次启动从最新的已关闭窗口开始；之后由持久化游标补算停机期间的窗口。
+		// The first run starts at the latest closed window; subsequent runs use the persisted cursor to backfill windows missed during downtime.
 		cursor = latestWindowEnd.Add(-a.config.AggregateWindow)
 	}
 
@@ -116,8 +116,8 @@ func (a *Aggregator) aggregateClosedWindow(ctx context.Context, now time.Time) e
 	return nil
 }
 
-// AggregateWindow 校验、分组并合并完全包含在半开区间
-// [windowStart, windowEnd) 内的所有记录。
+// AggregateWindow validates, groups, and merges all records fully contained in the half-open interval
+// [windowStart, windowEnd).
 func (a *Aggregator) AggregateWindow(ctx context.Context, windowStart time.Time, windowEnd time.Time) error {
 	records, err := a.store.ListRecords(
 		ctx,
@@ -188,7 +188,7 @@ func (a *Aggregator) aggregateGroup(ctx context.Context, windowStart time.Time, 
 	)
 
 	for _, record := range records {
-		// 防止 Store 异常返回重复记录。
+		// Guard against duplicate records unexpectedly returned by Store.
 		if _, exists := recordSet[record.RecordID]; exists {
 			continue
 		}
@@ -262,7 +262,7 @@ func (a *Aggregator) aggregateGroup(ctx context.Context, windowStart time.Time, 
 
 		Quantiles: quantiles,
 
-		// 保留聚合窗口级别的合并 Sketch，供下游继续合并。
+		// Retain the merged Sketch for the aggregation window for further downstream merging.
 		Payload:   sketch.Encode(),
 		Finalized: true,
 		CreatedAt: time.Now().UTC(),

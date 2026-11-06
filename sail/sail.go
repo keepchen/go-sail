@@ -17,31 +17,31 @@ import (
 	"go.uber.org/zap"
 )
 
-// Sailor 船员就位
+// Sailor crew ready
 type Sailor interface {
 	// SetupApiOption
 	//
-	// 设置统一返回配置
+	// Set common response configuration
 	SetupApiOption(opt *api.Option) Sailor
-	// EnableWebsocket 启动websocket服务
+	// EnableWebsocket starts the WebSocket service
 	//
-	// ws websocket连接实例，若为空，则启动默认配置连接
+	// ws WebSocket connection instance; if nil, start a connection with default settings
 	//
-	// handler 处理函数，若为空，则启用默认处理函数（仅打印接收到的message信息）
+	// handler handler function; if nil, use the default handler (only prints received messages)
 	//
-	// middlewares 路由中间件
+	// middlewares route middleware
 	EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn), middlewares ...gin.HandlerFunc) Sailor
-	// Hook 挂载相关方法
+	// Hook attaches related functions
 	//
-	// registerRoutes 注册路由函数
+	// registerRoutes route registration function
 	//
-	// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行
+	// beforeFunc custom pre-hook (optional), executed before framework functions
 	//
-	// 注意beforeFunc是异步执行的，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
+	// Note that beforeFunc runs asynchronously and components are not yet initialized; accessing components in this function will cause a nil pointer panic.
 	//
-	// afterFunc 后置自定义处理函数（可选），在框架函数之后执行
+	// afterFunc custom post-hook (optional), executed after framework functions
 	//
-	// 注意afterFunc是异步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
+	// Note that afterFunc runs asynchronously; components have been initialized according to configuration and can be used as needed.
 	Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad
 }
 
@@ -53,7 +53,7 @@ type websocketConf struct {
 	handler     func(ws *websocket.Conn)
 }
 
-// Sail 框架配置
+// Sail framework configuration
 type Sail struct {
 	appName   string
 	conf      *config.Config
@@ -63,13 +63,13 @@ type Sail struct {
 
 var _ Sailor = &Sail{}
 
-// Launchpad 启动台
+// Launchpad launchpad
 type Launchpad interface {
-	// Launch 启动
+	// Launch launches
 	Launch()
 }
 
-// Launcher 启动器
+// Launcher launcher
 type Launcher struct {
 	sa                 *Sail
 	registerRoutesFunc func(ginEngine *gin.Engine)
@@ -79,13 +79,13 @@ type Launcher struct {
 
 var _ Launchpad = &Launcher{}
 
-// WakeupHttp 唤醒http
+// WakeupHttp wakes up HTTP
 //
-// 启动前的配置准备
+// Prepare configuration before startup
 //
-// appName 应用名称
+// appName application name
 //
-// conf 配置文件
+// conf configuration file
 func WakeupHttp(appName string, conf *config.Config) Sailor {
 	if conf == nil {
 		panic("config is nil, did you forget to initialize the config?")
@@ -98,20 +98,20 @@ func WakeupHttp(appName string, conf *config.Config) Sailor {
 
 // SetupApiOption
 //
-// 设置统一返回配置
+// Set common response configuration
 func (s *Sail) SetupApiOption(opt *api.Option) Sailor {
 	s.apiOption = opt
 
 	return s
 }
 
-// EnableWebsocket 启动websocket服务
+// EnableWebsocket starts the WebSocket service
 //
-// routePath 路由地址
+// routePath route path
 //
-// ws websocket连接实例，若为空，则启动默认的连接实例
+// ws WebSocket connection instance; if nil, start the default connection instance
 //
-// handler 处理函数，若为空，则启动`defaultWebsocketHandlerFunc`默认处理函数
+// handler handler function; if nil, start the default handler `defaultWebsocketHandlerFunc`
 func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Conn), middlewares ...gin.HandlerFunc) Sailor {
 	s.wsConf = &websocketConf{
 		enable:      true,
@@ -124,17 +124,17 @@ func (s *Sail) EnableWebsocket(ws *websocket.Conn, handler func(ws *websocket.Co
 	return s
 }
 
-// Hook 挂载相关方法
+// Hook attaches related functions
 //
-// registerRoutes 注册路由函数
+// registerRoutes route registration function
 //
-// beforeFunc 前置自定义处理函数（可选），在框架函数之前执行
+// beforeFunc custom pre-hook (optional), executed before framework functions
 //
-// 注意beforeFunc是异步执行的，另外此时组件尚未初始化，因此在此函数内调用组件将会出现空指针异常（panic）。
+// Note that beforeFunc runs asynchronously and components are not yet initialized; accessing components in this function will cause a nil pointer panic.
 //
-// afterFunc 后置自定义处理函数（可选），在框架函数之后执行
+// afterFunc custom post-hook (optional), executed after framework functions
 //
-// 注意afterFunc是异步执行的，另外此时组件已经按配置初始化完成，可以按需调用。
+// Note that afterFunc runs asynchronously; components have been initialized according to configuration and can be used as needed.
 func (s *Sail) Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afterFunc func()) Launchpad {
 	return &Launcher{
 		sa:                 s,
@@ -144,7 +144,7 @@ func (s *Sail) Hook(registerRoutes func(ginEngine *gin.Engine), beforeFunc, afte
 	}
 }
 
-// Launch 启动
+// Launch launches
 func (l *Launcher) Launch() {
 	defer func() {
 		if err := recover(); err != nil {
@@ -161,23 +161,23 @@ func (l *Launcher) Launch() {
 
 	wg := &sync.WaitGroup{}
 
-	//- before，自定义前置函数调用
+	//- before, invoke the custom pre-hook
 	if l.beforeFunc != nil {
 		go l.beforeFunc()
 	}
 
-	//:: 根据配置依次初始化组件、启动服务 ::
+	//:: Initialize components and start services in order according to configuration ::
 	componentsStartup(l.sa.appName, l.sa.conf)
 
 	//- Gin
 	ginEngine := httpserver.InitGinEngine(l.sa.conf.HttpServer)
 
-	//- 注册自定义路由
+	//- Register custom routes
 	if l.registerRoutesFunc != nil {
 		l.registerRoutesFunc(ginEngine)
 	}
 
-	//- 注册websocket
+	//- Register WebSocket
 	if l.sa.wsConf != nil && l.sa.wsConf.enable {
 		if len(l.sa.wsConf.middlewares) > 0 {
 			ginEngine.Use(l.sa.wsConf.middlewares...).GET(l.sa.wsConf.routePath,
@@ -205,25 +205,25 @@ func (l *Launcher) Launch() {
 	//set config
 	config.Set(l.sa.conf)
 
-	//- after,自定义后置函数调用
+	//- after, invoke the custom post-hook
 	if l.afterFunc != nil {
 		go l.afterFunc()
 	}
 
 	wg.Wait()
 
-	//设置了组件关闭前应等待调用者，需要等待调用者发送退出信号
+	//Waiting for the caller before component shutdown is enabled; wait for the caller's exit signal
 	if atomic.LoadInt32(&componentsWaitForCallerState) == 1 {
 		<-waitForMeChan
 	}
 
-	//关闭相应的组件
+	//Shut down the corresponding components
 	componentsShutdown(l.sa.conf)
 }
 
-// Shutdown 关闭服务
+// Shutdown shuts down services
 //
-// 用于手动停止服务
+// Used to stop services manually
 func Shutdown() {
 	go httpserver.NotifyExit(syscall.SIGINT)
 }
@@ -234,16 +234,16 @@ var (
 	closeWaitChanState           int32
 )
 
-// ComponentsBeforeShutdownWaitForCaller 组件关闭前等待调用者
+// ComponentsBeforeShutdownWaitForCaller waits for the caller before shutting down components
 //
-// 框架默认行为：监听到退出信号后会停止http服务并关闭已启动的组件
+// Default framework behavior: stop the HTTP service and shut down started components upon receiving an exit signal
 //
-// 调用此方法后，在关闭已启动的组件前会等待调用方发出指令，指令发出后才会执行
-// 关闭组件的动作。
+// After this method is called, shutting down started components waits for the caller's instruction;
+// components are shut down only after that instruction is received.
 //
-// 调用方可以调用 ComponentsShouldShutdownCauseImReady 方法指示组件退出。
+// Callers can invoke ComponentsShouldShutdownCauseImReady to signal component shutdown.
 //
-// # 使用示例：
+// # Usage example:
 //
 //		  beforeFunc := func() {
 //	       sail.ComponentsBeforeShutdownWaitForCaller()
@@ -256,9 +256,9 @@ func ComponentsBeforeShutdownWaitForCaller() {
 	atomic.CompareAndSwapInt32(&componentsWaitForCallerState, 0, 1)
 }
 
-// ComponentsShouldShutdownCauseImReady 我已就绪，组件可以关闭了
+// ComponentsShouldShutdownCauseImReady signals readiness for component shutdown
 //
-// 此方法需要与 ComponentsBeforeShutdownWaitForCaller 方法配合使用
+// Use this method together with ComponentsBeforeShutdownWaitForCaller
 func ComponentsShouldShutdownCauseImReady() {
 	if atomic.CompareAndSwapInt32(&closeWaitChanState, 0, 1) {
 		close(waitForMeChan)

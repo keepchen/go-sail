@@ -22,7 +22,7 @@ func TestListeningExit(t *testing.T) {
 			time.Sleep(time.Second)
 			wg.Done()
 
-			//模拟触发
+			//Simulate a trigger
 			signals <- syscall.SIGINT
 		}()
 

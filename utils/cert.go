@@ -15,52 +15,52 @@ type certImpl struct {
 }
 
 type ICert interface {
-	// ReportValidity 报告证书有效性
+	// ReportValidity reports certificate validity
 	//
-	// 参数：
+	// Parameters:
 	//
-	// - domain: 域名
+	// - domain: domain name
 	//
-	// - pemData: 包含 -----BEGIN CERTIFICATE----- xx -----END CERTIFICATE----- 的证书链，格式为pem或crt
+	// - pemData: certificate chain containing -----BEGIN CERTIFICATE----- xx -----END CERTIFICATE----- in PEM or CRT format
 	//
-	// 返回值：
+	// Returns:
 	//
-	// - 是否有效
+	// - Whether valid
 	//
-	// - 证书有效期开始时间
+	// - Certificate validity start time
 	//
-	// - 证书有效期结束时间
+	// - Certificate validity end time
 	//
-	// - 错误
+	// - Error
 	ReportValidity(domain string, pemData []byte) (bool, time.Time, time.Time, error)
-	// ReportKeyWhetherMatch 报告证书和私钥是否匹配
+	// ReportKeyWhetherMatch reports whether the certificate and private key match
 	ReportKeyWhetherMatch(certData, keyData []byte) (bool, error)
 }
 
 var ci ICert = &certImpl{}
 
-// Cert 实例化证书工具类
+// Cert instantiates certificate utilities
 func Cert() ICert {
 	return ci
 }
 
-// ReportValidity 报告证书有效性
+// ReportValidity reports certificate validity
 //
-// 参数：
+// Parameters:
 //
-// - domain: 域名
+// - domain: domain name
 //
-// - pemData: 包含 -----BEGIN CERTIFICATE----- xx -----END CERTIFICATE----- 的证书链，格式为pem或crt
+// - pemData: certificate chain containing -----BEGIN CERTIFICATE----- xx -----END CERTIFICATE----- in PEM or CRT format
 //
-// 返回值：
+// Returns:
 //
-// - 是否有效
+// - Whether valid
 //
-// - 证书有效期开始时间
+// - Certificate validity start time
 //
-// - 证书有效期结束时间
+// - Certificate validity end time
 //
-// - 错误
+// - Error
 func (certImpl) ReportValidity(domain string, pemData []byte) (bool, time.Time, time.Time, error) {
 	block, _ := pem.Decode(pemData)
 	if block == nil || block.Type != "CERTIFICATE" {
@@ -70,25 +70,25 @@ func (certImpl) ReportValidity(domain string, pemData []byte) (bool, time.Time, 
 	if err != nil {
 		return false, time.Now(), time.Now(), err
 	}
-	//证书有效期结束时间晚于开始时间
+	//Certificate validity ends after it starts
 	if certObj.NotAfter.Before(certObj.NotBefore) {
 		return false, certObj.NotBefore, certObj.NotAfter, fmt.Errorf("the certificate's validity range is invalid")
 	}
-	//证书有效期结束时间早于当前时间
+	//Certificate validity ends before the current time
 	if certObj.NotAfter.Before(time.Now()) {
 		return false, certObj.NotBefore, certObj.NotAfter, fmt.Errorf("the certificate has expired")
 	}
-	//证书有效期开始时间晚于当前时间
+	//Certificate validity starts after the current time
 	if certObj.NotBefore.After(time.Now()) {
 		return false, certObj.NotBefore, certObj.NotAfter, fmt.Errorf("the certificate is not yet valid")
 	}
-	//验证域名是否匹配
+	//Check whether the domain matches
 	err = certObj.VerifyHostname(domain)
 
 	return err == nil, certObj.NotBefore, certObj.NotAfter, err
 }
 
-// ReportKeyWhetherMatch 报告证书和私钥是否匹配
+// ReportKeyWhetherMatch reports whether the certificate and private key match
 func (certImpl) ReportKeyWhetherMatch(certData, keyData []byte) (bool, error) {
 	certBlock, _ := pem.Decode(certData)
 	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
@@ -122,7 +122,7 @@ func (certImpl) ReportKeyWhetherMatch(certData, keyData []byte) (bool, error) {
 			keyPublicKey, _ = x509.MarshalPKIXPublicKey(privatePublicKey)
 		}
 	} else {
-		//尝试解析其他格式的私钥（PKCS1 或 EC）
+		//Try parsing other private key formats (PKCS1 or EC)
 		privateKey, err = x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
 		if err == nil && privateKey != nil {
 			privatePublicKey = privateKey.(*rsa.PrivateKey).Public()
@@ -140,7 +140,7 @@ func (certImpl) ReportKeyWhetherMatch(certData, keyData []byte) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("the key can not be parse")
 	}
-	// 比较公钥是否一致
+	// Compare public keys for equality
 	if base64.StdEncoding.EncodeToString(certPublicKey) != base64.StdEncoding.EncodeToString(keyPublicKey) {
 		return false, fmt.Errorf("certificate and key not match")
 	}

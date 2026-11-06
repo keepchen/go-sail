@@ -10,7 +10,7 @@ import (
 
 var instance valkey.Client
 
-// Init 初始化连接实例
+// Init initializes a connection instance
 func Init(conf Conf) {
 	client := mustInitVK(conf)
 	instance = client
@@ -46,12 +46,12 @@ func mustInitVK(conf Conf) valkey.Client {
 	return client
 }
 
-// GetValKey 获取连接实例
+// GetValKey retrieves the connection instance
 func GetValKey() valkey.Client {
 	return instance
 }
 
-// New 新建连接实例
+// New creates a connection instance
 func New(conf Conf) (valkey.Client, error) {
 	return initVK(conf)
 }

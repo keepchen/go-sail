@@ -14,102 +14,102 @@ type stringImpl struct {
 }
 
 type IString interface {
-	// Wordwrap 以给定的字符和长度来打断字符串
+	// Wordwrap wraps a string using the given character and length
 	Wordwrap(rawStr string, length int, split string) string
-	// WrapRedisKey 包装redis键名
+	// WrapRedisKey wraps a Redis key name
 	//
-	// 给redis的键加入应用名前缀，如：
+	// Prefix Redis keys with the application name, for example:
 	//
 	// appName=game key=user
 	//
-	// 最终的redis键名为：game:user
+	// The resulting Redis key is: game:user
 	//
-	// 此方法的主要作用是按应用来划分redis键名
+	// This method primarily separates Redis key names by application
 	WrapRedisKey(appName, key string) string
-	// RandomLetters 随机字符串(字母)
+	// RandomLetters random string (letters)
 	RandomLetters(length int) string
-	// RandomDigitalChars 随机字符串(数字)
+	// RandomDigitalChars random string (digits)
 	RandomDigitalChars(length int) string
-	// RandomString 随机字符串(字母+数字)
+	// RandomString random string (letters+digits)
 	RandomString(length int) string
-	// RandomComplexString 随机字符串(可带特殊符号)
+	// RandomComplexString random string (may include special characters)
 	RandomComplexString(length int) string
-	// Reverse 翻转字符串
+	// Reverse reverses a string
 	Reverse(s string) string
-	// Shuffle 打乱字符串
+	// Shuffle shuffles a string
 	Shuffle(s string) string
-	// PaddingLeft 向左填充字符串
+	// PaddingLeft pads a string on the left
 	//
-	// rawString 原字符
+	// rawString original string
 	//
-	// padChar 填充字符
+	// padChar padding character
 	//
-	// length 最终字符长度
+	// length final string length
 	PaddingLeft(rawString, padChar string, length int) string
-	// PaddingRight 向右填充字符串
+	// PaddingRight pads a string on the right
 	//
-	// rawString 原字符
+	// rawString original string
 	//
-	// padChar 填充字符
+	// padChar padding character
 	//
-	// length 最终字符长度
+	// length final string length
 	PaddingRight(rawString, padChar string, length int) string
-	// PaddingBoth 向两端填充字符串
+	// PaddingBoth pads both ends of a string
 	//
-	// rawString 原字符
+	// rawString original string
 	//
-	// padChar 填充字符
+	// padChar padding character
 	//
-	// length 最终字符长度
+	// length final string length
 	//
 	// # Note
 	//
-	// 如果填充长度不能均分，那么右侧多填充一个字符，如：
+	// If the padding cannot be split evenly, add one extra character on the right, for example:
 	//
 	// rawString = "a",padChar = "#",length = 4
 	//
-	// 则：
+	// Then:
 	//
 	// result = "#a##"
 	PaddingBoth(rawString, padChar string, length int) string
-	// FromCharCode 返回ASCII码对应的字符
+	// FromCharCode returns the character for an ASCII code
 	//
 	// # Note
 	//
-	// 常规ASCII码表范围为0~127
+	// The standard ASCII range is 0~127
 	//
-	// 扩展ASCII码表范围为128~255
+	// The extended ASCII range is 128~255
 	//
 	// more: https://www.rfc-editor.org/rfc/rfc698.txt
 	FromCharCode(code int32) string
-	// CharCodeAt 返回字符对应的ASCII码
+	// CharCodeAt returns the ASCII code for a character
 	CharCodeAt(character string) rune
-	//Truncate 按指定长度截取字符串
+	//Truncate truncates a string to the specified length
 	//
-	// length若超出字符串长度则返回字符串本身
+	// Return the original string if length exceeds its length
 	Truncate(rawString string, length int) string
-	// StrToBytes 字符串转换为字节数组
+	// StrToBytes converts a string to a byte slice
 	StrToBytes(s string) []byte
-	// BytesToStr 字节数组转换为字符串
+	// BytesToStr converts a byte slice to a string
 	BytesToStr(b []byte) string
-	// RandomIdentity 随机的ID生成
+	// RandomIdentity generates random IDs
 	//
-	// 生成指定长度的随机字符，已去掉易混淆的字符如1和l以及I等，可用于无规律且有冲突要求的随机字符生成场景，
-	// 如文件名、随机帐号等。
+	// Generate a random string of the specified length, excluding ambiguous characters such as 1, l, and I, for unpredictable identifiers with collision constraints,
+	// such as filenames and random account names.
 	//
-	// 因len(alphabet) = 32
+	// Since len(alphabet) = 32
 	//
-	// 总空间 = 32^length = 2^(5*length)
+	// Total space = 32^length = 2^(5*length)
 	//
-	// 【冲突概率】
+	// [Collision probability]
 	//
-	// 近似公式： P ≈ n² / (2N)
+	// Approximate formula: P ≈ n² / (2N)
 	//
-	//   - n=生成总数量
+	//   - n=total number generated
 	//
-	//   - N=总空间
+	//   - N=total space
 	//
-	// 实际场景，如length=10
+	// Practical example, length=10
 	//
 	//	N=2^50≈1.12e15
 	//
@@ -119,19 +119,19 @@ type IString interface {
 	//
 	// length = 12, P ≈ 0.00000043%
 	RandomIdentity(length int) (string, error)
-	// MaskString 对字符串进行脱敏
+	// MaskString masks sensitive information in a string
 	//
-	// rawString - 原字符串
+	// rawString - original string
 	//
-	// maskChar - 混淆字符
+	// maskChar - masking character
 	//
-	// maskLen - 混淆字符所占长度
+	// maskLen - number of masking characters
 	//
-	// prefixLen - 原字符保留前缀长度
+	// prefixLen - length of the original prefix to retain
 	//
-	// suffixLen - 原字符保留后缀长度
+	// suffixLen - length of the original suffix to retain
 	//
-	// 举例1：
+	// Example 1:
 	//
 	// rawString = 123456789
 	//
@@ -143,11 +143,11 @@ type IString interface {
 	//
 	// suffixLen = 2
 	//
-	// 结果：12****89
+	// Result: 12****89
 	//
 	// ------------------------------------------
 	//
-	// 举例2：
+	// Example 2:
 	//
 	// rawString = 12
 	//
@@ -159,22 +159,22 @@ type IString interface {
 	//
 	// suffixLen = 2
 	//
-	// 结果：12****
+	// Result: 12****
 	MaskString(rawString string, maskChar string, maskLen, prefixLen, suffixLen int) string
-	// RandHexString 生成指定长度的16进制字符串
+	// RandHexString generates a hexadecimal string of the specified length
 	//
-	// length - 字符串长度
+	// length - string length
 	RandHexString(length int) string
 }
 
 var sti IString = &stringImpl{}
 
-// String 实例化string工具类
+// String instantiates string utilities
 func String() IString {
 	return sti
 }
 
-// Wordwrap 以给定的字符和长度来打断字符串
+// Wordwrap wraps a string using the given character and length
 func (stringImpl) Wordwrap(rawStr string, length int, split string) string {
 	if len(rawStr) <= length || length < 1 {
 		return rawStr
@@ -206,15 +206,15 @@ func (stringImpl) Wordwrap(rawStr string, length int, split string) string {
 	return finalStr.String()
 }
 
-// WrapRedisKey 包装redis键名
+// WrapRedisKey wraps a Redis key name
 //
-// 给redis的键加入应用名前缀，如：
+// Prefix Redis keys with the application name, for example:
 //
 // appName=game key=user
 //
-// 最终的redis键名为：game:user
+// The resulting Redis key is: game:user
 //
-// 此方法的主要作用是按应用来划分redis键名
+// This method primarily separates Redis key names by application
 func (stringImpl) WrapRedisKey(appName, key string) string {
 	return fmt.Sprintf("%s:%s", appName, key)
 }
@@ -225,7 +225,7 @@ const (
 	specificSymbols = "~`!@#$%^&*-_+=/\\|/<>.:;'\""
 )
 
-// RandomLetters 随机字符串(字母)
+// RandomLetters random string (letters)
 func (stringImpl) RandomLetters(length int) string {
 	if length < 1 {
 		return ""
@@ -240,7 +240,7 @@ func (stringImpl) RandomLetters(length int) string {
 	return string(b)
 }
 
-// RandomDigitalChars 随机字符串(数字)
+// RandomDigitalChars random string (digits)
 func (stringImpl) RandomDigitalChars(length int) string {
 	if length < 1 {
 		return ""
@@ -255,7 +255,7 @@ func (stringImpl) RandomDigitalChars(length int) string {
 	return string(b)
 }
 
-// RandomString 随机字符串(字母+数字)
+// RandomString random string (letters+digits)
 func (stringImpl) RandomString(length int) string {
 	var s = fmt.Sprintf("%s%s", letters, digitalChars)
 
@@ -268,7 +268,7 @@ func (stringImpl) RandomString(length int) string {
 	return string(b)
 }
 
-// RandomComplexString 随机字符串(可带特殊符号)
+// RandomComplexString random string (may include special characters)
 func (stringImpl) RandomComplexString(length int) string {
 	var s = fmt.Sprintf("%s%s%s", letters, digitalChars, specificSymbols)
 
@@ -281,7 +281,7 @@ func (stringImpl) RandomComplexString(length int) string {
 	return string(b)
 }
 
-// Reverse 翻转字符串
+// Reverse reverses a string
 func (stringImpl) Reverse(s string) string {
 	length := len(s)
 
@@ -298,7 +298,7 @@ func (stringImpl) Reverse(s string) string {
 	return string(b)
 }
 
-// Shuffle 打乱字符串
+// Shuffle shuffles a string
 func (stringImpl) Shuffle(s string) string {
 	length := len(s)
 
@@ -316,58 +316,58 @@ func (stringImpl) Shuffle(s string) string {
 	return strings.Join(arr, "")
 }
 
-// PaddingLeft 向左填充字符串
+// PaddingLeft pads a string on the left
 //
-// rawString 原字符
+// rawString original string
 //
-// padChar 填充字符
+// padChar padding character
 //
-// length 最终字符长度
+// length final string length
 func (stringImpl) PaddingLeft(rawString, padChar string, length int) string {
 	return padding(rawString, padChar, length, 0)
 }
 
-// PaddingRight 向右填充字符串
+// PaddingRight pads a string on the right
 //
-// rawString 原字符
+// rawString original string
 //
-// padChar 填充字符
+// padChar padding character
 //
-// length 最终字符长度
+// length final string length
 func (stringImpl) PaddingRight(rawString, padChar string, length int) string {
 	return padding(rawString, padChar, length, 1)
 }
 
-// PaddingBoth 向两端填充字符串
+// PaddingBoth pads both ends of a string
 //
-// rawString 原字符
+// rawString original string
 //
-// padChar 填充字符
+// padChar padding character
 //
-// length 最终字符长度
+// length final string length
 //
 // # Note
 //
-// 如果填充长度不能均分，那么右侧多填充一个字符，如：
+// If the padding cannot be split evenly, add one extra character on the right, for example:
 //
 // rawString = "a",padChar = "#",length = 4
 //
-// 则：
+// Then:
 //
 // result = "#a##"
 func (stringImpl) PaddingBoth(rawString, padChar string, length int) string {
 	return padding(rawString, padChar, length, 2)
 }
 
-// padding 填充字符串
+// padding pads a string
 //
-// rawString 原字符
+// rawString original string
 //
-// padChar 填充字符
+// padChar padding character
 //
-// length 最终字符长度
+// length final string length
 //
-// padType 0:向左填充,1:向右填充,2:向两端填充
+// padType 0:pad left,1:pad right,2:pad both ends
 func padding(rawString, padChar string, length, padType int) string {
 	if length < 1 || len(padChar) == 0 {
 		return rawString
@@ -377,7 +377,7 @@ func padding(rawString, padChar string, length, padType int) string {
 		return rawString
 	}
 
-	//如果填充字符长度大于1，则取第一个字符
+	//Use the first character if the padding character length exceeds 1
 	if len(padChar) > 1 {
 		var s = make([]byte, 1)
 		s[0] = padChar[0]
@@ -393,7 +393,7 @@ func padding(rawString, padChar string, length, padType int) string {
 		return fmt.Sprintf("%s%s", rawString, strings.Repeat(padChar, padLength))
 	case 2:
 		left, right := padLength/2, padLength/2
-		//如果填充长度不能均分，那么右侧多填充一个字符
+		//If the padding cannot be split evenly, add one extra character on the right
 		if padLength&1 == 1 {
 			right += 1
 		}
@@ -401,27 +401,27 @@ func padding(rawString, padChar string, length, padType int) string {
 	}
 }
 
-// FromCharCode 返回ASCII码对应的字符
+// FromCharCode returns the character for an ASCII code
 //
 // # Note
 //
-// 常规ASCII码表范围为0~127
+// The standard ASCII range is 0~127
 //
-// 扩展ASCII码表范围为128~255
+// The extended ASCII range is 128~255
 //
 // more: https://www.rfc-editor.org/rfc/rfc698.txt
 func (stringImpl) FromCharCode(code int32) string {
 	return fmt.Sprintf("%c", code)
 }
 
-// CharCodeAt 返回字符对应的ASCII码
+// CharCodeAt returns the ASCII code for a character
 func (stringImpl) CharCodeAt(character string) rune {
 	return ([]rune(character))[0]
 }
 
-// Truncate 按指定长度截取字符串
+// Truncate truncates a string to the specified length
 //
-// length若超出字符串长度则返回字符串本身
+// Return the original string if length exceeds its length
 func (stringImpl) Truncate(rawString string, length int) string {
 	if length <= 0 {
 		return ""
@@ -437,24 +437,24 @@ func (stringImpl) Truncate(rawString string, length int) string {
 
 const alphabet = "23456789abcdefghjkmnpqrstuvwxyz"
 
-// RandomIdentity 随机的ID生成
+// RandomIdentity generates random IDs
 //
-// 生成指定长度的随机字符，已去掉易混淆的字符如1和l以及I等，可用于无规律且有冲突要求的随机字符生成场景，
-// 如文件名、随机帐号等。
+// Generate a random string of the specified length, excluding ambiguous characters such as 1, l, and I, for unpredictable identifiers with collision constraints,
+// such as filenames and random account names.
 //
-// 因len(alphabet) = 32
+// Since len(alphabet) = 32
 //
-// 总空间 = 32^length = 2^(5*length)
+// Total space = 32^length = 2^(5*length)
 //
-// 【冲突概率】
+// [Collision probability]
 //
-// 近似公式： P ≈ n² / (2N)
+// Approximate formula: P ≈ n² / (2N)
 //
-//   - n=生成总数量
+//   - n=total number generated
 //
-//   - N=总空间
+//   - N=total space
 //
-// 实际场景，如length=10
+// Practical example, length=10
 //
 //	N=2^50≈1.12e15
 //
@@ -477,19 +477,19 @@ func (stringImpl) RandomIdentity(length int) (string, error) {
 	return string(b), nil
 }
 
-// MaskString 对字符串进行脱敏
+// MaskString masks sensitive information in a string
 //
-// rawString - 原字符串
+// rawString - original string
 //
-// maskChar - 混淆字符
+// maskChar - masking character
 //
-// maskLen - 混淆字符所占长度
+// maskLen - number of masking characters
 //
-// prefixLen - 原字符保留前缀长度
+// prefixLen - length of the original prefix to retain
 //
-// suffixLen - 原字符保留后缀长度
+// suffixLen - length of the original suffix to retain
 //
-// 举例1：
+// Example 1:
 //
 // rawString = 123456789
 //
@@ -501,11 +501,11 @@ func (stringImpl) RandomIdentity(length int) (string, error) {
 //
 // suffixLen = 2
 //
-// 结果：12****89
+// Result: 12****89
 //
 // ------------------------------------------
 //
-// 举例2：
+// Example 2:
 //
 // rawString = 12
 //
@@ -517,7 +517,7 @@ func (stringImpl) RandomIdentity(length int) (string, error) {
 //
 // suffixLen = 2
 //
-// 结果：12****
+// Result: 12****
 func (stringImpl) MaskString(rawString string, maskChar string, maskLen, prefixLen, suffixLen int) string {
 	if len(rawString) == 0 {
 		return ""
@@ -526,7 +526,7 @@ func (stringImpl) MaskString(rawString string, maskChar string, maskLen, prefixL
 	runes := []rune(rawString)
 	n := len(runes)
 
-	// 边界保护
+	// Boundary checks
 	if prefixLen < 0 {
 		prefixLen = 0
 	}
@@ -539,16 +539,16 @@ func (stringImpl) MaskString(rawString string, maskChar string, maskLen, prefixL
 
 	var builder strings.Builder
 
-	// 前缀（最多取 n）
+	// Prefix (at most n characters)
 	if prefixLen > n {
 		prefixLen = n
 	}
 	builder.WriteString(string(runes[:prefixLen]))
 
-	// 强制填充 maskLen
+	// Force maskLen padding characters
 	builder.WriteString(strings.Repeat(maskChar, maskLen))
 
-	// 后缀（注意不能和前缀重叠）
+	// Suffix (must not overlap the prefix)
 	if suffixLen > 0 {
 		start := n - suffixLen
 		if start < prefixLen {
@@ -560,15 +560,15 @@ func (stringImpl) MaskString(rawString string, maskChar string, maskLen, prefixL
 	return builder.String()
 }
 
-// RandHexString 生成指定长度的16进制字符串
+// RandHexString generates a hexadecimal string of the specified length
 //
-// length - 字符串长度
+// length - string length
 func (stringImpl) RandHexString(length int) string {
 	if length <= 0 {
 		return ""
 	}
 
-	// hex是1 byte -> 2 chars
+	// hex uses 1 byte -> 2 chars
 	byteLen := (length + 1) / 2
 
 	b := make([]byte, byteLen)
@@ -578,6 +578,6 @@ func (stringImpl) RandHexString(length int) string {
 
 	s := hex.EncodeToString(b)
 
-	// 截断到指定长度
+	// Truncate to the specified length
 	return s[:length]
 }

@@ -6,7 +6,7 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-// Watch 监听key
+// Watch watches a key
 func Watch(ctx context.Context, key string, fn func(k, v []byte)) {
 	watchChan := GetInstance().Watch(ctx, key)
 	for watchResp := range watchChan {
@@ -16,7 +16,7 @@ func Watch(ctx context.Context, key string, fn func(k, v []byte)) {
 	}
 }
 
-// WatchWithPrefix 监听key，带前缀
+// WatchWithPrefix watches keys with a prefix
 func WatchWithPrefix(ctx context.Context, key string, fn func(k, v []byte)) {
 	watchChan := GetInstance().Watch(ctx, key, clientv3.WithPrefix())
 	for watchResp := range watchChan {
@@ -26,7 +26,7 @@ func WatchWithPrefix(ctx context.Context, key string, fn func(k, v []byte)) {
 	}
 }
 
-// WatchWith 监听key，带选项
+// WatchWith watches a key with options
 func WatchWith(ctx context.Context, key string, fn func(k, v []byte), opts ...clientv3.OpOption) {
 	watchChan := GetInstance().Watch(ctx, key, opts...)
 	for watchResp := range watchChan {

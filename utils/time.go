@@ -17,9 +17,9 @@ type TIM struct {
 	dirtyTimezone             bool
 }
 
-// NewTimeWithTimeZone 根据时区初始化时间
+// NewTimeWithTimeZone initializes a time using the specified time zone
 //
-// 默认时区: Asia/Shanghai
+// Default time zone: Asia/Shanghai
 func NewTimeWithTimeZone(timeZone ...string) *TIM {
 	var (
 		tz            string
@@ -48,27 +48,27 @@ func NewTimeWithTimeZone(timeZone ...string) *TIM {
 	}
 }
 
-// Now 获取当前时间对象（带时区）
+// Now retrieves the current time object (with time zone)
 func (t *TIM) Now() time.Time {
 	return time.Now().In(t.loc)
 }
 
-// DatetimeTZ 获取格式化后的当前日期时间-tz
+// DatetimeTZ retrieves the formatted current date and time with time zone
 func (t *TIM) DatetimeTZ() string {
 	return t.Now().Format(t.datetimeTZLayout)
 }
 
-// Datetime 获取格式化后的当前日期时间
+// Datetime retrieves the formatted current date and time
 func (t *TIM) Datetime() string {
 	return t.Now().Format(t.datetimeLayout)
 }
 
-// Date 获取格式化后的当前日期
+// Date retrieves the formatted current date
 func (t *TIM) Date() string {
 	return t.Now().Format(t.dateLayout)
 }
 
-// Time 获取格式化后的当前时间
+// Time retrieves the formatted current time
 func (t *TIM) Time() string {
 	return t.Now().Format(t.timeLayout)
 }

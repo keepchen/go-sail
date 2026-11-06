@@ -10,24 +10,24 @@ type gzipImpl struct {
 }
 
 type IGzip interface {
-	// Compress gzip压缩
+	// Compress gzip compression
 	//
-	// 使用 gzip.DefaultCompression 压缩等级
+	// Uses the gzip.DefaultCompression level
 	Compress(content []byte) []byte
-	// Decompress gzip解压
+	// Decompress gzip decompression
 	Decompress(content []byte) []byte
 }
 
 var gi IGzip = &gzipImpl{}
 
-// Gzip 实例化gzip工具类
+// Gzip instantiates gzip utilities
 func Gzip() IGzip {
 	return gi
 }
 
-// Compress gzip压缩
+// Compress gzip compression
 //
-// 使用 gzip.DefaultCompression 压缩等级
+// Uses the gzip.DefaultCompression level
 func (gzipImpl) Compress(content []byte) []byte {
 	var b bytes.Buffer
 	w, e := gzip.NewWriterLevel(&b, gzip.DefaultCompression)
@@ -41,7 +41,7 @@ func (gzipImpl) Compress(content []byte) []byte {
 	return b.Bytes()
 }
 
-// Decompress gzip解压
+// Decompress gzip decompression
 func (gzipImpl) Decompress(content []byte) []byte {
 	r, e := gzip.NewReader(bytes.NewReader(content))
 	if e != nil {

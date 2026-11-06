@@ -5,14 +5,14 @@ import (
 	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/service"
 )
 
-// GetUserInfo 获取用户信息
-// @Tags        user / 用户相关
-// @Summary     user-info / 获取用户信息
-// @Description 获取用户信息
+// GetUserInfo retrieves user information
+// @Tags        user / User operations
+// @Summary     user-info / Get user information
+// @Description Get user information
 // @Security    ApiKeyAuth
 // @Accept      application/json
 // @Produce     json
-// @Param       query query    request.GetUserInfo true "查询参数"
+// @Param       query query    request.GetUserInfo true "Query parameters"
 // @Success     200   {object} response.GetUserInfo
 // @Failure     400   {object} dto.Error400
 // @Failure     500   {object} dto.Error500

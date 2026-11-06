@@ -3,8 +3,8 @@ package models
 type WalletStatusCode int
 
 const (
-	WalletStatusCodeNormal    = WalletStatusCode(0) //正常
-	WalletStatusCodeForbidden = WalletStatusCode(1) //禁用
+	WalletStatusCodeNormal    = WalletStatusCode(0) //Normal
+	WalletStatusCodeForbidden = WalletStatusCode(1) //Disabled
 )
 
 var walletStatusCodeMap = map[WalletStatusCode]string{

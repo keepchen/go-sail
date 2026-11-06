@@ -5,7 +5,7 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 )
 
-// IUtils 工具类接口
+// IUtils utility interface
 type IUtils interface {
 	Aes() utils.IAes
 	Base64() utils.IBase64
@@ -37,7 +37,7 @@ type utilsImpl struct{}
 
 var ui IUtils = &utilsImpl{}
 
-// Utils 获取工具类方法
+// Utils retrieves utility methods
 func Utils() IUtils {
 	return ui
 }

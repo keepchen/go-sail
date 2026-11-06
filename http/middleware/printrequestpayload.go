@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// PrintRequestPayload 打印请求载荷
+// PrintRequestPayload prints the request payload
 func PrintRequestPayload() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		dump, _ := httputil.DumpRequest(c.Request, true)

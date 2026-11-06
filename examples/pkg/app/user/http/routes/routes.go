@@ -12,9 +12,9 @@ import (
 	mdlw "github.com/keepchen/go-sail/v3/http/middleware"
 )
 
-// RegisterRoutes 注册路由
+// RegisterRoutes registers routes
 func RegisterRoutes(r *gin.Engine) {
-	//k8s健康检查接口
+	//Kubernetes health check endpoint
 	r.GET("/actuator/health", func(c *gin.Context) {
 		c.String(http.StatusOK, "%s", "ok")
 	})
@@ -28,7 +28,7 @@ func RegisterRoutes(r *gin.Engine) {
 	//	RedisKeyPrefix: "rate-limiter",
 	//})
 	//mdlw.RateLimiter(limiter)
-	//全局打印请求载荷、放行跨域请求、gzip压缩
+	//Globally log request payloads, allow cross-origin requests, and enable gzip compression
 	r.Use(mdlw.LogTrace(), mdlw.PrintRequestPayload(), mdlw.WithCors(allowHeaders), gzip.Gzip(gzip.DefaultCompression))
 	apiGroup := r.Group("/api/v1")
 	{

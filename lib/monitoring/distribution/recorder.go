@@ -9,21 +9,21 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/monitoring/distribution/codec"
 )
 
-// RecorderSnapshot 是一个记录窗口的不可变交接快照。
-// 快照返回后，原 Recorder 不会再修改其中的 Sketch。
+// RecorderSnapshot is an immutable handoff snapshot of a recording window.
+// The original Recorder will no longer modify the Sketch after returning the snapshot.
 type RecorderSnapshot struct {
-	Sketch *codec.DDSketch // 观测分布的可合并近似摘要。
+	Sketch *codec.DDSketch // Mergeable approximate summary of the observed distribution.
 
-	WindowStart time.Time // 窗口闭区间边界。
-	WindowEnd   time.Time // 窗口开区间边界。
+	WindowStart time.Time // Inclusive window boundary.
+	WindowEnd   time.Time // Exclusive window boundary.
 
-	Count uint64  // 精确样本数。
-	Sum   float64 // 精确样本总和。
-	Min   float64 // 精确最小样本值。
-	Max   float64 // 精确最大样本值。
+	Count uint64  // Exact sample count.
+	Sum   float64 // Exact sample sum.
+	Min   float64 // Exact minimum sample value.
+	Max   float64 // Exact maximum sample value.
 }
 
-// Recorder 将有限非负数值收集到对齐的本地窗口中，并支持并发使用。
+// Recorder collects finite nonnegative values into aligned local windows and supports concurrent use.
 type Recorder struct {
 	mu sync.Mutex
 
@@ -41,7 +41,7 @@ type Recorder struct {
 	max   float64
 }
 
-// NewRecorder 创建一个与 now 所在时间窗口对齐的记录器。
+// NewRecorder creates a recorder aligned to the time window containing now.
 func NewRecorder(now time.Time, windowDuration time.Duration, relativeAccuracy float64) (*Recorder, error) {
 	sketch, err := codec.NewDDSketch(relativeAccuracy)
 	if err != nil {
@@ -61,7 +61,7 @@ func NewRecorder(now time.Time, windowDuration time.Duration, relativeAccuracy f
 	}, nil
 }
 
-// Observe 向当前窗口添加一个有限非负数值。
+// Observe adds a finite nonnegative value to the current window.
 func (r *Recorder) Observe(value float64) error {
 	if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 {
 		return errors.New("[Go-Sail] <monitoring> observed value must be a finite non-negative number")
@@ -87,8 +87,8 @@ func (r *Recorder) Observe(value float64) error {
 	return nil
 }
 
-// Rotate 在 now 到达当前窗口末尾时关闭并返回该窗口。
-// 窗口仍开放或不含样本时返回 (nil, nil)。
+// Rotate closes and returns the current window when now reaches its end.
+// Returns (nil, nil) if the window is still open or contains no samples.
 func (r *Recorder) Rotate(now time.Time) (*RecorderSnapshot, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -129,8 +129,8 @@ func (r *Recorder) Rotate(now time.Time) (*RecorderSnapshot, error) {
 	return snapshot, nil
 }
 
-// Flush 返回当前不完整窗口并重置记录器。快照保留原定窗口结束时间，
-// 以确保分布式聚合仍按统一边界对齐。
+// Flush returns the current incomplete window and resets the recorder. The snapshot retains the scheduled window end time
+// to keep distributed aggregation aligned to common boundaries.
 func (r *Recorder) Flush() (*RecorderSnapshot, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

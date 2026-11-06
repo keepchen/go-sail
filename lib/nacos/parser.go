@@ -8,13 +8,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// ParseConfig 解析配置字符
+// ParseConfig parses configuration content
 //
-// configBytes 配置字符byte数组
+// configBytes configuration content as a byte slice
 //
-// appConfig 解析到目标
+// appConfig target to parse into
 //
-// format 内容格式，支持: json|yaml|toml
+// format content format; supports: json|yaml|toml
 func ParseConfig(configBytes []byte, appConfig any, format string) error {
 	var (
 		err        error

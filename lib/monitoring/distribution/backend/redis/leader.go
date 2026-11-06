@@ -25,8 +25,8 @@ end
 return 0
 `)
 
-// Leadership 实现带所有权令牌的 Redis 租约。续期和释放使用先比较后执行的脚本，
-// 防止一个进程修改另一个进程持有的租约。
+// Leadership implements a Redis lease with an ownership token. Renewal and release use compare-and-act scripts
+// to prevent one process from modifying a lease held by another.
 type Leadership struct {
 	client redisLib.UniversalClient
 
@@ -35,7 +35,7 @@ type Leadership struct {
 	ttl   time.Duration
 }
 
-// NewLeadership 创建一个带随机所有权令牌的 Redis 租约。
+// NewLeadership creates a Redis lease with a random ownership token.
 func NewLeadership(client redisLib.UniversalClient, key string, ttl time.Duration) (*Leadership, error) {
 	token, err := randomToken()
 	if err != nil {
@@ -50,7 +50,7 @@ func NewLeadership(client redisLib.UniversalClient, key string, ttl time.Duratio
 	}, nil
 }
 
-// Acquire 在租约键不存在时尝试创建该键。
+// Acquire attempts to create the lease key if it does not exist.
 func (l *Leadership) Acquire(ctx context.Context) (bool, error) {
 	acquired, err := l.client.SetNX(ctx, l.key, l.token, l.ttl).Result()
 
@@ -61,7 +61,7 @@ func (l *Leadership) Acquire(ctx context.Context) (bool, error) {
 	return acquired, nil
 }
 
-// Renew 仅在所有权令牌仍匹配时延长租约。
+// Renew extends the lease only if the ownership token still matches.
 func (l *Leadership) Renew(ctx context.Context) (bool, error) {
 	value, err := renewScript.Run(ctx, l.client, []string{l.key}, l.token, l.ttl.Milliseconds()).Int64()
 
@@ -72,7 +72,7 @@ func (l *Leadership) Renew(ctx context.Context) (bool, error) {
 	return value == 1, nil
 }
 
-// Release 仅在所有权令牌仍匹配时删除租约。
+// Release deletes the lease only if the ownership token still matches.
 func (l *Leadership) Release(ctx context.Context) error {
 	_, err := releaseScript.Run(ctx, l.client, []string{l.key}, l.token).Result()
 

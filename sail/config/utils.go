@@ -10,11 +10,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// PrintTemplateConfig 打印配置信息模板
+// PrintTemplateConfig prints the configuration template
 //
-// format 内容格式，支持: json|yaml|toml
+// format content format; supports: json|yaml|toml
 //
-// writeToFile 写入到目标文件（可选）
+// writeToFile writes to the target file (optional)
 func PrintTemplateConfig(format string, writeToFile ...string) {
 	var (
 		abort      bool
@@ -49,11 +49,11 @@ func PrintTemplateConfig(format string, writeToFile ...string) {
 	}
 }
 
-// ParseConfigFromBytes 从字符串解析配置
+// ParseConfigFromBytes parses configuration from a string
 //
-// format 内容格式，支持: json|yaml|toml
+// format content format; supports: json|yaml|toml
 //
-// source 配置源字符
+// source configuration source content
 func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 	var (
 		formatList = [...]string{"json", "yaml", "toml"}
@@ -76,15 +76,15 @@ func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 	return &cfg, err
 }
 
-// ParseConfigFromBytesToDst 从字符串解析配置到目标结构
+// ParseConfigFromBytesToDst parses configuration from a string into the target struct
 //
-// format 内容格式，支持: json|yaml|toml
+// format content format; supports: json|yaml|toml
 //
-// source 配置源字符
+// source configuration source content
 //
-// dst 目标结构
+// dst target struct
 //
-// @return 返回值与参数dst类型相同，需要进行断言
+// @return the return value has the same type as dst and requires a type assertion
 func ParseConfigFromBytesToDst(format string, source []byte, dst any) (any, error) {
 	var (
 		formatList = [...]string{"json", "yaml", "toml"}

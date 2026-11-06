@@ -11,9 +11,9 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// ParseConfig 解析配置
+// ParseConfig parses configuration
 //
-// 当cfgPath不为空时，从文件解析配置，反之则从nacos读取
+// Parse configuration from a file when cfgPath is nonempty; otherwise read from Nacos
 func ParseConfig(cfgPath string) {
 	if len(cfgPath) != 0 {
 		fmt.Printf("Parse config from local file: %s\n", cfgPath)
@@ -23,7 +23,7 @@ func ParseConfig(cfgPath string) {
 		ParseConfigFromNacos()
 	}
 
-	//测试加载时区
+	//Test loading the time zone
 	TestLoadTimeZonePanicWhileFailure()
 }
 
@@ -38,10 +38,10 @@ func ParseConfigFromFile(cfgPath string) {
 		}
 	}
 
-	//解析jwt配置
+	//Parse JWT configuration
 	globalConfig.JWT.Load()
 
-	//设置默认时区
+	//Set the default time zone
 	if len(globalConfig.Timezone) == 0 {
 		globalConfig.Timezone = constants.DefaultTimeZone
 	}
@@ -51,11 +51,11 @@ func ParseConfigFromFile(cfgPath string) {
 	}
 }
 
-// ParseConfigFromNacos 从nacos读取并解析配置
+// ParseConfigFromNacos reads and parses configuration from Nacos
 //
-// 注意：需要设置环境变量nacosAddrs 和 nacosNamespaceID
+// Note: the nacosAddrs and nacosNamespaceID environment variables must be set
 //
-// 如：
+// For example:
 //
 // nacosAddrs=192.168.224.3:8848,192.168.224.3:8848
 //
@@ -83,7 +83,7 @@ func ParseConfigFromNacos() {
 
 	globalConfig = &conf
 
-	//设置默认时区
+	//Set the default time zone
 	if len(globalConfig.Timezone) == 0 {
 		globalConfig.Timezone = constants.DefaultTimeZone
 	}
@@ -105,7 +105,7 @@ func ParseConfigFromNacos() {
 			}
 			globalConfig = &cfg
 
-			//设置默认时区
+			//Set the default time zone
 			if len(globalConfig.Timezone) == 0 {
 				globalConfig.Timezone = constants.DefaultTimeZone
 			}

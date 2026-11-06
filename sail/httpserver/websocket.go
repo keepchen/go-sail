@@ -9,11 +9,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// WrapWebsocketHandler 包装websocket处理函数
+// WrapWebsocketHandler wraps a WebSocket handler
 //
-// ws websocket连接实例
+// ws WebSocket connection instance
 //
-// handler websocket消息处理函数
+// handler WebSocket message handler
 func WrapWebsocketHandler(ws *websocket.Conn, handler func(ws *websocket.Conn)) func(ginContext *gin.Context) {
 	return func(ginContext *gin.Context) {
 		if ws == nil {
@@ -32,7 +32,7 @@ func WrapWebsocketHandler(ws *websocket.Conn, handler func(ws *websocket.Conn)) 
 	}
 }
 
-// wrappedDefaultWebsocketConn 包装默认的websocket连接实例
+// wrappedDefaultWebsocketConn wraps the default WebSocket connection instance
 func wrappedDefaultWebsocketConn(ginContext *gin.Context) *websocket.Conn {
 	var upgrade = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -48,7 +48,7 @@ func wrappedDefaultWebsocketConn(ginContext *gin.Context) *websocket.Conn {
 	return ws
 }
 
-// defaultWebsocketHandlerFunc 默认的websocket处理函数
+// defaultWebsocketHandlerFunc default WebSocket handler
 var defaultWebsocketHandlerFunc = func(ws *websocket.Conn) {
 	defer func() {
 		_ = ws.Close()

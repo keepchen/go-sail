@@ -1,6 +1,6 @@
 package constants
 
 const (
-	Success bool = true  //Success 业务状态码：成功
-	Failure bool = false //Failure 业务状态码：失败
+	Success bool = true  //Success business status code: success
+	Failure bool = false //Failure business status code: failure
 )

@@ -10,7 +10,7 @@ import (
 
 var client *clientv3.Client
 
-// Init 初始化连接实例
+// Init initializes a connection instance
 func Init(conf Conf) {
 	if conf.Timeout == 0 {
 		conf.Timeout = 10000
@@ -37,12 +37,12 @@ func Init(conf Conf) {
 	client = cli
 }
 
-// GetInstance 获取连接实例
+// GetInstance retrieves the connection instance
 func GetInstance() *clientv3.Client {
 	return client
 }
 
-// New 新建连接实例
+// New creates a connection instance
 func New(conf Conf) (*clientv3.Client, error) {
 	if conf.Timeout == 0 {
 		conf.Timeout = 10000

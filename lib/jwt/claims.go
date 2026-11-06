@@ -11,7 +11,7 @@ import (
 	jwtLib "github.com/golang-jwt/jwt/v5"
 )
 
-// AppClaims App票据声明
+// AppClaims application token claims
 type AppClaims struct {
 	Scopes   []string
 	ScopeIDs []int64
@@ -82,9 +82,9 @@ func (c *MapClaims) GetAudience() (jwtLib.ClaimStrings, error) {
 
 // MergeStandardClaims
 //
-// 合并标准字段
+// Merge standard fields
 //
-// 如果传入的自定义字段在标准字段中存在，则用自定义字段覆盖标准字段
+// Override standard fields with custom fields when their names overlap
 func MergeStandardClaims(fields map[string]any) MapClaims {
 	now := time.Now()
 	defaultClaims := MapClaims{

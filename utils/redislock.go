@@ -16,53 +16,53 @@ type redisLockerImpl struct {
 	client redisLib.UniversalClient
 }
 
-// IRedisLocker redis锁定义
+// IRedisLocker Redis lock definition
 type IRedisLocker interface {
-	// TryLock redis锁-尝试上锁
+	// TryLock Redis lock - try to acquire
 	//
 	// using SetNX
 	//
-	// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+	// Use Unlock or UnlockWithContext to release the lock
 	//
 	// # Note
 	//
-	// 该方法会立即返回锁定成功与否的结果
+	// This method immediately returns whether locking succeeded
 	TryLock(key string) bool
-	// TryLockWithContext redis锁-尝试上锁
+	// TryLockWithContext Redis lock - try to acquire
 	//
 	// using SetNX
 	//
-	// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+	// Use Unlock or UnlockWithContext to release the lock
 	//
 	// # Note
 	//
-	// 该方法会立即返回锁定成功与否的结果
+	// This method immediately returns whether locking succeeded
 	TryLockWithContext(ctx context.Context, key string) bool
-	// Lock redis锁-上锁
+	// Lock Redis lock - acquire
 	//
 	// using SetNX
 	//
-	// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+	// Use Unlock or UnlockWithContext to release the lock
 	//
 	// # Note
 	//
-	// 该方法会阻塞住线程直到上锁成功 或者 触发ctx.Done()
+	// This method blocks until the lock is acquired or ctx.Done() is triggered
 	Lock(ctx context.Context, key string)
-	// Unlock redis锁-解锁
+	// Unlock Redis lock - release
 	//
 	// using Del
 	//
 	// # Note
 	//
-	// 该方法会立即返回解锁成功与否的结果
+	// This method immediately returns whether unlocking succeeded
 	Unlock(key string) bool
-	// UnlockWithContext redis锁-解锁
+	// UnlockWithContext Redis lock - release
 	//
 	// using Del
 	//
 	// # Note
 	//
-	// 该方法会阻塞住线程直到解锁有结果 或者 触发ctx.Done()
+	// This method blocks until unlocking produces a result or ctx.Done() is triggered
 	UnlockWithContext(ctx context.Context, key string) bool
 }
 
@@ -70,29 +70,29 @@ var _ IRedisLocker = &redisLockerImpl{}
 
 var onceStartRenewalScheduler sync.Once
 
-// RedisLocker 实例化redis锁工具类
+// RedisLocker instantiates Redis lock utilities
 //
 // # Note
 //
-// 1.若未指定自定义客户端且单实例和集群客户端都没有实例化，那么将panic
+// 1.Panics if no custom client is specified and neither the standalone nor cluster client has been initialized
 //
-// 2.若指定了自定义客户端，请始终保持相同的客户端调用，否则将造成数据异常
+// 2.If a custom client is specified, consistently use the same client for calls to avoid data inconsistencies
 func RedisLocker(client ...redisLib.UniversalClient) IRedisLocker {
 	rl := &redisLockerImpl{}
 
 	defer onceStartRenewalScheduler.Do(rl.startRenewalScheduler)
 
-	//使用自定义客户端
+	//Use a custom client
 	if len(client) > 0 {
 		rl.client = client[0]
 		return rl
 	}
-	//使用单实例客户端
+	//Use the standalone client
 	if redis.GetInstance() != nil {
 		rl.client = redis.GetInstance()
 		return rl
 	}
-	//使用集群客户端
+	//Use the cluster client
 	if redis.GetClusterInstance() != nil {
 		rl.client = redis.GetClusterInstance()
 		return rl
@@ -106,7 +106,7 @@ type cancelControl struct {
 	token  string
 }
 
-// lua脚本-原子操作-对比并删除
+// Lua script - atomic operation - compare and delete
 const compareAndDeleteScript = `
 if redis.call("GET", KEYS[1]) == ARGV[1] then
 	return redis.call("DEL", KEYS[1])
@@ -114,7 +114,7 @@ end
 return 0
 `
 
-// lua脚本-原子操作-对比并续期
+// Lua script - atomic operation - compare and renew
 const compareAndExpireScript = `
 if redis.call("GET", KEYS[1]) == ARGV[1] then
 	return redis.call("PEXPIRE", KEYS[1], ARGV[2])
@@ -137,15 +137,15 @@ var (
 	states               = &stateListeners{mux: &sync.RWMutex{}, listeners: make(map[string]*cancelControl)}
 )
 
-// TryLock redis锁-尝试上锁
+// TryLock Redis lock - try to acquire
 //
 // using SetNX
 //
-// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+// Use Unlock or UnlockWithContext to release the lock
 //
 // # Note
 //
-// 该方法会立即返回锁定成功与否的结果
+// This method immediately returns whether locking succeeded
 func (rl *redisLockerImpl) TryLock(key string) bool {
 	ctx, cancel := withRedisExecuteTimeout()
 	defer cancel()
@@ -153,15 +153,15 @@ func (rl *redisLockerImpl) TryLock(key string) bool {
 	return rl.TryLockWithContext(ctx, key)
 }
 
-// TryLockWithContext redis锁-尝试上锁
+// TryLockWithContext Redis lock - try to acquire
 //
 // using SetNX
 //
-// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+// Use Unlock or UnlockWithContext to release the lock
 //
 // # Note
 //
-// 该方法会立即返回锁定成功与否的结果
+// This method immediately returns whether locking succeeded
 func (rl *redisLockerImpl) TryLockWithContext(ctx context.Context, key string) bool {
 	if !canDoLockPreflight(key) {
 		return false
@@ -173,7 +173,7 @@ func (rl *redisLockerImpl) TryLockWithContext(ctx context.Context, key string) b
 		fmt.Printf("[Go-Sail] <redisLock> key: %s lock err: %v\n", key, lockErr)
 	}
 
-	//锁定成功，开始执行自动续期
+	//Lock acquired; start automatic renewal
 	if lockOk {
 		rl.autoRenewal(key, token)
 	}
@@ -181,15 +181,15 @@ func (rl *redisLockerImpl) TryLockWithContext(ctx context.Context, key string) b
 	return lockOk
 }
 
-// Lock redis锁-上锁
+// Lock Redis lock - acquire
 //
 // using SetNX
 //
-// 与之对应的是使用 Unlock 或 UnlockWithContext 解锁
+// Use Unlock or UnlockWithContext to release the lock
 //
 // # Note
 //
-// 该方法会阻塞住线程直到上锁成功 或者 触发ctx.Done()
+// This method blocks until the lock is acquired or ctx.Done() is triggered
 func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
 	token := lockerValue()
 	lockOk, lockErr := rl.client.SetNX(ctx, key, token, lockTTL).Result()
@@ -198,7 +198,7 @@ func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
 		fmt.Printf("[Go-Sail] <redisLock> key: %s lock error: %v\n", key, lockErr)
 	}
 
-	//第一次锁定失败，进行重试操作
+	//Initial lock attempt failed; retry
 	if !lockOk || lockErr != nil {
 		retryTicker := time.NewTicker(retryInterval)
 		defer retryTicker.Stop()
@@ -218,15 +218,15 @@ func (rl *redisLockerImpl) Lock(ctx context.Context, key string) {
 		}
 	}
 
-	//锁定成功，开始执行自动续期
+	//Lock acquired; start automatic renewal
 	if lockOk {
 		rl.autoRenewal(key, token)
 	}
 }
 
-// Unlock redis锁-解锁
+// Unlock Redis lock - release
 //
-// 使用Lua脚本原子校验所有权令牌并删除锁
+// Use a Lua script to atomically verify the ownership token and delete the lock
 func (rl *redisLockerImpl) Unlock(key string) bool {
 	ctx, cancel := withRedisExecuteTimeout()
 	defer cancel()
@@ -241,17 +241,17 @@ func (rl *redisLockerImpl) Unlock(key string) bool {
 		fmt.Printf("[Go-Sail] <redisLock> key: %s unlock key error: %v\n", key, unlockErr)
 	}
 
-	//清理内存数据并终止自动续期
+	//Clean up in-memory data and stop automatic renewal
 	//
-	// 调用解锁方法意图明显，因此无论是否解锁成功，都执行收尾工作
+	// An unlock call expresses clear intent, so perform cleanup whether unlocking succeeds or not
 	rl.clearListenerAndStopAutoRenewal(key, ctrl)
 
 	return unlockOk == 1
 }
 
-// UnlockWithContext redis锁-解锁
+// UnlockWithContext Redis lock - release
 //
-// 使用Lua脚本原子校验所有权令牌并删除锁
+// Use a Lua script to atomically verify the ownership token and delete the lock
 func (rl *redisLockerImpl) UnlockWithContext(ctx context.Context, key string) bool {
 	ctrl, ok := listener(key)
 	if !ok {
@@ -277,13 +277,13 @@ func (rl *redisLockerImpl) UnlockWithContext(ctx context.Context, key string) bo
 		}
 	}
 
-	//清理内存数据并终止自动续期
+	//Clean up in-memory data and stop automatic renewal
 	rl.clearListenerAndStopAutoRenewal(key, ctrl)
 
 	return unlockOk == 1
 }
 
-// 自动续期
+// Automatic renewal
 func (rl *redisLockerImpl) autoRenewal(key, token string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	ctrl := &cancelControl{ctx: ctx, cancel: cancel, token: token}
@@ -293,7 +293,7 @@ func (rl *redisLockerImpl) autoRenewal(key, token string) {
 	states.mux.Unlock()
 }
 
-// 清理监听器并停止自动续期
+// Clean up the watcher and stop automatic renewal
 func (rl *redisLockerImpl) clearListenerAndStopAutoRenewal(key string, expected *cancelControl) {
 	states.mux.Lock()
 	if ctrl, ok := states.listeners[key]; ok && ctrl == expected {
@@ -309,11 +309,11 @@ type keyAndCtrl struct {
 	cmd  *redisLib.Cmd
 }
 
-// 续期的统一调度器
+// Central renewal scheduler
 //
-// 1.使用二阶段Mutex锁定，减少锁持有时间
+// 1.Use two-phase Mutex locking to reduce lock hold time
 //
-// 2.使用redis pipeline减少RTT
+// 2.Use Redis pipelines to reduce RTT
 func (rl *redisLockerImpl) startRenewalScheduler() {
 	doRenewalRound := func() {
 		if rl.client == nil {
@@ -324,7 +324,7 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 		states.mux.Lock()
 		if len(states.listeners) == 0 {
 			states.mux.Unlock()
-			//避免空转锁定占用
+			//Avoid holding locks while idle
 			return
 		}
 		processingKeys := make([]*keyAndCtrl, 0, len(states.listeners))
@@ -353,7 +353,7 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 
 		if pipeErr != nil {
 			fmt.Printf("[Go-Sail] <redisLock> renewal pipeline error: %v\n", pipeErr)
-			return //宽容处理：本轮不进行cancel和delete
+			return //Handle leniently: skip cancel and delete in this round
 		}
 
 		states.mux.Lock()
@@ -364,15 +364,15 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 					fmt.Printf("[Go-Sail] <redisLock> key: %s renewal err: %v\n", command.key, expErr)
 				}
 				if current, ok := states.listeners[command.key]; ok && current == command.ctrl {
-					current.cancel() //续期失败也要清理掉
+					current.cancel() //Clean up even if renewal fails
 					delete(states.listeners, command.key)
 				}
 			}
 		}
-		//清理已经过期的
+		//Clean up expired entries
 		for index := range invalidKeys {
 			if current, ok := states.listeners[invalidKeys[index].key]; ok && current == invalidKeys[index].ctrl {
-				current.cancel() //保险的再次调用以确保触发ctx.Done
+				current.cancel() //Call again as a safeguard to ensure ctx.Done is triggered
 				delete(states.listeners, invalidKeys[index].key)
 			}
 		}
@@ -389,9 +389,9 @@ func (rl *redisLockerImpl) startRenewalScheduler() {
 	}()
 }
 
-// 预检是否可以执行锁定任务
+// Precheck whether the locking task can run
 //
-// 此操作属于本地(堆栈)检测
+// This is a local (in-memory) check
 func canDoLockPreflight(key string) bool {
 	states.mux.RLock()
 	defer states.mux.RUnlock()
@@ -406,18 +406,18 @@ func listener(key string) (*cancelControl, bool) {
 	return ctrl, ok
 }
 
-// redis操作超时控制
+// Redis operation timeout control
 func withRedisExecuteTimeout() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), redisExecuteTimeout)
 }
 
 var (
-	hostname, _ = os.Hostname()   //主机名称
-	ip, _       = IP().GetLocal() //主机ip
-	processId   = os.Getpid()     //进程id
+	hostname, _ = os.Hostname()   //Hostname
+	ip, _       = IP().GetLocal() //Host IP
+	processId   = os.Getpid()     //Process ID
 )
 
-// 锁的持有者信息
+// Lock holder information
 func lockerValue() string {
 	return fmt.Sprintf("lockedAt:%s@%s<%d>(%s:%s)",
 		hostname, ip, processId, time.Now().Format("2006-01-02T15:04:05.000000Z"), rand.Text())

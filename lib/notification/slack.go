@@ -9,14 +9,14 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 )
 
-// SlackConf slack配置
+// SlackConf Slack configuration
 type SlackConf struct {
-	WebhookUrl string `yaml:"webhook_url" toml:"webhook_url" json:"webhook_url"` //webhook地址
-	BotToken   string `yaml:"bot_token" toml:"bot_token" json:"bot_token"`       //bot token，注意：确保Bot Token 拥有 chat:write 权限
-	ChannelID  string `yaml:"channel_id" toml:"channel_id" json:"channel_id"`    //频道
+	WebhookUrl string `yaml:"webhook_url" toml:"webhook_url" json:"webhook_url"` //Webhook URL
+	BotToken   string `yaml:"bot_token" toml:"bot_token" json:"bot_token"`       //Bot token; note: ensure the Bot Token has the chat:write permission
+	ChannelID  string `yaml:"channel_id" toml:"channel_id" json:"channel_id"`    //Channel
 }
 
-// SlackResponseEntity 响应实体
+// SlackResponseEntity response entity
 type SlackResponseEntity struct {
 	OK        bool   `json:"ok"`
 	Channel   string `json:"channel"`
@@ -28,7 +28,7 @@ type SlackResponseEntity struct {
 	} `json:"message"`
 }
 
-// SlackEmit 发射slack通知
+// SlackEmit sends a Slack notification
 func SlackEmit(conf SlackConf, content string) (SlackResponseEntity, error) {
 	headers := map[string]string{
 		"Content-Type":  "application/json",

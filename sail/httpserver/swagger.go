@@ -11,12 +11,12 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// RunSwaggerServerWhenEnable 启动swagger文档服务
+// RunSwaggerServerWhenEnable starts the Swagger documentation service
 //
-// 当配置文件指明启用时才会启动
+// Start only when enabled in the configuration file
 func RunSwaggerServerWhenEnable(conf config.SwaggerConf, ginEngine *gin.Engine) {
 	if !conf.Enable {
-		//如果不是调试模式就不注册swagger路由
+		//Do not register Swagger routes outside debug mode
 		return
 	}
 

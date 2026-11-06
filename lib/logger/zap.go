@@ -34,14 +34,14 @@ func (sc *svcHolders) load(module string) svcStd {
 
 	//panic(fmt.Sprintf("GetLogger failure:logger instance [%s] not initialize", module))
 
-	//使用默认module
+	//Use the default module
 	return sc.instances[0]
 }
 
 func (sc *svcHolders) store(module string, lg *zap.Logger) {
 	var exist bool
 	for k, svc := range sc.instances {
-		//已存在，则更新
+		//Update if it exists
 		if svc.module == module {
 			sc.instances[k].instance = lg
 			exist = true
@@ -49,7 +49,7 @@ func (sc *svcHolders) store(module string, lg *zap.Logger) {
 		}
 	}
 
-	//不存在，则新增
+	//Add if it does not exist
 	if !exist {
 		sc.instances = append(sc.instances, svcStd{module: module, instance: lg})
 	}
@@ -61,11 +61,11 @@ var (
 	gWriterSyncers    = make([]zapcore.WriteSyncer, 0, 2)
 )
 
-// GetLogger 获取日志服务实例
+// GetLogger retrieves a logger instance
 //
-// 要使用对应module，请初始化时指定 Conf.Modules 配置
+// Specify Conf.Modules during initialization to use the corresponding module
 //
-// 如果module未被初始化，那么将使用默认module
+// Use the default module if the requested module has not been initialized
 func GetLogger(module ...string) *zap.Logger {
 	if len(module) < 1 {
 		return gLoggerSvcHolders.load(gDefaultModeName).instance
@@ -74,29 +74,29 @@ func GetLogger(module ...string) *zap.Logger {
 	return gLoggerSvcHolders.load(module[0]).instance
 }
 
-// Init 初始化
+// Init initializes
 //
-// InitLoggerZap 方法的语法糖
+// Shorthand for InitLoggerZap
 func Init(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 	InitLoggerZap(cfg, appName, syncers...)
 }
 
-// InitLoggerZap 初始化zap日志服务
+// InitLoggerZap initializes the Zap logging service
 //
-// 会加入默认的一个模块空间，当不传参调用 GetLogger 时，
-// 就是使用默认的模块空间
+// A default module namespace is added; when GetLogger is called without arguments,
+// the default module namespace is used
 //
-// 当启用exporter时，Exporter.Provider 字段值将作为exporter方案，
-// 为空则表示不启用exporter。
-// 目前Provider字段支持:
+// When the exporter is enabled, Exporter.Provider specifies the exporter implementation;
+// an empty value disables the exporter.
+// Provider currently supports:
 //
 // 'redis'、'redis-cluster'、'nats'、'kafka'
 func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
-	//注入默认的空间模块
+	//Inject the default module namespace
 	cfg.Modules = append(cfg.Modules, gDefaultModeName)
 	sc := &svcHolders{}
 
-	//定义全局日志组件配置
+	//Define the global logging component configuration
 	atomicLevel := zap.NewAtomicLevel()
 	switch strings.ToLower(cfg.Level) {
 	default:
@@ -160,14 +160,14 @@ func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 			Compress:   cfg.Compress,
 		}
 
-		//输出到文件
+		//Output to a file
 		fileCore := zapcore.NewCore(
 			zapcore.NewJSONEncoder(encoderConfig), zapcore.Lock(zapcore.AddSync(fileWriter)), atomicLevel,
 		)
 
 		cores = append(cores, fileCore)
 
-		//输出到终端(如果配置启用)
+		//Output to the terminal (if enabled in configuration)
 		if cfg.ConsoleOutput {
 			//consoleEncoder := zapcore.NewJSONEncoder(encoderConfig)
 			consoleEncoder := zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig())
@@ -183,7 +183,7 @@ func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 			cores = append(cores, consoleCore)
 		}
 
-		//logstash订阅的key只定义一个，与module无关
+		//Define a single Logstash subscription key, independent of the module
 		writer := exporterProvider(cfg)
 		if writer != nil {
 			coreWithWriter := zapcore.NewCore(
@@ -192,12 +192,12 @@ func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 			cores = append(cores, coreWithWriter)
 		}
 
-		//设置自定义exporter
+		//Set a custom exporter
 		if len(syncers) > 0 {
 			gWriterSyncers = append(gWriterSyncers, syncers...)
 		}
 
-		//读取外部配置的syncer并加入到cores中
+		//Read externally configured syncers and add them to the cores
 		for _, syncer := range gWriterSyncers {
 			coreWithWriter := zapcore.NewCore(
 				zapcore.NewJSONEncoder(encoderConfig), zapcore.Lock(zapcore.AddSync(syncer)), atomicLevel,
@@ -221,7 +221,7 @@ func InitLoggerZap(cfg Conf, appName string, syncers ...zapcore.WriteSyncer) {
 	}()
 }
 
-// 设置导出器
+// Set the exporter
 func exporterProvider(cfg Conf) zapcore.WriteSyncer {
 	var writer zapcore.WriteSyncer
 

@@ -6,15 +6,15 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 )
 
-// GetConfig 获取配置
+// GetConfig retrieves configuration
 //
-// groupName 所属分组
+// groupName group the configuration belongs to
 //
-// dataID 配置文件id
+// dataID configuration file ID
 //
-// appConfig 解析到目标
+// appConfig target to parse into
 //
-// format 配置文件格式，支持: json|yaml|toml
+// format configuration file format; supports: json|yaml|toml
 func GetConfig(groupName, dataID string, appConfig any, format string) error {
 	content, err := GetConfigClient().GetConfig(vo.ConfigParam{
 		DataId: dataID,
@@ -27,17 +27,17 @@ func GetConfig(groupName, dataID string, appConfig any, format string) error {
 	return ParseConfig([]byte(content), appConfig, format)
 }
 
-// ListenConfig 监听配置
+// ListenConfig watches configuration
 //
-// groupName 所属分组
+// groupName group the configuration belongs to
 //
-// dataID 配置文件id
+// dataID configuration file ID
 //
-// appConfig 解析到目标
+// appConfig target to parse into
 //
-// format 配置文件格式，支持: json|yaml|toml
+// format configuration file format; supports: json|yaml|toml
 //
-// printData 打印配置内容(可选项)，为true将打印配置内容，注意隐私保护
+// printData prints configuration content (optional); true enables printing, so protect sensitive information
 func ListenConfig(groupName, dataID string, appConfig any, format string, printData ...bool) error {
 	err := GetConfigClient().ListenConfig(vo.ConfigParam{
 		DataId: dataID,
@@ -57,13 +57,13 @@ func ListenConfig(groupName, dataID string, appConfig any, format string, printD
 	return err
 }
 
-// ListenConfigWithCallback 监听配置-自定义回调函数方式
+// ListenConfigWithCallback watches configuration with a custom callback
 //
-// groupName 所属分组
+// groupName group the configuration belongs to
 //
-// dataID 配置文件id
+// dataID configuration file ID
 //
-// callback 回调函数
+// callback callback function
 func ListenConfigWithCallback(groupName, dataID string, callback func(namespace, group, dataId, data string)) error {
 	err := GetConfigClient().ListenConfig(vo.ConfigParam{
 		DataId:   dataID,

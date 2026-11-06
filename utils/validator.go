@@ -12,24 +12,24 @@ type validatorImpl struct {
 }
 
 type IValidator interface {
-	// Email 验证邮箱格式
+	// Email validates the email address format
 	Email(email string) bool
-	// IdentityCard （中国大陆）身份证格式校验
+	// IdentityCard validates the (mainland China) identity card format
 	//
-	// 计算规则参考“中国国家标准化管理委员会”
+	// Calculation rules reference the Standardization Administration of China
 	//
-	// 官方文档@see http://www.gb688.cn/bzgk/gb/newGbInfo?hcno=080D6FBF2BB468F9007657F26D60013E
+	// Official documentation @see http://www.gb688.cn/bzgk/gb/newGbInfo?hcno=080D6FBF2BB468F9007657F26D60013E
 	IdentityCard(idCard string) bool
 }
 
 var vi IValidator = &validatorImpl{}
 
-// Validator 实例化validator工具类
+// Validator instantiates validator utilities
 func Validator() IValidator {
 	return vi
 }
 
-// Email 验证邮箱格式
+// Email validates the email address format
 func (validatorImpl) Email(email string) bool {
 	reg, err := regexp.Compile("^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)])$")
 	if err != nil {
@@ -39,13 +39,13 @@ func (validatorImpl) Email(email string) bool {
 	return reg.Match([]byte(email))
 }
 
-// IdentityCard （中国大陆）身份证格式校验
+// IdentityCard validates the (mainland China) identity card format
 //
-// 计算规则参考“中国国家标准化管理委员会”
+// Calculation rules reference the Standardization Administration of China
 //
-// 官方文档@see http://www.gb688.cn/bzgk/gb/newGbInfo?hcno=080D6FBF2BB468F9007657F26D60013E
+// Official documentation @see http://www.gb688.cn/bzgk/gb/newGbInfo?hcno=080D6FBF2BB468F9007657F26D60013E
 func (validatorImpl) IdentityCard(idCard string) bool {
-	//a1与对应的校验码对照表，其中key表示a1，value表示校验码，value中的10表示校验码X
+	//Mapping from a1 to check digits, where key is a1, value is the check digit, and 10 represents check digit X
 	var a1Map = map[int]int{
 		0:  1,
 		1:  0,
@@ -74,7 +74,7 @@ func (validatorImpl) IdentityCard(idCard string) bool {
 		var i = 18 - index
 		if i != 1 {
 			if v, pErr := strconv.Atoi(string(c)); pErr == nil {
-				//计算加权因子
+				//Calculate weighting factors
 				var weight = int(math.Pow(2, float64(i-1))) % 11
 				sum += v * weight
 			} else {

@@ -6,15 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-// AutoMigrate 自动同步表结构
+// AutoMigrate automatically synchronizes table schemas
 func AutoMigrate(db *gorm.DB, tables ...any) error {
 	err := db.AutoMigrate(tables...)
 	return err
 }
 
-// Paginate 分页器
+// Paginate paginator
 //
-// page默认为0，pageSize默认为10
+// page defaults to 0 and pageSize defaults to 10
 func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if page < 1 {
@@ -31,7 +31,7 @@ func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-// IgnoreErrRecordNotFound 忽略记录未找到的错误
+// IgnoreErrRecordNotFound ignores record-not-found errors
 //
 // @docs https://gorm.io/docs/v2_release_note.html#ErrRecordNotFound
 //

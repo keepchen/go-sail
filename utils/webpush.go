@@ -12,26 +12,26 @@ type webPushImpl struct {
 }
 
 type IWebPush interface {
-	// GenerateVAPIDKeys 生成web push的公私钥
+	// GenerateVAPIDKeys generates public and private keys for Web Push
 	GenerateVAPIDKeys() (privateKey string, publicKey string, err error)
-	// SendNotification 发送通知
+	// SendNotification sends a notification
 	SendNotification(privateKey, publicKey string, sub webpush.Subscription, subscriberEmail string, body Payload) error
 }
 
 var wpi IWebPush = &webPushImpl{}
 
-// WebPush 实例化web push工具类
+// WebPush instantiates Web Push utilities
 func WebPush() IWebPush {
 	return wpi
 }
 
-// GenerateVAPIDKeys 生成web push的公私钥
+// GenerateVAPIDKeys generates public and private keys for Web Push
 func (webPushImpl) GenerateVAPIDKeys() (privateKey string, publicKey string, err error) {
 	privateKey, publicKey, err = webpush.GenerateVAPIDKeys()
 	return
 }
 
-// Payload 消息推送载荷
+// Payload push notification payload
 type Payload struct {
 	Title string           `json:"title"`
 	Body  string           `json:"body"`
@@ -40,12 +40,12 @@ type Payload struct {
 	Badge string           `json:"badge"`
 }
 
-// PayloadDataField 消息推送载荷-data字段
+// PayloadDataField push notification payload - data field
 type PayloadDataField struct {
 	URL string `json:"url"`
 }
 
-// SendNotification 发送通知
+// SendNotification sends a notification
 func (webPushImpl) SendNotification(privateKey, publicKey string, sub webpush.Subscription, subscriberEmail string, body Payload) error {
 	js, _ := json.Marshal(body)
 	respData, respErr := webpush.SendNotification(js, &sub, &webpush.Options{

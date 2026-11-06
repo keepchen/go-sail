@@ -8,56 +8,56 @@ import (
 )
 
 const (
-	// DefaultLocalWindow 表示单节点生成 Sketch 的默认窗口时长。
+	// DefaultLocalWindow is the default window duration for a single node's Sketch.
 	DefaultLocalWindow = 10 * time.Second
-	// DefaultAggregateWindow 表示分布式聚合结果的默认窗口时长。
+	// DefaultAggregateWindow is the default window duration for distributed aggregation results.
 	DefaultAggregateWindow = time.Minute
-	// DefaultAllowedLateness 表示聚合窗口关闭前等待迟到数据的默认时长。
+	// DefaultAllowedLateness is the default wait for late data before an aggregation window closes.
 	DefaultAllowedLateness = 20 * time.Second
-	// DefaultRelativeAccuracy 表示 DDSketch 默认的相对误差上限。
+	// DefaultRelativeAccuracy is the default upper bound on relative error for DDSketch.
 	DefaultRelativeAccuracy = 0.01
-	// DefaultRetention 表示节点级 Sketch 记录的默认保留时长。
+	// DefaultRetention is the default retention period for node-level Sketch records.
 	DefaultRetention = 24 * time.Hour
-	// DefaultReporterQueueSize 表示上报队列默认可缓冲的记录数。
+	// DefaultReporterQueueSize is the default number of records the reporting queue can buffer.
 	DefaultReporterQueueSize = 1024
-	// DefaultLeaderTTL 表示分布式聚合租约的默认有效期。
+	// DefaultLeaderTTL is the default lifetime of the distributed aggregation lease.
 	DefaultLeaderTTL = 15 * time.Second
 )
 
-// Conf 控制本地记录、数据上报和分布式聚合行为。
+// Conf controls local recording, reporting, and distributed aggregation behavior.
 type Conf struct {
-	Enabled   bool   `yaml:"enabled" toml:"enabled" json:"enabled"`       // Enabled 控制是否启用分布式分位数统计。
-	Namespace string `yaml:"namespace" toml:"namespace" json:"namespace"` // Namespace 用于隔离环境或租户。
-	Service   string `yaml:"service" toml:"service" json:"service"`       // Service 标识产生指标的应用服务。
-	NodeID    string `yaml:"nodeID" toml:"nodeID" json:"nodeID"`          // NodeID 唯一标识一个服务实例。
+	Enabled   bool   `yaml:"enabled" toml:"enabled" json:"enabled"`       // Enabled controls whether distributed quantile statistics are enabled.
+	Namespace string `yaml:"namespace" toml:"namespace" json:"namespace"` // Namespace isolates environments or tenants.
+	Service   string `yaml:"service" toml:"service" json:"service"`       // Service identifies the application service producing metrics.
+	NodeID    string `yaml:"nodeID" toml:"nodeID" json:"nodeID"`          // NodeID uniquely identifies a service instance.
 
-	LocalWindow      time.Duration `yaml:"localWindow" toml:"localWindow" json:"localWindow"`                // LocalWindow 表示每个节点级 Sketch 的窗口时长。
-	AggregateWindow  time.Duration `yaml:"aggregateWindow" toml:"aggregateWindow" json:"aggregateWindow"`    // AggregateWindow 表示跨节点合并的窗口时长。
-	AllowedLateness  time.Duration `yaml:"allowedLateness" toml:"allowedLateness" json:"allowedLateness"`    // AllowedLateness 为迟到上报延后窗口关闭时间。
-	RelativeAccuracy float64       `yaml:"relativeAccuracy" toml:"relativeAccuracy" json:"relativeAccuracy"` // RelativeAccuracy 必须位于零和一之间。
-	Quantiles        []float64     `yaml:"quantiles" toml:"quantiles" json:"quantiles"`                      // Quantiles 是待计算的分位点，每项必须位于开区间 (0, 1)。
+	LocalWindow      time.Duration `yaml:"localWindow" toml:"localWindow" json:"localWindow"`                // LocalWindow is the window duration for each node-level Sketch.
+	AggregateWindow  time.Duration `yaml:"aggregateWindow" toml:"aggregateWindow" json:"aggregateWindow"`    // AggregateWindow is the window duration for merging across nodes.
+	AllowedLateness  time.Duration `yaml:"allowedLateness" toml:"allowedLateness" json:"allowedLateness"`    // AllowedLateness delays window closure to accommodate late reports.
+	RelativeAccuracy float64       `yaml:"relativeAccuracy" toml:"relativeAccuracy" json:"relativeAccuracy"` // RelativeAccuracy must be between zero and one.
+	Quantiles        []float64     `yaml:"quantiles" toml:"quantiles" json:"quantiles"`                      // Quantiles lists the quantiles to calculate; each must be in the open interval (0, 1).
 
-	Reporter   ReporterConfig   `yaml:"reporter" toml:"reporter" json:"reporter"`       // Reporter 配置记录上报和保留策略。
-	Aggregator AggregatorConfig `yaml:"aggregator" toml:"aggregator" json:"aggregator"` // Aggregator 配置选主和跨节点聚合行为。
+	Reporter   ReporterConfig   `yaml:"reporter" toml:"reporter" json:"reporter"`       // Reporter configures record reporting and retention policies.
+	Aggregator AggregatorConfig `yaml:"aggregator" toml:"aggregator" json:"aggregator"` // Aggregator configures leader election and cross-node aggregation behavior.
 }
 
-// ReporterConfig 控制节点级 Sketch 的上报后端、队列和保留策略。
+// ReporterConfig controls the reporting backend, queue, and retention policy for node-level Sketches.
 type ReporterConfig struct {
-	Driver    string        `yaml:"driver" toml:"driver" json:"driver"`          // Driver 指定上报后端，例如 redis。
-	QueueSize int           `yaml:"queueSize" toml:"queueSize" json:"queueSize"` // QueueSize 限制非阻塞上报队列的容量。
-	Retention time.Duration `yaml:"retention" toml:"retention" json:"retention"` // Retention 控制节点级记录的保留时长。
+	Driver    string        `yaml:"driver" toml:"driver" json:"driver"`          // Driver specifies the reporting backend, such as redis.
+	QueueSize int           `yaml:"queueSize" toml:"queueSize" json:"queueSize"` // QueueSize limits the capacity of the nonblocking reporting queue.
+	Retention time.Duration `yaml:"retention" toml:"retention" json:"retention"` // Retention controls how long node-level records are retained.
 }
 
-// AggregatorConfig 控制选主和聚合结果的保留策略。
+// AggregatorConfig controls leader election and aggregated result retention policies.
 type AggregatorConfig struct {
-	Enabled         bool          `yaml:"enabled" toml:"enabled" json:"enabled"`                         // Enabled 控制是否在当前节点启动聚合器。
-	LeaderKey       string        `yaml:"leaderKey" toml:"leaderKey" json:"leaderKey"`                   // LeaderKey 是参与选主的共享租约键。
-	LeaderTTL       time.Duration `yaml:"leaderTTL" toml:"leaderTTL" json:"leaderTTL"`                   // LeaderTTL 是已获取租约的有效期。
-	ScanInterval    time.Duration `yaml:"scanInterval" toml:"scanInterval" json:"scanInterval"`          // ScanInterval 控制租约续期和窗口扫描间隔。
-	ResultRetention time.Duration `yaml:"resultRetention" toml:"resultRetention" json:"resultRetention"` // ResultRetention 控制聚合结果的保留时长。
+	Enabled         bool          `yaml:"enabled" toml:"enabled" json:"enabled"`                         // Enabled controls whether to start the aggregator on the current node.
+	LeaderKey       string        `yaml:"leaderKey" toml:"leaderKey" json:"leaderKey"`                   // LeaderKey is the shared lease key for leader election.
+	LeaderTTL       time.Duration `yaml:"leaderTTL" toml:"leaderTTL" json:"leaderTTL"`                   // LeaderTTL is the lifetime of an acquired lease.
+	ScanInterval    time.Duration `yaml:"scanInterval" toml:"scanInterval" json:"scanInterval"`          // ScanInterval controls the interval for lease renewal and window scanning.
+	ResultRetention time.Duration `yaml:"resultRetention" toml:"resultRetention" json:"resultRetention"` // ResultRetention controls how long aggregated results are retained.
 }
 
-// SetDefaults 填充未设置的配置默认值，并对 Quantiles 进行排序。
+// SetDefaults fills in unset configuration defaults and sorts Quantiles.
 func (c *Conf) SetDefaults() {
 	if c.LocalWindow <= 0 {
 		c.LocalWindow = DefaultLocalWindow
@@ -96,7 +96,7 @@ func (c *Conf) SetDefaults() {
 	sort.Float64s(c.Quantiles)
 }
 
-// Validate 检查启用状态下的配置是否完整且内部一致。
+// Validate checks that the configuration is complete and internally consistent when enabled.
 func (c *Conf) Validate() error {
 	if !c.Enabled {
 		return nil

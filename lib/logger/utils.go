@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 )
 
-// MarshalInterfaceValue 将interface序列化成字符串
+// MarshalInterfaceValue serializes an interface to a string
 //
-// 主要用于日志记录
+// Mainly used for logging
 func MarshalInterfaceValue(obj any) string {
 	js, _ := json.Marshal(obj)
 

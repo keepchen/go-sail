@@ -6,10 +6,10 @@ import (
 	"github.com/keepchen/go-sail/v3/constants"
 )
 
-// GetUserInfo 获取用户信息请求参数
+// GetUserInfo request parameters for retrieving user information
 // swagger: model
 type GetUserInfo struct {
-	UserID int64 `json:"userId" form:"userId" validate:"required"` // 用户id
+	UserID int64 `json:"userId" form:"userId" validate:"required"` // User ID
 }
 
 func (v GetUserInfo) Validator() (constants.ICodeType, error) {

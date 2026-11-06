@@ -6,11 +6,11 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 )
 
-// RunAfter 在一定时间后执行
+// RunAfter runs after a specified duration
 //
 // # Note
 //
-// 这是一个一次性任务，只会执行一次，不会重复执行
+// This is a one-time task; it runs once and does not repeat
 func (j *taskJob) RunAfter(delay time.Duration) (cancel CancelFunc) {
 	timer := time.After(delay)
 	cancel = j.cancelFunc

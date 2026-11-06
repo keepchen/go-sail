@@ -2,19 +2,19 @@ package utils
 
 import "container/heap"
 
-// IAnyValue 任意值接口
+// IAnyValue arbitrary value interface
 type IAnyValue interface {
-	// GetScore 获取对比分值
+	// GetScore retrieves the comparison score
 	GetScore() float64
-	// SortByAsc 指定排序规则
+	// SortByAsc specifies the sort order
 	//
-	// true 为升序(小顶堆)
+	// true for ascending order (min-heap)
 	//
-	// false 为降序(大顶堆)
+	// false for descending order (max-heap)
 	SortByAsc() bool
 }
 
-// 任意数据类型的堆
+// Heap for arbitrary data types
 type anyValueHeap []IAnyValue
 
 func (avh *anyValueHeap) Push(value any) {
@@ -37,11 +37,11 @@ func (avh *anyValueHeap) Len() int {
 }
 
 func (avh *anyValueHeap) Less(i, j int) bool {
-	// 按升序排列，即为小顶堆
+	// Ascending order, i.e. a min-heap
 	if (*avh)[i].SortByAsc() {
 		return (*avh)[i].GetScore() < (*avh)[j].GetScore()
 	}
-	// 按降序排列，即为大顶堆
+	// Descending order, i.e. a max-heap
 	return (*avh)[i].GetScore() > (*avh)[j].GetScore()
 }
 
@@ -59,9 +59,9 @@ func (avh *anyValueHeap) Top() IAnyValue {
 }
 
 type HeapHelper interface {
-	// Push 将数据添加到堆中
+	// Push adds data to the heap
 	Push(value IAnyValue)
-	// Pop 将数据从堆中取出
+	// Pop removes data from the heap
 	Pop() IAnyValue
 }
 
@@ -69,13 +69,13 @@ type HeapStd struct {
 	values *anyValueHeap
 }
 
-// NewHeap 初始化一个全新的堆
+// NewHeap initializes a fresh heap
 //
-// 它的作用是可以对任意数据类型的切片进行排序
+// It can sort slices of arbitrary data types
 //
-// 实现 IAnyValue.SortByAsc 方法可以指定排序规则（升序、降序）
+// Implement IAnyValue.SortByAsc to specify the sort order (ascending or descending)
 //
-// IAnyValue.GetScore 方法是排序的数值依据
+// IAnyValue.GetScore provides the numeric basis for sorting
 func NewHeap() HeapHelper {
 	var values = &anyValueHeap{}
 	heap.Init(values)

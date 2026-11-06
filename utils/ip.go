@@ -6,18 +6,18 @@ type ipImpl struct {
 }
 
 type IIP interface {
-	// GetLocal 获取本地ip地址（单播地址）
+	// GetLocal retrieves the local IP address (unicast address)
 	GetLocal() (string, error)
 }
 
 var ipi IIP = &ipImpl{}
 
-// IP 实例化ip工具类
+// IP instantiates IP utilities
 func IP() IIP {
 	return ipi
 }
 
-// GetLocal 获取本地ip地址（单播地址）
+// GetLocal retrieves the local IP address (unicast address)
 func (ipImpl) GetLocal() (string, error) {
 	addrList, err := net.InterfaceAddrs()
 	if err != nil {

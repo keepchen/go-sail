@@ -4,12 +4,12 @@ import (
 	"github.com/keepchen/go-sail/v3/schedule"
 )
 
-// Schedule 计划任务
+// Schedule scheduled tasks
 //
 // # Note
 //
-// 使用默认的redis连接实例作为竞态检测的实例连接，
-// 调用者可以使用 SetRedisClient(client).ForSchedule() 覆盖默认连接
+// Use the default Redis connection instance for contention detection;
+// callers can override it with SetRedisClient(client).ForSchedule()
 func Schedule(name string, task func()) schedule.Scheduler {
 	return schedule.NewJob(name, task)
 }

@@ -14,8 +14,8 @@ type metricEntry struct {
 	recorder  *Recorder
 }
 
-// Registry 管理本地指标记录器，并将已完成的 Sketch 放入有界非阻塞上报队列。
-// Registry 支持并发使用。
+// Registry manages local metric recorders and enqueues completed Sketches in a bounded nonblocking reporting queue.
+// Registry supports concurrent use.
 type Registry struct {
 	config *Conf
 
@@ -31,7 +31,7 @@ type Registry struct {
 	observeErrors  atomic.Uint64
 }
 
-// NewRegistry 应用默认值、校验配置并创建空注册表。
+// NewRegistry applies defaults, validates configuration, and creates an empty registry.
 func NewRegistry(config *Conf) (*Registry, error) {
 	config.SetDefaults()
 
@@ -46,16 +46,16 @@ func NewRegistry(config *Conf) (*Registry, error) {
 	}, nil
 }
 
-// ObserveDuration 以微秒记录耗时，并保留小数部分。
+// ObserveDuration records durations in microseconds, preserving fractional values.
 func (r *Registry) ObserveDuration(metric string, duration time.Duration, labels Labels) {
-	// 内部统一使用微秒，但保留小数。
+	// Use microseconds internally while preserving fractional values.
 	value := float64(duration.Nanoseconds()) / float64(time.Microsecond)
 
 	r.Observe(metric, value, labels)
 }
 
-// Observe 记录一个有限非负数值。无效观测和记录器错误不会返回给调用方，
-// 而是由 ObserveErrors 计数。
+// Observe records a finite nonnegative value. Invalid observations and recorder errors are not returned to the caller;
+// instead, they are counted by ObserveErrors.
 func (r *Registry) Observe(metric string, value float64, labels Labels) {
 	entry, err := r.getOrCreate(metric, labels)
 	if err != nil {
@@ -63,7 +63,7 @@ func (r *Registry) Observe(metric string, value float64, labels Labels) {
 		return
 	}
 
-	// 除定时轮转外，观测路径也执行轮转，避免边界后到达的数值落入上一窗口。
+	// In addition to scheduled rotation, the observation path rotates windows to prevent values arriving after a boundary from entering the previous window.
 	r.rotateEntry(entry, time.Now())
 	if err := entry.recorder.Observe(value); err != nil {
 		r.observeErrors.Add(1)
@@ -114,8 +114,8 @@ func (r *Registry) getOrCreate(metric string, labels Labels) (*metricEntry, erro
 	return entry, nil
 }
 
-// Start 持续轮转本地窗口，直至 ctx 被取消。关闭时会刷新当前不完整窗口，
-// 将其放入队列后关闭 ReportQueue。
+// Start continuously rotates local windows until ctx is canceled. On shutdown, it flushes the current incomplete window,
+// enqueues it, and then closes ReportQueue.
 func (r *Registry) Start(ctx context.Context) {
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
@@ -242,18 +242,18 @@ func (r *Registry) buildRecord(entry *metricEntry, snapshot *RecorderSnapshot) *
 	return record
 }
 
-// ReportQueue 返回供 ReportWorker 消费的记录流。
-// Start 会在关闭阶段关闭该通道。
+// ReportQueue returns the record stream consumed by ReportWorker.
+// Start closes this channel during shutdown.
 func (r *Registry) ReportQueue() <-chan *SketchRecord {
 	return r.reportQueue
 }
 
-// DroppedRecords 返回因上报无法立即接收或关闭超时而丢弃的记录数。
+// DroppedRecords returns the number of records dropped because reporting could not accept them immediately or shutdown timed out.
 func (r *Registry) DroppedRecords() uint64 {
 	return r.droppedRecords.Load()
 }
 
-// ObserveErrors 返回被记录器拒绝的观测次数。
+// ObserveErrors returns the number of observations rejected by recorders.
 func (r *Registry) ObserveErrors() uint64 {
 	return r.observeErrors.Load()
 }

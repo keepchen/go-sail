@@ -6,38 +6,38 @@ import (
 	"github.com/keepchen/go-sail/v3/utils"
 )
 
-// IJwt Jwt接口
+// IJwt JWT interface
 type IJwt interface {
-	// MakeToken 生成JWT令牌
+	// MakeToken generates a JWT token
 	//
-	// uid 用户id
+	// uid user ID
 	//
-	// exp 令牌有效期，秒级时间戳
+	// exp token expiration, Unix timestamp in seconds
 	//
-	// otherFields 其他可扩展字段
+	// otherFields additional extensible fields
 	MakeToken(uid string, exp int64, otherFields ...map[string]any) (string, error)
-	// ValidToken 验证JWT令牌
+	// ValidToken validates a JWT token
 	//
-	// # ⚠️注意⚠️
+	// # ⚠️Note⚠️
 	//
-	// 此方法继承 jwt.Validator 的 Validate 方法，因此只验证了存在且格式正确的字段，
-	// 如果调用方有其他的验证规则，需要自行处理验证逻辑。
+	// This method inherits jwt.Validator's Validate method, so it only validates fields that are present and correctly formatted;
+	// callers must implement their own validation logic for any additional rules.
 	ValidToken(token string) (bool, jwt.MapClaims, error)
-	//Encrypt 加密字符
+	//Encrypt encrypts a string
 	//
-	// 此方法可以与 Decrypt 方法对应进行加解密
+	// This method pairs with Decrypt for encryption and decryption
 	//
 	// # Note
 	//
-	// 此方法调用 utils.RSA 方法并使用 jwt.Conf 配置中的公钥PublicKey进行加密
+	// This method calls utils.RSA and encrypts with PublicKey from jwt.Conf
 	Encrypt(plaintext string) (string, error)
-	//Decrypt 解密字符
+	//Decrypt decrypts a string
 	//
-	// 此方法可以与 Encrypt 方法对应进行加解密
+	// This method pairs with Encrypt for encryption and decryption
 	//
 	// # Note
 	//
-	// 此方法调用 utils.RSA 方法并使用 jwt.Conf 配置中的私钥PrivateKey进行解密
+	// This method calls utils.RSA and decrypts with PrivateKey from jwt.Conf
 	Decrypt(encryptedStr string) (string, error)
 }
 
@@ -45,18 +45,18 @@ type jwtImpl struct{}
 
 var _ IJwt = &jwtImpl{}
 
-// JWT jwt实例
+// JWT JWT instance
 func JWT() IJwt {
 	return &jwtImpl{}
 }
 
-// MakeToken 生成JWT令牌
+// MakeToken generates a JWT token
 //
-// uid 用户id
+// uid user ID
 //
-// exp 令牌有效期，秒级时间戳
+// exp token expiration, Unix timestamp in seconds
 //
-// otherFields 其他可扩展字段
+// otherFields additional extensible fields
 func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]any) (string, error) {
 	conf := config.Get()
 	baseMap := map[string]any{
@@ -64,7 +64,7 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]any) (
 		"iss": conf.JwtConf.TokenIssuer,
 		"exp": exp,
 	}
-	//可能会存在覆盖的情况
+	//Values may be overwritten
 	for _, otherField := range otherFields {
 		for k, v := range otherField {
 			baseMap[k] = v
@@ -75,12 +75,12 @@ func (jwtImpl) MakeToken(uid string, exp int64, otherFields ...map[string]any) (
 	return jwt.SignWithMap(mp, *conf.JwtConf)
 }
 
-// ValidToken 验证JWT令牌
+// ValidToken validates a JWT token
 //
-// # ⚠️注意⚠️
+// # ⚠️Note⚠️
 //
-// 此方法继承 jwt.Validator 的 Validate 方法，因此只验证了存在且格式正确的字段，
-// 如果调用方有其他的验证规则，需要自行处理验证逻辑。
+// This method inherits jwt.Validator's Validate method, so it only validates fields that are present and correctly formatted;
+// callers must implement their own validation logic for any additional rules.
 func (jwtImpl) ValidToken(token string) (bool, jwt.MapClaims, error) {
 	conf := config.Get()
 	mp, err := jwt.VerifyFromMap(token, *conf.JwtConf)
@@ -88,25 +88,25 @@ func (jwtImpl) ValidToken(token string) (bool, jwt.MapClaims, error) {
 	return err == nil, mp, err
 }
 
-// Encrypt 加密字符
+// Encrypt encrypts a string
 //
-// 此方法可以与 Decrypt 方法对应进行加解密
+// This method pairs with Decrypt for encryption and decryption
 //
 // # Note
 //
-// 此方法调用 utils.RSA 方法并使用 jwt.Conf 配置中的公钥PublicKey进行加密
+// This method calls utils.RSA and encrypts with PublicKey from jwt.Conf
 func (jwtImpl) Encrypt(plaintext string) (string, error) {
 	conf := config.Get()
 	return utils.RSA().Encrypt(plaintext, []byte(conf.JwtConf.PublicKey))
 }
 
-// Decrypt 解密字符
+// Decrypt decrypts a string
 //
-// 此方法可以与 Encrypt 方法对应进行加解密
+// This method pairs with Encrypt for encryption and decryption
 //
 // # Note
 //
-// 此方法调用 utils.RSA 方法并使用 jwt.Conf 配置中的私钥PrivateKey进行解密
+// This method calls utils.RSA and decrypts with PrivateKey from jwt.Conf
 func (jwtImpl) Decrypt(encryptedStr string) (string, error) {
 	conf := config.Get()
 	return utils.RSA().Decrypt(encryptedStr, []byte(conf.JwtConf.PrivateKey))

@@ -4,18 +4,18 @@ import "github.com/keepchen/message-queue/queue"
 
 var listInstance *queue.Instance
 
-// InitList 初始化列表
+// InitList initializes the list
 func InitList() {
 	listInstance = queue.GetDBInstance("<localList>")
 	listInstance.SetDebugMode(false)
 }
 
-// GetListInstance 获取列表实例
+// GetListInstance retrieves the list instance
 func GetListInstance() *queue.Instance {
 	return listInstance
 }
 
-// NewList 新建列表
+// NewList creates a list
 func NewList(listName string) *queue.Instance {
 	instance := queue.GetDBInstance(listName)
 	instance.SetDebugMode(false)

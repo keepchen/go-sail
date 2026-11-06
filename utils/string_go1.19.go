@@ -8,7 +8,7 @@ import (
 	"unsafe"
 )
 
-// StrToBytes 字符串转换为字节数组
+// StrToBytes converts a string to a byte slice
 //
 // nolint
 func StrToBytes(s string) []byte {
@@ -18,7 +18,7 @@ func StrToBytes(s string) []byte {
 	return *(*[]byte)(unsafe.Pointer(&bh))
 }
 
-// StrToBytes 字符串转换为字节数组
+// StrToBytes converts a string to a byte slice
 //
 // nolint
 func (stringImpl) StrToBytes(s string) []byte {
@@ -28,7 +28,7 @@ func (stringImpl) StrToBytes(s string) []byte {
 	return *(*[]byte)(unsafe.Pointer(&bh))
 }
 
-// BytesToStr 字节数组转换为字符串
+// BytesToStr converts a byte slice to a string
 //
 // nolint
 func BytesToStr(b []byte) string {
@@ -38,7 +38,7 @@ func BytesToStr(b []byte) string {
 	return *(*string)(unsafe.Pointer(&sh))
 }
 
-// BytesToStr 字节数组转换为字符串
+// BytesToStr converts a byte slice to a string
 //
 // nolint
 func (stringImpl) BytesToStr(b []byte) string {

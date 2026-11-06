@@ -4,8 +4,8 @@ import (
 	"github.com/keepchen/go-sail/v3/constants"
 )
 
-// IRequest 统一请求接口
+// IRequest common request interface
 type IRequest interface {
-	//Validator 校验请求参数
+	//Validator validates request parameters
 	Validator() (constants.ICodeType, error)
 }

@@ -14,26 +14,26 @@ import (
 	"go.uber.org/zap"
 )
 
-// Monitor 提供分布式统计初始化和聚合结果查询能力。
+// Monitor provides distributed statistics initialization and aggregated result queries.
 type Monitor interface {
-	// Distribution 初始化分布式统计组件。同一个监控实例只会执行一次有效初始化。
-	// disabled 配置不会占用初始化机会，后续仍可使用 enabled 配置完成初始化。
+	// Distribution initializes distributed statistics. Each monitor instance performs successful initialization only once.
+	// A disabled configuration does not consume the initialization opportunity; a later enabled configuration can still initialize it.
 	Distribution(conf *distribution.Conf, redisClient redis.UniversalClient)
-	// Result 获取指定指标在聚合窗口
+	// Result retrieves the complete statistics for the specified metric within the aggregation window
 	//
-	// [windowStart, windowEnd) 内的完整统计结果。
+	// [windowStart, windowEnd).
 	Result(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (*distribution.AggregatedResult, error)
-	// P 按 Pxx 记法获取指定指标的分位值。
+	// P retrieves a quantile value for the specified metric using Pxx notation.
 	//
-	// bool 表示聚合结果中是否包含该分位点。
+	// bool indicates whether the aggregated result contains the quantile.
 	P(percentile uint, metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error)
-	// P85 获取指定指标的 P85 分位值。
+	// P85 retrieves the P85 quantile value for the specified metric.
 	P85(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error)
-	// P99 获取指定指标的 P99 分位值。
+	// P99 retrieves the P99 quantile value for the specified metric.
 	P99(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error)
-	// P990 获取指定指标的 P99.0 分位值，与 P99 数值等价。
+	// P990 retrieves the P99.0 quantile value for the specified metric, numerically equivalent to P99.
 	P990(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error)
-	// P999 获取指定指标的 P99.9 分位值。
+	// P999 retrieves the P99.9 quantile value for the specified metric.
 	P999(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error)
 }
 
@@ -55,8 +55,8 @@ var (
 	monitorInstance Monitor
 )
 
-// Monitoring 初始化并返回全局唯一的监控实例。
-// 首次调用传入的 ctx 和 logger 会用于该实例的整个生命周期，后续调用仅返回已有实例。
+// Monitoring initializes and returns the single global monitor instance.
+// The ctx and logger from the first call are used throughout the instance's lifetime; subsequent calls only return the existing instance.
 func Monitoring(ctx context.Context, logger *zap.Logger) Monitor {
 	monitorOnce.Do(func() {
 		monitorMu.Lock()
@@ -70,8 +70,8 @@ func Monitoring(ctx context.Context, logger *zap.Logger) Monitor {
 	return GetMonitor()
 }
 
-// GetMonitor 返回已由 Monitoring 初始化的全局监控实例。
-// 尚未初始化时返回 nil。
+// GetMonitor returns the global monitor instance initialized by Monitoring.
+// Returns nil if not yet initialized.
 func GetMonitor() Monitor {
 	monitorMu.RLock()
 	defer monitorMu.RUnlock()
@@ -79,8 +79,8 @@ func GetMonitor() Monitor {
 	return monitorInstance
 }
 
-// Distribution 初始化分布式统计组件。同一个监控实例只会执行一次有效初始化。
-// disabled 配置不会占用初始化机会，后续仍可使用 enabled 配置完成初始化。
+// Distribution initializes distributed statistics. Each monitor instance performs successful initialization only once.
+// A disabled configuration does not consume the initialization opportunity; a later enabled configuration can still initialize it.
 func (m *monitoringImpl) Distribution(conf *distribution.Conf, redisClient redis.UniversalClient) {
 	if !conf.Enabled {
 		return
@@ -105,20 +105,20 @@ func (m *monitoringImpl) Distribution(conf *distribution.Conf, redisClient redis
 
 		go registry.Start(m.ctx)
 		go reportWorker.Run(m.ctx)
-		// 如果当前节点开启了聚合，就执行聚合操作。
+		// Run aggregation if enabled on the current node.
 		if conf.Aggregator.Enabled {
 			aggregator := distribution.NewAggregator(conf, redisStore, leadership, m.logger)
 			go aggregator.Run(m.ctx)
 		}
 
-		// 连接到 HTTP 埋点。
+		// Connect to HTTP instrumentation.
 		api.SetRegistry(registry)
 	})
 }
 
-// Result 获取指定指标在聚合窗口
+// Result retrieves the complete statistics for the specified metric within the aggregation window
 //
-// [windowStart, windowEnd) 内的完整统计结果。
+// [windowStart, windowEnd).
 func (m *monitoringImpl) Result(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (*distribution.AggregatedResult, error) {
 	m.mu.RLock()
 	conf := m.conf
@@ -144,9 +144,9 @@ func (m *monitoringImpl) Result(metric string, labels distribution.Labels, windo
 	return result, nil
 }
 
-// P 按 Pxx 记法获取指定指标的分位值。
+// P retrieves a quantile value for the specified metric using Pxx notation.
 //
-// bool 表示聚合结果中是否包含该分位点。
+// bool indicates whether the aggregated result contains the quantile.
 func (m *monitoringImpl) P(percentile uint, metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error) {
 	result, err := m.Result(metric, labels, windowStart, windowEnd)
 	if err != nil {
@@ -156,22 +156,22 @@ func (m *monitoringImpl) P(percentile uint, metric string, labels distribution.L
 	return value, ok, nil
 }
 
-// P85 获取指定指标的 P85 分位值。
+// P85 retrieves the P85 quantile value for the specified metric.
 func (m *monitoringImpl) P85(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error) {
 	return m.P(85, metric, labels, windowStart, windowEnd)
 }
 
-// P99 获取指定指标的 P99 分位值。
+// P99 retrieves the P99 quantile value for the specified metric.
 func (m *monitoringImpl) P99(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error) {
 	return m.P(99, metric, labels, windowStart, windowEnd)
 }
 
-// P990 获取指定指标的 P99.0 分位值，与 P99 数值等价。
+// P990 retrieves the P99.0 quantile value for the specified metric, numerically equivalent to P99.
 func (m *monitoringImpl) P990(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error) {
 	return m.P(990, metric, labels, windowStart, windowEnd)
 }
 
-// P999 获取指定指标的 P99.9 分位值。
+// P999 retrieves the P99.9 quantile value for the specified metric.
 func (m *monitoringImpl) P999(metric string, labels distribution.Labels, windowStart, windowEnd time.Time) (float64, bool, error) {
 	return m.P(999, metric, labels, windowStart, windowEnd)
 }

@@ -15,33 +15,33 @@ type redisClientSetter struct {
 	redisClient redisLib.UniversalClient
 }
 
-// RedisClientSetter redis连接实例设置器
+// RedisClientSetter Redis connection instance setter
 type RedisClientSetter interface {
-	// ForSchedule 为计划任务指定redis连接实例
+	// ForSchedule specifies the Redis connection instance for scheduled tasks
 	//
-	// 调用此方法后，默认的连接实例将被覆盖
+	// Calling this method overrides the default connection instance
 	ForSchedule()
-	// ForRedisLocker 为redis分布式锁指定redis连接实例
+	// ForRedisLocker specifies the Redis connection instance for Redis distributed locks
 	//
-	// 调用此方法后，默认的连接实例将被覆盖
+	// Calling this method overrides the default connection instance
 	ForRedisLocker()
 }
 
-// SetRedisClient 设置redis连接实例
+// SetRedisClient sets the Redis connection instance
 func SetRedisClient(client redisLib.UniversalClient) RedisClientSetter {
 	return &redisClientSetter{redisClient: client}
 }
 
-// ForSchedule 为计划任务指定redis连接实例
+// ForSchedule specifies the Redis connection instance for scheduled tasks
 //
-// 调用此方法后，默认的连接实例将被覆盖
+// Calling this method overrides the default connection instance
 func (s *redisClientSetter) ForSchedule() {
 	schedule.SetRedisClientOnce(s.redisClient)
 }
 
-// ForRedisLocker 为redis分布式锁指定redis连接实例
+// ForRedisLocker specifies the Redis connection instance for Redis distributed locks
 //
-// 调用此方法后，默认的连接实例将被覆盖
+// Calling this method overrides the default connection instance
 func (s *redisClientSetter) ForRedisLocker() {
 	setRedisClientForRedisLockerOnce.Do(func() {
 		redisClientForRedisLocker = s.redisClient

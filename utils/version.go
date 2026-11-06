@@ -11,25 +11,25 @@ type versionImpl struct {
 }
 
 type IVersion interface {
-	// Print 打印版本信息
+	// Print prints version information
 	Print(fields VersionInfoFields)
 }
 
 var vei IVersion = versionImpl{}
 
-// Version 实例化version工具类
+// Version instantiates version utilities
 func Version() IVersion {
 	return vei
 }
 
-// VersionInfoFields 版本信息字段
+// VersionInfoFields version information fields
 type VersionInfoFields struct {
-	AppName   string //应用名称
-	Branch    string //版本分支
-	Version   string //版本号
+	AppName   string //Application name
+	Branch    string //Version branch
+	Version   string //Version number
 	Revision  string //commit id
-	BuildDate string //编译时间
-	GoVersion string //golang版本
+	BuildDate string //Build time
+	GoVersion string //Go version
 }
 
 const versionInfoTmpl = `
@@ -39,7 +39,7 @@ const versionInfoTmpl = `
   go version:   {{.goVersion}}
 `
 
-// Print 打印版本信息
+// Print prints version information
 func (versionImpl) Print(fields VersionInfoFields) {
 	m := map[string]string{
 		"program":   fields.AppName,

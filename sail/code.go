@@ -2,15 +2,15 @@ package sail
 
 import "github.com/keepchen/go-sail/v3/constants"
 
-// ICode 错误码接口
+// ICode error code interface
 type ICode interface {
-	// Register 将错误码信息注册到错误码表中
+	// Register registers an error code message in the error code table
 	//
-	// - language，语言代码，需要符合 constants.LanguageCode 表中的值，例如en,en-US
+	// - language, language code matching a value in constants.LanguageCode, e.g. en,en-US
 	//
-	// - code，错误码值
+	// - code, error code value
 	//
-	// - msg，错误提示信息
+	// - msg, error message
 	Register(language string, code int, msg string)
 }
 
@@ -18,7 +18,7 @@ type codeImpl struct{}
 
 var ci ICode = &codeImpl{}
 
-// Code 获取错误码接口方法
+// Code retrieves the error code interface
 func Code() ICode {
 	return ci
 }

@@ -58,7 +58,7 @@ func TestConfigViaEtcd(t *testing.T) {
 	}
 	_ = conn.Close()
 
-	//写入测试数据
+	//Write test data
 	instance, err := etcd.New(etcdConf)
 	t.Log(instance, err)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

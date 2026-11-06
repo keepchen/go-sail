@@ -3,7 +3,7 @@ package constants
 // @see https://timezonedb.com/time-zones
 // Linux shell: timedatectl list-timezones
 const (
-	DefaultTimeZone   string = "Asia/Shanghai" //默认时区
+	DefaultTimeZone   string = "Asia/Shanghai" //Default time zone
 	TimeZoneUTCSub11  string = "Pacific/Niue"
 	TimeZoneUTCSub10  string = "Pacific/Honolulu"
 	TimeZoneUTCSub9   string = "Pacific/Gambier"
@@ -31,9 +31,9 @@ const (
 )
 
 const (
-	DateLayout                string = "2006-01-02"               //日期格式
-	TimeLayout                string = "15:04:05"                 //时间格式
-	DatetimeLayout            string = "2006-01-02 15:04:05"      //日期时间格式
-	DatetimeTZLayout          string = "2006-01-02T15:04:05Z"     //日期时间格式-tz
-	DateTimeTZLayoutWithMilli string = "2006-01-02T15:04:05.000Z" //日期时间格式-tz，带毫秒
+	DateLayout                string = "2006-01-02"               //Date format
+	TimeLayout                string = "15:04:05"                 //Time format
+	DatetimeLayout            string = "2006-01-02 15:04:05"      //Date and time format
+	DatetimeTZLayout          string = "2006-01-02T15:04:05Z"     //Date and time format with time zone
+	DateTimeTZLayoutWithMilli string = "2006-01-02T15:04:05.000Z" //Date and time format with time zone and milliseconds
 )

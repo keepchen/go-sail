@@ -11,17 +11,17 @@ const (
 	defaultTokenIssuer = "Go-Sail"
 )
 
-// SigningMethod 签名方法
+// SigningMethod signing method
 type SigningMethod string
 
 const (
-	SigningMethodRS256 SigningMethod = "RS256" //SigningMethodRS256 rsa256方法
-	SigningMethodRS512 SigningMethod = "RS512" //SigningMethodRS512 rsa512方法
-	SigningMethodHS512 SigningMethod = "HS512" //SigningMethodHS512 hmac方法
-	SigningMethodEdDSA SigningMethod = "EdDSA" //SigningMethodEdDSA ed25519方法
-	SigningMethodES256 SigningMethod = "ES256" //SigningMethodES256 ecdsa256方法
-	SigningMethodES384 SigningMethod = "ES384" //SigningMethodES384 ecdsa384方法
-	SigningMethodES512 SigningMethod = "ES512" //SigningMethodES521 ecdsa512方法
+	SigningMethodRS256 SigningMethod = "RS256" //SigningMethodRS256 RSA256 method
+	SigningMethodRS512 SigningMethod = "RS512" //SigningMethodRS512 RSA512 method
+	SigningMethodHS512 SigningMethod = "HS512" //SigningMethodHS512 HMAC method
+	SigningMethodEdDSA SigningMethod = "EdDSA" //SigningMethodEdDSA Ed25519 method
+	SigningMethodES256 SigningMethod = "ES256" //SigningMethodES256 ECDSA256 method
+	SigningMethodES384 SigningMethod = "ES384" //SigningMethodES384 ECDSA384 method
+	SigningMethodES512 SigningMethod = "ES512" //SigningMethodES521 ECDSA512 method
 )
 
 func (sm SigningMethod) String() string {
@@ -49,7 +49,7 @@ func (sm SigningMethod) getSigningMethod() jwtLib.SigningMethod {
 	}
 }
 
-// Sign 签名
+// Sign signs a token
 func Sign(claim jwtLib.Claims, conf Conf) (string, error) {
 	appClaims, ok := claim.(AppClaims)
 	if !ok {
@@ -80,7 +80,7 @@ func Sign(claim jwtLib.Claims, conf Conf) (string, error) {
 	}
 }
 
-// SignWithMap 签名
+// SignWithMap signs a token
 func SignWithMap(claims MapClaims, conf Conf) (string, error) {
 	if val, ok := claims["iss"]; !ok || len(fmt.Sprintf("%v", val)) == 0 {
 		if len(conf.TokenIssuer) > 0 {
@@ -110,7 +110,7 @@ func SignWithMap(claims MapClaims, conf Conf) (string, error) {
 	}
 }
 
-// Verify 验证
+// Verify verifies a token
 func Verify(tokenString string, conf Conf) (AppClaims, error) {
 	token, err := jwtLib.ParseWithClaims(tokenString, &AppClaims{}, func(token *jwtLib.Token) (any, error) {
 		if token.Method.Alg() != conf.Algorithm {
@@ -145,7 +145,7 @@ func Verify(tokenString string, conf Conf) (AppClaims, error) {
 	return AppClaims{}, errors.New("token verify failed")
 }
 
-// VerifyFromMap 验证
+// VerifyFromMap verifies a token
 func VerifyFromMap(tokenString string, conf Conf) (MapClaims, error) {
 	token, err := jwtLib.ParseWithClaims(tokenString, &MapClaims{}, func(token *jwtLib.Token) (any, error) {
 		if token.Method.Alg() != conf.Algorithm {
@@ -180,7 +180,7 @@ func VerifyFromMap(tokenString string, conf Conf) (MapClaims, error) {
 	return MapClaims{}, errors.New("token verify failed")
 }
 
-// GetToken 获取token
+// GetToken retrieves the token
 func (c *AppClaims) GetToken(method SigningMethod, secret any) (string, error) {
 	if secret == nil {
 		return "", errors.New("secret is nil")
@@ -192,7 +192,7 @@ func (c *AppClaims) GetToken(method SigningMethod, secret any) (string, error) {
 	return tokenStr, err
 }
 
-// GetToken 获取token
+// GetToken retrieves the token
 func (c *MapClaims) GetToken(method SigningMethod, secret any) (string, error) {
 	if secret == nil {
 		return "", errors.New("secret is nil")

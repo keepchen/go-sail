@@ -52,7 +52,7 @@ import (
 	userConfig "github.com/keepchen/go-sail/v3/examples/pkg/app/user/config"
 )
 
-// StartServer 启动服务
+// StartServer starts the service
 //
 //go:generate swag init --dir ./ --output ./http/docs --parseDependency --parseInternal --generalInfo user.go
 //go:generate redoc-cli bundle ./http/docs/*.yaml -o ./http/docs/docs.html
@@ -173,7 +173,7 @@ func StartServer(wg *sync.WaitGroup) {
 		}
 	)
 
-	//挂载处理方法后启动
+	//Start after attaching the handlers
 	sail.WakeupHttp("go-sail", conf).
 		//SetupApiOption(apiOption).
 		//EnableWebsocket(nil, nil).
@@ -181,7 +181,7 @@ func StartServer(wg *sync.WaitGroup) {
 		Launch()
 }
 
-// RegisterServicesToNacos 将服务注册到注册中心
+// RegisterServicesToNacos registers services with the service registry
 func RegisterServicesToNacos(wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -210,7 +210,7 @@ func RegisterServicesToNacos(wg *sync.WaitGroup) {
 	}
 }
 
-// UnregisterServiceFromNacos 将服务从注册中心下线
+// UnregisterServiceFromNacos deregisters services from the service registry
 func UnregisterServiceFromNacos() {
 	nc := nacos.GetNamingClient()
 	var param vo.DeregisterInstanceParam

@@ -2,9 +2,9 @@ package config
 
 import "time"
 
-//TestLoadTimeZonePanicWhileFailure 测试加载时区
+//TestLoadTimeZonePanicWhileFailure tests loading the time zone
 //
-//如果加载失败，将panic
+//Panic if loading fails
 func TestLoadTimeZonePanicWhileFailure() {
 	_, err := time.LoadLocation(GetGlobalConfig().Timezone)
 	if err != nil {

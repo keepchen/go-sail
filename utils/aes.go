@@ -12,46 +12,46 @@ import (
 type aesImpl struct {
 }
 
-// IAes aes接口
+// IAes AES interface
 type IAes interface {
-	// Encode aes加密
+	// Encode AES encryption
 	//
-	// 使用CTR
+	// Uses CTR
 	//
-	// key应该是一个16或24或32位长度的字符
+	// key should be a string of length 16, 24, or 32
 	Encode(rawString, key string) (string, error)
-	// Decode aes解密
+	// Decode AES decryption
 	//
-	// 使用CTR
+	// Uses CTR
 	//
-	// key应该是一个16或24或32位长度的字符
+	// key should be a string of length 16, 24, or 32
 	Decode(encryptedString, key string) (string, error)
-	// GCMEncrypt aes加密
+	// GCMEncrypt AES encryption
 	//
-	// 使用GCM
+	// Uses GCM
 	//
-	// key应该是一个16或24或32位长度的字符
+	// key should be a string of length 16, 24, or 32
 	GCMEncrypt(rawString, key string) (string, error)
-	// GCMDecrypt aes解密
+	// GCMDecrypt AES decryption
 	//
-	// 使用GCM
+	// Uses GCM
 	//
-	// key应该是一个16或24或32位长度的字符
+	// key should be a string of length 16, 24, or 32
 	GCMDecrypt(encryptedString, key string) (string, error)
 }
 
-// Aes 实例化aes工具类
+// Aes instantiates AES utilities
 func Aes() IAes {
 	return ai
 }
 
 var ai IAes = &aesImpl{}
 
-// Encode aes加密
+// Encode AES encryption
 //
-// 使用CTR
+// Uses CTR
 //
-// key应该是一个16或24或32位长度的字符
+// key should be a string of length 16, 24, or 32
 func (aesImpl) Encode(rawString, key string) (string, error) {
 	plainText := []byte(rawString)
 
@@ -72,11 +72,11 @@ func (aesImpl) Encode(rawString, key string) (string, error) {
 	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
-// Decode aes解密
+// Decode AES decryption
 //
-// 使用CTR
+// Uses CTR
 //
-// key应该是一个16或24或32位长度的字符
+// key should be a string of length 16, 24, or 32
 func (aesImpl) Decode(encryptedString, key string) (string, error) {
 	cipherText, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
@@ -101,11 +101,11 @@ func (aesImpl) Decode(encryptedString, key string) (string, error) {
 	return string(cipherText), nil
 }
 
-// GCMEncrypt aes加密
+// GCMEncrypt AES encryption
 //
-// 使用GCM
+// Uses GCM
 //
-// key应该是一个16或24或32位长度的字符
+// key should be a string of length 16, 24, or 32
 func (aesImpl) GCMEncrypt(rawString, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
@@ -123,11 +123,11 @@ func (aesImpl) GCMEncrypt(rawString, key string) (string, error) {
 	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
-// GCMDecrypt aes解密
+// GCMDecrypt AES decryption
 //
-// 使用GCM
+// Uses GCM
 //
-// key应该是一个16或24或32位长度的字符
+// key should be a string of length 16, 24, or 32
 func (aesImpl) GCMDecrypt(encryptedString, key string) (string, error) {
 	ciphertext, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {

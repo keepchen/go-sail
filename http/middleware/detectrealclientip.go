@@ -7,26 +7,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// DetectRealClientIP 获取客户端真实ip
+// DetectRealClientIP retrieves the client's real IP address
 //
-// 从请求头中读取 X-Forwarded-For 字段进行处理
+// Read and process the X-Forwarded-For request header
 //
-// # 提示
+// # Tip
 //
-// 为了更加安全准确的获取客户端真实ip，建议使用 gin.Engine.SetTrustedProxies() 方法设置授信的代理ip
+// For safer and more accurate client IP detection, use gin.Engine.SetTrustedProxies() to configure trusted proxy IP addresses
 func DetectRealClientIP() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//读取请求头中的X-Forwarded-For字段
+		//Read the X-Forwarded-For request header
 		xForwardedFor := c.GetHeader("X-Forwarded-For")
 
 		if len(xForwardedFor) == 0 {
-			c.Set("realClientIp", c.ClientIP()) // 回退到默认方法
+			c.Set("realClientIp", c.ClientIP()) // Fall back to the default method
 			c.Next()
 			return
 		}
 
 		ips := strings.Split(xForwardedFor, ",")
-		//取最后一个IP
+		//Use the last IP address
 		realIP := strings.TrimSpace(ips[len(ips)-1])
 		ip := net.ParseIP(realIP)
 		if ip == nil {

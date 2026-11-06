@@ -13,18 +13,18 @@ import (
 	"gorm.io/gorm"
 )
 
-// 数据库类型标识
+// Database type identifier
 const (
-	DriverNameMysql      = "mysql"      //数据库类型标识:mysql
-	DriverNamePostgres   = "postgres"   //数据库类型标识:postgres sql
-	DriverNameSqlite     = "sqlite"     //数据库类型标识:sqlite
-	DriverNameSqlserver  = "sqlserver"  //数据库类型标识:sqlserver
-	DriverNameClickhouse = "clickhouse" //数据库类型标识:clickhouse
+	DriverNameMysql      = "mysql"      //Database type identifier: MySQL
+	DriverNamePostgres   = "postgres"   //Database type identifier: PostgreSQL
+	DriverNameSqlite     = "sqlite"     //Database type identifier: SQLite
+	DriverNameSqlserver  = "sqlserver"  //Database type identifier: SQL Server
+	DriverNameClickhouse = "clickhouse" //Database type identifier: ClickHouse
 
 	//more ...
 )
 
-// 组装mysql的dsn
+// Build the MySQL DSN
 // @see https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
 // dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 func mysqlDsn(conf MysqlConfItem) string {
@@ -46,7 +46,7 @@ func mysqlDsn(conf MysqlConfItem) string {
 		conf.Database, conf.Charset, parseTime, conf.Loc)
 }
 
-// 组装postgres的dsn
+// Build the PostgreSQL DSN
 // dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
 func postgresDsn(conf PostgresConfItem) string {
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
@@ -54,13 +54,13 @@ func postgresDsn(conf PostgresConfItem) string {
 		conf.Port, conf.SSLMode, conf.TimeZone)
 }
 
-// 组装sqlite的dsn
+// Build the SQLite DSN
 // dsn := "sqlite.db"
 func sqliteDsn(conf SqliteConfItem) string {
 	return conf.File
 }
 
-// 组装sqlserver的dsn
+// Build the SQL Server DSN
 // dsn := "sqlserver://gorm:LoremIpsum86@localhost:9930?database=gorm"
 func sqlserverDsn(conf SqlserverConfItem) string {
 	return fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s",
@@ -68,7 +68,7 @@ func sqlserverDsn(conf SqlserverConfItem) string {
 		conf.Port, conf.Database)
 }
 
-// 组装clickhouse的dsn
+// Build the ClickHouse DSN
 // dsn := "tcp://localhost:9000?database=gorm&username=gorm&password=gorm&read_timeout=10&write_timeout=20"
 func clickhouseDsn(conf ClickhouseConfItem) string {
 	if conf.ReadTimeout == 0 {
@@ -83,7 +83,7 @@ func clickhouseDsn(conf ClickhouseConfItem) string {
 		conf.ReadTimeout, conf.WriteTimeout)
 }
 
-// GenDialector 生成数据库连接方言(驱动)
+// GenDialector generates the database dialect (driver)
 func (conf Conf) GenDialector() (gorm.Dialector, gorm.Dialector) {
 	switch strings.ToLower(conf.DriverName) {
 	case DriverNameMysql:

@@ -1,6 +1,6 @@
 package api
 
-// CookieStd cookie字段定义
+// CookieStd cookie field definitions
 type CookieStd struct {
 	Name     string
 	Value    string
