@@ -5,13 +5,13 @@ import (
 	"github.com/keepchen/go-sail/v3/examples/pkg/app/user/service"
 )
 
-// SayHello 欢迎语
-// @Tags        welcome / 欢迎语
-// @Summary     say-hello / 说你好
-// @Description 欢迎语
+// SayHello greeting
+// @Tags        welcome / Greeting
+// @Summary     say-hello / Say hello
+// @Description Greeting
 // @Accept      application/json
 // @Produce     json
-// @Param       query query    request.SayHello true "查询参数"
+// @Param       query query    request.SayHello true "Query parameters"
 // @Success     200   {object} response.SayHello
 // @Failure     400   {object} dto.Error400
 // @Failure     500   {object} dto.Error500

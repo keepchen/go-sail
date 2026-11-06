@@ -47,7 +47,7 @@ func main() {
 ```
 このように起動した後のコンソール画面例：
 
-<img src="static/launch.png" alt="launch.png" title="launch.png" width="600" />
+<img src="static/launch-screenshot.png" alt="launch.png" title="launch.png" width="600" />
 
 
 ## 使用例
@@ -273,6 +273,11 @@ func UpdateUserBalance() {
   - パフォーマンス監視
     - Prometheus
     - Pprof
+  - 分散型分位数統計
+    - P99
+    - P90
+    - ...
+    - P(N)
 - [x] APIエラーコード
   - 動的挿入
   - 多言語対応
@@ -345,7 +350,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
         </tr>
         <tr style="height:200px">
             <td style="border: 1px solid black; padding: 8px;">
-              <img src="static/usecases/sendflare-logo.png" alt="sendflare.com" width="200"/>
+              <img src="static/usecases/sendflare.com.png" alt="sendflare.com" width="200"/>
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 <a href="https://sendflare.com?ref=go-sail" target="_blank">https://sendflare.com</a>
@@ -404,7 +409,7 @@ ok    github.com/keepchen/go-sail/v3  3.663s
               <img src="static/usecases/fantaGoal-logo.png" alt="FantaGoal" width="200" />
             </td>
             <td style="border: 1px solid black; padding: 8px;">
-              <a href="https://fantagoal.io" target="_blank">https://fantagoal.io</a>
+              -
             </td>
             <td style="border: 1px solid black; padding: 8px;">
                 Webサイト
@@ -445,9 +450,25 @@ ok    github.com/keepchen/go-sail/v3  3.663s
 </table>
 
 ## スポンサー
-[![Powered by DartNode](static/sponsors/DartNode_Brand_Full/black_color_full.png)](https://dartnode.com?ref=go-sail "Powered by DartNode - Free VPS for Open Source")  
-[![TempMail100.com](static/sponsors/tempmail100/tempmail100-logo.webp)](https://tempmail100.com?ref=go-sail "Secure and Anonymous Temp Mail Service")
-[![StarDots.io](static/sponsors/stardots/stardots-logo-banner.png)](https://stardots.io?ref=go-sail "Your All-in-One Image Hosting and Transformation Powerhouse")
+<table style="text-align: center">
+    <tr style="height:200px">
+        <td style="border: 1px solid black; padding: 8px;">
+          <a href="https://dartnode.com" target="_blank">
+            <img src="static/sponsors/DartNode_Brand_Full/color_white_icon.png" alt="Powered by DartNode - Free VPS for Open Source" title="Powered by DartNode - Free VPS for Open Source" width="200" />
+          </a>
+        </td>
+        <td style="border: 1px solid black; padding: 8px;">
+          <a href="https://tempmail100.com" target="_blank">
+            <img src="static/sponsors/tempmail100/tempmail100.com.png" alt="Secure and Anonymous Temp Mail Service" title="Secure and Anonymous Temp Mail Service" width="200" />
+          </a>
+        </td>
+        <td style="border: 1px solid black; padding: 8px;">
+          <a href="https://stardots.io" target="_blank">
+            <img src="static/sponsors/stardots/stardots-logo.png" alt="Your All-in-One Image Hosting and Transformation Powerhouse" title="Your All-in-One Image Hosting and Transformation Powerhouse" width="200" />
+          </a>
+        </td>
+    </tr>
+</table>
 
 ## Star History  
 <a href="https://www.star-history.com/?repos=keepchen%2Fgo-sail&type=date&legend=top-left">

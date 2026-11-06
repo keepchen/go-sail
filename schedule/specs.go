@@ -7,22 +7,22 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-// RunAt 在某一时刻执行
+// RunAt runs at a specified time
 //
-// 重复地在某个时间点执行任务
+// Run tasks repeatedly at a specified time
 //
-// crontabExpr 支持五字段和六字段表达式，省略秒字段时默认为0。
+// crontabExpr supports five- and six-field expressions; omitted seconds default to 0.
 //
-// 格式：[秒(0-59)] 分(0-59) 时(0-23) 日(1-31) 月(1-12) 星期(0-6，周日为0)。
-// 月份和星期也支持英文缩写；支持 @daily、@every 等描述符。
-// LastDayOfMonth 是额外支持的月末预设，不支持其他含 L 的表达式。
+// Format: [second(0-59)] minute(0-59) hour(0-23) day(1-31) month(1-12) weekday(0-6, Sunday is 0).
+// Months and weekdays also support English abbreviations; descriptors such as @daily and @every are supported.
+// LastDayOfMonth is an additional month-end preset; other expressions containing L are not supported.
 func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 	cronStartOnce.Do(func() {
 		cronJob = cron.New(cron.WithParser(scheduleParser{}))
 		cronJob.Start()
 	})
 
-	//因为AddFunc内部是协程启动，因此这里的方法使用同步方式调用
+	//Since AddFunc starts a goroutine internally, call the method here synchronously
 	j.wrappedTaskFunc = func() {
 		j.running = true
 
@@ -66,32 +66,32 @@ func (j *taskJob) RunAt(crontabExpr string) (cancel CancelFunc) {
 	return
 }
 
-// TenClockAtWeekday 每个工作日（周一~周五）上午10点
+// TenClockAtWeekday runs at 10:00 every weekday (Monday-Friday)
 func (j *taskJob) TenClockAtWeekday() (cancel CancelFunc) {
 	return j.RunAt(TenClockAtWeekday)
 }
 
-// TenClockAtWeekend 每个周末（周六和周日）上午10点
+// TenClockAtWeekend runs at 10:00 every weekend day (Saturday and Sunday)
 func (j *taskJob) TenClockAtWeekend() (cancel CancelFunc) {
 	return j.RunAt(TenClockAtWeekend)
 }
 
-// FirstDayOfMonthly 每月1号
+// FirstDayOfMonthly runs on the first day of every month
 func (j *taskJob) FirstDayOfMonthly() (cancel CancelFunc) {
 	return j.RunAt(FirstDayOfMonth)
 }
 
-// LastDayOfMonthly 每月最后一天
+// LastDayOfMonthly runs on the last day of every month
 func (j *taskJob) LastDayOfMonthly() (cancel CancelFunc) {
 	return j.RunAt(LastDayOfMonth)
 }
 
-// FirstDayOfWeek 每周1的00:00
+// FirstDayOfWeek runs at 00:00 every Monday
 func (j *taskJob) FirstDayOfWeek() (cancel CancelFunc) {
 	return j.RunAt(FirstDayOfWeek)
 }
 
-// LastDayOfWeek 每周天的00:00
+// LastDayOfWeek runs at 00:00 every Sunday
 func (j *taskJob) LastDayOfWeek() (cancel CancelFunc) {
 	return j.RunAt(LastDayOfWeek)
 }

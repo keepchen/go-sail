@@ -10,36 +10,36 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-// Argon2Config 配置参数
+// Argon2Config configuration parameters
 type Argon2Config struct {
-	Memory      uint32 // 内存使用量（KB）
-	Iterations  uint32 // 迭代次数
-	Parallelism uint8  // 并行度
-	SaltLength  uint32 // 盐长度
-	KeyLength   uint32 // 输出密钥长度
+	Memory      uint32 // Memory usage (KB)
+	Iterations  uint32 // Iteration count
+	Parallelism uint8  // Parallelism
+	SaltLength  uint32 // Salt length
+	KeyLength   uint32 // Output key length
 }
 
 type argon2Impl struct {
 	config Argon2Config
 }
 
-// IArgon2 argon2接口
+// IArgon2 Argon2 interface
 type IArgon2 interface {
-	// HashMake 生成哈希字符
+	// HashMake generates a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	HashMake(plaintext string) (string, error)
-	// HashCheck 验证哈希字符
+	// HashCheck verifies a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// hashed - 已哈希的字符
+	// hashed - hashed string
 	HashCheck(plaintext, hashed string) (bool, error)
 }
 
 var _ IArgon2 = &argon2Impl{}
 
-// 默认的Argon2配置
+// Default Argon2 configuration
 var defaultArgon2Config = Argon2Config{
 	Memory:      64 * 1024, //64MB
 	Iterations:  3,
@@ -53,7 +53,7 @@ const (
 	argon2DecodeFormat = "m=%d,t=%d,p=%d"
 )
 
-// Argon2 实例化argon2算法
+// Argon2 instantiates the Argon2 algorithm
 func Argon2(config ...Argon2Config) IArgon2 {
 	if len(config) > 0 {
 		return &argon2Impl{config[0]}
@@ -63,9 +63,9 @@ func Argon2(config ...Argon2Config) IArgon2 {
 	}
 }
 
-// HashMake 生成哈希字符
+// HashMake generates a hash string
 //
-// plaintext - 明文字符
+// plaintext - plaintext string
 func (a *argon2Impl) HashMake(plaintext string) (string, error) {
 	salt := make([]byte, a.config.SaltLength)
 	if _, err := (&rand.ChaCha8{}).Read(salt); err != nil {
@@ -85,11 +85,11 @@ func (a *argon2Impl) HashMake(plaintext string) (string, error) {
 	return result, nil
 }
 
-// HashCheck 验证哈希字符
+// HashCheck verifies a hash string
 //
-// plaintext - 明文字符
+// plaintext - plaintext string
 //
-// hashed - 已哈希的字符
+// hashed - hashed string
 func (a *argon2Impl) HashCheck(plaintext, hashed string) (bool, error) {
 	parts := strings.Split(hashed, "$")
 	if len(parts) != 6 {
@@ -121,10 +121,10 @@ func (a *argon2Impl) HashCheck(plaintext, hashed string) (bool, error) {
 	}
 
 	cfg.KeyLength = uint32(len(hash))
-	//重新计算哈希
+	//Recalculate the hash
 	computedHash := argon2.IDKey([]byte(plaintext), salt,
 		cfg.Iterations, cfg.Memory, cfg.Parallelism, cfg.KeyLength)
 
-	// 使用constant-time比较防止时序攻击
+	// Use a constant-time comparison to prevent timing attacks
 	return subtle.ConstantTimeCompare(hash, computedHash) == 1, nil
 }

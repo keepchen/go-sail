@@ -7,13 +7,13 @@ import (
 
 var redisClientForRedisLocker redisLib.UniversalClient
 
-// RedisLocker 获取redis锁实例
+// RedisLocker retrieves the Redis lock instance
 //
 // # Note
 //
-// 若没有初始化redis实例且没有设定redis实例，调用此方法将panic
+// This method panics if no Redis instance has been initialized or explicitly set
 //
-// 调用者可以使用 SetRedisClient(client).ForRedisLocker() 覆盖默认连接
+// Callers can override the default connection with SetRedisClient(client).ForRedisLocker()
 func RedisLocker() utils.IRedisLocker {
 	if redisClientForRedisLocker != nil {
 		return utils.RedisLocker(redisClientForRedisLocker)

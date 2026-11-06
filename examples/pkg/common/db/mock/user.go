@@ -9,9 +9,9 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/logger"
 )
 
-// CreateUserAndWalletData mock用户及钱包数据
+// CreateUserAndWalletData mocks user and wallet data
 //
-// 生成三条数据
+// Generate three records
 func CreateUserAndWalletData() {
 	users := []modelsUsers.User{
 		{

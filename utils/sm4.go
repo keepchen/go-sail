@@ -14,44 +14,44 @@ type sm4impl struct {
 }
 
 type ISM4 interface {
-	// ECBEncrypt ECB加密
+	// ECBEncrypt ECB encryption
 	//
-	// hexKey 16进制key 长度32位
+	// hexKey hexadecimal key, 32 characters long
 	//
-	// raw 待加密内容
+	// raw content to encrypt
 	ECBEncrypt(hexKey, raw string) (string, error)
-	// ECBDecrypt ECB解密
+	// ECBDecrypt ECB decryption
 	//
-	// hexKey 16进制key 长度32位
+	// hexKey hexadecimal key, 32 characters long
 	//
-	// base64Raw 加密内容 base64格式
+	// base64Raw encrypted content in Base64 format
 	ECBDecrypt(hexKey, base64Raw string) (string, error)
-	// GCMEncrypt GCM加密
+	// GCMEncrypt GCM encryption
 	//
-	// hexKey 16进制key 长度16位
+	// hexKey hexadecimal key, 16 characters long
 	//
-	// raw 待加密内容
+	// raw content to encrypt
 	GCMEncrypt(hexKey, raw string) (string, error)
-	// GCMDecrypt GCM解密
+	// GCMDecrypt GCM decryption
 	//
-	// hexKey 16进制key 长度16位
+	// hexKey hexadecimal key, 16 characters long
 	//
-	// base64Raw 加密内容 base64格式
+	// base64Raw encrypted content in Base64 format
 	GCMDecrypt(hexKey, base64Raw string) (string, error)
 }
 
 var smi ISM4 = &sm4impl{}
 
-// SM4 实例化sm4工具类
+// SM4 instantiates SM4 utilities
 func SM4() ISM4 {
 	return smi
 }
 
-// ECBEncrypt ECB加密
+// ECBEncrypt ECB encryption
 //
-// hexKey 16进制key 长度32位
+// hexKey hexadecimal key, 32 characters long
 //
-// raw 待加密内容
+// raw content to encrypt
 func (sm4impl) ECBEncrypt(hexKey, raw string) (string, error) {
 	key, err := hex.DecodeString(hexKey)
 	if err != nil {
@@ -65,11 +65,11 @@ func (sm4impl) ECBEncrypt(hexKey, raw string) (string, error) {
 	return Base64().Encode(out), nil
 }
 
-// ECBDecrypt ECB解密
+// ECBDecrypt ECB decryption
 //
-// hexKey 16进制key 长度32位
+// hexKey hexadecimal key, 32 characters long
 //
-// base64Raw 加密内容 base64格式
+// base64Raw encrypted content in Base64 format
 func (sm4impl) ECBDecrypt(hexKey, base64Raw string) (string, error) {
 	key, err := hex.DecodeString(hexKey)
 	if err != nil {
@@ -89,11 +89,11 @@ func (sm4impl) ECBDecrypt(hexKey, base64Raw string) (string, error) {
 	return string(out), nil
 }
 
-// GCMEncrypt GCM加密
+// GCMEncrypt GCM encryption
 //
-// hexKey 16进制key 长度32位
+// hexKey hexadecimal key, 32 characters long
 //
-// raw 待加密内容
+// raw content to encrypt
 func (sm4impl) GCMEncrypt(hexKey, raw string) (string, error) {
 	block, err := sm4.NewCipher([]byte(hexKey))
 	if err != nil {
@@ -111,11 +111,11 @@ func (sm4impl) GCMEncrypt(hexKey, raw string) (string, error) {
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// GCMDecrypt GCM解密
+// GCMDecrypt GCM decryption
 //
-// hexKey 16进制key 长度32位
+// hexKey hexadecimal key, 32 characters long
 //
-// base64Raw 加密内容 base64格式
+// base64Raw encrypted content in Base64 format
 func (sm4impl) GCMDecrypt(hexKey, base64Raw string) (string, error) {
 	ciphertext, err := base64.StdEncoding.DecodeString(base64Raw)
 	if err != nil {

@@ -1,6 +1,6 @@
 package nats
 
-// Conf 配置
+// Conf configuration
 //
 // <yaml example>
 //
@@ -13,24 +13,24 @@ package nats
 //
 // <toml example>
 //
-// # ::nats配置::
+// # ::NATS configuration::
 //
 // [nats_conf]
 //
-// # 服务实例地址
+// # Service instance address
 //
 // endpoints = ["nats://127.0.0.1:4222"]
 //
-// # 认证用户名
+// # Authentication username
 //
 // username = "admin"
 //
-// # 认证密码
+// # Authentication password
 //
 // password = "changeMe"
 type Conf struct {
-	Enable    bool     `yaml:"enable" toml:"enable" json:"enable"`          //是否启用
-	Endpoints []string `yaml:"endpoints" toml:"endpoints" json:"endpoints"` //服务实例列表
-	Username  string   `yaml:"username" toml:"username" json:"username"`    //用户名
-	Password  string   `yaml:"password" toml:"password" json:"password"`    //密码
+	Enable    bool     `yaml:"enable" toml:"enable" json:"enable"`          //Whether to enable
+	Endpoints []string `yaml:"endpoints" toml:"endpoints" json:"endpoints"` //Service instance list
+	Username  string   `yaml:"username" toml:"username" json:"username"`    //Username
+	Password  string   `yaml:"password" toml:"password" json:"password"`    //Password
 }

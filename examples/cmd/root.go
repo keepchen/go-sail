@@ -6,7 +6,7 @@ import (
 
 var cfgPath string
 
-//RootCMD 根级(主)命令
+//RootCMD root (main) command
 var RootCMD = &cobra.Command{
 	Use: "go-sail",
 }

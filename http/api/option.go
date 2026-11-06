@@ -11,97 +11,97 @@ import (
 )
 
 var (
-	emptyDataField       any = nil                       //空data字段
-	forceHttpCode200         = false                     //强制使用200作为http的状态码
-	timezone                 = constants.DefaultTimeZone //时区
-	detectAcceptLanguage     = false                     //是否检测客户端语言
-	languageCode             = constants.LanguageEnglish //语言代码
+	emptyDataField       any = nil                       //Empty data field
+	forceHttpCode200         = false                     //Force HTTP status code 200
+	timezone                 = constants.DefaultTimeZone //Time zone
+	detectAcceptLanguage     = false                     //Whether to detect the client language
+	languageCode             = constants.LanguageEnglish //Language code
 )
 
-// 可被覆盖的内置错误码
+// Built-in error codes that can be overridden
 var (
-	anotherErrNoneCode                      constants.ICodeType = constants.ErrNone                      //被改写后的成功code码
-	anotherErrRequestParamsInvalidCode      constants.ICodeType = constants.ErrRequestParamsInvalid      //被修改后的参数错误code码
-	anotherErrAuthorizationTokenInvalidCode constants.ICodeType = constants.ErrAuthorizationTokenInvalid //被修改后的令牌失效code码
-	anotherErrInternalServerErrorCode       constants.ICodeType = constants.ErrInternalServerError       //被修改后的服务内部错误code码
+	anotherErrNoneCode                      constants.ICodeType = constants.ErrNone                      //Overridden success code
+	anotherErrRequestParamsInvalidCode      constants.ICodeType = constants.ErrRequestParamsInvalid      //Overridden invalid parameter code
+	anotherErrAuthorizationTokenInvalidCode constants.ICodeType = constants.ErrAuthorizationTokenInvalid //Overridden expired token code
+	anotherErrInternalServerErrorCode       constants.ICodeType = constants.ErrInternalServerError       //Overridden internal server error code
 )
 
 var (
-	loc             *time.Location                                                                                                 //时区
-	funcBeforeWrite func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) //写入响应前的处理函数
-	registry        *distribution.Registry                                                                                         //分布式分位数统计
+	loc             *time.Location                                                                                                 //Time zone
+	funcBeforeWrite func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base) //Handler invoked before writing the response
+	registry        *distribution.Registry                                                                                         //Distributed quantile statistics
 )
 
-// Option 配置项
+// Option configuration options
 type Option struct {
-	//成功code码，默认成功code码为0，配置此项后，成功code码将使用这个值。
+	//Success code, default: 0. When configured, this value is used as the success code.
 	ErrNoneCode constants.ICodeType
-	//成功提示语，默认成功提示语为SUCCESS，配置此项后，成功提示语将使用这个值。
+	//Success message, default: SUCCESS. When configured, this value is used as the success message.
 	ErrNoneCodeMsg string
-	//参数错误code码，默认参数错误code码为100000，配置此项后，参数错误code码将使用这个值。
+	//Invalid parameter code, default: 100000. When configured, this value is used as the invalid parameter code.
 	ErrRequestParamsInvalidCode constants.ICodeType
-	//参数错误提示语，配置此项后，参数错误提示语将使用这个值。
+	//Invalid parameter message. When configured, this value is used as the invalid parameter message.
 	ErrRequestParamsInvalidCodeMsg string
-	//令牌失效code码，默认令牌失效code码为100000，配置此项后，令牌失效code码将使用这个值。
+	//Expired token code, default: 100000. When configured, this value is used as the expired token code.
 	ErrAuthorizationTokenInvalidCode constants.ICodeType
-	//令牌失效提示语，配置此项后，令牌失效提示语将使用这个值。
+	//Expired token message. When configured, this value is used as the expired token message.
 	ErrAuthorizationTokenInvalidCodeMsg string
-	//服务器内部错误code码，默认服务器内部错误code码为999999，配置此项后，服务器内部错误code码将使用这个值。
+	//Internal server error code, default: 999999. When configured, this value is used as the internal server error code.
 	ErrInternalServerErrorCode constants.ICodeType
-	//服务器内部错误提示语，配置此项后，服务器内部错误提示语将使用这个值。
+	//Internal server error message. When configured, this value is used as the internal server error message.
 	ErrInternalServerErrorCodeMsg string
-	//空data序列化结构，默认返回的data字段为空时为null值，配置此项后，空data序列化格式将使用这个值。
+	//Empty data serialization format, default: null. When configured, this value is used for empty data fields.
 	EmptyDataStruct int
-	//强制使用200作为http的状态码，配置此项后，http状态码将不从业务code码中解析。
+	//Force HTTP status code 200. When enabled, the HTTP status code is not derived from the business code.
 	//
-	//注意，调用 Responder.Status 方法和 Responder.SendWithCode 方法时的优先级高于此项配置。
+	//Note that Responder.Status and Responder.SendWithCode take precedence over this option.
 	ForceHttpCode200 bool
-	//时区
+	//Time zone
 	Timezone string
-	//是否检测客户端语言，用于错误码消息返回
+	//Whether to detect the client language for error messages
 	DetectAcceptLanguage bool
-	//语言代码
+	//Language code
 	//
-	//当没有启用 DetectAcceptLanguage 时，使用该语言代码
+	//Use this language code when DetectAcceptLanguage is disabled
 	LanguageCode constants.LanguageCode
-	//写入响应前的处理函数
+	//Handler invoked before writing the response
 	//
-	//request http请求结构体指针
+	//request pointer to the HTTP request struct
 	//
-	//entryAtUnixNano 请求到达一刻的纳秒时间戳
+	//entryAtUnixNano nanosecond timestamp when the request arrives
 	//
-	//requestId 请求id
+	//requestId request ID
 	//
-	//spanId 内部调用链的唯一id
+	//spanId unique ID for the internal call chain
 	//
-	//httpCode http状态码
+	//httpCode HTTP status code
 	//
-	//writeData 即将写入的数据
+	//writeData data about to be written
 	//
-	//# 注意，该函数是同步调用，对于性能敏感的场景，不建议在函数体内做阻塞或耗时的操作。
+	//# Note: this function is called synchronously. Avoid blocking or time-consuming operations in performance-sensitive scenarios.
 	FuncBeforeWrite func(request *http.Request, entryAtUnixNano int64, requestId, spanId string, httpCode int, writeData dto.Base)
 }
 
 const (
-	DefaultEmptyDataStructNull   int = 0 //空(null)
-	DefaultEmptyDataStructObject int = 1 //大(花)括号
-	DefaultEmptyDataStructArray  int = 2 //中(方)括号
-	DefaultEmptyDataStructString int = 3 //空字符串
+	DefaultEmptyDataStructNull   int = 0 //Empty (null)
+	DefaultEmptyDataStructObject int = 1 //Braces (curly brackets)
+	DefaultEmptyDataStructArray  int = 2 //Brackets (square brackets)
+	DefaultEmptyDataStructString int = 3 //Empty string
 )
 
-// SetupOption 设置选项
+// SetupOption sets options
 //
-// 目前支持设定:
+// Currently supports:
 //
-// 1.内置错误码及错误码信息
+// 1.Built-in error codes and error messages
 //
-// 2.空数据序列化结构
+// 2.Serialization format for empty data
 //
-// # 提示
+// # Tip
 //
-// 该方法不支持重入，因此，调用者应当在全局使用且最多调用一次
+// This method is not reentrant; callers should use it globally and call it at most once
 func SetupOption(opt Option) {
-	//覆盖内置错误码
+	//Override built-in error codes
 	if opt.ErrNoneCode != nil {
 		constants.RegisterCodeSingle(constants.LanguageEnglish, opt.ErrNoneCode, opt.ErrNoneCodeMsg)
 		anotherErrNoneCode = opt.ErrNoneCode
@@ -158,7 +158,7 @@ func SetupOption(opt Option) {
 	}
 }
 
-// DefaultSetupOption 默认设置
+// DefaultSetupOption default settings
 func DefaultSetupOption() *Option {
 	return &Option{
 		Timezone:                            constants.DefaultTimeZone,
@@ -175,7 +175,7 @@ func DefaultSetupOption() *Option {
 	}
 }
 
-// SetRegistry 设置分布式分位数统计
+// SetRegistry sets distributed quantile statistics
 func SetRegistry(reg *distribution.Registry) {
 	registry = reg
 }

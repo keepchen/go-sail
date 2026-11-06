@@ -6,10 +6,10 @@ import (
 	"github.com/keepchen/go-sail/v3/sail/config"
 )
 
-// EnablePProfOnDebugMode 启动pprof检测
+// EnablePProfOnDebugMode starts pprof profiling
 func EnablePProfOnDebugMode(conf config.HttpServerConf, r *gin.Engine) {
 	if conf.Debug {
-		//仅在调试模式下才开启pprof检测
+		//Enable pprof profiling only in debug mode
 		pprof.Register(r, "/debug/pprof")
 	}
 }

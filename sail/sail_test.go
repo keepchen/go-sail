@@ -54,7 +54,7 @@ func TestLaunch(t *testing.T) {
 		fmt.Println("service is ready")
 	}
 
-	//模拟请求
+	//Simulate a request
 	requestFunc := func() {
 		timeout := time.Second * 5
 		//ping
@@ -79,7 +79,7 @@ func TestLaunch(t *testing.T) {
 		})
 	}
 
-	//手动退出
+	//Exit manually
 	go func() {
 		timer := time.NewTimer(time.Second * 5)
 		for range timer.C {

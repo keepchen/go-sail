@@ -8,7 +8,7 @@ import (
 
 var natsInstance *natsLib.Conn
 
-// Init 初始化
+// Init initializes
 func Init(conf Conf) {
 	conn := mustInitNats(conf)
 
@@ -41,12 +41,12 @@ func initNats(conf Conf) (*natsLib.Conn, error) {
 	return conn, err
 }
 
-// GetInstance 获取链接实例
+// GetInstance retrieves the connection instance
 func GetInstance() *natsLib.Conn {
 	return natsInstance
 }
 
-// New 初始化新的nats实例
+// New initializes a new NATS instance
 func New(conf Conf) (*natsLib.Conn, error) {
 	return initNats(conf)
 }

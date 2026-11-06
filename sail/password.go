@@ -4,79 +4,79 @@ import "github.com/keepchen/go-sail/v3/utils"
 
 type passwordImpl struct{}
 
-// IPassword 密码工具类接口
+// IPassword password utility interface
 type IPassword interface {
-	// AesGCMEncrypt aes加密
+	// AesGCMEncrypt AES encryption
 	//
-	// 使用GCM
+	// Uses GCM
 	//
-	// key应该是一个16或24或32位长度的字符
+	// key should be a string of length 16, 24, or 32
 	AesGCMEncrypt(plaintext, key string) (string, error)
-	// AesGCMDecrypt aes解密
+	// AesGCMDecrypt AES decryption
 	//
-	// 使用GCM
+	// Uses GCM
 	//
-	// key应该是一个16或24或32位长度的字符
+	// key should be a string of length 16, 24, or 32
 	AesGCMDecrypt(ciphertext, key string) (string, error)
-	// SM4GCMEncrypt GCM加密
+	// SM4GCMEncrypt GCM encryption
 	//
-	// hexKey 16进制key 长度32位
+	// hexKey hexadecimal key, 32 characters long
 	//
-	// raw 待加密内容
+	// raw content to encrypt
 	SM4GCMEncrypt(plaintext, key string) (string, error)
-	// SM4GCMDecrypt GCM解密
+	// SM4GCMDecrypt GCM decryption
 	//
-	// hexKey 16进制key 长度32位
+	// hexKey hexadecimal key, 32 characters long
 	//
-	// base64Raw 加密内容 base64格式
+	// base64Raw encrypted content in Base64 format
 	SM4GCMDecrypt(ciphertext, key string) (string, error)
-	// RSAEncrypt rsa加密
+	// RSAEncrypt RSA encryption
 	//
-	// publicKey格式支持：
+	// Supported publicKey formats:
 	//
-	// - 标准格式
+	// - Standard format
 	//
-	// - 不带前后缀的一行字符串
+	// - Single-line string without the prefix and suffix
 	RSAEncrypt(plaintext string, publicKey []byte) (string, error)
-	// RSADecrypt rsa解密
+	// RSADecrypt RSA decryption
 	//
-	// privateKey格式支持：
+	// Supported privateKey formats:
 	//
-	// - 标准格式
+	// - Standard format
 	//
-	// - 不带前后缀的一行字符串
+	// - Single-line string without the prefix and suffix
 	RSADecrypt(ciphertext string, privateKey []byte) (string, error)
-	// BcryptHashMake 生成哈希字符
+	// BcryptHashMake generates a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// costs - 权重，范围∈[4,31]，默认为10
+	// costs - cost factor, range ∈ [4,31], default: 10
 	BcryptHashMake(plaintext string, costs ...int) (string, error)
-	// BcryptHashCheck 验证哈希字符
+	// BcryptHashCheck verifies a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// hashed - 已哈希的字符
+	// hashed - hashed string
 	BcryptHashCheck(plaintext string, hash string) (bool, error)
-	// Argon2HashMake 生成哈希字符
+	// Argon2HashMake generates a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// argon2Config - 配置参数
+	// argon2Config - configuration parameters
 	Argon2HashMake(plaintext string, argon2Config ...utils.Argon2Config) (string, error)
-	// Argon2HashCheck 验证哈希字符
+	// Argon2HashCheck verifies a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// hashed - 已哈希的字符
+	// hashed - hashed string
 	//
-	// argon2Config - 配置参数
+	// argon2Config - configuration parameters
 	Argon2HashCheck(plaintext string, hash string, argon2Config ...utils.Argon2Config) (bool, error)
 }
 
 var _ IPassword = &passwordImpl{}
 
-// Password 实例化工具类方法
+// Password instantiates password utilities
 func Password() IPassword {
 	return &passwordImpl{}
 }

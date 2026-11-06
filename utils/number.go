@@ -11,15 +11,15 @@ type numberImpl struct {
 }
 
 type INumber interface {
-	// RandomInt64 在指定范围内取随机整数
+	// RandomInt64 generates a random integer within the specified range
 	//
-	// start和end同时支持正负数
+	// start and end support both positive and negative values
 	//
-	// 结果值区间 ∈ [start, end)
+	// Result range ∈ [start, end)
 	//
 	// # Note
 	//
-	// 若start大于end将panic
+	// Panics if start is greater than end
 	//
 	// # Example:
 	//
@@ -32,17 +32,17 @@ type INumber interface {
 	// result := RandomInt64(-20, -10)
 	// //-> -7
 	RandomInt64(start, end int64) int64
-	// RandomFloat64 在指定范围内取随机浮点数
+	// RandomFloat64 generates a random floating-point number within the specified range
 	//
-	// start和end同时支持正负数
+	// start and end support both positive and negative values
 	//
-	// precision为精度，此参数将限定返回值的最大小数位数
+	// precision limits the maximum number of decimal places in the return value
 	//
-	// 结果值区间 ∈ [start, end)
+	// Result range ∈ [start, end)
 	//
 	// # Note
 	//
-	// 若start大于end将panic
+	// Panics if start is greater than end
 	//
 	// # Example:
 	//
@@ -55,30 +55,30 @@ type INumber interface {
 	// result := RandomFloat64(-20.20, -10.10101010101, 4)
 	// //-> -8.1234
 	RandomFloat64(start, end float64, precision int) float64
-	// Pow 计算x的y次幂
+	// Pow calculates x raised to the power of y
 	//
 	// # Note
 	//
-	// 若y小于0,将panic
+	// Panics if y is less than 0
 	Pow(x, y int64) int64
 }
 
 var nbi INumber = &numberImpl{}
 
-// Number 实例化number工具类
+// Number instantiates number utilities
 func Number() INumber {
 	return nbi
 }
 
-// RandomInt64 在指定范围内取随机整数
+// RandomInt64 generates a random integer within the specified range
 //
-// start和end同时支持正负数
+// start and end support both positive and negative values
 //
-// 结果值区间 ∈ [start, end)
+// Result range ∈ [start, end)
 //
 // # Note
 //
-// 若start大于end将panic
+// Panics if start is greater than end
 //
 // # Example:
 //
@@ -97,21 +97,21 @@ func (numberImpl) RandomInt64(start, end int64) int64 {
 	if start == end {
 		return start
 	}
-	//如果范围都是负值区间
+	//If the entire range is negative
 	if start < 0 && end < 0 {
 		fixedStart, fixedEnd := 0-start, 0-end
 		return 0 - (fixedEnd + rand.Int64N(fixedStart))
 	}
-	//如果是一正一负
+	//If one bound is positive and the other negative
 	if start < 0 {
 		fixed := 0 - start
 		return rand.Int64N(fixed+end) - fixed
 	}
-	//如果都为正
+	//If both bounds are positive
 	if start > 0 && end > 0 {
 		return rand.Int64N(end-start) + start
 	}
-	//起始为0
+	//Start is 0
 	if start == 0 {
 		return rand.Int64N(end)
 	}
@@ -119,17 +119,17 @@ func (numberImpl) RandomInt64(start, end int64) int64 {
 	return start
 }
 
-// RandomFloat64 在指定范围内取随机浮点数
+// RandomFloat64 generates a random floating-point number within the specified range
 //
-// start和end同时支持正负数
+// start and end support both positive and negative values
 //
-// precision为精度，此参数将限定返回值的最大小数位数
+// precision limits the maximum number of decimal places in the return value
 //
-// 结果值区间 ∈ [start, end)
+// Result range ∈ [start, end)
 //
 // # Note
 //
-// 若start大于end将panic
+// Panics if start is greater than end
 //
 // # Example:
 //
@@ -156,11 +156,11 @@ func (numberImpl) RandomFloat64(start, end float64, precision int) float64 {
 		Truncate(int32(precision)).InexactFloat64()
 }
 
-// Pow 计算x的y次幂
+// Pow calculates x raised to the power of y
 //
 // # Note
 //
-// 若y小于0,将panic
+// Panics if y is less than 0
 func (numberImpl) Pow(x, y int64) int64 {
 	if y < 0 {
 		panic(fmt.Errorf("y less than zero"))

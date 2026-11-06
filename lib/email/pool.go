@@ -7,31 +7,31 @@ import (
 	"time"
 )
 
-// Envelope 信封
+// Envelope email envelope
 type Envelope struct {
-	From     string                       //发送人邮箱
-	To       string                       //收件人邮件
-	Subject  string                       //主题
-	MimeType string                       //邮件类型
-	Body     string                       //邮件内容
-	Callback func(e *Envelope, err error) //回调函数
+	From     string                       //Sender email address
+	To       string                       //Recipient email address
+	Subject  string                       //Subject
+	MimeType string                       //Email MIME type
+	Body     string                       //Email content
+	Callback func(e *Envelope, err error) //Callback function
 }
 
-// Sender 发送者
+// Sender email sender
 type Sender interface {
-	// Mount 加入发送队列
+	// Mount adds to the send queue
 	Mount(index int, envelope *Envelope)
-	// Emit 启动队列
+	// Emit starts the queue
 	Emit()
-	// Done 发送完成
+	// Done marks sending as complete
 	Done()
-	// 初始化发送协程
+	// Initialize sender goroutines
 	makeWorkers()
-	// 执行发送操作
+	// Perform the send operation
 	send(ep *Envelope) error
 }
 
-// sendPool 发送池
+// sendPool send pool
 type sendPool struct {
 	workers      []chan *Envelope
 	throttle     time.Duration
@@ -43,7 +43,7 @@ type sendPool struct {
 
 var _ Sender = &sendPool{}
 
-// NewPool 实例化
+// NewPool instantiates a pool
 func NewPool(conf Conf) Sender {
 	pool := &sendPool{
 		conf:         conf,
@@ -57,7 +57,7 @@ func NewPool(conf Conf) Sender {
 	return pool
 }
 
-// Mount 加入发送队列
+// Mount adds to the send queue
 func (p *sendPool) Mount(index int, envelope *Envelope) {
 	p.wg.Add(1)
 	go func(ep *Envelope) {
@@ -65,7 +65,7 @@ func (p *sendPool) Mount(index int, envelope *Envelope) {
 	}(envelope)
 }
 
-// Emit 启动队列
+// Emit starts the queue
 func (p *sendPool) Emit() {
 	handler := func(index int, wk chan *Envelope) {
 	LOOP:
@@ -77,7 +77,7 @@ func (p *sendPool) Emit() {
 					if err != nil {
 						fmt.Println("[GO-SAIL] <Email> send failure via worker, error:", err)
 					}
-					//处理上层回调函数
+					//Handle the caller's callback
 					if ep.Callback != nil {
 						ep.Callback(ep, err)
 					}
@@ -97,7 +97,7 @@ func (p *sendPool) Emit() {
 	}
 }
 
-// Done 发送完成
+// Done marks sending as complete
 func (p *sendPool) Done() {
 	p.wg.Wait()
 	for index := range p.workers {
@@ -107,7 +107,7 @@ func (p *sendPool) Done() {
 	close(p.exit)
 }
 
-// 初始化发送协程
+// Initialize sender goroutines
 func (p *sendPool) makeWorkers() {
 	if p.workersCount < 1 {
 		p.workersCount = 1
@@ -123,7 +123,7 @@ func (p *sendPool) makeWorkers() {
 	p.workers = workers
 }
 
-// 执行发送操作
+// Perform the send operation
 func (p *sendPool) send(ep *Envelope) error {
 	if ep == nil || ep == (*Envelope)(nil) {
 		return errors.New("ep is nil")

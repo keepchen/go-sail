@@ -12,20 +12,20 @@ type signalImpl struct {
 }
 
 type ISignal interface {
-	// ListeningExit 监听系统退出信号
+	// ListeningExit listens for system exit signals
 	ListeningExit(wg *sync.WaitGroup)
 }
 
 var si ISignal = &signalImpl{}
 
-// Signal 实例化信号工具类
+// Signal instantiates signal utilities
 func Signal() ISignal {
 	return si
 }
 
 var signals = make(chan os.Signal, 1)
 
-// ListeningExit 监听系统退出信号
+// ListeningExit listens for system exit signals
 func (signalImpl) ListeningExit(wg *sync.WaitGroup) {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-signals

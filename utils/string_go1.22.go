@@ -5,22 +5,22 @@ package utils
 
 import "unsafe"
 
-// StrToBytes 字符串转换为字节数组
+// StrToBytes converts a string to a byte slice
 func StrToBytes(s string) []byte {
 	return *(*[]byte)(unsafe.Pointer(&s))
 }
 
-// StrToBytes 字符串转换为字节数组
+// StrToBytes converts a string to a byte slice
 func (stringImpl) StrToBytes(s string) []byte {
 	return *(*[]byte)(unsafe.Pointer(&s))
 }
 
-// BytesToStr 字节数组转换为字符串
+// BytesToStr converts a byte slice to a string
 func BytesToStr(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
 
-// BytesToStr 字节数组转换为字符串
+// BytesToStr converts a byte slice to a string
 func (stringImpl) BytesToStr(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }

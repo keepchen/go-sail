@@ -25,18 +25,18 @@ var (
 	exitChan = make(chan struct{})
 )
 
-// NotifyExit 通知退出
+// NotifyExit signals exit
 func NotifyExit(sig os.Signal) {
 	sigChan <- sig
 	errChan <- fmt.Errorf("%v", <-sigChan)
 	exitChan <- struct{}{}
 }
 
-// InitGinEngine 初始化gin引擎
+// InitGinEngine initializes the Gin engine
 //
 // # Note:
 //
-// 该方法会默认使用 middleware.LogTrace 中间件
+// This method uses middleware.LogTrace by default
 func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 	var r *gin.Engine
 	if conf.Debug {
@@ -65,11 +65,11 @@ func InitGinEngine(conf config.HttpServerConf) *gin.Engine {
 	return r
 }
 
-// RunHttpServer 启动http服务
+// RunHttpServer starts the HTTP service
 func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption *api.Option, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	//监听退出信号
+	//Listen for exit signals
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -77,7 +77,7 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 		cancel()
 	}()
 
-	//设置api返回选项
+	//Set API response options
 	if apiOption != nil {
 		api.SetupOption(*apiOption)
 	}
@@ -86,7 +86,7 @@ func RunHttpServer(conf config.HttpServerConf, ginEngine *gin.Engine, apiOption 
 		conf.Addr = ":8080"
 	}
 
-	//手动监听服务并检测退出信号从而实现优雅退出
+	//Manually serve requests and detect exit signals for graceful shutdown
 	srv := &http.Server{
 		Addr:    conf.Addr,
 		Handler: ginEngine,

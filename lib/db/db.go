@@ -9,14 +9,14 @@ import (
 )
 
 type Instance struct {
-	R *gorm.DB //读实例
-	W *gorm.DB //写实例
+	R *gorm.DB //Read instance
+	W *gorm.DB //Write instance
 }
 
-// 数据库连接实例
+// Database connection instance
 var dbInstance *Instance
 
-// InitDB 初始化数据库连接
+// InitDB initializes database connections
 func InitDB(conf Conf) {
 	dialectR, dialectW := conf.GenDialector()
 	//read instance
@@ -30,9 +30,9 @@ func InitDB(conf Conf) {
 	}
 }
 
-// NewFreshDB 实例化全新的数据库链接
+// NewFreshDB instantiates fresh database connections
 //
-// rInstance为读实例,wInstance为写实例
+// rInstance is the read instance and wInstance is the write instance
 func NewFreshDB(conf Conf) (rInstance *gorm.DB, rErr error, wInstance *gorm.DB, wErr error) {
 	dialectR, dialectW := conf.GenDialector()
 	rInstance, rErr = initDB(conf, dialectR)
@@ -115,23 +115,23 @@ func initDB(conf Conf, dialect gorm.Dialector) (*gorm.DB, error) {
 	return dbPtr, nil
 }
 
-// GetInstance 获取数据库实例
+// GetInstance retrieves database instances
 //
-// 获取由InitDB实例化后的连接
+// Retrieve connections initialized by InitDB
 func GetInstance() *Instance {
 	return dbInstance
 }
 
-// New 初始化化全新的数据库链接
+// New initializes fresh database connections
 //
-// rInstance为读实例,wInstance为写实例
+// rInstance is the read instance and wInstance is the write instance
 func New(conf Conf) (rInstance *gorm.DB, rErr error, wInstance *gorm.DB, wErr error) {
 	return NewFreshDB(conf)
 }
 
-// Init 初始化数据库连接
+// Init initializes database connections
 //
-// InitDB 的语法糖
+// Shorthand for InitDB
 func Init(conf Conf) {
 	InitDB(conf)
 }

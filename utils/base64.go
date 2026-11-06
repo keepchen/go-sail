@@ -5,27 +5,27 @@ import "encoding/base64"
 type base64Impl struct {
 }
 
-// IBase64 base64接口
+// IBase64 Base64 interface
 type IBase64 interface {
-	// Encode base64编码
+	// Encode Base64 encoding
 	Encode(rawBytes []byte) string
-	// Decode base64解码
+	// Decode Base64 decoding
 	Decode(encodedString string) ([]byte, error)
 }
 
-// Base64 实例化base64工具类
+// Base64 instantiates Base64 utilities
 func Base64() IBase64 {
 	return bi
 }
 
 var bi IBase64 = &base64Impl{}
 
-// Encode base64编码
+// Encode Base64 encoding
 func (base64Impl) Encode(rawBytes []byte) string {
 	return base64.StdEncoding.EncodeToString(rawBytes)
 }
 
-// Decode base64解码
+// Decode Base64 decoding
 func (base64Impl) Decode(encodedString string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(encodedString)
 }

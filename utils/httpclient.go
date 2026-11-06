@@ -17,30 +17,30 @@ type httpClientImpl struct {
 }
 
 type IHttpClient interface {
-	// WithLimit 设置限制参数
+	// WithLimit sets limit parameters
 	//
-	// maxReadBodySize 最大读取响应体字节数
+	// maxReadBodySize maximum response body bytes to read
 	WithLimit(maxReadBodySize int64) IHttpClient
-	// SendRequest 发送请求
+	// SendRequest sends a request
 	//
-	// 默认Content-Type为application/json; charset=utf-8
+	// The default Content-Type is application/json; charset=utf-8
 	//
-	// # 注意
+	// # Note
 	//
-	// 默认不限制读取响应体的大小，若需要进行限制，请使用 WithLimit 进行设置
+	// The response body read size is unlimited by default; use WithLimit to set a limit
 	SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error)
 }
 
 var hci IHttpClient = &httpClientImpl{}
 
-// HttpClient 实例化http client工具类
+// HttpClient instantiates HTTP client utilities
 func HttpClient() IHttpClient {
 	return hci
 }
 
-// WithLimit 设置限制参数
+// WithLimit sets limit parameters
 //
-// maxReadBodySize 最大读取响应体字节数
+// maxReadBodySize maximum response body bytes to read
 func (hc httpClientImpl) WithLimit(maxReadBodySize int64) IHttpClient {
 	if maxReadBodySize <= 0 {
 		maxReadBodySize = int64(defaultMaxReadBodySize)
@@ -50,13 +50,13 @@ func (hc httpClientImpl) WithLimit(maxReadBodySize int64) IHttpClient {
 	return hc
 }
 
-// SendRequest 发送请求
+// SendRequest sends a request
 //
-// 默认Content-Type为application/json; charset=utf-8
+// The default Content-Type is application/json; charset=utf-8
 //
-// # 注意
+// # Note
 //
-// 默认不限制读取响应体的大小，若需要进行限制，请使用 WithLimit 进行设置
+// The response body read size is unlimited by default; use WithLimit to set a limit
 func (hc httpClientImpl) SendRequest(method, url string, jsonPayload []byte, headers map[string]string, timeout ...time.Duration) (response []byte, statusCode int, err error) {
 	requestData := bytes.NewReader(jsonPayload)
 

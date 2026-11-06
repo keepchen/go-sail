@@ -5,18 +5,18 @@ import (
 	"time"
 )
 
-// Leadership 表示用于选举唯一聚合器的可续期租约。
+// Leadership represents a renewable lease for electing a single aggregator.
 type Leadership interface {
-	// Acquire 尝试立即获取租约，不等待其他持有者释放。
+	// Acquire attempts to acquire the lease immediately without waiting for other holders to release it.
 	Acquire(ctx context.Context) (bool, error)
-	// Renew 延长当前实例仍持有的租约。
+	// Renew extends the lease still held by the current instance.
 	Renew(ctx context.Context) (bool, error)
-	// Release 释放当前实例仍持有的租约。
+	// Release releases the lease still held by the current instance.
 	Release(ctx context.Context) error
 }
 
-// LeaderFactory 为存储后端创建选主租约。
+// LeaderFactory creates leader election leases for a storage backend.
 type LeaderFactory interface {
-	// NewLeadership 使用 key 和 ttl 创建租约。
+	// NewLeadership creates a lease using key and ttl.
 	NewLeadership(key string, ttl time.Duration) Leadership
 }

@@ -2,16 +2,16 @@ package constants
 
 import "strings"
 
-// LanguageCode 语言码
+// LanguageCode language code
 //
-// 采用ISO 3166-1标准
-// 例如：
+// Uses the ISO 3166-1 standard
+// For example:
 //
-// 美式英文: en-US
+// American English: en-US
 //
-// 简体中文: zh-CN
+// Simplified Chinese: zh-CN
 //
-// 繁体中文: zh-TW
+// Traditional Chinese: zh-TW
 //
 // @see https://en.wikipedia.org/wiki/ISO_3166-1
 type LanguageCode string

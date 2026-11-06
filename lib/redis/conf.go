@@ -1,6 +1,6 @@
 package redis
 
-// Conf 配置信息
+// Conf configuration
 //
 // <yaml example>
 //
@@ -18,7 +18,7 @@ package redis
 //
 // <toml example>
 //
-// # ::redis配置::
+// # ::Redis configuration::
 //
 // [redis_conf]
 //
@@ -39,12 +39,12 @@ package redis
 // ssl_enable = false
 type Conf struct {
 	Endpoint  `yaml:"endpoint" toml:"endpoint" json:"endpoint"`
-	Enable    bool `yaml:"enable" toml:"enable" json:"enable"`             //是否启用
-	Database  int  `yaml:"database" toml:"database" json:"database"`       //数据库名
-	SSLEnable bool `yaml:"ssl_enable" toml:"ssl_enable" json:"ssl_enable"` //是否启用ssl
+	Enable    bool `yaml:"enable" toml:"enable" json:"enable"`             //Whether to enable
+	Database  int  `yaml:"database" toml:"database" json:"database"`       //Database name
+	SSLEnable bool `yaml:"ssl_enable" toml:"ssl_enable" json:"ssl_enable"` //Whether to enable SSL
 }
 
-// ClusterConf 集群配置信息
+// ClusterConf cluster configuration
 //
 // <yaml example>
 //
@@ -68,7 +68,7 @@ type Conf struct {
 //
 // <toml example>
 //
-// # ::redis cluster配置::
+// # ::Redis cluster configuration::
 //
 // [redis_cluster_conf]
 //
@@ -106,14 +106,14 @@ type Conf struct {
 //
 // password = ""
 type ClusterConf struct {
-	Enable    bool       `yaml:"enable" toml:"enable" json:"enable"`             //是否启用
-	SSLEnable bool       `yaml:"ssl_enable" toml:"ssl_enable" json:"ssl_enable"` //是否启用ssl
-	Endpoints []Endpoint `yaml:"endpoints" toml:"endpoints" json:"endpoints"`    //连接地址列表
+	Enable    bool       `yaml:"enable" toml:"enable" json:"enable"`             //Whether to enable
+	SSLEnable bool       `yaml:"ssl_enable" toml:"ssl_enable" json:"ssl_enable"` //Whether to enable SSL
+	Endpoints []Endpoint `yaml:"endpoints" toml:"endpoints" json:"endpoints"`    //Connection address list
 }
 
 type Endpoint struct {
-	Host     string `yaml:"host" toml:"host" json:"host"`             //主机地址
-	Port     int    `yaml:"port" toml:"port" json:"port"`             //端口
-	Username string `yaml:"username" toml:"username" json:"username"` //用户名
-	Password string `yaml:"password" toml:"password" json:"password"` //密码
+	Host     string `yaml:"host" toml:"host" json:"host"`             //Host address
+	Port     int    `yaml:"port" toml:"port" json:"port"`             //Port
+	Username string `yaml:"username" toml:"username" json:"username"` //Username
+	Password string `yaml:"password" toml:"password" json:"password"` //Password
 }

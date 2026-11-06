@@ -6,7 +6,7 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/redis"
 )
 
-// Conf 日志配置
+// Conf logging configuration
 //
 // <yaml example>
 //
@@ -62,71 +62,71 @@ import (
 //
 // <toml example>
 //
-// # ::zap日志组件配置 v2::
+// # ::Zap logging component configuration v2::
 //
 // [logger_conf]
 //
-// # 是否同时输出到终端
+// # Whether to also output to the terminal
 //
 // console_output = false
 //
-// # 日志环境 dev,prod
+// # Logging environment dev,prod
 //
 // env = "dev"
 //
-// # 日志级别 debug,info,warn,error,dpanic,panic,fatal
+// # Log level debug,info,warn,error,dpanic,panic,fatal
 //
 // level = "info"
 //
-// # 模块名称
+// # Module names
 //
 // modules = ["db", "schedule"]
 //
-// # 日志文件名称 需要跟上路径
+// # Log filename, including the path
 //
 // filename = "logs/running.log"
 //
-// # 单文件日志大小限制，单位MB
+// # Maximum size per log file, in MB
 //
 // max_size = 100
 //
-// # 最大历史文件保留数量
+// # Maximum number of old log files to retain
 //
 // max_backups = 10
 //
-// # 是否压缩历史文件
+// # Whether to compress old log files
 //
 // compress = true
 //
-// # 日志导出器配置
+// # Log exporter configuration
 //
 // [logger_conf.exporter]
 //
-// # 日志导出器介质
+// # Log exporter transport
 //
 // provider = "redis"
 //
-// # nats导出器配置
+// # NATS exporter configuration
 //
 // [logger_conf.exporter.nats]
 //
-// # nats主题
+// # NATS subject
 //
 // subject = "logger"
 //
-// # kafka导出器配置
+// # Kafka exporter configuration
 //
 // [logger_conf.exporter.kafka]
 //
-// # kafka主题
+// # Kafka topic
 //
 // topic = "logger"
 //
-// # redis导出器配置
+// # Redis exporter configuration
 //
 // [logger_conf.exporter.redis]
 //
-// # list键名
+// # List key name
 //
 // list_key = "logger"
 //
@@ -166,36 +166,36 @@ import (
 //
 // password = ""
 type Conf struct {
-	ConsoleOutput bool     `yaml:"console_output" toml:"console_output" json:"console_output" default:"false"` //是否同时输出到终端
-	Env           string   `yaml:"env" toml:"env" json:"env" default:"prod"`                                   //日志环境，prod：生产环境，dev：开发环境
-	Level         string   `yaml:"level" toml:"level" json:"level" default:"debug"`                            //日志级别，debug，info，warn，error
-	Modules       []string `yaml:"modules" toml:"modules" json:"modules"`                                      //模块名称（日志记录到不同的文件中）
-	Filename      string   `yaml:"filename" toml:"filename" json:"filename" default:"logs/running.log"`        //日志文件名称
-	MaxSize       int      `yaml:"max_size" toml:"max_size" json:"max_size" default:"100"`                     //日志大小限制，单位MB
-	MaxBackups    int      `yaml:"max_backups" toml:"max_backups" json:"max_backups" default:"10"`             //最大历史文件保留数量
-	Compress      bool     `yaml:"compress" toml:"compress" json:"compress"`                                   //是否压缩历史日志文件
-	Exporter      Exporter `yaml:"exporter" toml:"exporter" json:"exporter"`                                   //导出器
+	ConsoleOutput bool     `yaml:"console_output" toml:"console_output" json:"console_output" default:"false"` //Whether to also output to the terminal
+	Env           string   `yaml:"env" toml:"env" json:"env" default:"prod"`                                   //Logging environment, prod: production, dev: development
+	Level         string   `yaml:"level" toml:"level" json:"level" default:"debug"`                            //Log level, debug, info, warn, error
+	Modules       []string `yaml:"modules" toml:"modules" json:"modules"`                                      //Module names (logs are written to separate files)
+	Filename      string   `yaml:"filename" toml:"filename" json:"filename" default:"logs/running.log"`        //Log filename
+	MaxSize       int      `yaml:"max_size" toml:"max_size" json:"max_size" default:"100"`                     //Log size limit, in MB
+	MaxBackups    int      `yaml:"max_backups" toml:"max_backups" json:"max_backups" default:"10"`             //Maximum number of old log files to retain
+	Compress      bool     `yaml:"compress" toml:"compress" json:"compress"`                                   //Whether to compress old log files
+	Exporter      Exporter `yaml:"exporter" toml:"exporter" json:"exporter"`                                   //Exporter
 }
 
 type Exporter struct {
-	Provider string        `yaml:"provider" toml:"provider" json:"provider"` //导出器，目前支持redis、redis-cluster、nats和kafka，为空表示不启用
+	Provider string        `yaml:"provider" toml:"provider" json:"provider"` //Exporter; supports redis, redis-cluster, nats, and kafka; empty means disabled
 	Redis    ProviderRedis `yaml:"redis" toml:"redis" json:"redis"`
 	Nats     ProviderNats  `yaml:"nats" toml:"nats" json:"nats"`
 	Kafka    ProviderKafka `yaml:"kafka" toml:"kafka" json:"kafka"`
 }
 
 type ProviderRedis struct {
-	ListKey         string            `yaml:"list_key" toml:"list_key" json:"list_key"`                            //redis列表名称
-	ConnConf        redis.Conf        `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"`                         //redis连接配置（单机）
-	ClusterConnConf redis.ClusterConf `yaml:"cluster_conn_conf" toml:"cluster_conn_conf" json:"cluster_conn_conf"` //redis连接配置（集群）
+	ListKey         string            `yaml:"list_key" toml:"list_key" json:"list_key"`                            //Redis list name
+	ConnConf        redis.Conf        `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"`                         //Redis connection configuration (standalone)
+	ClusterConnConf redis.ClusterConf `yaml:"cluster_conn_conf" toml:"cluster_conn_conf" json:"cluster_conn_conf"` //Redis connection configuration (cluster)
 }
 
 type ProviderNats struct {
-	Subject  string    `yaml:"subject" toml:"subject" json:"subject"`       //nats的发布主题
-	ConnConf nats.Conf `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"` //nats连接配置
+	Subject  string    `yaml:"subject" toml:"subject" json:"subject"`       //NATS publish subject
+	ConnConf nats.Conf `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"` //NATS connection configuration
 }
 
 type ProviderKafka struct {
-	Topic    string     `yaml:"topic" toml:"topic" json:"topic"`             //kafka的发布主题
-	ConnConf kafka.Conf `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"` //kafka连接配置
+	Topic    string     `yaml:"topic" toml:"topic" json:"topic"`             //Kafka publish topic
+	ConnConf kafka.Conf `yaml:"conn_conf" toml:"conn_conf" json:"conn_conf"` //Kafka connection configuration
 }

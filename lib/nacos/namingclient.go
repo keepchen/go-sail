@@ -10,17 +10,17 @@ import (
 	"go.uber.org/zap"
 )
 
-// RegisterService 将服务注册到注册中心
+// RegisterService registers a service with the service registry
 //
-// groupName 分组名称
+// groupName group name
 //
-// serviceName 服务名称
+// serviceName service name
 //
-// ip 访问ip地址，如果为空，则使用 utils.IP().GetLocal() 自动获取
+// ip access IP address; if empty, obtain it automatically with utils.IP().GetLocal()
 //
-// port 监听的端口
+// port listen port
 //
-// metadata 元数据信息
+// metadata metadata information
 func RegisterService(groupName, serviceName string, ip string, port uint64, metadata map[string]string) (bool, error) {
 	var param vo.RegisterInstanceParam
 	param.Ip = ip
@@ -42,13 +42,13 @@ func RegisterService(groupName, serviceName string, ip string, port uint64, meta
 	return GetNamingClient().RegisterInstance(param)
 }
 
-// UnregisterService 将服务从注册中心下线
+// UnregisterService deregisters a service from the service registry
 //
-// serviceName 服务名称
+// serviceName service name
 //
-// ip 访问ip地址，如果为空，则使用 utils.IP().GetLocal() 自动获取
+// ip access IP address; if empty, obtain it automatically with utils.IP().GetLocal()
 //
-// port 监听的端口
+// port listen port
 func UnregisterService(groupName, serviceName string, ip string, port uint64) (bool, error) {
 	var param vo.DeregisterInstanceParam
 	param.Ip = ip
@@ -66,13 +66,13 @@ func UnregisterService(groupName, serviceName string, ip string, port uint64) (b
 	return GetNamingClient().DeregisterInstance(param)
 }
 
-// GetHealthyInstanceUrl 获取健康实例url地址
+// GetHealthyInstanceUrl retrieves the URL of a healthy instance
 //
-// groupName 分组名称
+// groupName group name
 //
-// serviceName 服务名称
+// serviceName service name
 //
-// loggerSvc 日志组件
+// loggerSvc logging component
 func GetHealthyInstanceUrl(groupName, serviceName string, loggerSvc *zap.Logger) string {
 	var param vo.SelectOneHealthInstanceParam
 	param.GroupName = groupName
@@ -88,15 +88,15 @@ func GetHealthyInstanceUrl(groupName, serviceName string, loggerSvc *zap.Logger)
 	return fmt.Sprintf("%s:%d", instance.Ip, instance.Port)
 }
 
-// SubscribeInstances 订阅(监听)服务实例变化
+// SubscribeInstances subscribes to (watches) service instance changes
 //
-// groupName 分组名称
+// groupName group name
 //
-// serviceName 服务名称
+// serviceName service name
 //
-// fn 回调处理函数
+// fn callback handler
 //
-// loggerSvc 日志组件
+// loggerSvc logging component
 func SubscribeInstances(groupName, serviceName string, fn func(instances []model.Instance, err error), loggerSvc *zap.Logger) {
 	var param = &vo.SubscribeParam{
 		GroupName:         groupName,
@@ -110,15 +110,15 @@ func SubscribeInstances(groupName, serviceName string, fn func(instances []model
 	}
 }
 
-// UnsubscribeInstances 取消订阅(监听)服务实例变化
+// UnsubscribeInstances unsubscribes from (stops watching) service instance changes
 //
-// groupName 分组名称
+// groupName group name
 //
-// serviceName 服务名称
+// serviceName service name
 //
-// fn 回调处理函数
+// fn callback handler
 //
-// loggerSvc 日志组件
+// loggerSvc logging component
 func UnsubscribeInstances(groupName, serviceName string, fn func(instances []model.Instance, err error), loggerSvc *zap.Logger) {
 	var param = &vo.SubscribeParam{
 		GroupName:         groupName,

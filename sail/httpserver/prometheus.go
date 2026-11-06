@@ -16,9 +16,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// RunPrometheusServerWhenEnable 启动prometheus指标收集服务
+// RunPrometheusServerWhenEnable starts the Prometheus metrics collection service
 //
-// 当配置文件指明启用时才会启动
+// Start only when enabled in the configuration file
 func RunPrometheusServerWhenEnable(conf config.PrometheusConf) {
 	if !conf.Enable {
 		return

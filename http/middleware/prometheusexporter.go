@@ -14,7 +14,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// PrometheusExporter 导出Prometheus指标
+// PrometheusExporter exports Prometheus metrics
 func PrometheusExporter() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("entryUnixMilli", time.Now().UnixMilli())
@@ -41,9 +41,9 @@ func (r *responseBodyWriter) Write(b []byte) (int, error) {
 
 	entryUnixMilli := r.ctx.MustGet("entryUnixMilli").(int64)
 	elapsed := time.Now().UnixMilli() - entryUnixMilli
-	//记录接口延时
+	//Record API latency
 	metricsSummaryVecHttpLatency.WithLabelValues(r.ctx.FullPath()).Observe(float64(elapsed))
-	//记录接口返回状态码
+	//Record the API response status code
 	metricsSummaryVecHttpStatus.WithLabelValues(r.ctx.FullPath(), fmt.Sprintf("%d", r.ctx.Writer.Status())).Observe(float64(1))
 
 	r.written = true
@@ -53,7 +53,7 @@ func (r *responseBodyWriter) Write(b []byte) (int, error) {
 
 var once sync.Once
 
-// http接口状态与延迟
+// HTTP API status and latency
 var (
 	metricsSummaryVecHttpLatency          *prometheus.SummaryVec
 	metricsSummaryVecHttpStatus           *prometheus.SummaryVec
@@ -68,21 +68,21 @@ var (
 	sampleInterval = time.Minute
 )
 
-// SetDiskPath 设置磁盘监控路径
+// SetDiskPath sets the disk monitoring path
 func SetDiskPath(path string) {
 	if len(path) != 0 {
 		diskPath = path
 	}
 }
 
-// SetSampleInterval 设置采样间隔(频率)
+// SetSampleInterval sets the sampling interval (frequency)
 func SetSampleInterval(interval string) {
 	if len(interval) != 0 {
 		sampleInterval = time.Minute
 		return
 	}
 	td, err := time.ParseDuration(interval)
-	//若小于1ms，则使用默认值1分钟
+	//Use the default of 1 minute if less than 1ms
 	if err != nil || td.Milliseconds() == 0 {
 		td = time.Minute
 	}
@@ -138,21 +138,21 @@ func init() {
 	})
 }
 
-// SystemMetricsSample 系统指标采样
+// SystemMetricsSample samples system metrics
 //
-// 默认采样周期为每分钟一次，覆盖上一次记录值
+// The default sampling interval is once per minute, overwriting the previous values
 //
-// 采集对象：
+// Collected metrics:
 //
-// - cpu，多核 -> 使用率
+// - CPU, multiple cores -> utilization
 //
-// - 内存 -> 使用数值和使用率
+// - Memory -> usage and utilization
 //
-// - 硬盘使用率，根路径 -> 使用数值和使用率
+// - Disk usage, root path -> usage and utilization
 //
-// - 硬盘io，遍历设备 -> 读写次数、字节数、时间
+// - Disk I/O, all devices -> read/write counts, bytes, and time
 //
-// - 网卡，多网卡 -> 出入站数值
+// - Network interfaces, multiple interfaces -> inbound and outbound values
 func SystemMetricsSample(exit chan struct{}) {
 	ticker := time.NewTicker(sampleInterval)
 
@@ -160,41 +160,41 @@ LOOP:
 	for {
 		select {
 		case <-ticker.C:
-			//cpu使用率
+			//CPU utilization
 			cpuUsage, err := cpu.Percent(sampleInterval, true)
 			if err == nil && len(cpuUsage) > 0 {
 				for index, cu := range cpuUsage {
 					metricsSummaryGaugeVecCPUUsage.WithLabelValues(fmt.Sprintf("%d", index)).Set(cu)
 				}
 			}
-			//内存使用率
+			//Memory utilization
 			memStat, err := mem.VirtualMemory()
 			if err == nil && memStat != nil {
 				metricsSummaryGaugeVecMemoryUsage.WithLabelValues("used").Set(float64(memStat.Used))
 				metricsSummaryGaugeVecMemoryUsage.WithLabelValues("percent").Set(memStat.UsedPercent)
 			}
-			//硬盘使用率
+			//Disk utilization
 			diskStat, err := disk.Usage(diskPath)
 			if err == nil && diskStat != nil {
 				metricsSummaryGaugeVecDiskUsage.WithLabelValues(diskPath, "used").Set(float64(diskStat.Used))
 				metricsSummaryGaugeVecDiskUsage.WithLabelValues(diskPath, "percent").Set(diskStat.UsedPercent)
 			}
-			//硬盘io
+			//Disk I/O
 			diskIoStat, err := disk.IOCounters()
 			if err == nil && diskIoStat != nil {
 				for device, stat := range diskIoStat {
-					//读
+					//Read
 					metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "readBytes").Set(float64(stat.ReadBytes))
 					metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "readTime").Set(float64(stat.ReadTime))
 					metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "readCount").Set(float64(stat.ReadCount))
 
-					//写
+					//Write
 					metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "writeBytes").Set(float64(stat.WriteBytes))
 					metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "writeTime").Set(float64(stat.WriteTime))
 					metricsSummaryGaugeVecDiskUsage.WithLabelValues(device, "writeCount").Set(float64(stat.WriteCount))
 				}
 			}
-			//网卡使用率
+			//Network interface utilization
 			netStats, err := net.IOCounters(false)
 			if err == nil && len(netStats) > 0 {
 				for _, netStat := range netStats {

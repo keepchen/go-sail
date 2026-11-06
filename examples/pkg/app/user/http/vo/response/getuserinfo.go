@@ -5,11 +5,11 @@ import (
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
-// GetUserInfo 获取用户信息返回数据结构
+// GetUserInfo response data structure for retrieving user information
 // swagger: model
 type GetUserInfo struct {
 	dto.Base
-	// 数据体
+	// Data body
 	// in: body
 	// required: true
 	Data struct {
@@ -18,35 +18,35 @@ type GetUserInfo struct {
 	} `json:"data" format:"object"`
 }
 
-// UserInfo 用户基础信息数据结构
+// UserInfo basic user information data structure
 // swagger: model
 type UserInfo struct {
-	UserID int64 `json:"userId" validate:"required"` // 用户id
-	// 用户昵称
+	UserID int64 `json:"userId" validate:"required"` // User ID
+	// User nickname
 	// in: body
 	// required: true
 	Nickname string `json:"userInfo" validate:"required"`
-	// 账号状态
+	// Account status
 	//
-	// UserStatusCodeNormal    = UserStatusCode(0) //正常
-	// UserStatusCodeForbidden = UserStatusCode(1) //禁用
+	// UserStatusCodeNormal    = UserStatusCode(0) //Normal
+	// UserStatusCodeForbidden = UserStatusCode(1) //Disabled
 	//
 	// in: body
 	// required: true
 	Status modelsEnum.UserStatusCode `json:"status" enums:"0,1" validate:"required"`
 }
 
-// WalletInfo 钱包信息数据结构
+// WalletInfo wallet information data structure
 // swagger: model
 type WalletInfo struct {
-	// 账户余额
+	// Account balance
 	// in: body
 	// required: true
 	Amount float64 `json:"amount" validate:"required"`
-	// 钱包状态
+	// Wallet status
 	//
-	// WalletStatusCodeNormal    = WalletStatusCode(0) //正常
-	// WalletStatusCodeForbidden = WalletStatusCode(1) //禁用
+	// WalletStatusCodeNormal    = WalletStatusCode(0) //Normal
+	// WalletStatusCodeForbidden = WalletStatusCode(1) //Disabled
 	//
 	// in: body
 	// required: true

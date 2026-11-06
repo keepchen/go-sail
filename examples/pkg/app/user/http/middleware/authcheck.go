@@ -8,7 +8,7 @@ import (
 	"github.com/keepchen/go-sail/v3/http/api"
 )
 
-// AuthCheck 授权检查
+// AuthCheck authorization check
 func AuthCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authorization := c.GetHeader("Authorization")

@@ -12,8 +12,8 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/monitoring/distribution"
 )
 
-// Store 是基于 Redis 的分布式统计存储。原始记录和聚合结果拥有独立保留期，
-// 聚合游标不会过期。
+// Store is a Redis-backed store for distributed statistics. Raw records and aggregated results have separate retention periods,
+// and the aggregation cursor never expires.
 type Store struct {
 	client redisLib.UniversalClient
 
@@ -22,8 +22,8 @@ type Store struct {
 	resultRetention time.Duration
 }
 
-// NewStore 创建 Redis 存储。省略 resultRetention 或传入非正值时，
-// 聚合结果使用 recordRetention，以保持向后兼容。
+// NewStore creates a Redis store. If resultRetention is omitted or nonpositive,
+// aggregated results use recordRetention for backward compatibility.
 func NewStore(client redisLib.UniversalClient, localWindow time.Duration, recordRetention time.Duration, resultRetention ...time.Duration) *Store {
 	resultTTL := recordRetention
 	if len(resultRetention) > 0 && resultRetention[0] > 0 {
@@ -37,7 +37,7 @@ func NewStore(client redisLib.UniversalClient, localWindow time.Duration, record
 	}
 }
 
-// Report 幂等保存记录，并按本地窗口建立索引。
+// Report saves records idempotently and indexes them by local window.
 func (s *Store) Report(ctx context.Context, record *distribution.SketchRecord) error {
 	data, err := json.Marshal(record)
 	if err != nil {
@@ -49,7 +49,7 @@ func (s *Store) Report(ctx context.Context, record *distribution.SketchRecord) e
 
 	pipe := s.client.TxPipeline()
 
-	// 稳定的 RecordID 使重复上报覆盖同一份记录。
+	// A stable RecordID lets repeated reports overwrite the same record.
 	pipe.Set(ctx, recordKey(record.RecordID), data, s.recordRetention)
 	pipe.SAdd(ctx, indexKey, record.RecordID)
 	pipe.Expire(ctx, indexKey, s.recordRetention)
@@ -61,7 +61,7 @@ func (s *Store) Report(ctx context.Context, record *distribution.SketchRecord) e
 	return nil
 }
 
-// ListRecords 读取完全包含在查询半开窗口内的记录。
+// ListRecords reads records fully contained within the queried half-open window.
 func (s *Store) ListRecords(ctx context.Context, query distribution.WindowQuery) ([]*distribution.SketchRecord, error) {
 	ids := make(map[string]struct{})
 
@@ -120,7 +120,7 @@ func (s *Store) ListRecords(ctx context.Context, query distribution.WindowQuery)
 	return records, nil
 }
 
-// SaveResult 使用结果保留期幂等保存聚合结果。
+// SaveResult saves aggregated results idempotently with the result retention period.
 func (s *Store) SaveResult(ctx context.Context, result *distribution.AggregatedResult) error {
 	data, err := json.Marshal(result)
 	if err != nil {
@@ -134,7 +134,7 @@ func (s *Store) SaveResult(ctx context.Context, result *distribution.AggregatedR
 	return nil
 }
 
-// GetResult 根据 ID 读取聚合结果。
+// GetResult reads an aggregated result by ID.
 func (s *Store) GetResult(ctx context.Context, resultID string) (*distribution.AggregatedResult, error) {
 	data, err := s.client.Get(ctx, resultKey(resultID)).Bytes()
 	if err != nil {
@@ -149,7 +149,7 @@ func (s *Store) GetResult(ctx context.Context, resultID string) (*distribution.A
 	return &result, nil
 }
 
-// MarkAggregated 为已处理的记录 ID 创建带保留期的标记。
+// MarkAggregated creates expiring markers for processed record IDs.
 func (s *Store) MarkAggregated(ctx context.Context, recordIDs []string) error {
 	if len(recordIDs) == 0 {
 		return nil
@@ -168,8 +168,8 @@ func (s *Store) MarkAggregated(ctx context.Context, recordIDs []string) error {
 	return nil
 }
 
-// GetAggregationCursor 返回最近成功处理窗口的结束时间；
-// 聚合尚未建立游标时返回零值时间。
+// GetAggregationCursor returns the end time of the most recently processed window;
+// it returns the zero time if no aggregation cursor has been established.
 func (s *Store) GetAggregationCursor(ctx context.Context, namespace string, service string) (time.Time, error) {
 	value, err := s.client.Get(ctx, cursorKey(namespace, service)).Int64()
 	if err != nil {
@@ -181,7 +181,7 @@ func (s *Store) GetAggregationCursor(ctx context.Context, namespace string, serv
 	return time.Unix(0, value).UTC(), nil
 }
 
-// SaveAggregationCursor 持久化最近成功处理窗口的结束时间。
+// SaveAggregationCursor persists the end time of the most recently processed window.
 func (s *Store) SaveAggregationCursor(ctx context.Context, namespace string, service string, windowEnd time.Time) error {
 	if err := s.client.Set(ctx, cursorKey(namespace, service), windowEnd.UnixNano(), 0).Err(); err != nil {
 		return fmt.Errorf("[Go-Sail] <monitoring> save aggregation cursor: %w", err)

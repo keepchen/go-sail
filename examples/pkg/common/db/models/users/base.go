@@ -2,7 +2,7 @@ package users
 
 import "gorm.io/gorm"
 
-//AutoMigrate 自动同步表结构
+//AutoMigrate automatically synchronizes table schemas
 func AutoMigrate(db *gorm.DB) {
 	err := db.AutoMigrate(
 		&User{},

@@ -22,17 +22,17 @@ var tracerStdPool = sync.Pool{
 	},
 }
 
-// LogTrace 日志追踪
+// LogTrace log tracing
 //
-// 作用是在请求入口注入必要的内容到上下文，供后续的请求调用链使用，一般用于日志追踪、链路追踪
+// Inject necessary values into the context at the request entry point for subsequent calls, typically for log and distributed tracing
 //
-// 注入内容：
+// Injected values:
 //
-// 1.请求id
+// 1.Request ID
 //
-// 2.请求到来那一刻的纳秒时间戳
+// 2.Nanosecond timestamp when the request arrives
 //
-// 3.包装了请求id的日志组件实例
+// 3.Logger instance containing the request ID
 //
 // Example:
 //
@@ -54,8 +54,8 @@ func LogTrace() gin.HandlerFunc {
 			tracer.requestId = c.Request.Header.Get("X-Request-Id")
 		}
 
-		//溢出检测
-		//TODO 目前暂定为最长保留200个字符
+		//Overflow check
+		//TODO Currently limited to a maximum of 200 characters
 		if utf8.RuneCountInString(tracer.requestId) > 200 {
 			tracer.requestId = string([]rune(tracer.requestId)[:200])
 		}

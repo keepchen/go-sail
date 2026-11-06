@@ -8,7 +8,7 @@ import (
 
 var rawString = "hello world!"
 
-// KeyForTest 测试密钥
+// KeyForTest test key
 const KeyForTest = "fakeKeyChangeMe!"
 
 func TestAesImplEncode(t *testing.T) {

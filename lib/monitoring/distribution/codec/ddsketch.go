@@ -6,13 +6,13 @@ import (
 	"github.com/DataDog/sketches-go/ddsketch"
 )
 
-// DDSketch 封装 DataDog 的可合并分位数 Sketch 及其精度配置。
+// DDSketch wraps DataDog's mergeable quantile Sketch and its accuracy configuration.
 type DDSketch struct {
 	value    *ddsketch.DDSketch
 	accuracy float64
 }
 
-// NewDDSketch 按指定相对精度创建空 Sketch。
+// NewDDSketch creates an empty Sketch with the specified relative accuracy.
 func NewDDSketch(relativeAccuracy float64) (*DDSketch, error) {
 	value, err := ddsketch.NewDefaultDDSketch(relativeAccuracy)
 	if err != nil {
@@ -25,7 +25,7 @@ func NewDDSketch(relativeAccuracy float64) (*DDSketch, error) {
 	}, nil
 }
 
-// Add 向 Sketch 插入一个数值。
+// Add inserts a value into the Sketch.
 func (d *DDSketch) Add(value float64) error {
 	if err := d.value.Add(value); err != nil {
 		return fmt.Errorf("[Go-Sail] <monitoring> add ddsketch value: %w", err)
@@ -33,7 +33,7 @@ func (d *DDSketch) Add(value float64) error {
 	return nil
 }
 
-// Merge 将另一个兼容 Sketch 中的所有样本合并进来。
+// Merge merges all samples from another compatible Sketch.
 func (d *DDSketch) Merge(other *DDSketch) error {
 	if other == nil {
 		return nil
@@ -44,7 +44,7 @@ func (d *DDSketch) Merge(other *DDSketch) error {
 	return nil
 }
 
-// MergeEncoded 解码并合并映射配置与当前实例兼容的载荷。
+// MergeEncoded decodes and merges a payload whose mapping configuration is compatible with the current instance.
 func (d *DDSketch) MergeEncoded(payload []byte) error {
 	if err := d.value.DecodeAndMergeWith(payload); err != nil {
 		return fmt.Errorf("[Go-Sail] <monitoring> decode and merge ddsketch: %w", err)
@@ -52,7 +52,7 @@ func (d *DDSketch) MergeEncoded(payload []byte) error {
 	return nil
 }
 
-// Quantiles 返回指定分位点对应的近似值。
+// Quantiles returns approximate values for the specified quantiles.
 func (d *DDSketch) Quantiles(values []float64) ([]float64, error) {
 	result, err := d.value.GetValuesAtQuantiles(values)
 	if err != nil {
@@ -61,27 +61,27 @@ func (d *DDSketch) Quantiles(values []float64) ([]float64, error) {
 	return result, nil
 }
 
-// Encode 序列化 Sketch，并携带索引映射以便进行兼容性检查。
+// Encode serializes the Sketch, including the index mapping for compatibility checks.
 func (d *DDSketch) Encode() []byte {
 	payload := make([]byte, 0, 512)
 
-	// 第一版携带 Mapping，保证解码端能够验证兼容性。
+	// The first version includes Mapping so the decoder can verify compatibility.
 	d.value.Encode(&payload, false)
 
 	return payload
 }
 
-// Clear 清除全部样本，但保留 Sketch 配置。
+// Clear removes all samples while retaining the Sketch configuration.
 func (d *DDSketch) Clear() {
 	d.value.Clear()
 }
 
-// Empty 表示 Sketch 是否不含任何样本。
+// Empty indicates whether the Sketch contains no samples.
 func (d *DDSketch) Empty() bool {
 	return d.value.IsEmpty()
 }
 
-// Accuracy 返回配置的相对精度。
+// Accuracy returns the configured relative accuracy.
 func (d *DDSketch) Accuracy() float64 {
 	return d.accuracy
 }

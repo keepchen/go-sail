@@ -9,14 +9,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// Reporter 持久化或传输一条节点级 Sketch 记录。
-// 实现应针对 SketchRecord.RecordID 保证幂等。
+// Reporter persists or transmits a node-level Sketch record.
+// Implementations should ensure idempotency based on SketchRecord.RecordID.
 type Reporter interface {
-	// Report 写入一条 Sketch 记录。
+	// Report writes a Sketch record.
 	Report(ctx context.Context, record *SketchRecord) error
 }
 
-// ReportWorker 消费注册表队列，并以有限次数重试上报记录。
+// ReportWorker consumes the registry queue and reports records with bounded retries.
 type ReportWorker struct {
 	reporter Reporter
 	input    <-chan *SketchRecord
@@ -29,7 +29,7 @@ type ReportWorker struct {
 	failures  atomic.Uint64
 }
 
-// NewReportWorker 使用默认重试策略创建上报工作器。
+// NewReportWorker creates a reporting worker with the default retry policy.
 func NewReportWorker(reporter Reporter, input <-chan *SketchRecord, logger *zap.Logger) *ReportWorker {
 	if logger == nil {
 		logger = zap.NewNop()
@@ -44,8 +44,8 @@ func NewReportWorker(reporter Reporter, input <-chan *SketchRecord, logger *zap.
 	}
 }
 
-// Run 持续消费记录，直至输入关闭或 ctx 被取消。
-// 取消后会在限定时间内尝试排空 Registry 中已入队的记录。
+// Run continuously consumes records until the input closes or ctx is canceled.
+// After cancellation, it attempts to drain records already queued in Registry within a limited time.
 func (w *ReportWorker) Run(ctx context.Context) {
 	for {
 		select {
@@ -122,7 +122,7 @@ func (w *ReportWorker) report(ctx context.Context, record *SketchRecord) error {
 			return ctx.Err()
 
 		case <-timer.C:
-			// 等待下一次重试。
+			// Wait for the next retry.
 		}
 	}
 

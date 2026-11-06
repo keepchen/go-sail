@@ -27,11 +27,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// GetDB 获取数据库实例
+// GetDB retrieves database instances
 //
-// 该方法依次返回读实例、写实例
+// This method returns the read instance followed by the write instance
 //
-// 注意，使用前请确保db组件已初始化成功。
+// Note: ensure the database component has been initialized before use.
 func GetDB() (read *gorm.DB, write *gorm.DB) {
 	if db.GetInstance() == nil {
 		read, write = nil, nil
@@ -42,14 +42,14 @@ func GetDB() (read *gorm.DB, write *gorm.DB) {
 	return
 }
 
-// NewDB 创建新的数据实例
+// NewDB creates new database instances
 func NewDB(conf db.Conf) (read *gorm.DB, rErr error, write *gorm.DB, wErr error) {
 	return db.New(conf)
 }
 
-// GetDBR 获取数据库读实例
+// GetDBR retrieves the database read instance
 //
-// 注意，使用前请确保db组件已初始化成功。
+// Note: ensure the database component has been initialized before use.
 func GetDBR() *gorm.DB {
 	if db.GetInstance() == nil {
 		return nil
@@ -58,9 +58,9 @@ func GetDBR() *gorm.DB {
 	return db.GetInstance().R
 }
 
-// GetDBW 获取数据库写实例
+// GetDBW retrieves the database write instance
 //
-// 注意，使用前请确保db组件已初始化成功。
+// Note: ensure the database component has been initialized before use.
 func GetDBW() *gorm.DB {
 	if db.GetInstance() == nil {
 		return nil
@@ -69,19 +69,19 @@ func GetDBW() *gorm.DB {
 	return db.GetInstance().W
 }
 
-// GetRedis 获取通用的redis连接
+// GetRedis retrieves a universal Redis connection
 //
-// # GetRedisUniversal 方法的语法糖
+// # Shorthand for GetRedisUniversal
 //
-// 自动检测当前已实例化的redis连接
+// Automatically detect currently initialized Redis connections
 //
-// 如果同时存在standalone实例和cluster实例，优先返回standalone实例
+// Prefer the standalone instance if both standalone and cluster instances exist
 //
-// 如果期望获取指定的连接类型，请单独使用 GetRedisStandalone 或 GetRedisCluster
+// Use GetRedisStandalone or GetRedisCluster to retrieve a specific connection type
 //
 // ----
 //
-// 提示：当你能确定你的连接类型时，可以通过断言的方式调用进阶方法，例如：
+// Tip: when the connection type is known, use a type assertion to call advanced methods, for example:
 //
 // # - Conn (on standalone client)
 //
@@ -94,17 +94,17 @@ func GetRedis() redisLib.UniversalClient {
 	return GetRedisUniversal()
 }
 
-// GetRedisUniversal 获取通用的redis连接
+// GetRedisUniversal retrieves a universal Redis connection
 //
-// 自动检测当前已实例化的redis连接
+// Automatically detect currently initialized Redis connections
 //
-// 如果同时存在standalone实例和cluster实例，优先返回standalone实例
+// Prefer the standalone instance if both standalone and cluster instances exist
 //
-// 如果期望获取指定的连接类型，请单独使用 GetRedisStandalone 或 GetRedisCluster
+// Use GetRedisStandalone or GetRedisCluster to retrieve a specific connection type
 //
 // ----
 //
-// 提示：当你能确定你的连接类型时，可以通过断言的方式调用进阶方法，例如：
+// Tip: when the connection type is known, use a type assertion to call advanced methods, for example:
 //
 // # - Conn (on standalone client)
 //
@@ -124,143 +124,143 @@ func GetRedisUniversal() redisLib.UniversalClient {
 	}
 }
 
-// GetRedisStandalone 获取redis连接(standalone)
+// GetRedisStandalone retrieves a Redis connection (standalone)
 //
-// 单实例模式
+// Standalone mode
 //
-// 注意，使用前请确保redis(standalone)组件已初始化成功。
+// Note: ensure the Redis (standalone) component has been initialized before use.
 func GetRedisStandalone() *redisLib.Client {
 	return redis.GetInstance()
 }
 
-// GetRedisCluster 获取redis连接(cluster)
+// GetRedisCluster retrieves a Redis connection (cluster)
 //
-// cluster集群模式
+// Cluster mode
 //
-// 注意，使用前请确保redis(cluster)组件已初始化成功。
+// Note: ensure the Redis (cluster) component has been initialized before use.
 func GetRedisCluster() *redisLib.ClusterClient {
 	return redis.GetClusterInstance()
 }
 
-// NewRedis 创建新的redis (standalone)连接实例
+// NewRedis creates a new Redis (standalone) connection instance
 func NewRedis(conf redis.Conf) (*redisLib.Client, error) {
 	return redis.New(conf)
 }
 
-// NewRedisCluster  创建新的redis (cluster)连接实例
+// NewRedisCluster  creates a new Redis (cluster) connection instance
 func NewRedisCluster(conf redis.ClusterConf) (*redisLib.ClusterClient, error) {
 	return redis.NewCluster(conf)
 }
 
-// GetNats 获取nats连接实例
+// GetNats retrieves the NATS connection instance
 //
-// 注意，使用前请确保nats组件已初始化成功。
+// Note: ensure the NATS component has been initialized before use.
 func GetNats() *natsLib.Conn {
 	return nats.GetInstance()
 }
 
-// NewNats 创建新的nats 连接实例
+// NewNats creates a new NATS connection instance
 func NewNats(conf nats.Conf) (*natsLib.Conn, error) {
 	return nats.New(conf)
 }
 
-// GetLogger 获取日志实例
+// GetLogger retrieves the logger instance
 //
-// 注意，使用前请确保logger组件已初始化成功。
+// Note: ensure the logging component has been initialized before use.
 func GetLogger(module ...string) *zap.Logger {
 	return logger.GetLogger(module...)
 }
 
-// MarshalInterfaceValue 将interface序列化成字符串
+// MarshalInterfaceValue serializes an interface to a string
 //
-// 主要用于日志记录
+// Mainly used for logging
 func MarshalInterfaceValue(obj any) string {
 	return logger.MarshalInterfaceValue(obj)
 }
 
-// Response http响应组件
+// Response HTTP response component
 func Response(c *gin.Context) api.Responder {
 	return api.Response(c)
 }
 
-// GetKafkaInstance 获取kafka完整实例
+// GetKafkaInstance retrieves the complete Kafka instance
 //
-// 注意，使用前请确保kafka组件已初始化成功。
+// Note: ensure the Kafka component has been initialized before use.
 func GetKafkaInstance() *kafka.Instance {
 	return kafka.GetInstance()
 }
 
-// GetKafkaConnections 获取kafka连接
+// GetKafkaConnections retrieves Kafka connections
 //
-// 注意，使用前请确保kafka组件已初始化成功。
+// Note: ensure the Kafka component has been initialized before use.
 func GetKafkaConnections() []*kafkaLib.Conn {
 	return kafka.GetConnections()
 }
 
-// GetKafkaWriter 获取kafka写实例
+// GetKafkaWriter retrieves the Kafka writer instance
 //
-// 注意，使用前请确保kafka组件已初始化成功。
+// Note: ensure the Kafka component has been initialized before use.
 func GetKafkaWriter() *kafkaLib.Writer {
 	return kafka.GetWriter()
 }
 
-// GetKafkaReader 获取kafka读实例
+// GetKafkaReader retrieves the Kafka reader instance
 //
-// 注意，使用前请确保kafka组件已初始化成功。
+// Note: ensure the Kafka component has been initialized before use.
 func GetKafkaReader() *kafkaLib.Reader {
 	return kafka.GetReader()
 }
 
-// NewKafkaConnections 创建新的kafka连接实例
+// NewKafkaConnections creates new Kafka connection instances
 func NewKafkaConnections(conf kafka.Conf) []*kafkaLib.Conn {
 	return kafka.NewConnections(conf)
 }
 
-// GetEtcdInstance 获取etcd连接实例
+// GetEtcdInstance retrieves the etcd connection instance
 //
-// 注意，使用前请确保etcd组件已初始化成功。
+// Note: ensure the etcd component has been initialized before use.
 func GetEtcdInstance() *clientv3.Client {
 	return etcd.GetInstance()
 }
 
-// NewEtcd 创建新的etcd连接实例
+// NewEtcd creates a new etcd connection instance
 func NewEtcd(conf etcd.Conf) (*clientv3.Client, error) {
 	return etcd.New(conf)
 }
 
-// GetValKey 获取valkey连接实例
+// GetValKey retrieves the Valkey connection instance
 //
-// 注意，使用前请确保valkey组件已初始化成功。
+// Note: ensure the Valkey component has been initialized before use.
 func GetValKey() valkeyLib.Client {
 	return valkey.GetValKey()
 }
 
-// NewValKey 创建新的valkey连接实例
+// NewValKey creates a new Valkey connection instance
 func NewValKey(conf valkey.Conf) (valkeyLib.Client, error) {
 	return valkey.New(conf)
 }
 
-// GetNacosConfigClient 获取nacos配置连接实例
+// GetNacosConfigClient retrieves the Nacos configuration connection instance
 //
-// 注意，使用前请确保nacos组件已初始化成功。
+// Note: ensure the Nacos component has been initialized before use.
 func GetNacosConfigClient() config_client.IConfigClient {
 	return nacos.GetConfigClient()
 }
 
-// GetNacosNamingClient 获取nacos命名空间连接实例
+// GetNacosNamingClient retrieves the Nacos naming connection instance
 //
-// 注意，使用前请确保nacos组件已初始化成功。
+// Note: ensure the Nacos component has been initialized before use.
 func GetNacosNamingClient() naming_client.INamingClient {
 	return nacos.GetNamingClient()
 }
 
-// NewNacosConfigClient 新建nacos配置连接实例
+// NewNacosConfigClient creates a new Nacos configuration connection instance
 func NewNacosConfigClient(appName string, endpoints string, namespace string,
 	clientCfg ...constant.ClientConfig) (config_client.IConfigClient, error) {
 	return nacos.NewConfigClient(appName, endpoints, namespace, clientCfg...)
 }
 
-// NewNacosNamingClient 新建nacos命名空间连接实例
+// NewNacosNamingClient creates a new Nacos naming connection instance
 func NewNacosNamingClient(appName string, endpoints string, namespace string,
 	clientCfg ...constant.ClientConfig) (naming_client.INamingClient, error) {
 	return nacos.NewNamingClient(appName, endpoints, namespace, clientCfg...)
@@ -270,7 +270,7 @@ var (
 	monitoringCtx, monitoringCancel = context.WithCancel(context.Background())
 )
 
-// 根据配置依次初始化组件
+// Initialize components in order according to configuration
 func componentsStartup(appName string, conf *config.Config) {
 	//- logger
 	logger.Init(conf.LoggerConf, appName)
@@ -314,7 +314,7 @@ func componentsStartup(appName string, conf *config.Config) {
 
 	//- etcd
 	if conf.EtcdConf.Enable || etcd.GetInstance() != nil {
-		// 可能通过config进行了初始化，因此先检测是否有全局可用变量，没有才进行初始化操作
+		// Configuration may have already initialized this component; first check for an available global variable and initialize only if absent
 		if etcd.GetInstance() == nil {
 			etcd.Init(conf.EtcdConf)
 		}
@@ -328,7 +328,7 @@ func componentsStartup(appName string, conf *config.Config) {
 	}
 
 	//- nacos
-	// 可能通过config进行了初始化，因此先检测是否有全局可用变量，全局变量可用则进行信息打印
+	// Configuration may have already initialized this component; first check for an available global variable and print its information if present
 	if nacos.GetConfigClient() != nil {
 		fmt.Println("[GO-SAIL] <Components> initialize [nacos - configClient] successfully")
 	}
@@ -347,7 +347,7 @@ func componentsStartup(appName string, conf *config.Config) {
 	}
 }
 
-// 根据配置依次停止组件服务
+// Stop component services in order according to configuration
 func componentsShutdown(conf *config.Config) {
 	//- monitor/distribution
 	if conf.MonitorDistributorConf.Enabled {

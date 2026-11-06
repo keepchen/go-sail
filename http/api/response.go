@@ -14,93 +14,93 @@ import (
 	"github.com/keepchen/go-sail/v3/lib/monitoring/distribution"
 )
 
-// Responder 响应器
+// Responder response handler
 type Responder interface {
-	// Builder 组装返回数据
+	// Builder assembles response data
 	//
-	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+	// This method automatically sets the HTTP status, message, current system timestamp in milliseconds, and request ID based on the given code (requires middleware.LogTrace in the route configuration)
 	Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder
-	// Status 指定http状态码
+	// Status specifies the HTTP status code
 	//
-	// 该方法会覆盖 Assemble, Builder, SimpleAssemble, Wrap 解析的http状态码值
+	// This method overrides the HTTP status code derived by Assemble, Builder, SimpleAssemble, and Wrap
 	Status(httpCode int) Responder
-	// SendWithCode 以指定http状态码响应请求
+	// SendWithCode responds with the specified HTTP status code
 	SendWithCode(httpCode int)
-	// Send 响应请求
+	// Send responds to the request
 	Send()
-	// Wrap 组装返回数据
+	// Wrap assembles response data
 	//
-	// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
+	// Unlike Builder, this method does not require the data argument to implement dto.IResponse
 	//
-	// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+	// This method automatically sets the HTTP status, message, current system timestamp in milliseconds, and request ID based on the given code (requires middleware.LogTrace in the route configuration)
 	Wrap(code constants.ICodeType, data any, message ...string) Responder
-	// Bundle 包装返回数据
+	// Bundle wraps response data
 	//
-	// 此方法提供更加开放的响应数据组装
+	// This method provides more flexible response data assembly
 	//
-	// # 提示
+	// # Tip
 	//
-	// code码需要使用 sail.Code().Register() 事先进行注册才能正常工作
+	// Codes must be registered with sail.Code().Register() beforehand to work correctly
 	//
-	// 如：
+	// For example:
 	//
-	// sail.Code().Register("en", 12345, "Code description...") //注册code码
+	// sail.Code().Register("en", 12345, "Code description...") //Register the code
 	//
-	// Response(c).Bundle(12345, nil).Send() //使用code码
+	// Response(c).Bundle(12345, nil).Send() //Use the code
 	Bundle(code int, data any, message ...string) Responder
-	// Data 返回数据
+	// Data returns data
 	//
-	// 此方法直接返回响应数据，其中：
+	// This method directly returns response data, where:
 	//
-	// 1.http状态码为200
+	// 1.The HTTP status code is 200
 	//
-	// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
-	// 否则业务code为 constants.ErrNone
+	// 2.If Option.ErrNoneCode is set through SetupOption, the business code is Option.ErrNoneCode
+	// Otherwise, the business code is constants.ErrNone
 	Data(data any)
-	// Success 返回成功
+	// Success returns success
 	//
-	// 此方法直接返回成功状态，响应默认数据(data为空)，其中：
+	// This method directly returns a success status with default data (empty data), where:
 	//
-	// 1.http状态码为200
+	// 1.The HTTP status code is 200
 	//
-	// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
-	// 否则业务code为 constants.ErrNone
+	// 2.If Option.ErrNoneCode is set through SetupOption, the business code is Option.ErrNoneCode
+	// Otherwise, the business code is constants.ErrNone
 	Success()
-	// Failure 返回失败
+	// Failure returns failure
 	//
-	// 此方法响应默认数据(data为空)，其中：
+	// This method responds with default data (empty data), where:
 	//
-	// 1.http状态码为200
+	// 1.The HTTP status code is 200
 	//
-	// 2.业务code码为 constants.ErrRequestParamsInvalid
+	// 2.The business code is constants.ErrRequestParamsInvalid
 	Failure(message ...string)
-	// Failure200 返回失败
+	// Failure200 returns failure
 	//
-	// 此方法响应默认数据(data为空)，其中：
+	// This method responds with default data (empty data), where:
 	//
-	// 1.http状态码为200
+	// 1.The HTTP status code is 200
 	//
-	// 2.业务码为code
+	// 2.The business code is code
 	Failure200(code constants.ICodeType, message ...string)
-	// Failure400 返回失败
+	// Failure400 returns failure
 	//
-	// 此方法响应默认数据(data为空)，其中：
+	// This method responds with default data (empty data), where:
 	//
-	// 1.http状态码为400
+	// 1.The HTTP status code is 400
 	//
-	// 2.业务码为code
+	// 2.The business code is code
 	Failure400(code constants.ICodeType, message ...string)
-	// Failure500 返回失败
+	// Failure500 returns failure
 	//
-	// 此方法响应默认数据(data为空)，其中：
+	// This method responds with default data (empty data), where:
 	//
-	// 1.http状态码为500
+	// 1.The HTTP status code is 500
 	//
-	// 2.业务码为code
+	// 2.The business code is code
 	Failure500(code constants.ICodeType, message ...string)
-	// WithHeaders 为响应设置响应头
+	// WithHeaders sets response headers
 	WithHeaders(headers map[string]string) Responder
-	// WithCookies 为响应设置Cookie
+	// WithCookies sets response cookies
 	WithCookies(cookies []CookieStd) Responder
 }
 
@@ -116,14 +116,14 @@ type responseEngine struct {
 
 var _ Responder = &responseEngine{}
 
-// 定义 sync.Pool
+// Define sync.Pool
 var responseEnginePool = sync.Pool{
 	New: func() any {
 		return &responseEngine{}
 	},
 }
 
-// 归还 responseEngine 到池中
+// Return responseEngine to the pool
 func release(re *responseEngine) {
 	re.engine = nil
 	re.data = nil
@@ -131,10 +131,10 @@ func release(re *responseEngine) {
 }
 
 func New(c *gin.Context) Responder {
-	// 从池中获取 responseEngine
+	// Get responseEngine from the pool
 	re := responseEnginePool.Get().(*responseEngine)
 
-	// 重置字段以避免数据污染
+	// Reset fields to avoid data contamination
 	re.engine = c
 	re.language = languageCode.String()
 	re.requestId = ""
@@ -150,7 +150,7 @@ func New(c *gin.Context) Responder {
 	if val, ok := c.Get("entryAt"); ok {
 		re.entryAt = val.(int64)
 	}
-	//从上下文中获取语言代码
+	//Get the language code from the context
 	if detectAcceptLanguage {
 		if acceptLanguage, ok := c.Get("language"); ok {
 			if lang, assertOk := acceptLanguage.(string); assertOk {
@@ -162,7 +162,7 @@ func New(c *gin.Context) Responder {
 	return re
 }
 
-// Response 启动返回实例
+// Response initializes a response instance
 //
 // # Usage
 //
@@ -170,45 +170,45 @@ func New(c *gin.Context) Responder {
 //
 // Response(c).Builder(...).Send()
 //
-// New 方法的语法糖
+// Shorthand for New
 func Response(c *gin.Context) Responder {
 	return New(c)
 }
 
-// Builder 组装返回数据
+// Builder assembles response data
 //
-// Assemble 方法的语法糖
+// Shorthand for Assemble
 func (a *responseEngine) Builder(code constants.ICodeType, resp dto.IResponse, message ...string) Responder {
 	return a.mergeBody(code, resp, message...)
 }
 
-// Wrap 组装返回数据(轻量版)
+// Wrap assembles response data (lightweight version)
 //
-// 该方法与 Builder 的区别在于data参数不需要实现 dto.IResponse 接口
+// Unlike Builder, this method does not require the data argument to implement dto.IResponse
 //
-// 该方法会根据传递的code码自动设置http状态、描述信息、当前系统毫秒时间戳以及请求id(需要在路由配置中调用 middleware.LogTrace 中间件)
+// This method automatically sets the HTTP status, message, current system timestamp in milliseconds, and request ID based on the given code (requires middleware.LogTrace in the route configuration)
 func (a *responseEngine) Wrap(code constants.ICodeType, data any, message ...string) Responder {
 	return a.mergeBody(code, data, message...)
 }
 
-// Bundle 包装返回数据
+// Bundle wraps response data
 //
-// 此方法提供更加开放的响应数据组装
+// This method provides more flexible response data assembly
 //
-// # 提示
+// # Tip
 //
-// code码需要使用 sail.Code().Register() 事先进行注册才能正常工作
+// Codes must be registered with sail.Code().Register() beforehand to work correctly
 //
-// 如：
+// For example:
 //
-// sail.Code().Register("en", 12345, "Code description...") //注册code码
+// sail.Code().Register("en", 12345, "Code description...") //Register the code
 //
-// Response(c).Bundle(12345, nil).Send() //使用code码
+// Response(c).Bundle(12345, nil).Send() //Use the code
 func (a *responseEngine) Bundle(code int, resp any, message ...string) Responder {
 	return a.mergeBody(constants.CodeType(code), resp, message...)
 }
 
-// WithHeaders 为响应设置响应头
+// WithHeaders sets response headers
 func (a *responseEngine) WithHeaders(headers map[string]string) Responder {
 	for k, v := range headers {
 		a.engine.Header(k, v)
@@ -217,7 +217,7 @@ func (a *responseEngine) WithHeaders(headers map[string]string) Responder {
 	return a
 }
 
-// WithCookies 为响应设置Cookie
+// WithCookies sets response cookies
 func (a *responseEngine) WithCookies(cookies []CookieStd) Responder {
 	for _, cookie := range cookies {
 		a.engine.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, cookie.Domain, cookie.Secure, cookie.HttpOnly)
@@ -226,70 +226,70 @@ func (a *responseEngine) WithCookies(cookies []CookieStd) Responder {
 	return a
 }
 
-// Success 返回成功
+// Success returns success
 //
-// 此方法直接返回成功状态，响应默认数据(data为空)，其中：
+// This method directly returns a success status with default data (empty data), where:
 //
-// 1.http状态码为200
+// 1.The HTTP status code is 200
 //
-// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
-// 否则业务code为 constants.ErrNone
+// 2.If Option.ErrNoneCode is set through SetupOption, the business code is Option.ErrNoneCode
+// Otherwise, the business code is constants.ErrNone
 func (a *responseEngine) Success() {
 	a.Data(nil)
 }
 
-// Failure 返回失败
+// Failure returns failure
 //
-// 此方法响应默认数据(data为空)，其中：
+// This method responds with default data (empty data), where:
 //
-// 1.http状态码为200
+// 1.The HTTP status code is 200
 //
-// 2.业务code码为 constants.ErrRequestParamsInvalid
+// 2.The business code is constants.ErrRequestParamsInvalid
 func (a *responseEngine) Failure(message ...string) {
 	a.Failure200(constants.ErrRequestParamsInvalid, message...)
 }
 
-// Failure200 返回失败
+// Failure200 returns failure
 //
-// 此方法响应默认数据(data为空)，其中：
+// This method responds with default data (empty data), where:
 //
-// 1.http状态码为200
+// 1.The HTTP status code is 200
 //
-// 2.业务码为code
+// 2.The business code is code
 func (a *responseEngine) Failure200(code constants.ICodeType, message ...string) {
 	a.Wrap(code, nil, message...).SendWithCode(http.StatusOK)
 }
 
-// Failure400 返回失败
+// Failure400 returns failure
 //
-// 此方法响应默认数据(data为空)，其中：
+// This method responds with default data (empty data), where:
 //
-// 1.http状态码为400
+// 1.The HTTP status code is 400
 //
-// 2.业务码为code
+// 2.The business code is code
 func (a *responseEngine) Failure400(code constants.ICodeType, message ...string) {
 	a.Wrap(code, nil, message...).SendWithCode(http.StatusBadRequest)
 }
 
-// Failure500 返回失败
+// Failure500 returns failure
 //
-// 此方法响应默认数据(data为空)，其中：
+// This method responds with default data (empty data), where:
 //
-// 1.http状态码为500
+// 1.The HTTP status code is 500
 //
-// 2.业务码为code
+// 2.The business code is code
 func (a *responseEngine) Failure500(code constants.ICodeType, message ...string) {
 	a.Wrap(code, nil, message...).SendWithCode(http.StatusInternalServerError)
 }
 
-// Data 返回数据
+// Data returns data
 //
-// 此方法直接返回响应数据，其中：
+// This method directly returns response data, where:
 //
-// 1.http状态码为200
+// 1.The HTTP status code is 200
 //
-// 2.当调用 SetupOption 设置了 Option.ErrNoneCode 那么业务code为 Option.ErrNoneCode
-// 否则业务code为 constants.ErrNone
+// 2.If Option.ErrNoneCode is set through SetupOption, the business code is Option.ErrNoneCode
+// Otherwise, the business code is constants.ErrNone
 func (a *responseEngine) Data(data any) {
 	var code constants.ICodeType
 	if anotherErrNoneCode != nil {
@@ -301,7 +301,7 @@ func (a *responseEngine) Data(data any) {
 	a.Wrap(code, data).Send()
 }
 
-// 合并处理响应体
+// Consolidate response body processing
 func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message ...string) Responder {
 	var (
 		body     dto.Base
@@ -311,7 +311,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message .
 	body.RequestID = a.requestId
 	body.Code = code.Int()
 	if code == constants.ErrNone && anotherErrNoneCode != constants.ErrNone {
-		//改写了默认成功code码，且当前code码为None时，需要使用改写后的值
+		//Use the overridden success code when the default success code has been changed and the current code is None
 		body.Code = anotherErrNoneCode.Int()
 	}
 	body.Message = constants.CodeType(body.Code).String(a.language)
@@ -334,16 +334,16 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message .
 		httpCode = http.StatusBadRequest
 	}
 
-	//如果没有单独调用Status方法设置http状态码，则从code码中解析出http状态码
+	//Derive the HTTP status code from the business code unless Status was explicitly called
 	if a.httpCode == 0 {
 		a.httpCode = httpCode
-		//开启了强制使用200作为http状态码
+		//Forcing HTTP status code 200 is enabled
 		if forceHttpCode200 {
 			a.httpCode = http.StatusOK
 		}
 	}
 
-	//如果message有值，则覆盖默认错误码所代表的错误信息
+	//Override the default error message when message is provided
 	if len(message) > 0 {
 		var msg = strings.Builder{}
 		msg.Grow(len(message) * 16)
@@ -356,7 +356,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message .
 		body.Message = msg.String()
 	}
 
-	//设置用户响应体
+	//Set the user response body
 	//body.Data = resp
 	if resp == nil {
 		body.Data = emptyDataField
@@ -371,7 +371,7 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message .
 	}
 
 	if loc != nil {
-		//loc可能用于后续其他字段，这里暂时这样调用
+		//loc may be used for other fields later; use this call for now
 		body.Timestamp = time.Now().In(loc).UnixMilli()
 	} else {
 		body.Timestamp = time.Now().UnixMilli()
@@ -382,22 +382,22 @@ func (a *responseEngine) mergeBody(code constants.ICodeType, resp any, message .
 	return a
 }
 
-// Status 指定http状态码
+// Status specifies the HTTP status code
 //
-// 该方法会覆盖 Assemble, Builder, SimpleAssemble, Wrap 解析的http状态码值
+// This method overrides the HTTP status code derived by Assemble, Builder, SimpleAssemble, and Wrap
 func (a *responseEngine) Status(httpCode int) Responder {
 	a.httpCode = httpCode
 
 	return a
 }
 
-// SendWithCode 以指定http状态码响应请求
+// SendWithCode responds with the specified HTTP status code
 //
-// 调用此方法后：
+// After calling this method:
 //
-// 1.会覆盖自动推导的状态码
+// 1.The automatically derived status code is overridden
 //
-// 2.会忽略 Option.ForceHttpCode200 设置
+// 2.The Option.ForceHttpCode200 setting is ignored
 func (a *responseEngine) SendWithCode(httpCode int) {
 	defer release(a)
 
@@ -412,7 +412,7 @@ func (a *responseEngine) SendWithCode(httpCode int) {
 		funcBeforeWrite(a.engine.Request, a.entryAt, a.requestId, a.spanId, httpCode, data)
 	}
 
-	//记录分位数统计
+	//Record quantile statistics
 	if registry != nil {
 		status := httpCode / 100
 		registry.ObserveDuration(
@@ -429,12 +429,12 @@ func (a *responseEngine) SendWithCode(httpCode int) {
 	a.engine.AbortWithStatusJSON(httpCode, a.data)
 }
 
-// Send 响应请求
+// Send responds to the request
 func (a *responseEngine) Send() {
 	a.SendWithCode(a.httpCode)
 }
 
-// 判断一个interface是否为typed nil（即类型不为nil，但内部值为nil）
+// Check whether an interface is a typed nil (its type is non-nil but its underlying value is nil)
 func isTypedNil(v any) bool {
 	if v == nil {
 		return true

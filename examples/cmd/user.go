@@ -24,35 +24,35 @@ func userCMD() *cobra.Command {
 		Use:   "user",
 		Short: "启动user服务",
 		Run: func(cmd *cobra.Command, args []string) {
-			//启动时要执行的操作写在这里
+			//Place startup operations here
 			wg := &sync.WaitGroup{}
 
-			//启动http接口服务
+			//Start the HTTP API service
 			wg.Add(1)
 			go user.StartServer(wg)
 
-			//更多服务...
+			//More services...
 			utils.Signal().ListeningExit(wg)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			//启动前要执行的方法写在这里，例如加载配置文件、初始化数据库连接等
+			//Place pre-startup operations here, such as loading configuration and initializing database connections
 			if len(os.Getenv("nacosAddrs")) != 0 && len(os.Getenv("nacosNamespaceID")) != 0 {
 				nacos.InitClient(cmd.Use, os.Getenv("nacosAddrs"), os.Getenv("nacosNamespaceID"))
 			}
-			//::解析配置
+			//::Parse configuration
 			config.ParseConfig(cfgPath)
-			//::初始化redis集群连接
+			//::Initialize the Redis cluster connection
 			redis.InitRedisCluster(config.GetGlobalConfig().RedisCluster)
-			//::初始化nats
+			//::Initialize NATS
 			nats.Init(config.GetGlobalConfig().Nats)
-			//::初始化日志组件
+			//::Initialize the logging component
 			logger.InitLoggerZap(config.GetGlobalConfig().Logger, config.GetGlobalConfig().AppName)
-			//::初始化数据库
+			//::Initialize the database
 			db.InitDB(config.GetGlobalConfig().Datasource)
-			//当数据库配置了主从自动同步的情况下，只对写库进行结构同步
+			//Migrate only the write database when primary-replica synchronization is configured
 			if config.GetGlobalConfig().Datasource.AutoMigrate {
 				users.AutoMigrate(db.GetInstance().W)
-				//当开启了自动同步结构且处于调试模式时，进行数据mock操作
+				//Mock data when automatic schema migration and debug mode are enabled
 				if config.GetGlobalConfig().Debug {
 					log.Println("[!] Tips: mock user and wallet data")
 					mock.CreateUserAndWalletData()

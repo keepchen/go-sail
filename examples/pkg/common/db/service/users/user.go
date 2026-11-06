@@ -10,23 +10,23 @@ import (
 )
 
 type UserSvc interface {
-	//CreateUserAndWallet 创建用户及用户钱包
+	//CreateUserAndWallet creates a user and the user's wallet
 	CreateUserAndWallet(nickname string, amount float64) error
-	//CreateUserAndWalletWithUserID 创建用户及用户钱包（指定userID）
+	//CreateUserAndWalletWithUserID creates a user and wallet (with a specified userID)
 	CreateUserAndWalletWithUserID(userID int64, nickname string, amount float64) error
-	//GetUserAndWallet 获取用户信息及余额
+	//GetUserAndWallet retrieves user information and balance
 	GetUserAndWallet(userID int64) (users.User, error)
 }
 
 type UserSvcImpl struct {
-	dbr    *gorm.DB //读实例
-	dbw    *gorm.DB //写实例
+	dbr    *gorm.DB //Read instance
+	dbw    *gorm.DB //Write instance
 	logger *zap.Logger
 }
 
 var _ UserSvc = &UserSvcImpl{}
 
-// NewUserSvcImpl 实例化服务
+// NewUserSvcImpl instantiates the service
 var NewUserSvcImpl = func(dbr *gorm.DB, dbw *gorm.DB, logger *zap.Logger) UserSvc {
 	return &UserSvcImpl{
 		dbr:    dbr,

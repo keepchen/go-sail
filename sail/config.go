@@ -16,15 +16,15 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 )
 
-// Config 配置操作方法
+// Config configuration operations
 //
-// watcher - 监听处理函数
+// watcher - watch handler
 //
-// initClientAsComponent - 是否初始化客户端作为组件
+// initClientAsComponent - whether to initialize the client as a component
 //
 // # Note
 //
-// 当ConfigProvider = Nacos 或 Etcd 且连接成功时，initClientAsComponent = true会全局初始化对应的客户端
+// When ConfigProvider = Nacos or Etcd and the connection succeeds, initClientAsComponent = true initializes the corresponding client globally
 func Config(watcher func(configName string, content []byte, viaWatch bool), initClientAsComponent ...bool) ConfigProvider {
 	var initClient = false
 	if len(initClientAsComponent) > 0 {
@@ -36,28 +36,28 @@ func Config(watcher func(configName string, content []byte, viaWatch bool), init
 	}
 }
 
-// configImpl 配置操作方法实现
+// configImpl configuration operations implementation
 type configImpl struct {
 	watcher               func(configName string, content []byte, viaWatch bool)
 	initClientAsComponent bool
 	fileLastModifyTime    time.Time
 }
 
-// ConfigProvider 配置操作提供方案
+// ConfigProvider configuration provider
 type ConfigProvider interface {
-	// ViaFile 通过文件操作配置
+	// ViaFile manages configuration through files
 	ViaFile(filename string) Parser
-	// ViaEtcd 通过etcd操作配置
+	// ViaEtcd manages configuration through etcd
 	ViaEtcd(conf etcd.Conf, key string) Parser
-	// ViaNacos 通过nacos操作配置
+	// ViaNacos manages configuration through Nacos
 	//
-	// clientCfg 参数支持覆盖默认配置，例如认证操作
+	// The clientCfg argument supports overriding defaults, for example for authentication
 	ViaNacos(endpoints, namespaceID, groupName, dataID string, clientCfg ...constant.ClientConfig) Parser
 }
 
 var _ ConfigProvider = &configImpl{}
 
-// ViaFile 通过文件操作配置
+// ViaFile manages configuration through files
 func (ci *configImpl) ViaFile(filename string) Parser {
 	content, err := utils.File().GetContents(filename)
 	if err != nil {
@@ -69,7 +69,7 @@ func (ci *configImpl) ViaFile(filename string) Parser {
 		ci.fileLastModifyTime = file.ModTime()
 	}
 
-	//当监听函数被设置时，需要执行监听
+	//Start watching when a watch handler is set
 	if ci.watcher != nil {
 		watcher := func() {
 			ticker := time.NewTicker(time.Second * 3)
@@ -107,7 +107,7 @@ func (ci *configImpl) ViaFile(filename string) Parser {
 	return &parserImpl{configName: filename, content: content}
 }
 
-// ViaEtcd 通过etcd操作配置
+// ViaEtcd manages configuration through etcd
 func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	client, err := etcd.New(conf)
 	if err != nil {
@@ -129,7 +129,7 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 		panic(err)
 	}
 
-	//当监听函数被设置时，需要执行监听
+	//Start watching when a watch handler is set
 	if ci.watcher != nil {
 		watcher := func() {
 			watchChan := client.Watch(context.Background(), key)
@@ -149,7 +149,7 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	var content []byte
 	content = etcdResp.Kvs[0].Value
 
-	//初始化客户端
+	//Initialize the client
 	if client != nil && ci.initClientAsComponent {
 		etcd.Init(conf)
 	}
@@ -157,7 +157,7 @@ func (ci *configImpl) ViaEtcd(conf etcd.Conf, key string) Parser {
 	return &parserImpl{configName: key, content: content}
 }
 
-// ViaNacos 通过nacos操作配置
+// ViaNacos manages configuration through Nacos
 func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string, clientCfg ...constant.ClientConfig) Parser {
 	client, err := nacos.NewConfigClient("Go-Sail", endpoints, namespaceID, clientCfg...)
 	if err != nil {
@@ -176,7 +176,7 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 		panic(err)
 	}
 
-	//当监听函数被设置时，需要执行监听
+	//Start watching when a watch handler is set
 	if ci.watcher != nil {
 		watcher := func(namespace string, group string, dataId string, data string) {
 			fmt.Println("[Go-Sail] <Config> content has been modified (via Nacos)")
@@ -189,7 +189,7 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 		})
 	}
 
-	//初始化客户端
+	//Initialize the client
 	if ci.initClientAsComponent {
 		nacos.InitClient("Go-Sail", endpoints, namespaceID, clientCfg...)
 	}
@@ -197,21 +197,21 @@ func (ci *configImpl) ViaNacos(endpoints, namespaceID, groupName, dataID string,
 	return &parserImpl{configName: dataID, content: content}
 }
 
-// parserImpl 解析器实现
+// parserImpl parser implementation
 type parserImpl struct {
 	configName string
 	content    []byte
 }
 
-// Parser 解析器接口
+// Parser parser interface
 type Parser interface {
-	// Parse 解析处理函数
+	// Parse parsing handler
 	Parse(fn func(configName string, content []byte, viaWatch bool))
 }
 
 var _ Parser = &parserImpl{}
 
-// Parse 解析处理函数
+// Parse parsing handler
 func (pi *parserImpl) Parse(fn func(configName string, content []byte, viaWatch bool)) {
 	if fn != nil {
 		fn(pi.configName, pi.content, false)

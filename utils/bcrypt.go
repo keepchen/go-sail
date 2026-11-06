@@ -4,34 +4,34 @@ import "golang.org/x/crypto/bcrypt"
 
 type bcryptImpl struct{}
 
-// IBCrypt bcrypt接口
+// IBCrypt bcrypt interface
 type IBCrypt interface {
-	// HashMake 生成哈希字符
+	// HashMake generates a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// costs - 权重，范围∈[4,31]，默认为10
+	// costs - cost factor, range ∈ [4,31], default: 10
 	HashMake(plaintext string, costs ...int) (string, error)
-	// HashCheck 验证哈希字符
+	// HashCheck verifies a hash string
 	//
-	// plaintext - 明文字符
+	// plaintext - plaintext string
 	//
-	// hashed - 已哈希的字符
+	// hashed - hashed string
 	HashCheck(plaintext, hashed string) (bool, error)
 }
 
 var _ IBCrypt = &bcryptImpl{}
 
-// Bcrypt 实例化bcrypt哈希
+// Bcrypt instantiates bcrypt hashing
 func Bcrypt() IBCrypt {
 	return &bcryptImpl{}
 }
 
-// HashMake 生成哈希字符
+// HashMake generates a hash string
 //
-// plaintext - 明文字符
+// plaintext - plaintext string
 //
-// costs - 权重，范围∈[4,31]，默认为10
+// costs - cost factor, range ∈ [4,31], default: 10
 func (bcryptImpl) HashMake(plaintext string, costs ...int) (string, error) {
 	var cost = bcrypt.DefaultCost
 	if len(costs) > 0 {
@@ -45,11 +45,11 @@ func (bcryptImpl) HashMake(plaintext string, costs ...int) (string, error) {
 	return string(bytes), err
 }
 
-// HashCheck 验证哈希字符
+// HashCheck verifies a hash string
 //
-// plaintext - 明文字符
+// plaintext - plaintext string
 //
-// hashed - 已哈希的字符
+// hashed - hashed string
 func (bcryptImpl) HashCheck(plaintext, hashed string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(plaintext))
 

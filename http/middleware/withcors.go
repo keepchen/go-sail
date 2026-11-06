@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// WithCorsOnlyOptions 允许浏览器跨域请求
+// WithCorsOnlyOptions allows cross-origin browser requests
 //
-// 仅对options探测请求注入放行headers
+// Inject permissive headers only for OPTIONS preflight requests
 func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
@@ -38,11 +38,11 @@ func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 
 		c.Writer.WriteHeader(statusCode)
 
-		//处理浏览器跨域options探测请求
+		//Handle cross-origin browser OPTIONS preflight requests
 		if c.Request.Method == http.MethodOptions {
-			//手机端浏览器中返回 204 No Content 状态的跨域请求不被允许，主要是出于安全性和规范性的考虑。
-			//浏览器的同源策略和 CORS 规范旨在确保跨域请求的透明性和安全性，
-			//而 204 响应的无内容特性可能导致安全隐患或兼容性问题，因此在跨域环境中可能会被浏览器禁止。
+			//Mobile browsers may disallow cross-origin requests returning 204 No Content, mainly for security and standards compliance.
+			//The browser same-origin policy and CORS specification aim to ensure transparency and security for cross-origin requests,
+			//while the lack of content in a 204 response may cause security or compatibility issues, so browsers may block it in cross-origin scenarios.
 			//c.Writer.WriteHeader(http.StatusNoContent)
 			c.Abort()
 			return
@@ -52,7 +52,7 @@ func WithCorsOnlyOptions(headers map[string]string) gin.HandlerFunc {
 	}
 }
 
-// WithCors 允许浏览器跨域请求
+// WithCors allows cross-origin browser requests
 func WithCors(headers map[string]string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
@@ -80,9 +80,9 @@ func WithCors(headers map[string]string) gin.HandlerFunc {
 			c.Writer.Header().Set(key, value)
 		}
 
-		//手机端浏览器中返回 204 No Content 状态的跨域请求不被允许，主要是出于安全性和规范性的考虑。
-		//浏览器的同源策略和 CORS 规范旨在确保跨域请求的透明性和安全性，
-		//而 204 响应的无内容特性可能导致安全隐患或兼容性问题，因此在跨域环境中可能会被浏览器禁止。
+		//Mobile browsers may disallow cross-origin requests returning 204 No Content, mainly for security and standards compliance.
+		//The browser same-origin policy and CORS specification aim to ensure transparency and security for cross-origin requests,
+		//while the lack of content in a 204 response may cause security or compatibility issues, so browsers may block it in cross-origin scenarios.
 		//if c.Request.Method == http.MethodOptions {
 		//	statusCode = http.StatusNoContent
 		//}

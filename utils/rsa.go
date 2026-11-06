@@ -18,48 +18,48 @@ type rsaImpl struct {
 }
 
 type IRsa interface {
-	// Encrypt rsa加密
+	// Encrypt RSA encryption
 	//
-	// publicKey格式支持：
+	// Supported publicKey formats:
 	//
-	// - 标准格式
+	// - Standard format
 	//
-	// - 不带前后缀的一行字符串
+	// - Single-line string without the prefix and suffix
 	Encrypt(rawString string, publicKey []byte) (string, error)
-	// Decrypt rsa解密
+	// Decrypt RSA decryption
 	//
-	// privateKey格式支持：
+	// Supported privateKey formats:
 	//
-	// - 标准格式
+	// - Standard format
 	//
-	// - 不带前后缀的一行字符串
+	// - Single-line string without the prefix and suffix
 	Decrypt(encodedString string, privateKey []byte) (string, error)
-	// Sign rsa加签
+	// Sign RSA signing
 	//
-	// privateKey格式支持：
+	// Supported privateKey formats:
 	//
-	// - 标准格式
+	// - Standard format
 	//
-	// - 不带前后缀的一行字符串
+	// - Single-line string without the prefix and suffix
 	Sign(rawStringBytes, privateKey []byte) (string, error)
-	// VerifySign rsa验签
+	// VerifySign RSA signature verification
 	//
-	// publicKey格式支持：
+	// Supported publicKey formats:
 	//
-	// - 标准格式
+	// - Standard format
 	//
-	// - 不带前后缀的一行字符串
+	// - Single-line string without the prefix and suffix
 	VerifySign(rawStringBytes, sign, publicKey []byte) (bool, error)
 }
 
 var ri IRsa = &rsaImpl{}
 
-// RSA 实例化rsa工具类
+// RSA instantiates RSA utilities
 func RSA() IRsa {
 	return ri
 }
 
-// Encrypt rsa加密
+// Encrypt RSA encryption
 func (rsaImpl) Encrypt(rawString string, publicKey []byte) (string, error) {
 	pubObj := parsePublicKey(publicKey)
 	if pubObj == nil {
@@ -74,7 +74,7 @@ func (rsaImpl) Encrypt(rawString string, publicKey []byte) (string, error) {
 	return Base64().Encode(encodedByte), nil
 }
 
-// Decrypt rsa解密
+// Decrypt RSA decryption
 func (rsaImpl) Decrypt(encodedString string, privateKey []byte) (string, error) {
 	encodedByte, err := Base64().Decode(encodedString)
 	if err != nil {
@@ -93,7 +93,7 @@ func (rsaImpl) Decrypt(encodedString string, privateKey []byte) (string, error) 
 	return string(decodedByte), nil
 }
 
-// Sign rsa加签
+// Sign RSA signing
 func (rsaImpl) Sign(rawStringBytes, privateKey []byte) (string, error) {
 	h := sha256.New()
 	_, err := h.Write(rawStringBytes)
@@ -112,7 +112,7 @@ func (rsaImpl) Sign(rawStringBytes, privateKey []byte) (string, error) {
 	return Base64().Encode(sign), err
 }
 
-// VerifySign rsa验签
+// VerifySign RSA signature verification
 func (rsaImpl) VerifySign(rawStringBytes, sign, publicKey []byte) (bool, error) {
 	h := sha256.New()
 	_, err := h.Write(rawStringBytes)
@@ -136,7 +136,7 @@ func (rsaImpl) VerifySign(rawStringBytes, sign, publicKey []byte) (bool, error) 
 	return err == nil, err
 }
 
-// 解析公钥
+// Parse the public key
 func parsePublicKey(key []byte) *rsa.PublicKey {
 	key = formatKey(key, "public")
 	block, _ := pem.Decode(key)
@@ -154,7 +154,7 @@ func parsePublicKey(key []byte) *rsa.PublicKey {
 	return pub
 }
 
-// 解析私钥
+// Parse the private key
 func parsePrivateKey(key []byte) *rsa.PrivateKey {
 	key = formatKey(key, "private")
 	block, _ := pem.Decode(key)
@@ -171,11 +171,11 @@ func parsePrivateKey(key []byte) *rsa.PrivateKey {
 	return priObj
 }
 
-// 格式化公私钥
+// Format public and private keys
 //
-// 支持格式：
+// Supported formats:
 //
-// - 标准格式
+// - Standard format
 //
 // -----BEGIN PRIVATE KEY-----
 //
@@ -187,11 +187,11 @@ func parsePrivateKey(key []byte) *rsa.PrivateKey {
 //
 // -----END PRIVATE KEY-----
 //
-// - 非标准格式：一行不带前缀或不带后缀
+// - Nonstandard format: single line without a prefix or suffix
 //
 // xMIIEvgI...UK2duHjDxiaPKtANi2P4
 //
-// - 非标准格式：一行带前缀或后缀
+// - Nonstandard format: single line with a prefix or suffix
 //
 // -----BEGIN PRIVATE KEY-----MIIEvgI...UK2duHjDxiaPKtANi2P4-----END PRIVATE KEY-----
 func formatKey(key []byte, typ string) []byte {
@@ -207,23 +207,23 @@ func formatKey(key []byte, typ string) []byte {
 		prefix = constants.PrivateKeyBeginStr
 		suffix = constants.PrivateKeyEndStr
 	}
-	//按每行64个字符拆分
+	//Split into lines of 64 characters
 	if !strings.Contains(keyStr, "\n") {
-		//存在前缀，先去掉
+		//Remove the prefix first if present
 		if strings.HasPrefix(keyStr, prefix) {
 			keyStr = strings.Replace(keyStr, prefix, "", 1)
 		}
-		//存在后缀，先去掉
+		//Remove the suffix first if present
 		if strings.HasSuffix(keyStr, suffix) {
 			keyStr = strings.Replace(keyStr, suffix, "", 1)
 		}
 		keyStr = String().Wordwrap(keyStr, 64, "\n")
 	}
-	//检测前缀，没有则添加上
+	//Check for the prefix and add it if absent
 	if !strings.HasPrefix(keyStr, prefix) {
 		keyStr = fmt.Sprintf("%s\n%s", prefix, keyStr)
 	}
-	//检测后缀，没有则添加上
+	//Check for the suffix and add it if absent
 	if !strings.HasSuffix(keyStr, suffix) {
 		keyStr = fmt.Sprintf("%s\n%s", keyStr, suffix)
 	}

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// DateStyle 日期格式
+// DateStyle date format
 type DateStyle string
 
 const (
@@ -50,22 +50,22 @@ type datetimeImpl struct {
 }
 
 type IDatetime interface {
-	// FormatDate 时间对象转字符串
+	// FormatDate converts a time object to a string
 	FormatDate(date time.Time, dateStyle DateStyle) string
-	// ParseDate 解析时间
+	// ParseDate parses a time value
 	//
-	// string解析到time对象
+	// Parse a string into a time object
 	ParseDate(date, layout string, loc *time.Location) (time.Time, error)
 }
 
 var dti IDatetime = &datetimeImpl{}
 
-// Datetime 实例化日期时间工具类
+// Datetime instantiates date and time utilities
 func Datetime() IDatetime {
 	return dti
 }
 
-// FormatDate 时间对象转字符串
+// FormatDate converts a time object to a string
 func (datetimeImpl) FormatDate(date time.Time, dateStyle DateStyle) string {
 	layout := string(dateStyle)
 	layout = strings.Replace(layout, "yyyy", "2006", 1)
@@ -80,9 +80,9 @@ func (datetimeImpl) FormatDate(date time.Time, dateStyle DateStyle) string {
 	return date.Format(layout)
 }
 
-// ParseDate 解析时间
+// ParseDate parses a time value
 //
-// string解析到time对象
+// Parse a string into a time object
 func (datetimeImpl) ParseDate(date, layout string, loc *time.Location) (time.Time, error) {
 	layout = strings.Replace(layout, "yyyy", "2006", 1)
 	layout = strings.Replace(layout, "yy", "06", 1)

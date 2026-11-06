@@ -4,11 +4,11 @@ import (
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
-// SayHello 欢迎返回数据结构
+// SayHello greeting response data structure
 // swagger: model
 type SayHello struct {
 	dto.Base
-	// 数据体
+	// Data body
 	// in: body
 	// required: true
 	Data string `json:"data" example:"" format:"string" validate:"required"`

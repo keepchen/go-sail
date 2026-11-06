@@ -3,11 +3,11 @@ package models
 type OrderStatusCode int
 
 const (
-	OrderStatusCodeCreated   = OrderStatusCode(0) //订单已创建
-	OrderStatusCodePaid      = OrderStatusCode(1) //订单已支付
-	OrderStatusCodeClosed    = OrderStatusCode(2) //订单已关闭
-	OrderStatusCodeCancelled = OrderStatusCode(3) //订单已取消
-	OrderStatusCodeRefunded  = OrderStatusCode(4) //订单已退款
+	OrderStatusCodeCreated   = OrderStatusCode(0) //Order created
+	OrderStatusCodePaid      = OrderStatusCode(1) //Order paid
+	OrderStatusCodeClosed    = OrderStatusCode(2) //Order closed
+	OrderStatusCodeCancelled = OrderStatusCode(3) //Order canceled
+	OrderStatusCodeRefunded  = OrderStatusCode(4) //Order refunded
 )
 
 var orderStatusCodeMap = map[OrderStatusCode]string{

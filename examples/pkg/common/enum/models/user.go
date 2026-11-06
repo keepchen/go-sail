@@ -3,8 +3,8 @@ package models
 type UserStatusCode int
 
 const (
-	UserStatusCodeNormal    = UserStatusCode(0) //正常
-	UserStatusCodeForbidden = UserStatusCode(1) //禁用
+	UserStatusCodeNormal    = UserStatusCode(0) //Normal
+	UserStatusCodeForbidden = UserStatusCode(1) //Disabled
 )
 
 var userStatusCodeMap = map[UserStatusCode]string{

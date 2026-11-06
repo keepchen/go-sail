@@ -15,28 +15,28 @@ import (
 	"github.com/keepchen/go-sail/v3/http/api"
 )
 
-// Limiter 限流器支持本地和Redis两种模式
+// Limiter supports local and Redis rate limiting
 type Limiter struct {
-	reqs   int           //每个时间窗口允许的最大请求数
-	window time.Duration //滑动时间窗口长度
+	reqs   int           //Maximum requests allowed per time window
+	window time.Duration //Sliding time window length
 
-	//本地限流使用
+	//Used for local rate limiting
 	ips sync.Map
 
-	//Redis客户端限流使用
+	//Redis client for rate limiting
 	redisClient    redisLib.UniversalClient
 	redisKeyPrefix string
 }
 
-// LimiterOptions 限流器设置项
+// LimiterOptions rate limiter options
 type LimiterOptions struct {
-	Reqs           int                      //请求数
-	Window         time.Duration            //时间窗口
-	RedisClient    redisLib.UniversalClient //Redis客户端实例，支持Client和ClusterClient
-	RedisKeyPrefix string                   //Redis键名前缀
+	Reqs           int                      //Request count
+	Window         time.Duration            //Time window
+	RedisClient    redisLib.UniversalClient //Redis client instance; supports Client and ClusterClient
+	RedisKeyPrefix string                   //Redis key prefix
 }
 
-// NewLimiter 创建限流器，支持本地堆栈和Redis
+// NewLimiter creates a rate limiter with local storage or Redis
 func NewLimiter(opts LimiterOptions) *Limiter {
 	limiter := &Limiter{
 		reqs:           opts.Reqs,
@@ -48,14 +48,14 @@ func NewLimiter(opts LimiterOptions) *Limiter {
 	return limiter
 }
 
-// AllowResult 检查结果
+// AllowResult check result
 type AllowResult struct {
 	Allowed   bool
 	Remaining int
 	ResetTime time.Time
 }
 
-// Allow 检查请求是否允许
+// Allow checks whether a request is allowed
 func (l *Limiter) Allow(ip string) AllowResult {
 	if l.redisClient != nil {
 		return l.allowWithRedis(ip)
@@ -63,7 +63,7 @@ func (l *Limiter) Allow(ip string) AllowResult {
 	return l.allowWithLocal(ip)
 }
 
-// 本地限流逻辑
+// Local rate limiting logic
 func (l *Limiter) allowWithLocal(ip string) AllowResult {
 	now := time.Now()
 	cutoff := now.Add(-l.window)
@@ -72,7 +72,7 @@ func (l *Limiter) allowWithLocal(ip string) AllowResult {
 		queue = val.([]time.Time)
 	}
 
-	//移除过期请求
+	//Remove expired requests
 	for len(queue) > 0 && queue[0].Before(cutoff) {
 		queue = queue[1:]
 	}
@@ -88,7 +88,7 @@ func (l *Limiter) allowWithLocal(ip string) AllowResult {
 	return AllowResult{false, remaining, resetTime}
 }
 
-// Redis 限流逻辑脚本
+// Redis rate limiting script
 var redisScript = redisLib.NewScript(`
 local key = KEYS[1]
 local limit = tonumber(ARGV[1])
@@ -96,22 +96,22 @@ local window = tonumber(ARGV[2])
 local now = tonumber(ARGV[3])
 local member = tonumber(ARGV[4])
 
--- 清除窗口外的请求
+-- Remove requests outside the window
 redis.call("ZREMRANGEBYSCORE", key, 0, now - window)
 
--- 计算当前请求数
+-- Count current requests
 local count = redis.call("ZCARD", key)
 
 if count < limit then
-    -- 添加当前请求时间
+    -- Add the current request timestamp
     redis.call("ZADD", key, now, member)
-    -- 仅在新键创建时设置 TTL
+    -- Set TTL only when a new key is created
     if redis.call("TTL", key) == -1 then
-        redis.call("EXPIRE", key, window)  -- 使用秒
+        redis.call("EXPIRE", key, window)  -- Use seconds
     end
     return {1, limit - (count + 1), now + window}
 else
-    -- 获取窗口重置时间
+    -- Get the window reset time
     local oldest = redis.call("ZRANGE", key, 0, 0, "WITHSCORES")
     local resetTime = oldest and oldest[2] and tonumber(oldest[2]) + window or now + window
     return {0, limit - count, resetTime}
@@ -127,13 +127,13 @@ func (l *Limiter) allowWithRedis(ip string) AllowResult {
 
 	result, err := redisScript.Run(ctx, l.redisClient, []string{key}, l.reqs, int(l.window.Seconds()), now, member).Result()
 	if err != nil {
-		//如果Redis操作失败，默认允许请求
+		//Allow the request by default if the Redis operation fails
 		return AllowResult{Allowed: true, Remaining: l.reqs - 1, ResetTime: time.Now().Add(l.window)}
 	}
 
 	values, ok := result.([]any)
 	if !ok || len(values) < 3 {
-		//如果返回值格式不正确，默认拒绝请求
+		//Reject the request by default if the return value has an invalid format
 		return AllowResult{Allowed: false, Remaining: 0, ResetTime: time.Now().Add(l.window)}
 	}
 
@@ -144,7 +144,7 @@ func (l *Limiter) allowWithRedis(ip string) AllowResult {
 	return AllowResult{allowed, remaining, resetTime}
 }
 
-// RateLimiter 中间件函数
+// RateLimiter middleware function
 func RateLimiter(limiter *Limiter) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ip := c.ClientIP()

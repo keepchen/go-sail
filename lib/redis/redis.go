@@ -11,16 +11,16 @@ import (
 
 var redisInstance *redisLib.Client
 
-// InitRedis 初始化redis连接
+// InitRedis initializes the Redis connection
 func InitRedis(conf Conf) {
 	rdb := mustInitRedis(conf)
 
 	redisInstance = rdb
 }
 
-// GetInstance 获取redis连接实例
+// GetInstance retrieves the Redis connection instance
 //
-// 获取由InitRedis方法实例化后的连接
+// Retrieve the connection initialized by InitRedis
 func GetInstance() *redisLib.Client {
 	return redisInstance
 }
@@ -76,7 +76,7 @@ func initRedis(conf Conf) (*redisLib.Client, error) {
 	return rdb, err
 }
 
-// New 实例化新的实例
+// New instantiates a new instance
 func New(conf Conf) (*redisLib.Client, error) {
 	return initRedis(conf)
 }

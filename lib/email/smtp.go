@@ -8,14 +8,14 @@ import (
 	"net/smtp"
 )
 
-// Client 客户端
+// Client client
 type Client struct {
 	cli  *smtp.Client
 	auth smtp.Auth
 	conf Conf
 }
 
-// New 新建smtp实例
+// New creates an SMTP instance
 func New(conf Conf) *Client {
 	return &Client{
 		cli:  initSmtpClient(conf),
@@ -24,7 +24,7 @@ func New(conf Conf) *Client {
 	}
 }
 
-// SendMailWithTLS 使用tls方式发送
+// SendMailWithTLS sends using TLS
 func (c *Client) SendMailWithTLS(to []string, msg []byte) error {
 	if c.cli == nil {
 		return errors.New("smtp client is nil")
@@ -58,7 +58,7 @@ func (c *Client) SendMailWithTLS(to []string, msg []byte) error {
 	return c.cli.Quit()
 }
 
-// 初始化smtp客户端
+// Initialize the SMTP client
 func initSmtpClient(conf Conf) *smtp.Client {
 	addr := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
 	conn, err := tls.Dial("tcp", addr, nil)
@@ -77,7 +77,7 @@ func initSmtpClient(conf Conf) *smtp.Client {
 	return client
 }
 
-// 授权
+// Authenticate
 func authorize(conf Conf) smtp.Auth {
 	return smtp.PlainAuth("", conf.Username, conf.Password, conf.Host)
 }

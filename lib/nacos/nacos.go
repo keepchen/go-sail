@@ -18,13 +18,13 @@ var (
 	iNamingClient naming_client.INamingClient
 )
 
-// InitClient 初始化客户端（命名空间客户端和配置客户端）
+// InitClient initializes clients (naming and configuration clients)
 //
-// 注意endpoints支持多个地址，以英文逗号分隔，如：
+// Note that endpoints supports multiple comma-separated addresses, for example:
 //
 // 192.168.224.2:8848,192.168.224.3:8848
 //
-// clientCfg参数将覆盖默认clientConfig配置
+// The clientCfg argument overrides the default clientConfig configuration
 func InitClient(appName, endpoints, namespace string, clientCfg ...nacosV2Constant.ClientConfig) {
 	//create config client
 	cc, err := NewConfigClient(appName, endpoints, namespace, clientCfg...)
@@ -43,13 +43,13 @@ func InitClient(appName, endpoints, namespace string, clientCfg ...nacosV2Consta
 	iNamingClient = nc
 }
 
-// NewConfigClient 创建配置客户端
+// NewConfigClient creates a configuration client
 //
-// 注意endpoints支持多个地址，以英文逗号分隔，如：
+// Note that endpoints supports multiple comma-separated addresses, for example:
 //
 // 192.168.224.2:8848,192.168.224.3:8848
 //
-// clientCfg参数将覆盖默认clientConfig配置
+// The clientCfg argument overrides the default clientConfig configuration
 func NewConfigClient(appName, endpoints, namespace string, clientCfg ...nacosV2Constant.ClientConfig) (config_client.IConfigClient, error) {
 	if len(endpoints) == 0 || len(namespace) == 0 {
 		return nil, errors.New("[endpoints] or [namespace] is empty")
@@ -85,7 +85,7 @@ func NewConfigClient(appName, endpoints, namespace string, clientCfg ...nacosV2C
 		LogLevel:            "warn",
 	}
 
-	//如果传递了客户端配置，则覆盖默认配置
+	//Override defaults if a client configuration is provided
 	if len(clientCfg) > 0 {
 		clientConfig = clientCfg[0]
 	}
@@ -101,13 +101,13 @@ func NewConfigClient(appName, endpoints, namespace string, clientCfg ...nacosV2C
 	return cc, nil
 }
 
-// NewNamingClient 创建空间客户端
+// NewNamingClient creates a naming client
 //
-// 注意endpoints支持多个地址，以英文逗号分隔，如：
+// Note that endpoints supports multiple comma-separated addresses, for example:
 //
 // 192.168.224.2:8848,192.168.224.3:8848
 //
-// clientCfg参数将覆盖默认clientConfig配置
+// The clientCfg argument overrides the default clientConfig configuration
 func NewNamingClient(appName, endpoints, namespace string, clientCfg ...nacosV2Constant.ClientConfig) (naming_client.INamingClient, error) {
 	if len(endpoints) == 0 || len(namespace) == 0 {
 		return nil, errors.New("[endpoints] or [namespace] is empty")
@@ -143,7 +143,7 @@ func NewNamingClient(appName, endpoints, namespace string, clientCfg ...nacosV2C
 		LogLevel:            "warn",
 	}
 
-	//如果传递了客户端配置，则覆盖默认配置
+	//Override defaults if a client configuration is provided
 	if len(clientCfg) > 0 {
 		clientConfig = clientCfg[0]
 	}
@@ -160,12 +160,12 @@ func NewNamingClient(appName, endpoints, namespace string, clientCfg ...nacosV2C
 	return nc, nil
 }
 
-// GetConfigClient 获取配置实例
+// GetConfigClient retrieves the configuration instance
 func GetConfigClient() config_client.IConfigClient {
 	return iConfigClient
 }
 
-// GetNamingClient 获取服务发现实例
+// GetNamingClient retrieves the service discovery instance
 func GetNamingClient() naming_client.INamingClient {
 	return iNamingClient
 }

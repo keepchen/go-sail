@@ -21,32 +21,32 @@ go-sail`)
 )
 
 func createFormFile() *multipart.FileHeader {
-	// 创建一个缓冲区存储 multipart 数据
+	// Create a buffer to store multipart data
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	// 添加一个文件字段（例如字段名为 "file"）
+	// Add a file field (e.g. named "file")
 	part, err := writer.CreateFormFile("file", "example.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	// 写入文件内容
+	// Write file content
 	content := []byte("Hello, World!")
 	_, _ = part.Write(content)
 
-	// 添加其他表单字段（可选）
+	// Add other form fields (optional)
 	_ = writer.WriteField("key", "value")
 
-	// 关闭 writer 完成数据写入
+	// Close the writer to finish writing data
 	_ = writer.Close()
 
-	// 创建一个 HTTP 请求并解析 multipart 数据
+	// Create an HTTP request and parse multipart data
 	req, _ := http.NewRequest("POST", "/upload", body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	// 解析请求中的 multipart 数据
-	_ = req.ParseMultipartForm(32 << 20) // 32MB 内存限制
+	// Parse multipart data in the request
+	_ = req.ParseMultipartForm(32 << 20) // 32MB memory limit
 
 	return req.MultipartForm.File["file"][0]
 }

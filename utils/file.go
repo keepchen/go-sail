@@ -13,56 +13,56 @@ type fileImpl struct {
 }
 
 type IFile interface {
-	// Save2Dst 将文件保存到目标地址(拷贝文件)
+	// Save2Dst saves a file to the target path (copies the file)
 	//
-	// file *multipart.FileHeader 文件
+	// file *multipart.FileHeader file
 	//
-	// dst string 拷贝到的目标地址
+	// dst string target path for the copy
 	Save2Dst(file *multipart.FileHeader, dst string) error
-	// GetContents 获取文件内容
+	// GetContents retrieves file content
 	//
-	// filename string 文件地址
+	// filename string file path
 	GetContents(filename string) ([]byte, error)
-	//PutContents 将内容写入文件(覆盖写)
+	//PutContents writes content to a file (overwrites)
 	//
-	// content []byte 写入的内容
+	// content []byte content to write
 	//
-	// dst string 写入的目标地址
+	// dst string target path to write to
 	PutContents(content []byte, dst string) error
-	// AppendContents 将内容写入文件(追加写)
+	// AppendContents writes content to a file (appends)
 	//
-	// content []byte 写入的内容
+	// content []byte content to write
 	//
-	// dst string 写入的目标地址
+	// dst string target path to write to
 	AppendContents(content []byte, dst string) error
-	// Exists 检查文件上是否存在
+	// Exists checks whether a file exists
 	//
-	// dst string 目标地址
+	// dst string target path
 	Exists(dst string) bool
-	// ExistsWithError 检查文件上是否存在(会返回错误信息)
+	// ExistsWithError checks whether a file exists (returns error information)
 	//
-	// dst string 目标地址
+	// dst string target path
 	ExistsWithError(dst string) (bool, error)
-	// Ext 获取文件扩展名
+	// Ext retrieves the file extension
 	//
-	// 根据文件名最后一个.分隔来切分获取
+	// Split at the last dot in the filename
 	Ext(filename string) string
-	// GetContentsReadLine 逐行读取文件内容
+	// GetContentsReadLine reads file content line by line
 	GetContentsReadLine(dst string) (<-chan string, error)
 }
 
 var fi IFile = &fileImpl{}
 
-// File 实例化file工具类
+// File instantiates file utilities
 func File() IFile {
 	return fi
 }
 
-// Save2Dst 将文件保存到目标地址(拷贝文件)
+// Save2Dst saves a file to the target path (copies the file)
 //
-// file *multipart.FileHeader 文件
+// file *multipart.FileHeader file
 //
-// dst string 拷贝到的目标地址
+// dst string target path for the copy
 func (fileImpl) Save2Dst(file *multipart.FileHeader, dst string) error {
 	src, err := file.Open()
 	if err != nil {
@@ -82,27 +82,27 @@ func (fileImpl) Save2Dst(file *multipart.FileHeader, dst string) error {
 	return err
 }
 
-// GetContents 获取文件内容
+// GetContents retrieves file content
 //
-// filename string 文件地址
+// filename string file path
 func (fileImpl) GetContents(filename string) ([]byte, error) {
 	return os.ReadFile(filename)
 }
 
-// PutContents 将内容写入文件(覆盖写)
+// PutContents writes content to a file (overwrites)
 //
-// content []byte 写入的内容
+// content []byte content to write
 //
-// dst string 写入的目标地址
+// dst string target path to write to
 func (fileImpl) PutContents(content []byte, dst string) error {
 	return os.WriteFile(dst, content, 0644)
 }
 
-// AppendContents 将内容写入文件(追加写)
+// AppendContents writes content to a file (appends)
 //
-// content []byte 写入的内容
+// content []byte content to write
 //
-// dst string 写入的目标地址
+// dst string target path to write to
 func (fileImpl) AppendContents(content []byte, dst string) error {
 	f, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
@@ -116,18 +116,18 @@ func (fileImpl) AppendContents(content []byte, dst string) error {
 	return err
 }
 
-// Exists 检查文件上是否存在
+// Exists checks whether a file exists
 //
-// dst string 目标地址
+// dst string target path
 func (fileImpl) Exists(dst string) bool {
 	ok, _ := File().ExistsWithError(dst)
 
 	return ok
 }
 
-// ExistsWithError 检查文件上是否存在(会返回错误信息)
+// ExistsWithError checks whether a file exists (returns error information)
 //
-// dst string 目标地址
+// dst string target path
 func (fileImpl) ExistsWithError(dst string) (bool, error) {
 	_, err := os.Stat(dst)
 	if err == nil {
@@ -141,15 +141,15 @@ func (fileImpl) ExistsWithError(dst string) (bool, error) {
 	return false, err
 }
 
-// Ext 获取文件扩展名
+// Ext retrieves the file extension
 //
-// 根据文件名最后一个.分隔来切分获取
+// Split at the last dot in the filename
 func (fileImpl) Ext(filename string) string {
 	filenameSplit := strings.Split(filename, ".")
 	return filenameSplit[len(filenameSplit)-1]
 }
 
-// GetContentsReadLine 逐行读取文件内容
+// GetContentsReadLine reads file content line by line
 func (fileImpl) GetContentsReadLine(dst string) (<-chan string, error) {
 	ch := make(chan string)
 	f, err := os.Open(dst)

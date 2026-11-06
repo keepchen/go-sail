@@ -16,11 +16,11 @@ import (
 	"github.com/keepchen/go-sail/v3/http/pojo/dto"
 )
 
-// 创建gin测试下上文和引擎
+// Create a Gin test context and engine
 func createTestContextAndEngine() (*gin.Context, *gin.Engine) {
 	w := httptest.NewRecorder()
 
-	//创建测试用的Request（可自定义请求参数）
+	//Create a test Request (request parameters can be customized)
 	req, _ := http.NewRequest("GET", "/test?name=foo", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Request-Id", uuid.New().String())

@@ -14,14 +14,14 @@ import (
 //@doc https://open.feishu.cn/cardkit
 
 const (
-	//CardPayload 请求载荷-卡片
+	//CardPayload request payload - card
 	CardPayload = `{
         "timestamp": "%d",
         "sign": "%s",
         "msg_type": "interactive",
         "card": %s
 }`
-	//TextPayload 请求载荷-纯文本
+	//TextPayload request payload - plain text
 	TextPayload = `{
         "timestamp": "%d",
         "sign": "%s",
@@ -30,20 +30,20 @@ const (
 }`
 )
 
-// LarkConf lark or 飞书配置
+// LarkConf Lark or Feishu configuration
 type LarkConf struct {
-	WebhookUrl string `yaml:"webhook_url" toml:"webhook_url" json:"webhook_url"` //webhook地址(授权参数)
-	SignKey    string `yaml:"sign_key" toml:"sign_key" json:"sign_key"`          //签名
+	WebhookUrl string `yaml:"webhook_url" toml:"webhook_url" json:"webhook_url"` //Webhook URL (authorization parameter)
+	SignKey    string `yaml:"sign_key" toml:"sign_key" json:"sign_key"`          //Signature
 }
 
-// LarkResponseEntity 响应实体
+// LarkResponseEntity response entity
 type LarkResponseEntity struct {
 	Code int64  `json:"code"`
 	Msg  string `json:"msg"`
 	Data any    `json:"data"`
 }
 
-// LarkEmit 发射lark通知 - 卡片风格
+// LarkEmit sends a Lark notification - card style
 func LarkEmit(conf LarkConf, content string) (LarkResponseEntity, error) {
 	headers := map[string]string{"Content-Type": "application/json"}
 	timestamp := time.Now().Unix()
@@ -59,7 +59,7 @@ func LarkEmit(conf LarkConf, content string) (LarkResponseEntity, error) {
 	return response, err
 }
 
-// LarkEmitPlaintext 发射lark通知 - 纯文本风格
+// LarkEmitPlaintext sends a Lark notification - plain text style
 func LarkEmitPlaintext(conf LarkConf, content string) (LarkResponseEntity, error) {
 	headers := map[string]string{"Content-Type": "application/json"}
 	timestamp := time.Now().Unix()
@@ -75,11 +75,11 @@ func LarkEmitPlaintext(conf LarkConf, content string) (LarkResponseEntity, error
 	return response, err
 }
 
-// 生成lark或飞书签名
+// Generate a Lark or Feishu signature
 //
 // docs: https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot?lang=zh-CN#3c6592d6
 func genLarkSign(secret string, timestamp int64) (string, error) {
-	//timestamp + key 做sha256, 再进行base64 encode
+	//Apply SHA256 to timestamp + key, then Base64-encode
 	stringToSign := fmt.Sprintf("%v\n%s", timestamp, secret)
 
 	var data []byte
