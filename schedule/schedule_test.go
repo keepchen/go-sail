@@ -3,6 +3,7 @@ package schedule
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -153,7 +154,7 @@ func TestRunOnceImmediatelyDelay(t *testing.T) {
 
 func TestSetRedisClientOnce(t *testing.T) {
 	t.Run("Run-SetRedisClientOnce", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 		if err != nil {
 			return
 		}

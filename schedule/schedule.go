@@ -301,22 +301,18 @@ func Call(jobName string, mandatory bool) {
 		ticker := time.NewTicker(time.Millisecond * 500)
 		retryTimes := 0
 		defer ticker.Stop()
-	RetryLoop:
-		for {
-			select {
-			case <-ticker.C:
-				job.mux.RLock()
-				wrappedTaskFunc := job.wrappedTaskFunc
-				job.mux.RUnlock()
-				if wrappedTaskFunc != nil {
-					wrappedTaskFunc()
-					break RetryLoop
-				}
-				retryTimes++
+		for range ticker.C {
+			job.mux.RLock()
+			wrappedTaskFunc := job.wrappedTaskFunc
+			job.mux.RUnlock()
+			if wrappedTaskFunc != nil {
+				wrappedTaskFunc()
+				break
+			}
+			retryTimes++
 
-				if retryTimes > 2 {
-					break RetryLoop
-				}
+			if retryTimes > 2 {
+				break
 			}
 		}
 	}
@@ -352,22 +348,18 @@ func MustCall(jobName string, mandatory bool) {
 		ticker := time.NewTicker(time.Millisecond * 500)
 		retryTimes := 0
 		defer ticker.Stop()
-	RetryLoop:
-		for {
-			select {
-			case <-ticker.C:
-				job.mux.RLock()
-				wrappedTaskFunc := job.wrappedTaskFunc
-				job.mux.RUnlock()
-				if wrappedTaskFunc != nil {
-					wrappedTaskFunc()
-					break RetryLoop
-				}
-				retryTimes++
+		for range ticker.C {
+			job.mux.RLock()
+			wrappedTaskFunc := job.wrappedTaskFunc
+			job.mux.RUnlock()
+			if wrappedTaskFunc != nil {
+				wrappedTaskFunc()
+				break
+			}
+			retryTimes++
 
-				if retryTimes > 2 {
-					break RetryLoop
-				}
+			if retryTimes > 2 {
+				break
 			}
 		}
 	}

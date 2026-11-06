@@ -30,14 +30,14 @@ func (*Order) Class() string {
 }
 
 func (o *Order) BeforeCreate(_ *gorm.DB) (err error) {
-	o.BaseModel.CreatedAt = utils.NewTimeWithTimeZone().Now()
-	o.BaseModel.UpdatedAt = o.BaseModel.CreatedAt
+	o.CreatedAt = utils.NewTimeWithTimeZone().Now()
+	o.UpdatedAt = o.CreatedAt
 
 	return nil
 }
 
 func (o *Order) BeforeUpdate(_ *gorm.DB) (err error) {
-	o.BaseModel.UpdatedAt = utils.NewTimeWithTimeZone().Now()
+	o.UpdatedAt = utils.NewTimeWithTimeZone().Now()
 
 	return nil
 }

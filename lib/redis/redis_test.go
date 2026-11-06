@@ -2,8 +2,8 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"net"
+	"strconv"
 	"testing"
 	"time"
 
@@ -22,7 +22,7 @@ var sConf = Conf{
 }
 
 func TestInitRedis(t *testing.T) {
-	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+	conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 	if err != nil {
 		return
 	}
@@ -131,7 +131,7 @@ func TestInitRedis(t *testing.T) {
 }
 
 func TestNewRedis(t *testing.T) {
-	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+	conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 	if err != nil {
 		return
 	}

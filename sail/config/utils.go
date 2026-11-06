@@ -70,7 +70,7 @@ func ParseConfigFromBytes(format string, source []byte) (*Config, error) {
 		err = toml.Unmarshal(source, &cfg)
 	default:
 		fmt.Printf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
-		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s", format)
 	}
 
 	return &cfg, err
@@ -100,7 +100,7 @@ func ParseConfigFromBytesToDst(format string, source []byte, dst any) (any, erro
 		err = toml.Unmarshal(source, dst)
 	default:
 		fmt.Printf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
-		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s\n", format)
+		err = fmt.Errorf("[GO-SAIL] <Config> dump config by using unknown format: %s", format)
 	}
 
 	return dst, err

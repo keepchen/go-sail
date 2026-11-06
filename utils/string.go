@@ -188,10 +188,7 @@ func (stringImpl) Wordwrap(rawStr string, length int, split string) string {
 		finalStr = strings.Builder{}
 	)
 
-	for {
-		if start > len(strSplit) {
-			break
-		}
+	for start <= len(strSplit) {
 		if end >= len(strSplit) {
 			finalStr.WriteString(strings.Join(strSplit[start:], ""))
 		} else {

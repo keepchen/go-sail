@@ -42,10 +42,7 @@ func wordwrap(rawStr string, length int, split string) string {
 		finalStr string
 	)
 
-	for {
-		if start > len(strSplit) {
-			break
-		}
+	for start <= len(strSplit) {
 		if end >= len(strSplit) {
 			finalStr += strings.Join(strSplit[start:], "")
 		} else {

@@ -3,7 +3,6 @@ package etcd
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"net"
 	"testing"
 	"time"
@@ -18,7 +17,7 @@ var conf = Conf{
 
 func TestNew(t *testing.T) {
 	t.Run("New", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -38,7 +37,7 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("New-Auth", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -52,7 +51,7 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("New-TlsEnable", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -83,7 +82,7 @@ func TestNew(t *testing.T) {
 
 func TestInit(t *testing.T) {
 	t.Run("Init", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -93,7 +92,7 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("Init-Auth", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}
@@ -105,7 +104,7 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("Init-TlsEnable", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s", conf.Endpoints[0]))
+		conn, err := net.Dial("tcp", conf.Endpoints[0])
 		if err != nil {
 			return
 		}

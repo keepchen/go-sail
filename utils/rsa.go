@@ -66,7 +66,7 @@ func (rsaImpl) Encrypt(rawString string, publicKey []byte) (string, error) {
 		return "", errors.New("public key is nil")
 	}
 
-	encodedByte, err := rsa.EncryptPKCS1v15(rand.Reader, pubObj, []byte(rawString))
+	encodedByte, err := rsa.EncryptPKCS1v15(rand.Reader, pubObj, []byte(rawString)) //nolint:staticcheck // Preserve PKCS #1 v1.5 ciphertext compatibility for the existing API.
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +85,7 @@ func (rsaImpl) Decrypt(encodedString string, privateKey []byte) (string, error) 
 	if priObj == nil {
 		return "", errors.New("private key is nil")
 	}
-	decodedByte, err := rsa.DecryptPKCS1v15(rand.Reader, priObj, encodedByte)
+	decodedByte, err := rsa.DecryptPKCS1v15(rand.Reader, priObj, encodedByte) //nolint:staticcheck // Existing clients may supply PKCS #1 v1.5 ciphertext; OAEP requires an explicit API migration.
 	if err != nil {
 		return "", err
 	}

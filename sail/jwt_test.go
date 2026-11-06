@@ -153,6 +153,9 @@ func TestDecrypt(t *testing.T) {
 		conf.JwtConf.MustLoad()
 		config.Set(conf)
 		encryptedStr, err := JWT().Encrypt(uid)
+		if !assert.NoError(t, err) {
+			t.FailNow()
+		}
 		t.Log("Encrypt:", encryptedStr)
 		plaintext, err := JWT().Decrypt(encryptedStr)
 		t.Log("Decrypt:", plaintext)

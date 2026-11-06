@@ -1,8 +1,8 @@
 package orm
 
 import (
-	"fmt"
 	"net"
+	"strconv"
 	"testing"
 
 	"github.com/keepchen/go-sail/v3/lib/db"
@@ -11,7 +11,7 @@ import (
 
 func TestBeforeCreate(t *testing.T) {
 	t.Run("BeforeCreate", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -24,7 +24,7 @@ func TestBeforeCreate(t *testing.T) {
 
 func TestBeforeSave(t *testing.T) {
 	t.Run("BeforeSave", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -37,7 +37,7 @@ func TestBeforeSave(t *testing.T) {
 
 func TestBeforeUpdate(t *testing.T) {
 	t.Run("BeforeUpdate", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}
@@ -50,7 +50,7 @@ func TestBeforeUpdate(t *testing.T) {
 
 func TestBeforeDelete(t *testing.T) {
 	t.Run("BeforeDelete", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", dbConf.Mysql.Read.Host, dbConf.Mysql.Read.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(dbConf.Mysql.Read.Host, strconv.Itoa(dbConf.Mysql.Read.Port)))
 		if err != nil {
 			return
 		}

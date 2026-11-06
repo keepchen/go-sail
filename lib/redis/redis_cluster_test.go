@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"fmt"
 	"net"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ var cConf = ClusterConf{
 
 func TestInitRedisCluster(t *testing.T) {
 	t.Run("InitRedisCluster", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", cConf.Endpoints[0].Host, cConf.Endpoints[0].Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(cConf.Endpoints[0].Host, strconv.Itoa(cConf.Endpoints[0].Port)))
 		if err != nil {
 			return
 		}
@@ -52,7 +52,7 @@ func TestInitRedisCluster(t *testing.T) {
 
 func TestNewRedisCluster(t *testing.T) {
 	t.Run("NewRedisCluster", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", cConf.Endpoints[0].Host, cConf.Endpoints[0].Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(cConf.Endpoints[0].Host, strconv.Itoa(cConf.Endpoints[0].Port)))
 		if err != nil {
 			return
 		}
@@ -62,7 +62,7 @@ func TestNewRedisCluster(t *testing.T) {
 	})
 
 	t.Run("NewRedisCluster-SSLEnable", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", cConf.Endpoints[0].Host, cConf.Endpoints[0].Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(cConf.Endpoints[0].Host, strconv.Itoa(cConf.Endpoints[0].Port)))
 		if err != nil {
 			return
 		}
@@ -72,7 +72,7 @@ func TestNewRedisCluster(t *testing.T) {
 	})
 
 	t.Run("NewRedisCluster-Auth", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", cConf.Endpoints[0].Host, cConf.Endpoints[0].Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(cConf.Endpoints[0].Host, strconv.Itoa(cConf.Endpoints[0].Port)))
 		if err != nil {
 			return
 		}

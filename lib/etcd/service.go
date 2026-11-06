@@ -31,6 +31,9 @@ func RegisterService(ctx context.Context, groupName, serviceName, serviceEndpoin
 	// Also store the service name for service discovery
 	serviceKey := fmt.Sprintf("services/%s/%s", groupName, serviceName)
 	_, err = GetInstance().Put(ctx, serviceKey, "", clientv3.WithLease(lease.ID))
+	if err != nil {
+		return "", err
+	}
 
 	ch, err := GetInstance().KeepAlive(ctx, lease.ID)
 	if err != nil {

@@ -23,14 +23,14 @@ func (*Wallet) Class() string {
 }
 
 func (w *Wallet) BeforeCreate(_ *gorm.DB) (err error) {
-	w.BaseModel.CreatedAt = utils.NewTimeWithTimeZone().Now()
-	w.BaseModel.UpdatedAt = w.BaseModel.CreatedAt
+	w.CreatedAt = utils.NewTimeWithTimeZone().Now()
+	w.UpdatedAt = w.CreatedAt
 
 	return nil
 }
 
 func (w *Wallet) BeforeUpdate(_ *gorm.DB) (err error) {
-	w.BaseModel.UpdatedAt = utils.NewTimeWithTimeZone().Now()
+	w.UpdatedAt = utils.NewTimeWithTimeZone().Now()
 
 	return nil
 }

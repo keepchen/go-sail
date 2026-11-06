@@ -26,14 +26,14 @@ func (*User) Class() string {
 }
 
 func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
-	u.BaseModel.CreatedAt = utils.NewTimeWithTimeZone().Now()
-	u.BaseModel.UpdatedAt = u.BaseModel.CreatedAt
+	u.CreatedAt = utils.NewTimeWithTimeZone().Now()
+	u.UpdatedAt = u.CreatedAt
 
 	return nil
 }
 
 func (u *User) BeforeUpdate(_ *gorm.DB) (err error) {
-	u.BaseModel.UpdatedAt = utils.NewTimeWithTimeZone().Now()
+	u.UpdatedAt = utils.NewTimeWithTimeZone().Now()
 
 	return nil
 }

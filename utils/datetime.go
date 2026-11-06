@@ -75,7 +75,7 @@ func (datetimeImpl) FormatDate(date time.Time, dateStyle DateStyle) string {
 	layout = strings.Replace(layout, "HH", "15", 1)
 	layout = strings.Replace(layout, "mm", "04", 1)
 	layout = strings.Replace(layout, "ss", "05", 1)
-	layout = strings.Replace(layout, "SSS", "000", -1)
+	layout = strings.ReplaceAll(layout, "SSS", "000")
 
 	return date.Format(layout)
 }
@@ -91,7 +91,7 @@ func (datetimeImpl) ParseDate(date, layout string, loc *time.Location) (time.Tim
 	layout = strings.Replace(layout, "HH", "15", 1)
 	layout = strings.Replace(layout, "mm", "04", 1)
 	layout = strings.Replace(layout, "ss", "05", 1)
-	layout = strings.Replace(layout, "SSS", "000", -1)
+	layout = strings.ReplaceAll(layout, "SSS", "000")
 
 	if loc == nil {
 		loc = time.Local

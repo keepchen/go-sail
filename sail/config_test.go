@@ -52,7 +52,7 @@ var etcdConf = etcd.Conf{
 }
 
 func TestConfigViaEtcd(t *testing.T) {
-	conn, err := net.Dial("tcp", fmt.Sprintf("%s", etcdConf.Endpoints[0]))
+	conn, err := net.Dial("tcp", etcdConf.Endpoints[0])
 	if err != nil {
 		return
 	}

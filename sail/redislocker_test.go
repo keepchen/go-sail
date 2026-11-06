@@ -1,8 +1,8 @@
 package sail
 
 import (
-	"fmt"
 	"net"
+	"strconv"
 	"testing"
 
 	"github.com/keepchen/go-sail/v3/lib/redis"
@@ -19,7 +19,7 @@ func TestRedisLocker(t *testing.T) {
 			t.Log(RedisLocker())
 		}
 	})
-	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+	conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 	if err != nil {
 		return
 	}

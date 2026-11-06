@@ -3,6 +3,7 @@ package schedule
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"testing"
 	"time"
 
@@ -221,7 +222,7 @@ func TestYearly(t *testing.T) {
 
 func TestWithoutOverlapping(t *testing.T) {
 	t.Run("WithoutOverlapping", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 		if err != nil {
 			return
 		}
@@ -248,7 +249,7 @@ func TestSetInterval(t *testing.T) {
 
 func TestRun(t *testing.T) {
 	t.Run("Run", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 		if err != nil {
 			return
 		}
@@ -263,7 +264,7 @@ func TestRun(t *testing.T) {
 	})
 
 	t.Run("Run-withoutOverlapping", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 		if err != nil {
 			return
 		}
@@ -278,7 +279,7 @@ func TestRun(t *testing.T) {
 	})
 
 	t.Run("Run-Cancel", func(t *testing.T) {
-		conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", sConf.Host, sConf.Port))
+		conn, err := net.Dial("tcp", net.JoinHostPort(sConf.Host, strconv.Itoa(sConf.Port)))
 		if err != nil {
 			return
 		}
