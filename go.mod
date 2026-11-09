@@ -16,7 +16,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.8.3
 	github.com/jinzhu/configor v1.2.2
 	github.com/keepchen/message-queue v0.0.5
-	github.com/nacos-group/nacos-sdk-go/v2 v2.3.5
+	github.com/nacos-group/nacos-sdk-go/v2 v2.3.6
 	github.com/nats-io/nats.go v1.55.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/prometheus/client_golang v1.25.0
@@ -34,7 +34,6 @@ require (
 	go.etcd.io/etcd/client/v3 v3.7.3
 	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.58.0
-	golang.org/x/net v0.62.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/clickhouse v0.7.0
@@ -79,7 +78,6 @@ require (
 	github.com/bytedance/sonic/loader v0.5.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
-	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
@@ -96,7 +94,6 @@ require (
 	github.com/go-openapi/jsonreference v1.0.3 // indirect
 	github.com/go-openapi/spec v1.0.1 // indirect
 	github.com/go-openapi/swag/conv v0.29.2 // indirect
-	github.com/go-openapi/swag/jsonname v0.29.2 // indirect
 	github.com/go-openapi/swag/jsonutils v0.29.2 // indirect
 	github.com/go-openapi/swag/loading v0.29.2 // indirect
 	github.com/go-openapi/swag/pools v0.29.2 // indirect
@@ -168,6 +165,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/arch v0.32.0 // indirect
 	golang.org/x/mod v0.42.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
