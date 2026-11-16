@@ -5,7 +5,7 @@ go 1.26.10
 require (
 	github.com/DataDog/sketches-go v1.4.8
 	github.com/SherClockHolmes/webpush-go v1.4.0
-	github.com/gin-contrib/gzip v1.2.9
+	github.com/gin-contrib/gzip v1.2.10
 	github.com/gin-contrib/pprof v1.5.7
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-playground/assert/v2 v2.2.0
